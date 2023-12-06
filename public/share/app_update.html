@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>兰溪麻将</title>
+    <meta name="keywords" content="兰溪麻将">
+    <meta name="description" content="熟人棋牌社交专注朋友间最真实的棋牌体验。打造朋友间真实的线下扑克玩法。">
+ 
+   
+     <script type="text/javascript">
+        window.onload = function() {
+            var Ubrowser = {
+                versions: function() {
+                    var u = navigator.userAgent,
+                        app = navigator.appVersion;
+                    return { //移动终端浏览器版本信息
+                        trident: u.indexOf('Trident') > -1, //IE内核
+                        presto: u.indexOf('Presto') > -1, //opera内核
+                        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+                        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+                        mobile: !!u.match(/AppleWebKit.*Mobile.*/) || !!u.match(/AppleWebKit/), //是否为移动终端
+                        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+                        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者QQHD浏览器
+                        iPad: u.indexOf('iPad') > -1, //是否iPad
+                        webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部
+                    };
+                }(),
+                language: (navigator.browserLanguage || navigator.language).toLowerCase()
+            }
+            console.log(Ubrowser.versions)
+            if (Ubrowser.versions.iPhone) {
+                window.location.href = 'https://itunes.apple.com/cn/app/%E5%85%B0%E6%BA%AA%E9%BA%BB%E5%B0%86-%E7%BA%AF%E6%AD%A3%E6%9C%AC%E5%9C%B0%E7%8E%A9%E6%B3%95/id1218658890?mt=8'
+            } else {
+                window.location.href = 'http://www.1818lx.com/lanxi.apk';
+            }
+        }
+    </script>
+    <meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">
+    <meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">
+    <style id="stylish-5" class="stylish" type="text/css">
+
+    </style>
+     <link href="./static/css.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <div class="content">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><img src="./static/bg.jpg" width="640" style="width:100%;"></div>
+                
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

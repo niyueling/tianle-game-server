@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>雀友麻将</title>
+</head>
+<body>
+<script type="text/javascript">
+  var timeout;
+  var roomId;
+  function url2json(url){
+    var index = -1,
+      str = '',
+      arr = [],
+      length = 0,
+      res = {};
+    if(url.indexOf('?')!=-1){
+      index = url.indexOf('?');
+      str = url.substring(index+1);
+      arr = str.split('&');
+      length = arr.length;
+      for(var i=0; i <= length-1; i++){
+        res[arr[i].split('=')[0]] = arr[i].split('=')[1];
+      }
+    }else{
+      res = {};
+    }
+    return res;
+  };
+
+
+  function  openMahjongWeb() {
+    window.location.href = 'http://120.26.77.212:3001/public/build/web-mobile/';
+  }
+
+  function browserRedirect() {
+    var sUserAgent = navigator.userAgent.toLowerCase();
+    var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+    var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+    var bIsAndroid = sUserAgent.match(/android/i) == "android";
+    if (bIsIpad || bIsIphoneOs) {
+      document.writeln("<h1>请在safari中打开链接</h1>");
+      var urlParam = window.location.href;
+      var urlParamJson = url2json(urlParam);
+      var roomId = urlParamJson.roomId;
+      if (urlParam && roomId) {
+        if (sUserAgent.indexOf("safari") > -1) {
+          window.location.href = 'queyoumahjong://?roomId='+ roomId;
+         // timeout = setTimeout('openMahjongWeb()', 1000);
+        }
+      } else {
+
+      }
+
+    }else if(bIsAndroid){
+        //todo
+    }
+  }
+  browserRedirect();
+</script>
+</body>
+</html>

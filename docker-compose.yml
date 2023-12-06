@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:3.2.8-alpine
+    volumes:
+    - /root/data/redis:/data
+    ports:
+    - "6379:6379"
+    restart: always
+  mongo:
+    image: mongo:3.4
+    volumes:
+    - /root/data/db:/data/db
+    ports:
+    - "27017:27017"
+    restart: always
+  rabbitmq:
+    image: rabbitmq:3.8.9-management
+    ports:
+      - "5672:5672"
+      - "8080:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    restart: always

@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0023)http://game.jhbowei.cn/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" data-livestyle-extension="available" class="gr__game_jhbowei_cn">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>兰溪麻将</title>
+    <meta name="keywords" content="兰溪麻将">
+    <meta name="description" content="熟人棋牌社交专注朋友间最真实的棋牌体验。打造朋友间真实的线下扑克玩法。">
+    <style type="text/css">
+        <!-- body {
+            margin-left: 0px;
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 0px;
+        }
+        
+        -->
+    </style>
+    <link href="./static/css.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+        var android_start_schema = 'lanxi://mahjong:1234'
+        var ios_start_schema = 'wxe2097384d2bf77c0://'
+
+        var phoneWidth = parseInt(window.screen.width);
+        var phoneScale = phoneWidth / 640;
+        var ua = navigator.userAgent;
+        if (isAndroid()) {
+            var version = parseFloat(RegExp.$1);
+            // andriod 2.3
+            if (version > 2.3) {
+                document.write('<meta name="viewport" content="width=640, minimum-scale = ' + phoneScale + ', maximum-scale = ' + phoneScale + ', target-densitydpi=device-dpi">');
+                // andriod 2.3以上
+            } else {
+                document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
+            }
+            // 其他系统
+        } else {
+            document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">');
+        }
+
+        if (IsPC()) {
+            document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">');
+        }
+
+        function isAndroid() {
+            return /Android (\d+\.\d+)/.test(ua)
+        }
+
+        function IsPC() {
+            var userAgentInfo = navigator.userAgent;
+            var Agents = new Array("Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod");
+            var flag = true;
+            for (var v = 0; v < Agents.length; v++) {
+                if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                    flag = false;
+                    break;
+                }
+            }
+            return flag;
+        }
+
+
+        (function() {
+
+            var n = GetQueryString('n');
+            var url = 'app_update.html';
+            var script = document.createElement('script');
+            // script.setAttribute('src', url);
+            // document.getElementsByTagName('head')[0].appendChild(script);
+        })();
+
+
+        window.onload = function() {
+            var start = document.getElementById('start')
+            console.log(document, document.getElementById('start'))
+            if (isAndroid()) {
+                start.setAttribute('href', android_start_schema)
+            } else {
+                start.setAttribute('href', ios_start_schema)
+            }
+        }
+
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+
+        function download2(type) {
+            var n = GetQueryString('n');
+            if (n == null) {
+                n = 0;
+            }
+            location.href = 'app_update.html';
+        }
+    </script>
+    <meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">
+    <meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">
+    <style id="stylish-5" class="stylish" type="text/css">
+
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><img src="./static/bg.jpg" width="640" style="width:100%;"></div>
+                <div class="down">
+                    <span>
+                       <a id="start">
+                       <img src="static/start_game.png"></a>
+                    </span>
+                    <span class="download">
+                      <a href="/app_update.html" >
+                        <img src="static/android_btn_down.png" />
+                      </a>
+                    </span>
+                    <span class="download">                      
+                      <a href="/app_update.html">
+                         <img src="static/ios_btn_down.png" />
+                      </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="bottom">
+            <div class="stick-bottom">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

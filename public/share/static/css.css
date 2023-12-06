@@ -1,0 +1,362 @@
+/* CSS Document */
+
+@charset "utf-8";
+
+/* CSS Document */
+
+
+/*������ʽ��*/
+
+body,
+div,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+form {
+    margin: 0;
+    padding: 0;
+}
+
+ol,
+ul,
+li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 100%;
+    font-weight: normal;
+}
+
+em,
+i {
+    font-style: normal;
+}
+
+img {
+    border: 0;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline
+}
+
+.block {
+    display: block;
+}
+
+body {
+    font-family: ΢���ź�, Arial, ����, sans-serif;
+    background: #D5D5D5
+}
+
+.content {
+    width: 640px;
+    height: auto;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer {
+    width: 100%;
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 1.6rem;
+    color: #fff;
+    padding: 0.5rem 0;
+}
+
+.footer a {
+    color: #fff
+}
+
+
+/**/
+
+.swiper-container {
+    width: 100%;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative
+}
+
+.swiper-slide {
+    position: relative;
+    text-align: center;
+    font-size: 18px;
+    background: #fff;
+    /* Center slide text vertically */
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+
+/**/
+
+.index_download {
+    width: 100%;
+    position: absolute;
+    text-align: center;
+    bottom: 5em;
+    z-index: 100;
+}
+
+.index_download a.down-btn1 {
+    width: 60%;
+    display: block;
+    text-decoration: none;
+    margin: 0 auto;
+}
+
+.head {
+    width: 100%;
+    display: block;
+    height: 112px;
+    background: url(images/logo.png) #1a002d 3% center no-repeat;
+}
+
+.head span {
+    font-size: 1.4em;
+    color: #fff;
+    margin-left: 240px;
+    letter-spacing: 0.1em;
+    line-height: 31px;
+    width: 204px;
+    float: left;
+    margin-top: 27px;
+    text-align: center;
+}
+
+.index_download p {
+    text-align: center;
+    color: #fff;
+    font-size: 1.6em;
+    margin-top: 0.5em
+}
+
+
+/**/
+
+.index-nav {
+    filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+    padding-top: 15px;
+    -moz-background-size: 100%;
+    width: 640px;
+    height: 200px;
+}
+
+.index-nav li {
+    display: inline-block;
+    width: 161px;
+    height: 200px;
+    padding: 0;
+    float: left;
+    text-align: center;
+    background: url(images/di2.png) no-repeat;
+    margin-left: 36px;
+    position: relative;
+}
+
+.index-nav li a {
+    color: #666
+}
+
+.index-nav li span {
+    display: inline-block;
+    position: absolute;
+    bottom: 9px;
+    width: 82%;
+    left: 12px;
+    font-size: 1.4rem;
+    color: #fff;
+}
+
+.index-nav li img {
+    /* display: block; */
+    /* margin: 0rem auto 0rem; */
+    width: 80%;
+    float: left;
+    margin-left: 16px;
+    margin-top: 16px;
+}
+
+.second {
+    width: 100%;
+    height: 2700px;
+    background: url(images/di3.jpg) no-repeat
+}
+
+
+/**/
+
+.content .img_style {
+    width: 100%;
+    height: 112px;
+}
+
+.down-btn {
+    width: 171px;
+    height: 65px;
+    display: block;
+    background: url(images/bt-01.png) no-repeat;
+    float: right;
+    margin-right: 20px;
+    margin-top: 32px;
+}
+
+.down-btn1 {
+    width: 352px;
+    height: 114px;
+}
+
+
+/**/
+
+.game-list {
+    padding-top: 55px;
+}
+
+.content .game-list ul {
+    display: inline-block;
+    margin: 0.5em 0;
+    width: 100%;
+    padding: 0.2em 0
+}
+
+.content .game-list li {
+    width: 100%;
+    float: left;
+    text-align: center;
+    font-size: 0.8em
+}
+
+.content .game-list li .game_title {
+    width: 26%;
+    margin: 0 auto;
+    text-align: center
+}
+
+.content .game-list li .game_con {
+    background: url(images/di.png) no-repeat center 12%;
+    width: 560px;
+    margin: 0 auto;
+    filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+    -moz-background-size: 100%;
+    display: inline-block;
+    height: 180px;
+    background-size: 90%;
+}
+
+.content .game-list li .game_con .game_logo {
+    float: left;
+    width: 145px;
+    margin-top: -5px;
+}
+
+.content .game-list li .game_con .game_info {
+    float: left;
+    width: 50%;
+    color: #fff;
+    font-size: 1.2rem;
+    text-align: left;
+    margin-top: 33px;
+}
+
+.content .game-list li .game_con .down_bt2 {
+    float: right;
+    margin-right: 51px;
+    margin-top: 51px;
+    width: 15%
+}
+
+.up {
+    width: 100%;
+    height: 60px;
+    background-color: rgba(0, 0, 0, 0.64);
+    position: absolute;
+    top: 0;
+    padding: 10px
+}
+
+.up .button {
+    width: 170px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.up .icon {
+    width: 60px;
+    height: 60px;
+    margin-left: 100px;
+    margin-right: 10px;
+}
+
+.down {
+    position: absolute;
+    left: 70px;
+    bottom: 130px;
+    width: 500px;
+    height: 260px;
+    background-size: cover;
+}
+
+.down #start img {
+    height: 96px;
+}
+
+.down .download img {
+    width: 85%;
+    margin-top: 20px;
+}
+
+.content {
+    text-align: center;
+}
+
+.bottom {
+    width: 640px;
+    bottom: 0;
+    position: fixed;
+}
+
+.stick-bottom {
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
