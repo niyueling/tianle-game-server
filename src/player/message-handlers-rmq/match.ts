@@ -2,12 +2,7 @@ import {GameType} from "@fm/common/constants";
 import Club from '../../database/models/club'
 import ClubMember from '../../database/models/clubMember'
 import PlayerModel from '../../database/models/player'
-import biaofenLobby from '../../match/biaofen/centerlobby'
 import majiangLobby from '../../match/majiang/centerlobby'
-import niuniuLobby from '../../match/niuniu/centerlobby'
-import paodekuaiLobby from '../../match/paodekuai/centerlobby'
-import shisanshuiLobby from '../../match/shisanshui/centerLobby'
-import zhadanLobby from '../../match/zhadan/centerlobby'
 import {service} from "../../service/importService";
 import {AsyncRedisClient} from "../../utils/redis"
 import {ISocketPlayer} from "../ISocketPlayer"
@@ -38,18 +33,13 @@ async function playerCanInClubRoom(player, clubId, gameType) {
   return false;
 }
 
-const allGameName = ['paodekuai', 'niuniu', 'zhadan', 'majiang', 'shisanshui', 'biaofen']
+const allGameName = ['majiang']
 
 function getLobby(gameType) {
   const gameType2Lobby = {
-    niuniu: niuniuLobby,
-    paodekuai: paodekuaiLobby,
-    zhadan: zhadanLobby,
-    shisanshui: shisanshuiLobby,
     majiang: majiangLobby,
-    biaofen: biaofenLobby,
   }
-  return gameType2Lobby[gameType] || gameType2Lobby.paodekuai
+  return gameType2Lobby[gameType] || gameType2Lobby.majiang
 }
 
 export function createHandler(redisClient: AsyncRedisClient) {
