@@ -2,14 +2,12 @@ import {Router} from 'express'
 import * as moment from 'moment'
 import Notice from '../database/models/notice'
 import RoomRecord from '../database/models/roomRecord'
-import RoomManager from '../match/paodekuai/centerlobby'
 import PlayerManager from '../player/player-manager'
 
 const router = Router()
 export default router
 
 router.get('/status', getGameStatus)
-router.post('/dissolve', dissolveRoom)
 router.post('/addResource', addResource)
 router.post('/notice', notice)
 
@@ -23,19 +21,6 @@ async function getGameStatus(req, res) {
       players, rooms
     }
   })
-}
-
-function dissolveRoom(req, res) {
-  const {roomNum} = req.body
-  const room = RoomManager.getInstance().getRoom(parseInt(roomNum, 10))
-
-  console.log(`${__filename}:34 dissolveRoom`, roomNum, RoomManager.getInstance().rooms)
-  if (room) {
-    room.forceDissolve()
-    res.json({ok: true})
-  } else {
-    res.json({ok: false, info: 'room not found'})
-  }
 }
 
 async function addResource(req, res) {
