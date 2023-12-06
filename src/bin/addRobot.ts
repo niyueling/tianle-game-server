@@ -9,7 +9,7 @@ import {service} from "../service/importService";
 mongoose.connect(config.database.url);
 // 按行读取文件
 const lineReader = readline.createInterface({
-  input: fs.createReadStream('../../src/bin/robot.txt')
+  input: fs.createReadStream('./src/bin/robot.txt')
 });
 
 const robots = [];
