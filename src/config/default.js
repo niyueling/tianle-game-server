@@ -1,7 +1,7 @@
 module.exports = {
   gameName: "tianleGame",
   database: {
-    url: "mongodb://192.168.124.20:27017/tianleServer",
+    url: "mongodb://localhost:27017/tianleServer",
     opt: {
       reconnectTries: 100,
       reconnectInterval: 5000,
