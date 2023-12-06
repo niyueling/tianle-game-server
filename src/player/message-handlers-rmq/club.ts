@@ -4,7 +4,6 @@ import ClubMember from '../../database/models/clubMember'
 import ClubRuleModel from "../../database/models/clubRule";
 import {MailModel, MailState, MailType} from "../../database/models/mail";
 import {playerInClub} from '../../match/IRoom';
-import Lobby from '../../match/zhadan/centerlobby';
 import {service} from "../../service/importService";
 
 function lobbyQueueNameFrom(gameType: string) {
@@ -137,32 +136,6 @@ export async function playerIsAdmin(playerId, gameType, clubShortId) {
     return clubMemberInfo.role === 'admin'
   }
   return false
-}
-
-export async function getClubInfo(clubId: string) {
-  const room = await Lobby.getInstance().getClubRooms(clubId);
-
-  const club = await Club.findOne({ _id: clubId })
-    .populate('owner')
-
-  if (!club) {
-    return;
-  }
-
-  const clubOwner = club.owner
-  const rules = await getClubRule(club);
-  const clubInfo = {
-    gem: clubOwner.gem,
-    name: clubOwner.name,
-    clubName: club.name,
-    clubShortId: club.shortId,
-    defaultRule: club.defaultRule,
-    defaultGoldRule: club.defaultGoldRule,
-    publicRule: rules.publicRule,
-    goldRule: rules.goldRule,
-  }
-
-  return { ok: true, roomInfo: room, clubInfo };
 }
 
 function gameType2Name(gameType) {
