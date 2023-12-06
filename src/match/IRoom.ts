@@ -17,7 +17,6 @@ import {service} from "../service/importService";
 import { IGame, IRoom, ITable, SimplePlayer } from './interfaces';
 import {once} from "./onceDecorator"
 import {autoSerialize, Serializable, serialize, serializeHelp} from "./serializeDecorator"
-import {eqlModelId} from "./zhadan/modelId"
 
 export const playerInClub = async (clubShortId: string, playerId: string) => {
   if (!clubShortId) {
@@ -450,7 +449,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
 
     this.removePlayer(player)
-    this.removeOrder(player)
 
     player.room = null
 
@@ -515,15 +513,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     // this.evictFromOldTable(thePlayer)
 
     return true
-  }
-
-  protected removeOrder(player: SimplePlayer) {
-    for (let i = 0; i < this.playersOrder.length; i++) {
-      const po = this.playersOrder[i]
-      if (po && eqlModelId(po, player)) {
-        this.playersOrder[i] = null
-      }
-    }
   }
 
   abstract async reconnect(reconnectPlayer: SimplePlayer): Promise<any>
