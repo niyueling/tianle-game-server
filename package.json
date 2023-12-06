@@ -14,6 +14,7 @@
     "backend-majiang": "nodemon --ext js,ts -i dist --exec ts-node src/backend.majiang.ts",
     "dist-majiang": "cross-env NODE_ENV=dev INSTANCE_ID=majiang nodemon dist/backend.majiang.js",
     "init-server": "ts-node src/bin/setupRoomIds.ts",
+    "init-robot": "ts-node src/bin/addRobot.ts",
     "tsc": "tsc | sed  -Ee \"s/\\(([[:digit:]]+),([[:digit:]]+)\\)/\\:\\1:\\2 /g\""
   },
   "repository": {
