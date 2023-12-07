@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const schema = new Schema({
-  openid: {type: String, required: true},
-  unionid: {type: String, required: true},
+  openid: {type: String},
+  unionid: {type: String},
   shortId: {type: Number, required: true},
   avatar: {type: String, required: true},
   nickname: {type: String, required: true},

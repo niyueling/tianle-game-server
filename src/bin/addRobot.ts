@@ -19,10 +19,9 @@ lineReader.on('line', function (line) {
     // 第一个是昵称(base64), 第二个是性别，第三个头像地址
     const name = Buffer.from(lines[0], 'base64').toString('utf8');
     robots.push({
-      name,
-      sex: lines[1],
-      headImgUrl: lines[2],
-      platform: 'robot',
+      nickname: name,
+      avatar: lines[2],
+      robot: true
     })
   }
 });
@@ -31,12 +30,12 @@ lineReader.on('close', async function () {
   // 写入数据库
   for (const r of robots) {
     const robot = await Player.findOne({
-      headImgUrl: r.headImgUrl,
-      platform: 'robot',
+      avatar: r.avatar,
+      robot: true
     })
     if (robot) {
-      console.log('head url', r.headImgUrl)
-      robot.headImgUrl = r.headImgUrl;
+      console.log('head url', r.avatar)
+      robot.avatar = r.avatar;
       await robot.save();
       continue;
     }

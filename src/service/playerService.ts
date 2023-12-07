@@ -40,28 +40,16 @@ export default class PlayerService extends BaseService {
 
   // 创建用户
   async createNewPlayer(opt) {
-    const modelId = new mongoose.Types.ObjectId();
+    const shortId = await getNewShortPlayerId()
     return PlayerModel.create({
-      _id: opt._id ? opt._id : modelId,
-      name: opt.name ? opt.name : modelId,
-      // 房卡
-      gem: config.game.initModelGemCount,
-      headImgUrl: opt.headImgUrl ? opt.headImgUrl : '',
-      sex: opt.sex || 1,
-      gold: opt._id ? config.game.initModelGoldCount : 0,
-      ruby: opt.ruby || config.game.initModelRuby,
-      platform: opt.platform || '',
-      luckyDraw: {
-        date: new Date().toLocaleDateString(),
-        time: 1,
-      },
-      phone: opt.phoneNum || '',
-      isTourist: !opt._id,
-      openId: opt.openId || '',
-      miniOpenid: opt.miniOpenid || '',
-      appleId: opt.appleId || '',
-      shortId: await getNewShortPlayerId(),
-      inviteCode: await getNewPlayerInviteCode(),
+      unionid: null,
+      openid: null,
+      shortId,
+      avatar: opt.avatar,
+      nickname: opt.nickname,
+      sessionKey: null,
+      source: 0,
+      robot: opt.robot
     })
   }
 
