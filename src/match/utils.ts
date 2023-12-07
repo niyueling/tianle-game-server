@@ -1,4 +1,3 @@
-import Card from "./paodekuai/card";
 
 export function intersectComposite<T>(arrayA: T[], arrayB: T[], equalFn: (a: T, b: T) => boolean): Array<T[]> {
   const composites = []
@@ -29,34 +28,6 @@ export function groupBy<T>(array: T[], fn: (T) => number): T[][] {
   })
   return Object.keys(hash).map(key => hash[key])
 }
-
-export function isStraight(cards: Card[]): boolean {
-  for (let i = 0; i < cards.length - 1; i++) {
-    const prev = cards[i]
-    const next = cards[i + 1]
-
-    if (next.point - prev.point !== 1) {
-      return false
-    }
-  }
-
-  return true
-}
-
-
-export function isSameColor(cards: Card[]): boolean {
-  for (let i = 0; i < cards.length - 1; i++) {
-    const prev = cards[i]
-    const next = cards[i + 1]
-
-    if (next.type !== prev.type) {
-      return false
-    }
-  }
-
-  return true
-}
-
 
 export function lengthOf(array: any[], expect: number): boolean {
   return array.length === expect

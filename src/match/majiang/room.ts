@@ -4,6 +4,7 @@
 import {ConsumeLogType} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
+// @ts-ignore
 import {pick, values} from 'lodash'
 import * as mongoose from 'mongoose'
 import * as logger from 'winston'

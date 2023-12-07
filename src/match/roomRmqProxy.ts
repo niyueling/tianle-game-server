@@ -1,4 +1,3 @@
-import {GameType} from "@fm/common/constants";
 import {Channel, Message, Replies} from "amqplib"
 import * as winston from 'winston'
 import Club from "../database/models/club";
@@ -10,7 +9,6 @@ import {BaseGameAction} from "./base/baseGameAction";
 import {GameTypes} from "./gameTypes"
 import {IRoom} from "./interfaces"
 import {PlayerRmqProxy} from "./PlayerRmqProxy"
-import {GameAction} from "./xmmajiang/gameAction";
 import Timer = NodeJS.Timer
 
 const logger = new winston.Logger({
@@ -117,7 +115,7 @@ export default class RoomProxy {
     this.channel.consume(this.gameQueue.queue, async (message: Message) => {
       try {
         const messageBody = toMessageBody(message.content)
-        const cls = getActionClass(gameType);
+        const cls = getActionClass();
         const methodName = cls.getMethodName(messageBody.name);
         if (methodName) {
           console.log(`${room._id}: call ${messageBody.name}, payload ${JSON.stringify(messageBody.payload)}`)
@@ -444,9 +442,6 @@ export default class RoomProxy {
   }
 }
 
-function getActionClass(gameType) {
-  if (gameType === GameType.xmmj) {
-    return GameAction;
-  }
+function getActionClass() {
   return BaseGameAction;
 }

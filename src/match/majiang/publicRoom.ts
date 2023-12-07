@@ -1,6 +1,7 @@
 import {GameType} from "@fm/common/constants";
 import {Errors, getCodeByError} from "@fm/common/errors";
 import {Channel} from "amqplib";
+// @ts-ignore
 import {pick} from "lodash";
 import {service} from "../../service/importService";
 import {getPlayerRmqProxy} from "../PlayerRmqProxy";
@@ -67,7 +68,6 @@ export class PublicRoom extends Room {
     }
     player.removeListener('disconnect', this.disconnectCallback)
     this.removePlayer(player)
-    this.removeOrder(player);
     this.removeReadyPlayer(player.model._id)
     player.room = null
     this.broadcast('room/leave', {_id: player.model._id})

@@ -105,7 +105,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
         return player.sendMessage('room/join-fail', {reason: '在比赛场排队中'})
       }
       const rule = message.rule
-      const gameType = rule.type || 'paodekuai'
+      const gameType = rule.type || 'majiang'
       player.setGameName(message.gameType)
       player.requestTo(lobbyQueueNameFrom(gameType), 'createRoom', {rule, gameType})
       return
