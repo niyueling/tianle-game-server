@@ -6,7 +6,6 @@ import * as config from "./config"
 import MaJiangLobby from "./match/majiang/centerlobby"
 import {PublicRoom} from "./match/majiang/publicRoom";
 import Room from './match/majiang/room'
-import {BattleRoom} from "./match/majiang/TournamentRoom";
 
 process.on('unhandledRejection', error => {
   // @ts-ignore
@@ -38,9 +37,6 @@ async function boot() {
     .connectRabbitMq(config.rabbitmq.url)
     .useRoomRecoverPolicy(() => true)
     .useRecover(async (anyJson, repository) => {
-      if (anyJson.roomType === BattleRoom.RoomType) {
-        return BattleRoom.recover(anyJson, repository)
-      }
       if (anyJson.gameRule.isPublic) {
         return PublicRoom.recover(anyJson, repository)
       }

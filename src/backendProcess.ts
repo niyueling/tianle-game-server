@@ -3,7 +3,6 @@ import {Channel, Connection} from 'amqplib'
 import * as winston from 'winston'
 import * as config from "./config";
 import Database from './database/database'
-import ClubMember from "./database/models/clubMember"
 import {saveRoomDetail} from "./database/models/roomDetail";
 import {saveRoomInfo} from "./database/models/roomInfo";
 import {GameTypes} from "./match/gameTypes"
@@ -11,8 +10,6 @@ import {IMessageEmitter, IMessageGroupEmitter, Message, toBuffer} from "./match/
 import {RabbitQueueMessageSource} from "./match/messageBus/RabbitQueueSource";
 import {PlayerRmqProxy} from "./match/PlayerRmqProxy"
 import RoomProxy, {recoverFunc} from "./match/roomRmqProxy"
-import {ContestConfig, Tournament} from "./match/Tournament"
-import {getClubInfo, requestToAllClubMember} from "./player/message-handlers-rmq/club"
 import {service} from "./service/importService";
 import createClient from "./utils/redis";
 
@@ -61,36 +58,12 @@ export class BackendProcess {
     this.lobbyChannel = await this.connection.createChannel()
     // 子游戏大厅
     const lobbyQueueName = `${this.gameName}Lobby`
-    const tournamentQueueName = `${this.gameName}Tournament`
     const dealQuestionQueueName = `${this.gameName}DealQuestion`
     await this.lobbyChannel.assertQueue(lobbyQueueName, {durable: false})
-    await this.lobbyChannel.assertQueue(tournamentQueueName, {durable: false})
     await this.lobbyChannel.assertQueue(dealQuestionQueueName, {durable: false})
     await this.lobbyChannel.assertExchange('exGameCenter', 'topic', {durable: false})
-    await this.lobbyChannel.assertExchange('exTournament', 'topic', {durable: false})
     await this.lobbyChannel.assertExchange('exClubCenter', 'topic', {durable: false})
     await this.lobbyChannel.assertExchange('userCenter', 'topic', {durable: false})
-
-    this.lobby.clubBroadcaster = {
-      broadcast: async (clubId: string) => {
-        const rooms = this.lobby.getClubRooms(clubId)
-        const clubInfo = await getClubInfo(clubId)
-
-        await requestToAllClubMember(this.lobbyChannel, 'newClubRoomCreated', clubId, this.gameName, {
-          ok: true,
-          roomInfo: rooms,
-          ...clubInfo
-        });
-      },
-
-      updateClubRoomInfo: async (clubId: string, roomInfo: { roomNum: string, capacity: number, current: number }) => {
-        await requestToAllClubMember(this.lobbyChannel, 'club/updateClubRoom', clubId, this.gameName, roomInfo);
-      }
-
-    }
-    const contestIds: string[] = await this.getContestIdsToRecover()
-
-    await this.recoverContest(contestIds)
 
     const roomIds: string[] = await this.getRoomIdsToRecover()
 
@@ -137,32 +110,6 @@ export class BackendProcess {
       }
     }, {noAck: true})
 
-    await this.lobbyChannel.consume(tournamentQueueName, async message => {
-
-      const messageBody = JSON.parse(message.content.toString())
-
-      console.log(`${__filename}:142 \n`, messageBody);
-
-      if (messageBody.name === 'startTournament') {
-
-        const {players, config: contestConfig} = messageBody.payload
-        try {
-          await this.startTournament(contestConfig, players.map(pId => ({_id: pId, score: 0})))
-        } catch (e) {
-          console.log(`${__filename}:169 \n`, e);
-        }
-      }
-
-      if (messageBody.name === 'startBattle') {
-        const {players, config: contestConfig} = messageBody.payload
-        try {
-          await this.startBattle(contestConfig, players.map(pId => ({_id: pId, score: 0})))
-        } catch (e) {
-          console.log(`${__filename}:169 \n`, e);
-        }
-      }
-    }, {noAck: true})
-
     await this.lobbyChannel.consume(dealQuestionQueueName, async message => {
 
       const messageBody = JSON.parse(message.content.toString())
@@ -188,22 +135,6 @@ export class BackendProcess {
     }, {noAck: true})
 
     return
-  }
-
-  async startBattle(tc: ContestConfig, players) {
-    const roomId = await this.redisClient.lpopAsync('roomIds')
-    const room = this.lobby.createBattleRoom(roomId, tc.rule, players)
-
-    try {
-
-      room.on('empty', async () => {
-        await this.redisClient.decrAsync(`tc:${tc._id}`)
-      })
-      await this.attachRoomToBackendTopic(room)
-      await this.pullPlayerIntoRoom(players, roomId)
-    } catch (e) {
-      logger.error('startBattleRoom error', e)
-    }
   }
 
   async pullPlayerIntoRoom(players, roomId) {
@@ -237,119 +168,6 @@ export class BackendProcess {
     await this.redisClient.saddAsync('room', room._id)
     await this.redisClient.saddAsync(`cluster-${this.cluster}`, room._id)
     await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()))
-  }
-
-  async startTournament(tc: ContestConfig, players) {
-    const contestId = await this.redisClient.lpopAsync('contestIds')
-
-    class RabbitPlayerGroupBroadcaster implements IMessageGroupEmitter {
-      private channel: Channel;
-
-      constructor(ch: Channel) {
-        this.channel = ch
-      }
-
-      close(): void {
-        return;
-      }
-
-      emit(message: Message, playerIds) {
-        try {
-          playerIds.forEach(id => {
-            this.channel.publish('userCenter', `user.${id}`, toBuffer(message))
-          })
-          console.log('=====>', JSON.stringify(message));
-          // this.channel.publish('exTournament', this.routeKey, toBuffer(message))
-        } catch (e) {
-          console.error('emit failed', e.stack);
-        }
-      }
-    }
-
-    class RabbitQueueEmitter implements IMessageEmitter {
-      channel: Channel
-      constructor(ch: Channel, readonly queueName: string) {
-        this.channel = ch;
-      }
-
-      close(): void {
-        return;
-      }
-
-      emit(message: Message) {
-        try {
-          this.channel.sendToQueue(this.queueName, toBuffer(message))
-        } catch (e) {
-          console.error(e.stack);
-        }
-      }
-    }
-
-    const channel: Channel = await this.connection.createChannel();
-
-    const source = new RabbitQueueMessageSource(`tournament.${contestId}`, channel)
-    const roomReporter = new RabbitQueueEmitter(channel, `tournament.${contestId}`)
-    const emitter = new RabbitPlayerGroupBroadcaster(channel)
-
-    await this.redisClient.saddAsync('contest', contestId)
-    await this.redisClient.saddAsync(`cluster-contest-${this.cluster}`, contestId)
-    await this.redisClient.saddAsync(`contest:${this.gameName}`, contestId)
-
-    for (const p of players) {
-      await this.redisClient.saddAsync(`contest:${contestId}`, p._id)
-    }
-
-    const tournament = new Tournament(tc)
-      .withPlayers(players)
-      .withMessageBus({
-      source,
-      emitter, roomReport: roomReporter
-    })
-      .withContestId(contestId)
-      .withRedisClient(this.redisClient)
-      .withClusterName(this.cluster)
-      .withGameType(this.gameName)
-      .useLobby(this.startTournamentRoom.bind(this))
-
-    await tournament.start()
-  }
-
-  async startTournamentRoom(players, contestConfig: ContestConfig, roomReporter: IMessageEmitter, contesntId: string) {
-    const roomId = await this.redisClient.lpopAsync('roomIds')
-
-    const room = this.lobby.createTournamentRoom(roomId, contestConfig.rule, players, roomReporter)
-    room.contestId = contesntId
-    try {
-      const gameChannel = await this.connection.createChannel()
-      const roomQueueReply = await gameChannel.assertQueue(`${this.gameName}.${room._id}`, {
-        durable: false,
-        autoDelete: true
-      })
-      await gameChannel.bindQueue(roomQueueReply.queue, 'exGameCenter', `${this.gameName}.${room._id}`)
-
-      const roomProxy = new RoomProxy(room,
-        {
-          redisClient: this.redisClient,
-          gameChannel,
-          gameQueue: roomQueueReply,
-          cluster: this.cluster,
-        }, this.gameName)
-      await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()))
-
-      for (const p of players) {
-        this.lobbyChannel.publish('exGameCenter', `${this.gameName}.${roomId}`, toBuffer({
-          name: 'joinRoom',
-          payload: {},
-          from: p._id,
-          ip: 'local'
-        }))
-      }
-
-    } catch (e) {
-      logger.error('create room error', e)
-    }
-
-    return roomId
   }
 
   async createPrivateRoom(playerModel, messageBody) {
@@ -472,117 +290,8 @@ export class BackendProcess {
 
       await this.redisClient.saddAsync(`cluster-${this.cluster}`, room._id)
       await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()))
-
-      const clubInfo = await getClubInfo(clubId)
-
-      await requestToAllClubMember(gameChannel, 'newClubRoomCreated', clubId, this.gameName, clubInfo)
     } catch (e) {
       logger.error('create room error', e)
-    }
-  }
-
-  private async recoverContest(contestIds: string[]) {
-    for (const id of contestIds) {
-      try {
-        const jsonString = await this.redisClient.getAsync(`contest:info:${id}`)
-        if (jsonString) {
-          const contestJson = JSON.parse(jsonString)
-          class RabbitPlayerGroupBroadcaster implements IMessageGroupEmitter {
-            private channel: Channel;
-
-            constructor(ch: Channel) {
-              this.channel = ch
-            }
-
-            close(): void {
-              return;
-            }
-
-            emit(message: Message, playerIds) {
-              try {
-                playerIds.forEach(playerId => {
-                  this.channel.publish('userCenter', `user.${playerId}`, toBuffer(message))
-                })
-
-                console.log('=====>', JSON.stringify(message));
-                // this.channel.publish('exTournament', this.routeKey, toBuffer(message))
-              } catch (e) {
-                console.error('recover emit failed', e.stack);
-              }
-            }
-          }
-
-          class RabbitQueueEmitter implements IMessageEmitter {
-            channel: Channel;
-            constructor(ch: Channel, readonly queueName: string) {
-              this.channel = ch;
-            }
-
-            close(): void {
-              return;
-            }
-
-            emit(message: Message) {
-              try {
-
-                this.channel.sendToQueue(this.queueName, toBuffer(message))
-              } catch (e) {
-                console.error('RabbitQueueEmitter emit failed', e.stack);
-              }
-            }
-          }
-          const channel: Channel = await this.connection.createChannel();
-          const tournament = Tournament.recover(contestJson)
-
-          const source = new RabbitQueueMessageSource(`tournament.${tournament.contestId}`, channel)
-          const roomReporter = new RabbitQueueEmitter(channel, `tournament.${tournament.contestId}`)
-          const emitter = new RabbitPlayerGroupBroadcaster(channel)
-          tournament.withMessageBus({
-            source,
-            emitter, roomReport: roomReporter
-          }).withRedisClient(this.redisClient)
-            .withGameType(this.gameName)
-            .useLobby(this.startTournamentRoom.bind(this))
-          const needRecoverRoomIds = tournament.getCurrentRoomIds()
-          await this.recoverContestRooms(needRecoverRoomIds, roomReporter)
-          await tournament.listenRoom()
-        }
-      } catch (e) {
-        logger.error('contest recover failed', id, e)
-      }
-    }
-  }
-
-  private async recoverContestRooms(roomIds: string[], roomReporter: IMessageEmitter) {
-    for (const id of roomIds) {
-      try {
-        const jsonString = await this.redisClient.getAsync(`room:info:${id}`)
-        const roomJson = JSON.parse(jsonString)
-
-        if (this.recoverPolicy(roomJson)) {
-          const gameChannel = await this.connection.createChannel()
-          const roomQueueReply = await gameChannel.assertQueue(`${this.gameName}.${roomJson._id}`, {
-            durable: false,
-            autoDelete: true
-          })
-          await gameChannel.bindQueue(roomQueueReply.queue,
-            'exGameCenter',
-            `${this.gameName}.${roomJson._id}`)
-
-          const roomProxy = await RoomProxy.recover(JSON.parse(jsonString), {
-            gameChannel,
-            gameQueue: roomQueueReply,
-            cluster: this.cluster,
-            redisClient: this.redisClient,
-          }, this.gameName, this.roomRecover)
-
-          roomProxy.room.emitter = roomReporter
-
-          this.lobby.listenRoom(roomProxy.room)
-        }
-      } catch (e) {
-        logger.error('room recover failed', id, e)
-      }
     }
   }
 
