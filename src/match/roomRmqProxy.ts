@@ -228,7 +228,7 @@ export default class RoomProxy {
         }
 
         if (messageBody.name === 'room/awaitInfo') {
-          room.awaitInfo(thePlayer)
+          await room.awaitInfo()
           return
         }
 
