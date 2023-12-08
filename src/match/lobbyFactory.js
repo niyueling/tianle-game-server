@@ -36,7 +36,6 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         const room = kv[1];
         if (!room.isFull() &&
           room.isPublic &&
-          room.game.rule.ruleType === rule.ruleType &&
           room.gameRule.categoryId === rule.categoryId
         ) {
           found = room;
@@ -122,22 +121,6 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       let newRule = Object.assign({}, rule, {isPublic})
       const room = roomFactory(roomId, newRule)
       await room.init();
-      this.listenRoom(room)
-      redisClient.sadd('room', roomId)
-      return room;
-    }
-
-    createTournamentRoom(roomId, rule, playerScore, reporter) {
-      const room = roomFactory(roomId, rule, 'tournament', {playerScore, reporter})
-      room._id = roomId
-      this.listenRoom(room)
-      redisClient.sadd('room', roomId)
-      return room;
-    }
-
-    createBattleRoom(roomId, rule, playerScore) {
-      const room = roomFactory(roomId, rule, 'battle', {playerScore})
-      room._id = roomId
       this.listenRoom(room)
       redisClient.sadd('room', roomId)
       return room;

@@ -138,15 +138,6 @@ export class PublicRoom extends Room {
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
     const message = await super.joinMessageFor(newJoinPlayer);
-    // const lastRecord = await service.rubyReward.getLastRubyRecord(this.uid);
-    // if (lastRecord) {
-    //   // 奖池
-    //   message.roomRubyReward = lastRecord.balance;
-    //   message.mvpTimes = lastRecord.mvpTimes[newJoinPlayer.model.shortId] || 0;
-    // } else {
-    //   message.roomRubyReward = 0;
-    //   message.mvpTimes = 0;
-    // }
     message.roomRubyReward = 0;
     message.mvpTimes = 0;
     // 更新 model

@@ -78,7 +78,7 @@ export default class RoomProxy {
   private spinner: Timer
   private cluster: string
 
-  static async recover(json: any, req: RmqRoomRep, gameType: GameTypes = 'paodekuai',
+  static async recover(json: any, req: RmqRoomRep, gameType: GameTypes = 'majiang',
                        recover: recoverFunc): Promise<RoomProxy> {
 
     const room = await recover(json, {
@@ -104,7 +104,7 @@ export default class RoomProxy {
     return new RoomProxy(room, req, gameType)
   }
 
-  constructor(room, rabbit: RmqRoomRep, gameType: GameTypes = 'paodekuai') {
+  constructor(room, rabbit: RmqRoomRep, gameType: GameTypes = 'majiang') {
     this.room = room
     const gameName = gameType;
     this.channel = rabbit.gameChannel

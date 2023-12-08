@@ -1,4 +1,3 @@
-import {GameType} from "@fm/common/constants";
 import Club from '../../database/models/club'
 import ClubMember from '../../database/models/clubMember'
 import PlayerModel from '../../database/models/player'
@@ -6,31 +5,9 @@ import majiangLobby from '../../match/majiang/centerlobby'
 import {service} from "../../service/importService";
 import {AsyncRedisClient} from "../../utils/redis"
 import {ISocketPlayer} from "../ISocketPlayer"
-import {getContestId} from './account'
 
 export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
-}
-
-async function playerCanInClubRoom(player, clubId, gameType) {
-
-  if (!clubId) {
-    return false;
-  }
-  const ownerClub = await Club.findOne({_id: clubId})
-  if (ownerClub && ownerClub.owner === player.model._id) {
-    return true;
-  }
-
-  const clubMemberInfo = await ClubMember.findOne({
-    member: player.model._id,
-    club: clubId,
-  })
-
-  if (clubMemberInfo) {
-    return true
-  }
-  return false;
 }
 
 const allGameName = ['majiang']
@@ -43,11 +20,6 @@ function getLobby(gameType) {
 }
 
 export function createHandler(redisClient: AsyncRedisClient) {
-
-  async function isInTournaQueue(playerId: string, gameType: string): Promise<boolean> {
-    const tId = await redisClient.hgetAsync(`u:${playerId}`, `'t:${gameType}`)
-    return !!tId
-  }
 
   const handlers = {
     'room/reconnect': async (player, message) => {
@@ -98,12 +70,6 @@ export function createHandler(redisClient: AsyncRedisClient) {
     },
 
     'room/create': async (player, message) => {
-      if (await getContestId(player._id)) {
-        return player.sendMessage('room/join-fail', {reason: '不能加入房间，您有未完成的比赛场'})
-      }
-      if (await isInTournaQueue(player._id, message.gameType)) {
-        return player.sendMessage('room/join-fail', {reason: '在比赛场排队中'})
-      }
       const rule = message.rule
       const gameType = rule.type || 'majiang'
       player.setGameName(message.gameType)
@@ -112,12 +78,6 @@ export function createHandler(redisClient: AsyncRedisClient) {
     },
 
     'room/createForClub': async (player, message) => {
-      if (await getContestId(player._id)) {
-        return player.sendMessage('room/join-fail', {reason: '不能加入房间，您有未完成的比赛场'})
-      }
-      if (await isInTournaQueue(player._id, message.gameType)) {
-        return player.sendMessage('room/join-fail', {reason: '在比赛场排队中'})
-      }
       const rule = message.rule
 
       if (rule.share) {

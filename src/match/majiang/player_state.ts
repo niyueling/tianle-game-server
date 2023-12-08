@@ -1220,9 +1220,7 @@ class PlayerState implements Serializable {
     // if (!this.room.isPublic) {
     //   return
     // }
-    if (this.rule.ro.roomType === 'battleRoom') {
-      console.log('battle room')
-    } else if (this.rule.ro.roomType === 'normal' && this.rule.ro.autoCommit) {
+    if (this.rule.ro.roomType === 'normal' && this.rule.ro.autoCommit) {
       minutes = (this.rule.ro.autoCommit + 1) * 1000
     } else {
       return

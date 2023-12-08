@@ -24,7 +24,6 @@ import {createHandler} from './message-handlers-rmq/match'
 import resourceHandlers from './message-handlers-rmq/resource'
 import {ResourceApi} from "./message-handlers-rmq/resourceApi";
 import socialHandlers from './message-handlers-rmq/social'
-import {createHandler as createTournamentHandler} from './message-handlers-rmq/tornament'
 
 const transports = process.env.NODE_ENV === 'test' ? [] : [new winston.transports.Console()]
 const logger = new winston.Logger({transports})
@@ -50,7 +49,6 @@ const NullSocket = {
   }
 }
 const rediClient = createClient()
-const tournamentHandler = createTournamentHandler(rediClient)
 const matchHandlers = createHandler(rediClient)
 Object.assign(
   messageHandlers,
@@ -62,7 +60,6 @@ Object.assign(
   socialHandlers,
   chatHandlers,
   errorHandlers,
-  tournamentHandler,
   mailHandlers
 )
 

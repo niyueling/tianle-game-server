@@ -100,7 +100,6 @@ class Room extends RoomBase {
   lunZhuangCount: number
 
   @autoSerialize
-    // tslint:disable-next-line:variable-name
   _id: string
 
   @autoSerialize
@@ -153,7 +152,6 @@ class Room extends RoomBase {
     this.snapshot = []
     this.isPublic = rule.isPublic
     this.disconnectCallback = messageBoyd => {
-
       const disconnectPlayer = this.getPlayerById(messageBoyd.from)
       this.playerDisconnect(disconnectPlayer)
     }
@@ -164,8 +162,6 @@ class Room extends RoomBase {
     this.disconnected = []
     this.counterMap = {}
     this.charged = false
-
-    // this.charge = rule.share ? this.chargeAllPlayers.bind(this) : this.chargeCreator.bind(this)
 
     this.glodPerFan = rule.difen || 1
     this.initBase = this.currentBase = rule.base || 1
@@ -211,8 +207,6 @@ class Room extends RoomBase {
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
     const room = new Room(json.gameRule)
-    // Object.assign(room.game.rule.ro, json.game.rule.ro)
-    //
     const gameAutoKeys = autoSerializePropertyKeys(room.game)
     Object.assign(room.game, pick(json.game, gameAutoKeys))
 
@@ -596,13 +590,13 @@ class Room extends RoomBase {
   }
 
   async announcePlayerJoin(newJoinPlayer) {
-    this.broadcast('room/join', await this.joinMessageFor(newJoinPlayer))
+    this.broadcast('room/joinReply', await this.joinMessageFor(newJoinPlayer))
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
       .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
-      newJoinPlayer.sendMessage('room/join', await this.joinMessageFor(alreadyInRoomPlayer));
+      newJoinPlayer.sendMessage('room/joinReply', await this.joinMessageFor(alreadyInRoomPlayer));
     }
   }
 
@@ -611,7 +605,6 @@ class Room extends RoomBase {
   }
 
   async join(newJoinPlayer) {
-
     const isReconnect = this.indexOf(newJoinPlayer) >= 0
     if (isReconnect || this.disconnected.find(x => x[0] === newJoinPlayer._id)) {
       return this.reconnect(newJoinPlayer)
@@ -622,7 +615,6 @@ class Room extends RoomBase {
     }
     this.listen(newJoinPlayer);
     newJoinPlayer.room = this
-    // newJoinPlayer.on('disconnect', this.disconnectCallback)
     this.arrangePos(newJoinPlayer, false)
 
     this.mergeOrder()
@@ -650,27 +642,6 @@ class Room extends RoomBase {
   difen() {
     return this.game.rule.ro.difen
   }
-
-  // canDissolve() {
-  //   if (this.dissolveReqInfo.length === 0) {
-  //     return false
-  //   }
-  //
-  //   const onLinePlayer = this.dissolveReqInfo
-  //     .filter( reqInfo => {
-  //       const id = reqInfo._id
-  //       return !this.disconnected.some( item => item[0] === id)
-  //     })
-  //   const agreeReqs = onLinePlayer.filter(reqInfo => reqInfo.type === 'agree'
-  //     || reqInfo.type === 'originator' || reqInfo.type === 'agree_offline')
-  //
-  //   if (onLinePlayer.length <= 2) {
-  //     return agreeReqs.length === 2;
-  //   }
-  //
-  //   return agreeReqs.length > 0 && agreeReqs.length + 1 >= onLinePlayer.length
-  //
-  // }
 
   async nextGame(thePlayer) {
     if (this.game.juShu <= 0) {
@@ -941,19 +912,6 @@ class Room extends RoomBase {
         });
       }
     }
-    // for (let i = 0; i < this.disconnected.length; i++) {
-    //   const pp = this.disconnected[i];
-    //   this.snapshot.forEach(p => {
-    //       if (pp && p.model._id === pp[0]) {
-    //         this.dissolveReqInfo.push({
-    //           type: 'offline',
-    //           name: p.model.name,
-    //           _id: p.model._id
-    //         });
-    //       }
-    //     }
-    //   )
-    // }
     return this.dissolveReqInfo;
   }
 
@@ -1012,14 +970,6 @@ class Room extends RoomBase {
     return values(this.scoreMap).some(score => score <= this.rule.lostLimit)
   }
 
-  // clearDisconnected() {
-  //   this.disconnected.forEach(arr => {
-  //     const disConnectedPlayer = arr[0]
-  //     lobby.getInstance().clearDisConnectedPlayer(disConnectedPlayer)
-  //   })
-  //   this.disconnected = []
-  // }
-
   async gameOver(nextZhuangId, states) {
     // 清除洗牌
     this.shuffleData = []
@@ -1042,8 +992,6 @@ class Room extends RoomBase {
     await this.delPlayerBless();
     // 下一局
     await this.robotManager.nextRound();
-    // await this.recordRoomScore()
-    // this.recordGameRecord(states, this.gameState.recorder.getEvents())
 
     this.gameState.dissolve()
     this.gameState = null
@@ -1054,21 +1002,6 @@ class Room extends RoomBase {
       this.players.forEach(x => x && this.leave(x))
       this.emit('empty', this.disconnected)
     }
-    // else {
-    //   for (const x of this.players) {
-    //     if (x && x.isRobot()) {
-    //       if (await this.nextGame(x)) {
-    //         setTimeout(() => {
-    //           this.leave(x)
-    //         }, ms('5s'))
-    //       } else {
-    //         setTimeout(() => {
-    //           this.leave(x)
-    //         }, ms('5s'))
-    //       }
-    //     }
-    //   }
-    // }
   }
 
   allOverMessage(): any {
@@ -1217,518 +1150,4 @@ class Room extends RoomBase {
     this.robotManager = new RobotManager(this, this.gameRule.depositCount);
   }
 }
-
-//
-// export class PublicRoom extends Room {
-//   checkRoomInterval: NodeJS.Timeout = null;
-//
-//   constructor(rule) {
-//     super(rule)
-//     this.isPublic = true
-//     // this.charge = this.chargePublicPlayers
-//
-//     if (rule.diFen < 1000) {
-//       this.checkRoomInterval = setInterval(() => {
-//         const needPlayers = this.players.filter(p => !p).length
-//         const hasHuman = this.players.some(p => {
-//           return p && !p.isRobot()
-//         })
-//         if (hasHuman && needPlayers > 0) {
-//
-//           redisClient.rpoplpush("profiles", "profiles", (err, profileString) => {
-//             if (err) return;
-//             try {
-//               const model = JSON.parse(profileString)
-//               const npc = new NpcPlayer(model)
-//               if (this.rule.diFen === 500) {
-//                 npc.model.ruby += 50000
-//               }
-//               // this.join(npc)
-//               // this.ready(npc)
-//             } catch (e) {
-//               console.error('error stack', e.stack);
-//             }
-//           })
-//         }
-//       }, ms('4s'))
-//     }
-//   }
-//
-//   allOverMessage(): any {
-//     return {}
-//   }
-//
-//   isRoomAllOver(): boolean {
-//     return false
-//   }
-//
-//   private cost(): number {
-//     return Math.round((this.rule.diFen || 50) / 2)
-//   }
-//
-//   async chargePublicPlayers() {
-//     const cost = this.cost()
-//     const playerManager = PlayerManager.getInstance()
-//
-//     for (const player of this.snapshot) {
-//       const payee = playerManager.getPlayer(player.model._id) || player
-//       payee.model.ruby -= cost
-//       payee.sendMessage('resource/createRoomUsedRuby', {
-//         createRoomNeed: cost
-//       })
-//       PlayerModel.update({_id: player.model._id},
-//         {
-//           $inc: {
-//             ruby: -cost,
-//           },
-//         }, err => {
-//           if (err) {
-//             logger.error(player.model, err)
-//           }
-//         })
-//
-//       new ConsumeRecord({player: player.model._id, cost: cost / 10}).save()
-//     }
-//   }
-//
-//   initScore() {
-//     return;
-//   }
-//
-//   getScore(player) {
-//     if (player.model) {
-//       return player.model.gold || 0
-//     }
-//     return 0
-//   }
-//
-//   // recordGameRecord() {
-//   //   return
-//   // }
-//
-//   // async recordRoomScore() {
-//   //   return {}
-//   // }
-//
-//   async addScore(playerId, v) {
-//
-//     const robot = this.players.find(player => {
-//       return player && player.isRobot() && player.model._id === playerId
-//     })
-//
-//     if (robot) {
-//       robot.model.ruby += v
-//       return
-//     }
-//
-//     const playerManager = PlayerManager.getInstance()
-//     playerManager.addRuby(playerId, v)
-//
-//     return
-//   }
-//
-//   async nextGame(thePlayer) {
-//
-//     if (thePlayer.ruby <= Room.publicRoomLowestLimit(this.rule)) {
-//       thePlayer.sendMessage('room/join-fail', {reason: `钻石不足, 无法继续游戏`})
-//       return false
-//     }
-//
-//     if (this.indexOf(thePlayer) < 0) {
-//       thePlayer.sendMessage('room/join-fail', {reason: '您已经不属于这个房间.'})
-//       return false
-//     }
-//
-//     await this.announcePlayerJoin(thePlayer)
-//
-//     this.cancelWaitNextGame(thePlayer)
-//
-//     return true
-//   }
-//
-//   async gameOver(nextZhuangId, states) {
-//     this.clearPlayersIfPublic()
-//     return super.gameOver(nextZhuangId, states)
-//   }
-//
-//   playerDisconnect(player) {
-//     if (super.playerDisconnect(player)) {
-//       if (!this.gameState) {
-//         this.leave(player)
-//         return true
-//       }
-//       return true
-//     }
-//     return false
-//   }
-//
-//   leave(player) {
-//     if (super.leave(player)) {
-//       if (this.isEmpty()) {
-//         this.emit('empty', this.disconnected)
-//         clearInterval(this.checkRoomInterval)
-//         this.readyPlayers = []
-//       }
-//       return true
-//
-//     } else {
-//       return false
-//     }
-//   }
-//
-//   cancelWaitNextGame(player) {
-//     remove(this.waitNextGamePlayers, waitPlayer => waitPlayer === player)
-//   }
-//
-//   waitNextGame(player) {
-//     this.waitNextGamePlayers.push(player)
-//   }
-//
-//   private WAIT_NEXT_GAME_TIMEOUT = 30 * 1000
-//
-//   countDownEvictWaiter() {
-//     setTimeout(() => {
-//       this.waitNextGamePlayers.forEach(player => this.leave(player))
-//     }, this.WAIT_NEXT_GAME_TIMEOUT)
-//   }
-//
-//   private evictWaiterTimeout() {
-//     this.inRoomPlayers.forEach(player => this.waitNextGame(player))
-//     this.countDownEvictWaiter()
-//   }
-//
-//   clearPlayersIfPublic() {
-//     this.evictWaiterTimeout()
-//     this.clearPlayersOrderBaseOnDisconnected()
-//     this.clearDisconnected()
-//   }
-//
-//   clearPlayersOrderBaseOnDisconnected() {
-//     this.disconnected.forEach(([_, index]) => this.playersOrder[index] = null)
-//   }
-//
-//   // 赢家付
-//   async chargeWinner() {
-//     if (this.charged) return
-//     this.charged = true
-//     const payList = [];
-//     for (let j = 0; j < this.players.length; j ++) {
-//       // @ts-ignore
-//       const p = this.gameState && this.gameState.players[j];
-//       if (p) {
-//         if (p.huPai()) {
-//           payList.push(this.players[j]);
-//         }
-//       }
-//     }
-//     if (payList.length < 1) {
-//       return;
-//     }
-//     let fee = this.privateRoomFee(this.rule)
-//     fee = Math.ceil(fee / payList.length) || 1;
-//     for (const p of payList) {
-//       PlayerModel.update({_id: p.model._id},
-//         {
-//           $inc: {
-//             gem: -fee,
-//           },
-//         }, err => {
-//           if (err) {
-//             logger.error(p.model._id, err)
-//           }
-//         })
-//
-//       p.sendMessage('resource/createRoomUsedGem', {
-//         createRoomNeed: fee
-//       })
-//     }
-//   }
-//
-//   async updateBigWinner() {
-//     const record = await RoomRecord.findOne({ room: this.uid });
-//     if (!record) {
-//       // 出错了
-//       console.error('no room record to update winner', this.uid)
-//       return;
-//     }
-//     let winner = [];
-//     let tempScore = 0;
-//     for (let j = 0; j < this.snapshot.length; j ++) {
-//       const p = this.snapshot[j]
-//       if (p) {
-//         const score = this.playerGainRecord[p.model._id] || 0;
-//         if (tempScore === score) {
-//           winner.push(p.model.shortId)
-//         }
-//         if (tempScore < score) {
-//           tempScore = score;
-//           winner = [p.model.shortId]
-//         }
-//       }
-//     }
-//     record.bigWinner = winner;
-//     await record.save();
-//   }
-//   async init() {
-//     // 初始化以后，再开启机器人
-//     this.robotManager = new RobotManager(this, this.gameRule.depositCount);
-//   }
-// }
-
-// export class PublicRoom extends Room {
-//   checkRoomInterval: NodeJS.Timeout = null;
-//
-//   constructor(rule) {
-//     super(rule)
-//     this.isPublic = true
-//     // this.charge = this.chargePublicPlayers
-//
-//     if (rule.diFen < 1000) {
-//       this.checkRoomInterval = setInterval(() => {
-//         const needPlayers = this.players.filter(p => !p).length
-//         const hasHuman = this.players.some(p => {
-//           return p && !p.isRobot()
-//         })
-//         if (hasHuman && needPlayers > 0) {
-//
-//           redisClient.rpoplpush("profiles", "profiles", (err, profileString) => {
-//             if (err) return;
-//             try {
-//               const model = JSON.parse(profileString)
-//               const npc = new NpcPlayer(model)
-//               if (this.rule.diFen === 500) {
-//                 npc.model.ruby += 50000
-//               }
-//               // this.join(npc)
-//               // this.ready(npc)
-//             } catch (e) {
-//               console.error('error stack', e.stack);
-//             }
-//           })
-//         }
-//       }, ms('4s'))
-//     }
-//   }
-//
-//   allOverMessage(): any {
-//     return {}
-//   }
-//
-//   isRoomAllOver(): boolean {
-//     return false
-//   }
-//
-//   private cost(): number {
-//     return Math.round((this.rule.diFen || 50) / 2)
-//   }
-//
-//   async chargePublicPlayers() {
-//     const cost = this.cost()
-//     const playerManager = PlayerManager.getInstance()
-//
-//     for (const player of this.snapshot) {
-//       const payee = playerManager.getPlayer(player.model._id) || player
-//       payee.model.ruby -= cost
-//       payee.sendMessage('resource/createRoomUsedRuby', {
-//         createRoomNeed: cost
-//       })
-//       PlayerModel.update({_id: player.model._id},
-//         {
-//           $inc: {
-//             ruby: -cost,
-//           },
-//         }, err => {
-//           if (err) {
-//             logger.error(player.model, err)
-//           }
-//         })
-//
-//       new ConsumeRecord({player: player.model._id, cost: cost / 10}).save()
-//     }
-//   }
-//
-//   initScore() {
-//     return;
-//   }
-//
-//   getScore(player) {
-//     if (player.model) {
-//       return player.model.gold || 0
-//     }
-//     return 0
-//   }
-//
-//   // recordGameRecord() {
-//   //   return
-//   // }
-//
-//   // async recordRoomScore() {
-//   //   return {}
-//   // }
-//
-//   async addScore(playerId, v) {
-//
-//     const robot = this.players.find(player => {
-//       return player && player.isRobot() && player.model._id === playerId
-//     })
-//
-//     if (robot) {
-//       robot.model.ruby += v
-//       return
-//     }
-//
-//     const playerManager = PlayerManager.getInstance()
-//     playerManager.addRuby(playerId, v)
-//
-//     return
-//   }
-//
-//   async nextGame(thePlayer) {
-//
-//     if (thePlayer.ruby <= Room.publicRoomLowestLimit(this.rule)) {
-//       thePlayer.sendMessage('room/join-fail', {reason: `钻石不足, 无法继续游戏`})
-//       return false
-//     }
-//
-//     if (this.indexOf(thePlayer) < 0) {
-//       thePlayer.sendMessage('room/join-fail', {reason: '您已经不属于这个房间.'})
-//       return false
-//     }
-//
-//     await this.announcePlayerJoin(thePlayer)
-//
-//     this.cancelWaitNextGame(thePlayer)
-//
-//     return true
-//   }
-//
-//   async gameOver(nextZhuangId, states) {
-//     this.clearPlayersIfPublic()
-//     return super.gameOver(nextZhuangId, states)
-//   }
-//
-//   playerDisconnect(player) {
-//     if (super.playerDisconnect(player)) {
-//       if (!this.gameState) {
-//         this.leave(player)
-//         return true
-//       }
-//       return true
-//     }
-//     return false
-//   }
-//
-//   leave(player) {
-//     if (super.leave(player)) {
-//       if (this.isEmpty()) {
-//         this.emit('empty', this.disconnected)
-//         clearInterval(this.checkRoomInterval)
-//         this.readyPlayers = []
-//       }
-//       return true
-//
-//     } else {
-//       return false
-//     }
-//   }
-//
-//   cancelWaitNextGame(player) {
-//     remove(this.waitNextGamePlayers, waitPlayer => waitPlayer === player)
-//   }
-//
-//   waitNextGame(player) {
-//     this.waitNextGamePlayers.push(player)
-//   }
-//
-//   private WAIT_NEXT_GAME_TIMEOUT = 30 * 1000
-//
-//   countDownEvictWaiter() {
-//     setTimeout(() => {
-//       this.waitNextGamePlayers.forEach(player => this.leave(player))
-//     }, this.WAIT_NEXT_GAME_TIMEOUT)
-//   }
-//
-//   private evictWaiterTimeout() {
-//     this.inRoomPlayers.forEach(player => this.waitNextGame(player))
-//     this.countDownEvictWaiter()
-//   }
-//
-//   clearPlayersIfPublic() {
-//     this.evictWaiterTimeout()
-//     this.clearPlayersOrderBaseOnDisconnected()
-//     this.clearDisconnected()
-//   }
-//
-//   clearPlayersOrderBaseOnDisconnected() {
-//     this.disconnected.forEach(([_, index]) => this.playersOrder[index] = null)
-//   }
-//
-//   // 赢家付
-//   async chargeWinner() {
-//     if (this.charged) return
-//     this.charged = true
-//     const payList = [];
-//     for (let j = 0; j < this.players.length; j ++) {
-//       // @ts-ignore
-//       const p = this.gameState && this.gameState.players[j];
-//       if (p) {
-//         if (p.huPai()) {
-//           payList.push(this.players[j]);
-//         }
-//       }
-//     }
-//     if (payList.length < 1) {
-//       return;
-//     }
-//     let fee = this.privateRoomFee(this.rule)
-//     fee = Math.ceil(fee / payList.length) || 1;
-//     for (const p of payList) {
-//       PlayerModel.update({_id: p.model._id},
-//         {
-//           $inc: {
-//             gem: -fee,
-//           },
-//         }, err => {
-//           if (err) {
-//             logger.error(p.model._id, err)
-//           }
-//         })
-//
-//       p.sendMessage('resource/createRoomUsedGem', {
-//         createRoomNeed: fee
-//       })
-//     }
-//   }
-//
-//   async updateBigWinner() {
-//     const record = await RoomRecord.findOne({ room: this.uid });
-//     if (!record) {
-//       // 出错了
-//       console.error('no room record to update winner', this.uid)
-//       return;
-//     }
-//     let winner = [];
-//     let tempScore = 0;
-//     for (let j = 0; j < this.snapshot.length; j ++) {
-//       const p = this.snapshot[j]
-//       if (p) {
-//         const score = this.playerGainRecord[p.model._id] || 0;
-//         if (tempScore === score) {
-//           winner.push(p.model.shortId)
-//         }
-//         if (tempScore < score) {
-//           tempScore = score;
-//           winner = [p.model.shortId]
-//         }
-//       }
-//     }
-//     record.bigWinner = winner;
-//     await record.save();
-//   }
-//   async init() {
-//     // 初始化以后，再开启机器人
-//     this.robotManager = new RobotManager(this, this.gameRule.depositCount);
-//   }
-// }
-
 export default Room

@@ -1,4 +1,3 @@
-import {pick} from 'lodash'
 import {
   GiftState, Mail,
   MailModel,

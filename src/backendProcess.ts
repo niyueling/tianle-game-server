@@ -6,12 +6,12 @@ import Database from './database/database'
 import {saveRoomDetail} from "./database/models/roomDetail";
 import {saveRoomInfo} from "./database/models/roomInfo";
 import {GameTypes} from "./match/gameTypes"
-import {IMessageEmitter, IMessageGroupEmitter, Message, toBuffer} from "./match/messageBus";
-import {RabbitQueueMessageSource} from "./match/messageBus/RabbitQueueSource";
+import {toBuffer} from "./match/messageBus";
 import {PlayerRmqProxy} from "./match/PlayerRmqProxy"
 import RoomProxy, {recoverFunc} from "./match/roomRmqProxy"
 import {service} from "./service/importService";
 import createClient from "./utils/redis";
+import { TianleErrorCode } from "@fm/common/constants";
 
 const alwaysOk = () => true
 
@@ -75,36 +75,17 @@ export class BackendProcess {
 
       const unfinishedRoomId = await service.roomRegister.getDisconnectedRoom(messageBody.from, this.gameName);
       if (unfinishedRoomId) {
-        this.sendMessage('room/join-fail', {reason: `无法创建房间,还有未结束的房间${unfinishedRoomId}`}, playerRouteKey);
-        return
+        return this.sendMessage('room/join-fail', {reason: `无法创建房间,还有未结束的房间${unfinishedRoomId}`}, playerRouteKey);
       }
 
       const playerModel = await service.playerService.getPlayerPlainModel(messageBody.from)
       if (playerModel) {
         const alreadyInRoom = await service.roomRegister.roomNumber(playerModel._id, this.gameName)
         if (alreadyInRoom) {
-          this.sendMessage('room/join-fail', {reason: `您还有一个房间未打完 ${alreadyInRoom}`}, playerRouteKey);
-          return
+          return this.sendMessage('room/join-fail', {reason: `您还有一个房间未打完 ${alreadyInRoom}`}, playerRouteKey);
         }
 
-        if (messageBody.payload.clubId) {
-          // let clubMember = await ClubMember.findOne({club: messageBody.payload.clubId , member: playerModel._id});
-          // if (!clubMember) {
-          //   // 检查联盟战队
-          //   clubMember = await ClubMember.findOne({
-          //     unionClubShortId: club.shortId,
-          //     member: playerModel._id,
-          //   })
-          // }
-          // playerModel.clubGold = clubMember.clubGold;
-          await this.createPrivateClubRoom(playerModel, messageBody, messageBody.payload.clubId)
-        } else {
-          if (messageBody.payload.rule.isPublic) {
-            await this.joinPublicRoom(playerModel, messageBody);
-          } else {
-            await this.createPrivateRoom(playerModel, messageBody)
-          }
-        }
+        await this.joinPublicRoom(playerModel, messageBody);
       } else {
         this.sendMessage('room/join-fail', {reason: `无法创建房间,非法用户信息`}, playerRouteKey);
       }
@@ -333,7 +314,7 @@ export class BackendProcess {
     const playerRouteKey = `user.${messageBody.from}.${this.gameName}`
     const roomId = await this.redisClient.lpopAsync('roomIds')
     if (!roomId) {
-      this.sendMessage('room/join-fail', {reason: `服务器错误,无法创建房间 [-9]`}, playerRouteKey);
+      this.sendMessage('room/createReply', TianleErrorCode.roomInvalid, playerRouteKey);
       return
     }
     // 创建规则(红包规则等)
@@ -341,10 +322,10 @@ export class BackendProcess {
     // 检查金豆
     const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule.categoryId);
     if (resp.isMoreRuby) {
-      return this.sendMessage('room/join-fail', {reason: '您的豆豆不足，无法进入游戏'}, playerRouteKey);
+      return this.sendMessage('room/createReply', TianleErrorCode.goldInsufficient, playerRouteKey);
     }
     if (resp.isUpper) {
-      return this.sendMessage('room/join-fail', {reason: '您的豆豆足够到高级的房间游戏啦!'}, playerRouteKey);
+      return this.sendMessage('room/createReply', TianleErrorCode.goldIsHigh, playerRouteKey);
     }
     // 局数设为 99
     rule.juShu = 99;
@@ -368,12 +349,13 @@ export class BackendProcess {
         gameChannel,
         this.gameName
       )
-      playerRmqProxy.sendMessage('room/join-success', {_id: room._id, rule: room.rule})
+      playerRmqProxy.sendMessage('room/createReply', {_id: room._id, rule: room.rule})
       if (room.ownerId === playerRmqProxy._id) {
         await roomProxy.joinAsCreator(playerRmqProxy)
       } else {
         await room.join(playerRmqProxy);
       }
+
       // 第一次进房间,保存信息
       await saveRoomInfo(room._id, room.gameRule.type, room.clubId)
       await saveRoomDetail(room._id, JSON.stringify(room.toJSON()))

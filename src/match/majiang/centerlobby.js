@@ -10,12 +10,6 @@ import {PublicRoom} from "./publicRoom";
 const Lobby = LobbyFactory({
   gameName: 'majiang',
   roomFactory: function (id, rule, roomType = '', extraObj = {}) {
-    // if(roomType === 'battle'){
-    //   return new BattleRoom(rule, extraObj.playerScore)
-    // }
-    // if(roomType === 'tournament') {
-    //   return new TournamentRoom(rule, extraObj.playerScore, extraObj.reporter)
-    // }
     let room;
     if (rule.isPublic) {
       room = new PublicRoom(rule);
