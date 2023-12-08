@@ -358,7 +358,7 @@ export class BackendProcess {
       }
 
       // 第一次进房间,保存信息
-      await saveRoomInfo(room._id, room.gameRule.type, room.clubId)
+      await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId)
       await saveRoomDetail(room._id, JSON.stringify(room.toJSON()))
       await this.redisClient.saddAsync('room', room._id)
       await service.roomRegister.putPlayerInGameRoom(messageBody.from, this.gameName, room._id)
