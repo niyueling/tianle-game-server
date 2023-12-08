@@ -243,7 +243,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   async waitInfo() {
-    console.log(222)
+    console.error(222)
     if (!this.allReady) {
       return ;
     }
