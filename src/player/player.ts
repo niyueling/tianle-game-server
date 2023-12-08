@@ -344,7 +344,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
       await this.channel.bindQueue(this.myQueue, 'userCenter', `user.${this._id}.${gameName}`)
       const {consumerTag} = await this.channel.consume(this.myQueue, async message => {
         if (!message) return
-
+        console.error(message)
         try {
           const messageBody = JSON.parse(message.content.toString())
           logger.info(`from ${gameName} [${this.currentRoom}] to ${this._id} message name ${messageBody.name},`
