@@ -119,9 +119,9 @@ export default class RoomProxy {
     this.channel.consume(this.gameQueue.queue, async (message: Message) => {
       try {
         const messageBody = toMessageBody(message.content)
-        console.warn(messageBody)
         const cls = getActionClass();
         const methodName = cls.getMethodName(messageBody.name);
+        console.warn(messageBody.name, methodName)
         if (methodName) {
           console.log(`${room._id}: call ${messageBody.name}, payload ${JSON.stringify(messageBody.payload)}`)
           const instance = new cls(this.room);
