@@ -47,6 +47,8 @@ export interface IRoom extends EventEmitter {
 
   nextGame(p: SimplePlayer): Promise<boolean>
 
+  waitInfo(): Promise<boolean>
+
   onRequestDissolve(player: SimplePlayer)
 
   onAgreeDissolve(player: SimplePlayer)

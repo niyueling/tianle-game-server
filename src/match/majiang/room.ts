@@ -659,10 +659,6 @@ class Room extends RoomBase {
     return true
   }
 
-  async waitInfo() {
-    console.error("this is wait info")
-  }
-
   async dissolve(roomCreator) {
     if (roomCreator._id !== this.ownerId) {
       roomCreator.sendMessage('room/dissolveReply', {errorCode: 1})
