@@ -3,6 +3,9 @@ import * as mongoose from 'mongoose';
 import RoomJoinModel from "../database/models/roomJoin";
 import {AsyncRedisClient, createClient} from "../utils/redis";
 import BaseService from "./base";
+import * as logger from "winston";
+import RoomRecord from "../database/models/roomRecord";
+import {RoomInfoModel} from "../database/models/roomInfo";
 
 // 保存房间信息
 export default class RoomRegister extends BaseService {
@@ -171,5 +174,29 @@ export default class RoomRegister extends BaseService {
     for (const k of keys) {
       await this.redis.delAsync(k);
     }
+  }
+
+  async saveNewRoomRecord(room, gameType, player, rule) {
+    let m = await RoomRecord.findOne({ roomNum: room._id });
+    if (m) {
+      return false;
+    }
+    const roomRecord = {
+      players: [],
+      scores: [],
+      roomNum: room._id,
+      room: room.uid,
+      category: gameType,
+      creatorId: player.shortId || 0,
+      createAt: Date.now(),
+      roomState: "initialization",
+      juIndex: 0,
+      rule
+    }
+
+    RoomRecord.update({room: room.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})
+        .catch(e => { logger.error('recordRoomScore error', e) })
+
+    return true;
   }
 }
