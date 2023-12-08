@@ -356,6 +356,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
             return this.channel.close()
           }
 
+          console.error(messageBody.name, messageBody.payload._id)
           if (messageBody.name === 'room/joinReply') {
             this.currentRoom = messageBody.payload._id
             // 不加 await，先发 room/join
