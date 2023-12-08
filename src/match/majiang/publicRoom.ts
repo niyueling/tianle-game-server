@@ -159,7 +159,6 @@ export class PublicRoom extends Room {
   }
 
   async awaitInfo() {
-    console.error(222)
     if (!this.allReady) {
       return ;
     }
