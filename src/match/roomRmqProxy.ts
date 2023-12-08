@@ -34,10 +34,6 @@ interface InRoomReadyMessage extends InBase {
   name: 'room/ready'
 }
 
-interface InRoomAwaitInfoMessage extends InBase {
-  name: 'room/awaitInfo'
-}
-
 interface InRoomNextGameMessage extends InBase {
   name: 'room/next-game'
 }
@@ -58,7 +54,6 @@ interface INPipeMessage extends InBase {
 type In_Message = InJoinRoomMessage
   | InRoomNextGameMessage
   | InRoomReadyMessage
-  | InRoomAwaitInfoMessage
   | INRoomLeaveMessage
   | INRoomReconnectMessage
   | INPipeMessage
