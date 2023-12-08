@@ -219,8 +219,12 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
     this.readyPlayers.push(player._id)
     this.broadcast('room/readyReady', {
-      index: this.players.indexOf(player),
-      readyPlayers: this.readyPlayers
+      ok: true,
+      data: {
+        index: this.players.indexOf(player),
+        readyPlayers: this.readyPlayers
+      }
+
     })
 
     if (this.allReady) {
@@ -236,6 +240,35 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
         }
       }
     }
+  }
+
+  async waitInfo(player) {
+    if (!this.allReady) {
+      return;
+    }
+
+    const players = [];
+    this.playersOrder.forEach(player => {
+      if (player) {
+        players.push({
+          gold: player.model.gold,
+          diamond: player.model.diamond,
+          nickname: player.model.nickname,
+          avatar: player.model.avatar,
+          shortId: player.model.shortId
+        })
+      }
+    })
+
+    this.broadcast('room/waitInfoReady', {
+      ok: true,
+      data: {
+        players: players,
+        roomNum: this._id,
+        roomId: this.uid,
+        gameType: this.gameRule.gameType
+      }
+    })
   }
 
   clearReady() {

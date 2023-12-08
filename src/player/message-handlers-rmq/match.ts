@@ -110,6 +110,9 @@ export function createHandler(redisClient: AsyncRedisClient) {
     'room/ready': player => {
       player.requestToCurrentRoom('room/ready', {})
     },
+    'room/waitInfo': async player => {
+      player.requestToCurrentRoom('room/waitInfo', {})
+    },
     'room/creatorStartGame': player => {
       player.requestToCurrentRoom('room/creatorStartGame', {})
     },
