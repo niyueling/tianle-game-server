@@ -78,7 +78,7 @@ export class BackendProcess {
         return this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
       }
 
-      console.warn(messageBody)
+      console.error("error", messageBody)
       const playerModel = await service.playerService.getPlayerPlainModel(messageBody.from)
       if (playerModel) {
         const alreadyInRoom = await service.roomRegister.roomNumber(playerModel._id, this.gameName)
