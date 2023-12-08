@@ -159,7 +159,33 @@ export class PublicRoom extends Room {
   }
 
   async awaitInfo() {
-    console.error(111)
+    console.error(222)
+    if (!this.allReady) {
+      return ;
+    }
+
+    const players = [];
+    this.playersOrder.forEach(player => {
+      if (player) {
+        players.push({
+          gold: player.model.gold,
+          diamond: player.model.diamond,
+          nickname: player.model.nickname,
+          avatar: player.model.avatar,
+          shortId: player.model.shortId
+        })
+      }
+    })
+
+    this.broadcast('room/waitInfoReady', {
+      ok: true,
+      data: {
+        players: players,
+        roomNum: this._id,
+        roomId: this.uid,
+        gameType: this.gameRule.gameType
+      }
+    })
   }
 
   // 每局开始扣除进房金豆

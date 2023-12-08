@@ -242,36 +242,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
   }
 
-  async waitInfo() {
-    console.error(222)
-    if (!this.allReady) {
-      return ;
-    }
-
-    const players = [];
-    this.playersOrder.forEach(player => {
-      if (player) {
-        players.push({
-          gold: player.model.gold,
-          diamond: player.model.diamond,
-          nickname: player.model.nickname,
-          avatar: player.model.avatar,
-          shortId: player.model.shortId
-        })
-      }
-    })
-
-    this.broadcast('room/waitInfoReady', {
-      ok: true,
-      data: {
-        players: players,
-        roomNum: this._id,
-        roomId: this.uid,
-        gameType: this.gameRule.gameType
-      }
-    })
-  }
-
   clearReady() {
     this.readyPlayers = []
   }
