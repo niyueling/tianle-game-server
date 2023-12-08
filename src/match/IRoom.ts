@@ -218,7 +218,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
 
     this.readyPlayers.push(player._id)
-    this.broadcast('room/playerReady', {
+    this.broadcast('room/readyReady', {
       index: this.players.indexOf(player),
       readyPlayers: this.readyPlayers
     })
@@ -252,7 +252,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async startGame() {
     if (this.disconnected.length > 0 && !this.robotManager) {
       // 有人掉线了且没有机器人
-      console.info('some one offline');
+      console.info(`some one offline ${JSON.stringify(this.disconnected)}`);
       return;
     }
     this.readyPlayers = this.players.filter(p => p).map(x => x._id)
@@ -262,16 +262,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.destroyOldGame()
     await this.startNewGame()
     this.isHasRedPocket = false;
-    if (this.game.juIndex === this.game.rule.juShu && this.game.rule.ro.roomType !== 'battleRoom') {
-      // 获取红包总额
-      const amount = this.getRedPocketAmount();
-      if (amount > 0) {
-        // 有红包
-        this.isHasRedPocket = true;
-        this.initRedPockets(amount)
-        this.broadcast('room/startRedPocket', this.vaildPlayerRedPocketArray)
-      }
-    }
     // 保存游戏开始信息
     return service.roomRegister.saveRoomInfoToRedis(this)
   }
@@ -380,20 +370,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.gameState = gameState
     await gameState.start()
     this.broadcastStartGame()
-    // 每个用户记录游戏专家
-    for (const value of this.players) {
-      if (!value) {
-        // 空
-        continue;
-      }
-      await service.medal.updateGameProfessionMedal(value.model._id, value.model.shortId, this.gameRule.type);
-      // 为所有玩了6局的玩家添加抽奖次数
-      if (!this.isPublic) {
-        // 非金豆房
-        await service.lottery.addDailyLotteryTimes(value.model._id, value.model.shortId,
-          this.game.juIndex, this.gameRule.juShu);
-      }
-    }
   }
 
   broadcastStartGame() {

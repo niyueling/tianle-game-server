@@ -341,7 +341,8 @@ export class NewRobotManager {
         index = this.room.readyPlayers.indexOf(proxy.model._id)
         if (index === -1) {
           // 有在线用户没点下一局
-          console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`)
+          console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`);
+          this.room.ready(proxy);
           return false;
         }
       }
