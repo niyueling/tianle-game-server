@@ -81,7 +81,7 @@ export class NewRobotManager {
         await this.beforeMonit();
         // 添加房间数
         if (this.room.isPublic) {
-          await service.roomRegister.incPublicRoomCount(this.room.gameRule.type, this.room.gameRule.categoryId);
+          await service.roomRegister.incPublicRoomCount(this.room.gameType, this.room.gameRule.categoryId);
         }
       }
       await this.onMonit();
@@ -161,7 +161,7 @@ export class NewRobotManager {
   // 创建机器人代理
   async createProxy(playerId) {
     const model = await service.playerService.getPlayerPlainModel(playerId);
-    return new RobotRmqProxy(model, this.room.gameRule.type)
+    return new RobotRmqProxy(model, this.room.gameType)
   }
 
   // 更新离线时间
@@ -431,16 +431,15 @@ export class NewRobotManager {
       // 时间未到，或者已经有机器人
       return;
     }
+    console.error(this.room)
     for (let i = 0; i < this.room.players.length; i++) {
       const playerId = await this.getOfflinePlayerByIndex(i)
       if (playerId !== "" || this.room.players[i]) {
         continue
       }
       const model = await service.playerService.getRobot(this.room.gameRule.categoryId);
-      const robotProxy = await this.createProxy(model._id)
+      const robotProxy = await this.createProxy(model._id.toString())
       robotProxy.seatIndex = i;
-      // room.join 会加入
-      // robotProxy.room = this.room;
       robotProxy.isPublicRobot = true;
       // 加入房间
       const isOk = await this.room.join(robotProxy);

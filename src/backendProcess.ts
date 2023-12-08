@@ -71,7 +71,6 @@ export class BackendProcess {
     await this.recoverRooms(roomIds)
     await this.lobbyChannel.consume(lobbyQueueName, async message => {
       const messageBody = JSON.parse(message.content.toString())
-      console.error(messageBody)
       const playerRouteKey = `user.${messageBody.from}.${this.gameName}`
 
       const unfinishedRoomId = await service.roomRegister.getDisconnectedRoom(messageBody.from, this.gameName);
