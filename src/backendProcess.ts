@@ -75,19 +75,20 @@ export class BackendProcess {
 
       const unfinishedRoomId = await service.roomRegister.getDisconnectedRoom(messageBody.from, this.gameName);
       if (unfinishedRoomId) {
-        return this.sendMessage('room/join-fail', {reason: `无法创建房间,还有未结束的房间${unfinishedRoomId}`}, playerRouteKey);
+        return this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
       }
 
+      console.warn(messageBody)
       const playerModel = await service.playerService.getPlayerPlainModel(messageBody.from)
       if (playerModel) {
         const alreadyInRoom = await service.roomRegister.roomNumber(playerModel._id, this.gameName)
         if (alreadyInRoom) {
-          return this.sendMessage('room/join-fail', {reason: `您还有一个房间未打完 ${alreadyInRoom}`}, playerRouteKey);
+          return this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
         }
 
         await this.joinPublicRoom(playerModel, messageBody);
       } else {
-        this.sendMessage('room/join-fail', {reason: `无法创建房间,非法用户信息`}, playerRouteKey);
+        this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound}, playerRouteKey);
       }
     }, {noAck: true})
 
