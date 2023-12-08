@@ -1,9 +1,8 @@
 export interface IPlayerModel {
   _id: string,
-  name: string,
+  nickname: string,
   gold: number,
-  gem: number,
-  ruby: number
+  diamond: number,
   shortId: number
 }
 
@@ -26,22 +25,6 @@ export interface ISocketPlayer {
   sendMessage(name: 'club/updateClubInfo', message: {})
 
   sendMessage(name: 'club/haveRequest', message: {})
-
-  sendMessage(name: 'tournament/wait', message: {})
-
-  sendMessage(name: 'tournament/joinReply', message: {})
-
-  sendMessage(name: 'tournament/quitReply', message: {})
-
-  sendMessage(name: 'tournament/queue', message: {})
-
-  sendMessage(name: 'resource/update', message: {})
-
-  sendMessage(name: 'tournament/myTourIdReply', message: { currentId: string })
-
-  sendMessage(name: 'tournament/tournamentsReply', message: {})
-
-  sendMessage(name: 'tournament/countReply', message: {})
 
   requestToCurrentRoom(name: string, message?: any)
 

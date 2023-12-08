@@ -259,15 +259,6 @@ export default {
       }
       doc = JSON.parse(JSON.stringify(doc));
 
-      // const played = await GameRecord.count({players: doc._id}).exec()
-      // const winned = await GameRecord.count({winner: doc._id}).exec()
-
-
-      // doc.played = played
-      // doc.winned = winned
-      // doc.headImgUrl = 'http://47.103.133.25:9528/head?url=' +
-      //   (doc.headImgUrl || '')
-
       const checkCode = await AccountIdModel.findOne({player: doc._id}).exec();
 
       doc.needCheckCode = checkCode == null;
