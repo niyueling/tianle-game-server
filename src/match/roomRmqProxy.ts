@@ -227,6 +227,11 @@ export default class RoomProxy {
           return
         }
 
+        if (messageBody.name === 'room/awaitInfo') {
+          room.awaitInfo(thePlayer)
+          return
+        }
+
         if (messageBody.name === 'room/creatorStartGame') {
           room.creatorStartGame(thePlayer)
           await this.tryBestStore(rabbit.redisClient, room)

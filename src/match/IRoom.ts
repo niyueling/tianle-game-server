@@ -244,7 +244,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   async waitInfo() {
     if (!this.allReady) {
-      return false;
+      return ;
     }
 
     const players = [];
@@ -269,8 +269,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
         gameType: this.gameRule.gameType
       }
     })
-
-    return true;
   }
 
   clearReady() {

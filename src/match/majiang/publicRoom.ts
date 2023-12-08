@@ -158,6 +158,10 @@ export class PublicRoom extends Room {
     return super.nextGame(thePlayer);
   }
 
+  async awaitInfo() {
+    console.error(111)
+  }
+
   // 每局开始扣除进房金豆
   async payRubyForStart() {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
