@@ -417,6 +417,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
 
   requestTo(queue, name, message) {
     const playerIp = this.getIpAddress()
+    console.error({name, from: this._id, payload: message, ip: playerIp})
     this.channel.sendToQueue(
       queue,
       this.toBuffer({name, from: this._id, payload: message, ip: playerIp}),
