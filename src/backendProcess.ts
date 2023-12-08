@@ -314,7 +314,7 @@ export class BackendProcess {
     const playerRouteKey = `user.${messageBody.from}.${this.gameName}`
     const roomId = await this.redisClient.lpopAsync('roomIds')
     if (!roomId) {
-      this.sendMessage('room/createReply', TianleErrorCode.roomInvalid, playerRouteKey);
+      this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomInvalid}, playerRouteKey);
       return
     }
     // 创建规则(红包规则等)
@@ -322,10 +322,10 @@ export class BackendProcess {
     // 检查金豆
     const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule.categoryId);
     if (resp.isMoreRuby) {
-      return this.sendMessage('room/createReply', TianleErrorCode.goldInsufficient, playerRouteKey);
+      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldInsufficient}, playerRouteKey);
     }
     if (resp.isUpper) {
-      return this.sendMessage('room/createReply', TianleErrorCode.goldIsHigh, playerRouteKey);
+      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldIsHigh}, playerRouteKey);
     }
     // 局数设为 99
     rule.juShu = 99;
