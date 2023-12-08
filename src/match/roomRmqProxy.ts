@@ -34,6 +34,10 @@ interface InRoomReadyMessage extends InBase {
   name: 'room/ready'
 }
 
+interface InRoomAwaitInfoMessage extends InBase {
+  name: 'room/awaitInfo'
+}
+
 interface InRoomNextGameMessage extends InBase {
   name: 'room/next-game'
 }
@@ -54,6 +58,7 @@ interface INPipeMessage extends InBase {
 type In_Message = InJoinRoomMessage
   | InRoomNextGameMessage
   | InRoomReadyMessage
+  | InRoomAwaitInfoMessage
   | INRoomLeaveMessage
   | INRoomReconnectMessage
   | INPipeMessage
@@ -71,7 +76,6 @@ interface RmqRoomRep {
 export type recoverFunc = (json: any, RmqRoomRep) => Promise<IRoom>
 
 export default class RoomProxy {
-
   room: IRoom
   private channel: Channel
   private gameQueue: Replies.AssertQueue
@@ -115,6 +119,7 @@ export default class RoomProxy {
     this.channel.consume(this.gameQueue.queue, async (message: Message) => {
       try {
         const messageBody = toMessageBody(message.content)
+        console.warn(messageBody)
         const cls = getActionClass();
         const methodName = cls.getMethodName(messageBody.name);
         if (methodName) {
