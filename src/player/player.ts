@@ -346,7 +346,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
         if (!message) return
         try {
           const messageBody = JSON.parse(message.content.toString())
-          console.error(messageBody)
+
           logger.info(`from ${gameName} [${this.currentRoom}] to ${this._id} message name ${messageBody.name},`
             + `cmd ${messageBody.cmd}`)
           if (messageBody.type === 'cmd' && messageBody.cmd === 'leave' && this.socketId !== messageBody.sid) {
@@ -357,7 +357,8 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
           }
 
           if (messageBody.name === 'room/joinReply') {
-            this.currentRoom = messageBody.payload._id
+            console.error(messageBody.payload)
+            this.currentRoom = messageBody.payload.data._id
             // 不加 await，先发 room/join
             this.cancelListenClub(this.clubId)
           }
