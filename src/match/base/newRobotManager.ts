@@ -81,7 +81,7 @@ export class NewRobotManager {
         await this.beforeMonit();
         // 添加房间数
         if (this.room.isPublic) {
-          await service.roomRegister.incPublicRoomCount(this.room.gameType, this.room.gameRule.categoryId);
+          await service.roomRegister.incPublicRoomCount(this.room.gameRule.gameType, this.room.gameRule.categoryId);
         }
       }
       await this.onMonit();
@@ -161,7 +161,7 @@ export class NewRobotManager {
   // 创建机器人代理
   async createProxy(playerId) {
     const model = await service.playerService.getPlayerPlainModel(playerId);
-    return new RobotRmqProxy(model, this.room.gameType)
+    return new RobotRmqProxy(model, this.room.gameRule.gameType)
   }
 
   // 更新离线时间
@@ -285,7 +285,7 @@ export class NewRobotManager {
       // 扣除房间数
       this.disconnectPlayers = null;
       console.log('decrease room count');
-      await service.roomRegister.decrPublicRoomCount(this.room.gameRule.type, this.room.gameRule.categoryId);
+      await service.roomRegister.decrPublicRoomCount(this.room.gameRule.gameType, this.room.gameRule.categoryId);
     }
     // for (const key of Object.keys(this.disconnectPlayers)) {
     //   delete this.disconnectPlayers[key]
@@ -431,7 +431,7 @@ export class NewRobotManager {
       // 时间未到，或者已经有机器人
       return;
     }
-    console.error(this.room)
+
     for (let i = 0; i < this.room.players.length; i++) {
       const playerId = await this.getOfflinePlayerByIndex(i)
       if (playerId !== "" || this.room.players[i]) {
