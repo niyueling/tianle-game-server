@@ -341,6 +341,7 @@ export class NewRobotManager {
         index = this.room.readyPlayers.indexOf(proxy.model._id)
         if (index === -1) {
           // 有在线用户没点下一局
+          console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`)
           return false;
         }
       }
@@ -553,7 +554,7 @@ export class NewRobotManager {
     if (this.model.step === RobotStep.start) {
       isOk = await this.isHumanPlayerReady();
       if (!isOk) {
-        console.log('human player not ready', this.room._id);
+        // console.log('human player not ready', this.room._id);
         return;
       }
       this.model.step = RobotStep.running;
