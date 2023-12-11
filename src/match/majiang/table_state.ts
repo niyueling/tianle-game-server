@@ -330,7 +330,7 @@ class TableState implements Serializable {
   @autoSerialize
   remainCards: number
   @autoSerialize
-  caishen: number
+  caishen: (number)[]
 
   @serialize
   players: PlayerState[]
@@ -478,7 +478,7 @@ class TableState implements Serializable {
   async fapai() {
     this.shuffle()
     this.sleepTime = 0
-    this.caishen = this.rule.useCaiShen ? Enums.zhong : Enums.slotNoCard
+    this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
     const needShuffle = this.room.shuffleData.length > 0;
