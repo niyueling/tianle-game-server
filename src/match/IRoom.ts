@@ -383,7 +383,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       juIndex: this.game.juIndex,
       playersPosition: this.players.filter(x => x).map(x => x.model),
       // 获取底分
-      diFen: conf.Ante || 1,
+      diFen: conf.Ante ? conf.Ante : 1,
     })
   }
 
