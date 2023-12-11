@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {ConsumeLogType} from "@fm/common/constants";
+import {ConsumeLogType, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
@@ -646,16 +646,16 @@ class Room extends RoomBase {
 
   async nextGame(thePlayer) {
     if (this.game.juShu <= 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '牌局已经结束.'})
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
       return
     }
 
     if (this.indexOf(thePlayer) < 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '您已经不属于这个房间.'})
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
       return false
     }
 
-    await this.announcePlayerJoin(thePlayer)
+    // await this.announcePlayerJoin(thePlayer)
     return true
   }
 
