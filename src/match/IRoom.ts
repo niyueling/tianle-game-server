@@ -153,7 +153,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   broadcast(name, message, except?) {
     for (let i = 0; i < this.players.length; ++i) {
       const player = this.players[i]
-      if (player && player !== except && !player.isRobot()) {
+      if (player && player !== except) {
         player.sendMessage(name, message)
       }
     }
@@ -478,7 +478,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       return false
     }
 
-    await this.announcePlayerJoin(thePlayer)
+    // await this.announcePlayerJoin(thePlayer)
     // this.evictFromOldTable(thePlayer)
 
     return true
