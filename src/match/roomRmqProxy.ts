@@ -177,7 +177,7 @@ export default class RoomProxy {
             await room.join(newPlayer)
             await service.roomRegister.putPlayerInGameRoom(messageBody.from, gameName, room._id)
           } else {
-            newPlayer.sendMessage('room/join-fail', {ok: false, info: '房间已满!'})
+            newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFull})
             return
           }
           await this.tryBestStore(rabbit.redisClient, room)

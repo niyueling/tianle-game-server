@@ -10,9 +10,7 @@ export interface ISocketPlayer {
 
   model: IPlayerModel
 
-  sendMessage(name: 'room/join-success', message: { _id: string, rule: any });
-
-  sendMessage(name: 'room/join-fail', message: { reason: string });
+  sendMessage(name: 'room/joinReply', message: { ok: boolean, info: string });
 
   sendMessage(name: 'room/leave-success', message: { _id: string });
 

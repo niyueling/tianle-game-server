@@ -5,6 +5,7 @@ import majiangLobby from '../../match/majiang/centerlobby'
 import {service} from "../../service/importService";
 import {AsyncRedisClient} from "../../utils/redis"
 import {ISocketPlayer} from "../ISocketPlayer"
+import {TianleErrorCode} from "@fm/common/constants";
 
 export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
@@ -39,7 +40,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
         // 战队房
         const club = await Club.findById(roomInfo.clubId);
         if (!club) {
-          return player.sendMessage('room/join-fail', { reason: '房间不存在' })
+          return player.sendMessage('room/joinReply', { ok: false, info: TianleErrorCode.roomInvalid })
         }
         const unionMember = await service.club.getUnionMember(club.shortId, player.model._id);
         if (unionMember) {
@@ -56,7 +57,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
           resp = await service.club.joinNormalClubRoom(roomInfo.gameRule, club._id, player.model._id);
         }
         if (!resp.isOk) {
-          return player.sendMessage('room/join-fail', resp.info);
+          return player.sendMessage('room/joinReply', resp.info);
         }
       }
       const roomExists = await service.roomRegister.isRoomExists(message._id)
@@ -65,7 +66,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
         // 加入房间
         player.requestToRoom(message._id, 'joinRoom', message)
       } else {
-        player.sendMessage('room/join-fail', {reason: '房间不存在'})
+        player.sendMessage('room/joinReply', {reason: '房间不存在'})
       }
     },
 

@@ -51,7 +51,7 @@ export class PlayerRmqProxy extends EventEmitter implements SimplePlayer {
   }
 
   sendMessage(name: 'room/join-success', message: { _id: string, rule: any });
-  sendMessage(name: 'room/join-fail', message: { reason: string });
+  sendMessage(name: 'room/joinReply', message: { ok: false, info: string });
   sendMessage(name: 'room/leave-success' | 'room/leave-fail', message: { _id: string });
   sendMessage(name: 'room/reconnectReply', message: {errorCode: number, _id: string, rule: any});
   sendMessage(name: never | string, message: any);
