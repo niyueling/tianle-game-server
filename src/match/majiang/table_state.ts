@@ -493,17 +493,11 @@ class TableState implements Serializable {
     this.caishen = this.rule.useCaiShen ? Enums.zhong : Enums.slotNoCard
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
-    // 判断麻将补助是否开房
-    // const isMajongOpen = await service.utils.getGlobalConfigByName("majiangHelp");
-    // if (!this.room.rule.isPublic && Number(isMajongOpen) === 1) await this.checkPlayerHelper();
-
     const needShuffle = this.room.shuffleData.length > 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i]
       const cards13 = this.take13Cards(p)
-      const finallyCards = [...p.helpCards, ...cards13];
-      // logger.info('fapai player-%s :%s', this.players[i].model.shortId, finallyCards)
-      p.onShuffle(restCards, this.caishen, this.restJushu, finallyCards, i, this.room.game.juIndex, needShuffle)
+      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle)
     }
 
     // 金豆房扣除开局金豆

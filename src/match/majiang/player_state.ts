@@ -2,6 +2,7 @@
  * Created by Color on 2016/7/7.
  */
 import * as EventEmitter from 'events'
+// @ts-ignore
 import {pick, random} from 'lodash'
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serializeHelp} from "../serializeDecorator"
 import basicAi, {playerAi} from './ai'

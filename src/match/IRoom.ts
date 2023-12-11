@@ -373,15 +373,16 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     const gameState = this.game.startGame(this)
     this.gameState = gameState
     await gameState.start()
-    this.broadcastStartGame()
+    await this.broadcastStartGame()
   }
 
-  broadcastStartGame() {
+  async broadcastStartGame() {
+    let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
     this.broadcast('room/startGame', {
       juIndex: this.game.juIndex,
       playersPosition: this.players.filter(x => x).map(x => x.model),
       // 获取底分
-      diFen: 1,
+      diFen: conf.Ante || 1,
     })
   }
 
@@ -1249,7 +1250,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   // 转发，通知客户端
   updateResource2Client(player) {
-    player.sendMessage('resource/update', {gold: player.model.gold, gem: player.model.gem, ruby: player.model.ruby})
+    player.sendMessage('resource/update', {gold: player.model.gold, diamond: player.model.diamond})
   }
 
   async payRubyForStart() {
