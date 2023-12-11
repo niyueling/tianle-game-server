@@ -71,9 +71,9 @@ export function createHandler(redisClient: AsyncRedisClient) {
 
     'room/create': async (player, message) => {
       const rule = message.rule
-      const gameType = message.gameType || 'majiang'
+      const gameType = message.gameType
       rule.gameType = gameType;
-      const playerId = message.playerId || "657035133b59051a566799af"
+      const playerId = message.playerId
       player.model = await PlayerModel.findOne({_id: playerId}).lean();
       player.setGameName(gameType)
       await player.connectToBackend(player.gameName);
