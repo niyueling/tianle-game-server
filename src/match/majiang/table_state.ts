@@ -20,6 +20,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
+import {TianleErrorCode} from "@fm/common/constants";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1725,14 +1726,13 @@ class TableState implements Serializable {
     const index = this.players.indexOf(player);
     this.logger.info('da player-%s card:%s', index, card)
     let from
-    // const card = card_
     if (this.state !== stateWaitDa) {
-      player.sendMessage('DaReply', {errorCode: 1, info: '不能打牌'})
-      this.logger.info('da player-%s card:%s 不能打牌', index, card)
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError})
+      logger.info('da player-%s card:%s 不能打牌', index, card)
       return
     } else if (this.stateData[Enums.da]._id !== player._id) {
-      player.sendMessage('DaReply', {errorCode: 2, info: '不是您的回合'})
-      this.logger.info('da player-%s card:%s 不是您的回合', index, card)
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound})
+      logger.info('da player-%s card:%s 不是您的回合', index, card)
       return
     }
 
@@ -1740,7 +1740,7 @@ class TableState implements Serializable {
     if (ok) {
       this.lastDa = player
       player.cancelTimeout()
-      player.sendMessage('DaReply', {errorCode: 0})
+      player.sendMessage('game/daReply', {ok: true, data: {}})
 
       if (player.isTing()) {
         if (player.events[Enums.anGang] && player.events[Enums.anGang].length > 0) {
@@ -1752,7 +1752,7 @@ class TableState implements Serializable {
         }
       }
     } else {
-      player.sendMessage('DaReply', {errorCode: 3, info: '不能打这张牌'})
+      player.sendMessage('DaReply', {ok: false, info: TianleErrorCode.notDaThisCard})
       this.logger.info('da player-%s card:%s 不能打这张牌', index, card)
       return
     }
