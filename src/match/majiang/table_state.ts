@@ -112,13 +112,8 @@ const generateCards = function () {
 
   addSpan(Enums.wanzi1, Enums.wanzi9)
   addSpan(Enums.tongzi1, Enums.tongzi9)
-  addSpan(Enums.shuzi1, Enums.shuzi9)
-  // addSpan(Enums.dong, Enums.bai);
-
-  cards.push(Enums.zhong)
-  cards.push(Enums.zhong)
-  cards.push(Enums.zhong)
-  cards.push(Enums.zhong)
+  addSpan(Enums.constellation1, Enums.constellation12)
+  addSpan(Enums.zeus, Enums.athena);
 
   return cards
 }
@@ -456,12 +451,6 @@ class TableState implements Serializable {
 
   consumeCard(playerState: PlayerState) {
     const player = playerState
-    // const isRobot = player.room.robotManager.checkIsRobot(player);
-
-    // if(isRobot) {
-    //   const rCard = this.robotTingConsumeCard(player);
-    //   if(rCard) return rCard;
-    // }
 
     const cardIndex = --this.remainCards
     if (cardIndex === 0 && player) {
@@ -469,7 +458,6 @@ class TableState implements Serializable {
     }
     const card = this.cards[cardIndex]
     this.cards.splice(cardIndex, 1);
-    // logger.info('player %s normal-consumeCard %s', player.model.shortId, card)
     this.lastTakeCard = card;
     return card
   }
