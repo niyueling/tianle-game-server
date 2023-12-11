@@ -232,7 +232,7 @@ export default class RoomProxy {
           return
         }
 
-        if (messageBody.name === 'room/shuffleData') {
+        if (messageBody.name === 'room/shuffleDataApply') {
           await room.shuffleDataApply()
           return
         }
