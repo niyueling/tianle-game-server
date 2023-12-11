@@ -1,4 +1,4 @@
-import {ConsumeLogType, playerAttributes} from "@fm/common/constants";
+import {ConsumeLogType, playerAttributes, TianleErrorCode} from "@fm/common/constants";
 import * as EventEmitter from 'events'
 import * as lodash from 'lodash'
 import * as logger from 'winston'
@@ -153,7 +153,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   broadcast(name, message, except?) {
     for (let i = 0; i < this.players.length; ++i) {
       const player = this.players[i]
-      if (player && player !== except) {
+      if (player && player !== except && !player.isRobot()) {
         player.sendMessage(name, message)
       }
     }
@@ -227,19 +227,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
     })
 
-    // if (this.allReady) {
-    //   if (!this.game.isAllOver()) {
-    //     // 先播动画
-    //     const delayTime = this.playShuffle();
-    //     if (delayTime > 0) {
-    //       setTimeout(async () => {
-    //         await this.startGame()
-    //       }, delayTime);
-    //     } else {
-    //       await this.startGame();
-    //     }
-    //   }
-    // }
   }
 
   clearReady() {
@@ -483,11 +470,11 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   // 开始下一局
   async nextGame(thePlayer): Promise<boolean> {
     if (!this.isPublic && this.game.juShu <= 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '牌局已经结束.'})
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
       return
     }
     if (this.indexOf(thePlayer) === -1) {
-      thePlayer.sendMessage('room/join-fail', {reason: '您已经不属于这个房间.'})
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
       return false
     }
 
@@ -536,16 +523,14 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   // 通知其它人，有玩家加入
   async announcePlayerJoin(newJoinPlayer) {
     this.broadcast('room/join', await this.joinMessageFor(newJoinPlayer))
-    // const oldPlayer = this.players
-    //   .map((p, index) => {
-    //     return p || this.playersOrder[index]
-    //   })
-    //   .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString());
-    // for (const alreadyInRoomPlayer of oldPlayer) {
-    //   if (!alreadyInRoomPlayer.isRobot()) {
-    //     alreadyInRoomPlayer.sendMessage('room/join', await this.joinMessageFor(newJoinPlayer));
-    //   }
-    // }
+    const oldPlayer = this.players
+      .map((p, index) => {
+        return p || this.playersOrder[index]
+      })
+      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString());
+    for (const alreadyInRoomPlayer of oldPlayer) {
+      alreadyInRoomPlayer.sendMessage('room/join', await this.joinMessageFor(newJoinPlayer));
+    }
   }
 
   async broadcastRejoin(reconnectPlayer) {

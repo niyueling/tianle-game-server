@@ -361,9 +361,9 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
               return this.sendMessage(messageBody.name, messageBody.payload)
             }
 
-            this.currentRoom = messageBody.payload.data._id
-            // 不加 await，先发 room/join
-            this.cancelListenClub(this.clubId)
+            // this.currentRoom = messageBody.payload.data._id
+            // // 不加 await，先发 room/join
+            // this.cancelListenClub(this.clubId)
           }
 
           if (messageBody.name === 'newClubRoomCreated') {
