@@ -187,6 +187,22 @@ export class PublicRoom extends Room {
     })
   }
 
+  async shuffleDataApply() {
+    if (this.allReady) {
+      if (!this.game.isAllOver()) {
+        // 先播动画
+        const delayTime = this.playShuffle();
+        if (delayTime > 0) {
+          setTimeout(async () => {
+            await this.startGame()
+          }, delayTime);
+        } else {
+          await this.startGame();
+        }
+      }
+    }
+  }
+
   // 每局开始扣除进房金豆
   async payRubyForStart() {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);

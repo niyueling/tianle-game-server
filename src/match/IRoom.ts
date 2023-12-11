@@ -227,19 +227,19 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
     })
 
-    if (this.allReady) {
-      if (!this.game.isAllOver()) {
-        // 先播动画
-        const delayTime = this.playShuffle();
-        if (delayTime > 0) {
-          setTimeout(async () => {
-            await this.startGame()
-          }, delayTime);
-        } else {
-          await this.startGame();
-        }
-      }
-    }
+    // if (this.allReady) {
+    //   if (!this.game.isAllOver()) {
+    //     // 先播动画
+    //     const delayTime = this.playShuffle();
+    //     if (delayTime > 0) {
+    //       setTimeout(async () => {
+    //         await this.startGame()
+    //       }, delayTime);
+    //     } else {
+    //       await this.startGame();
+    //     }
+    //   }
+    // }
   }
 
   clearReady() {

@@ -10,6 +10,7 @@ import {GameTypes} from "./gameTypes"
 import {IRoom} from "./interfaces"
 import {PlayerRmqProxy} from "./PlayerRmqProxy"
 import Timer = NodeJS.Timer
+import {TianleErrorCode} from "@fm/common/constants";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -137,14 +138,14 @@ export default class RoomProxy {
           }, this.channel, gameName)
 
           if (!playerModel) {
-            newPlayer.sendMessage('room/join-fail', {reason: '未知的用户信息'})
+            newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound})
             return
           }
           if (room.gameRule.share || room.gameRule.winnerPay) {
             // aa 或者，赢家支付
             const fee = room.constructor.roomFee(room.game.rule)
             if (playerModel.gem < fee) {
-              newPlayer.sendMessage('room/join-fail', {reason: '钻石不足 无法加入房间。'})
+              newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound})
               return
             }
           }
@@ -154,12 +155,12 @@ export default class RoomProxy {
               // 检查联盟的战队
               const club = await Club.findById(room.clubId);
               if (!club) {
-                return newPlayer.sendMessage('room/join-fail', { reason: '房间不存在' });
+                return newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound});
               }
               clubMember = await service.club.getUnionMember(club.shortId, messageBody.from);
             }
             if (!clubMember) {
-              return newPlayer.sendMessage('room/join-fail', { reason: '房间不存在' });
+              return newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound});
             }
             newPlayer.model.clubGold = clubMember.clubGold;
           }
@@ -167,16 +168,16 @@ export default class RoomProxy {
           const alreadyInRoom = await service.roomRegister.roomNumber(messageBody.from, gameName)
 
           if (alreadyInRoom && alreadyInRoom !== room._id) {
-            newPlayer.sendMessage('room/join-fail', {reason: `您还有一个房间未打完 ${alreadyInRoom}`})
+            newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound})
             return
           }
 
           if (room.canJoin(newPlayer)) {
-            newPlayer.sendMessage('room/join-success', {_id: room._id, rule: room.rule, clubShortId: room.clubShortId})
+            newPlayer.sendMessage('room/joinReply', {ok: true, data: {_id: room._id, rule: room.rule, clubShortId: room.clubShortId}})
             await room.join(newPlayer)
             await service.roomRegister.putPlayerInGameRoom(messageBody.from, gameName, room._id)
           } else {
-            newPlayer.sendMessage('room/join-fail', {reason: '房间已满!'})
+            newPlayer.sendMessage('room/join-fail', {ok: false, info: '房间已满!'})
             return
           }
           await this.tryBestStore(rabbit.redisClient, room)
@@ -228,6 +229,11 @@ export default class RoomProxy {
 
         if (messageBody.name === 'room/awaitInfo') {
           await room.awaitInfo()
+          return
+        }
+
+        if (messageBody.name === 'room/shuffleData') {
+          await room.shuffleDataApply()
           return
         }
 
