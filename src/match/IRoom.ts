@@ -365,13 +365,12 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   async broadcastStartGame() {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
-    console.warn(conf.Ante)
-    this.broadcast('room/startGame', {
-      juIndex: this.game.juIndex,
-      playersPosition: this.players.filter(x => x).map(x => x.model),
-      // 获取底分
-      diFen: conf ? conf.Ante : 1,
-    })
+    this.broadcast('room/startGame', {ok: true, data: {
+        juIndex: this.game.juIndex,
+        playersPosition: this.players.filter(x => x).map(x => x.model),
+        // 获取底分
+        diFen: conf ? conf.Ante : 1,
+      }})
   }
 
   async join(newJoinPlayer) {
@@ -1238,7 +1237,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   // 转发，通知客户端
   updateResource2Client(player) {
-    player.sendMessage('resource/update', {gold: player.model.gold, diamond: player.model.diamond})
+    player.sendMessage('resource/update', {ok: true, data: {gold: player.model.gold, diamond: player.model.diamond}})
   }
 
   async payRubyForStart() {

@@ -385,7 +385,7 @@ class PlayerState implements Serializable {
     if (huResult.hu) {
       if (this.hadQiaoXiang) {
         // 不用选择 直接胡
-        this.sendMessage('game/TakeCard', msg)
+        this.sendMessage('game/TakeCard', {ok: true, data: msg})
         this.emitter.emit('waitForDa', msg)
         this.room.gameState.stateData.card = card
         return this.emitter.emit(Enums.hu, this.turn, card)
@@ -404,7 +404,7 @@ class PlayerState implements Serializable {
       this.freeCard = card
     }
 
-    const ret = this.sendMessage('game/TakeCard', msg)
+    const ret = this.sendMessage('game/TakeCard', {ok: true, data: msg})
     // 禁止触发旧麻将机器人
     this.emitter.emit('waitForDa', msg)
 
@@ -592,7 +592,7 @@ class PlayerState implements Serializable {
     this.seatIndex = seatIndex
 
     this.recorder.recordUserEvent(this, 'shuffle')
-    this.sendMessage('game/Shuffle', {juShu, cards, caiShen, remainCards, juIndex, needShuffle: !!needShuffle})
+    this.sendMessage('game/Shuffle', {ok: true, data: {juShu, cards, caiShen, remainCards, juIndex, needShuffle: !!needShuffle}})
   }
 
   @triggerAfterAction
