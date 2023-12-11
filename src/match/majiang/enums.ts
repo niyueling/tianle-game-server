@@ -56,18 +56,18 @@ const enums = {
   tongzi8: 28,
   tongzi9: 29,
 
-  constellation1: 41,
-  constellation2: 42,
-  constellation3: 43,
-  constellation4: 44,
-  constellation5: 45,
-  constellation6: 46,
-  constellation7: 47,
-  constellation8: 48,
-  constellation9: 49,
-  constellation10: 59,
-  constellation11: 51,
-  constellation12: 52,
+  constellation1: 41,// 白羊座
+  constellation2: 42,// 金牛座
+  constellation3: 43,// 双子座
+  constellation4: 44,// 巨蟹座
+  constellation5: 45,// 狮子座
+  constellation6: 46,// 处女座
+  constellation7: 47,// 天秤座
+  constellation8: 48,// 天蝎座
+  constellation9: 49,// 射手座
+  constellation10: 50,// 摩羯座
+  constellation11: 51,// 水瓶座
+  constellation12: 52,// 双鱼座
 
   dong: 31,
   nan: 32,
@@ -76,9 +76,9 @@ const enums = {
   zhong: 35,
   fa: 36,
   bai: 37,
-  zeus:38,
-  poseidon: 39,
-  athena: 40,
+  zeus:38, // 宙斯(癞子牌)
+  poseidon: 39,// 波塞冬(癞子牌)
+  athena: 40,// 雅典娜(癞子牌)
 
   chi: 'chi',
   peng: 'peng',

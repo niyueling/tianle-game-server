@@ -540,9 +540,9 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id);
+      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString());
     for (const alreadyInRoomPlayer of oldPlayer) {
-      newJoinPlayer.sendMessage('room/join', await this.joinMessageFor(alreadyInRoomPlayer));
+      alreadyInRoomPlayer.sendMessage('room/join', await this.joinMessageFor(newJoinPlayer));
     }
   }
 

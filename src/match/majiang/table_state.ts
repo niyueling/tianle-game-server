@@ -111,7 +111,7 @@ const generateCards = function () {
   }
 
   addSpan(Enums.wanzi1, Enums.wanzi9)
-  addSpan(Enums.tongzi1, Enums.tongzi9)
+  addSpan(Enums.shuzi1, Enums.shuzi9)
   addSpan(Enums.constellation1, Enums.constellation12)
   addSpan(Enums.zeus, Enums.athena);
 

@@ -438,7 +438,7 @@ export default class RoomProxy {
   canJoin(player: PlayerRmqProxy) {
 
     if (this.room.isFull(player)) {
-      player.sendMessage('room/join-fail', {reason: '房间人数已满, 请重新输入房间号'})
+      player.sendMessage('room/joinReply', {ok: false, info: '房间人数已满, 请重新输入房间号'})
       return false
     }
 
