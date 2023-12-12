@@ -292,9 +292,7 @@ export class ActionResolver implements Serializable {
     const message = {}
     oas.forEach(ao => {
       message[ao.action] = true
-      if (ao.action === 'chi') {
-        message['chiCombol'] = ao.option
-      }
+
       if (ao.action === 'hu') {
         message['huInfo'] = ao.option
       }
@@ -1753,21 +1751,12 @@ class TableState implements Serializable {
       }
     } else {
       player.sendMessage('DaReply', {ok: false, info: TianleErrorCode.notDaThisCard})
-      this.logger.info('da player-%s card:%s 不能打这张牌', index, card)
+      logger.info('da player-%s card:%s 不能打这张牌', index, card)
       return
     }
 
     from = this.atIndex(this.lastDa)
     this.turn++
-
-    if (this.remainCards === 4) {
-      this.room.broadcast('game/lastFour', {})
-      this.logger.info('game/lastFour')
-    }
-    if (this.remainCards === 1) {
-      this.room.broadcast('game/lastOne', {})
-      this.logger.info('game/lastOne')
-    }
 
     let check: HuCheck = {card}
     for (let j = 1; j < this.players.length; j++) {
@@ -1783,10 +1772,6 @@ class TableState implements Serializable {
     }
 
     const xiajia = this.players[(index + 1) % this.players.length]
-
-    if (xiajia.contacted(this.lastDa) < 2) {
-      check = xiajia.checkChi(card, check)
-    }
 
     for (let j = 1; j < this.players.length; j++) {
       const i = (index + j) % this.players.length
@@ -1807,7 +1792,7 @@ class TableState implements Serializable {
       this.stateData = {da: xiajia, card: newCard, msg};
       const sendMsg = {index: this.players.indexOf(xiajia)}
       this.room.broadcast('game/oppoTakeCard', sendMsg, xiajia.msgDispatcher)
-      this.logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg))
+      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg))
     })
 
     if (check[Enums.hu]) {
@@ -1815,12 +1800,6 @@ class TableState implements Serializable {
         this.actionResolver.appendAction(p, 'hu', p.huInfo)
       }
     }
-
-    // if (check[Enums.gang]) {
-    //   const p = check[Enums.gang]
-    //   let gangInfo = [card ,p.getGangKind(card, p === player)]
-    //   this.actionResolver.appendAction(p, 'gang', gangInfo)
-    // }
 
     if (check[Enums.pengGang]) {
       if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
@@ -1830,10 +1809,6 @@ class TableState implements Serializable {
         p.gangForbid.push(card)
         this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
       }
-    }
-
-    if (check[Enums.chi]) {
-      this.actionResolver.appendAction(check[Enums.chi], 'chi', check.chiCombol)
     }
 
     this.room.broadcast('game/oppoDa', {index, card}, player.msgDispatcher)
@@ -1851,7 +1826,7 @@ class TableState implements Serializable {
       }
     }
 
-    if (check[Enums.chi] || check[Enums.pengGang] || check[Enums.hu]) {
+    if (check[Enums.pengGang] || check[Enums.hu]) {
       this.state = stateWaitAction;
       this.stateData = check;
       this.stateData.hangUp = [];

@@ -973,7 +973,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     })
     // 多延时 1 秒
     const shuffleDelayTime = this.shuffleData.length * config.game.playShuffleTime + 1000;
-    this.broadcast('game/shuffleData', {shuffleData})
+    this.broadcast('game/shuffleData', {ok: true, shuffleData})
     return shuffleDelayTime;
   }
 
