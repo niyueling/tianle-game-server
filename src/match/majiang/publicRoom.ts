@@ -1,5 +1,4 @@
 import {GameType, TianleErrorCode} from "@fm/common/constants";
-import {Errors, getCodeByError} from "@fm/common/errors";
 import {Channel} from "amqplib";
 // @ts-ignore
 import {pick} from "lodash";

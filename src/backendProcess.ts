@@ -311,14 +311,7 @@ export class BackendProcess {
   }
 
   async joinPublicRoom(playerModel, messageBody) {
-    const playerRouteKey = `user.${messageBody.from}.${this.gameName}`
-    let conf = await service.gameConfig.getPublicRoomCategoryByCategory(messageBody.payload.rule.categoryId);
-    if (playerModel.gold < conf.minAmount) {
-      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomInvalid}, playerRouteKey);
-    }
-    if (playerModel.gold > conf.maxAmount) {
-      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldIsHigh}, playerRouteKey);
-    }
+    const playerRouteKey = `user.${messageBody.from}.${this.gameName}`;
 
     const roomId = await this.redisClient.lpopAsync('roomIds')
     if (!roomId) {
