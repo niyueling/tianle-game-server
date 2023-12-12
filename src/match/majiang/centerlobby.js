@@ -16,7 +16,6 @@ const Lobby = LobbyFactory({
     } else {
       room = new Room(rule);
     }
-    console.warn(room)
     room._id = id;
     return room
   },
