@@ -24,7 +24,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
 
   const handlers = {
     'room/reconnect': async (player, message) => {
-      const room = await service.roomRegister.getDisconnectedRoom(player._id, message.gameType);
+      const room = await service.roomRegister.getDisconnectedRoom(player._id.toString(), message.gameType);
       if (room) {
         player.currentRoom = room
         player.setGameName(message.gameType)
