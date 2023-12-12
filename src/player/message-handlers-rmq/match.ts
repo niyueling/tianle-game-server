@@ -70,6 +70,13 @@ export function createHandler(redisClient: AsyncRedisClient) {
       }
     },
 
+    'room/login': async (player, message) => {
+      const playerId = message.playerId
+      player.model = await PlayerModel.findOne({_id: playerId}).lean();
+
+      return player.sendMessage('room/loginReply', {ok: true, data: {model: player.model}})
+    },
+
     'room/create': async (player, message) => {
       const rule = message.rule
       const gameType = message.gameType
@@ -82,25 +89,6 @@ export function createHandler(redisClient: AsyncRedisClient) {
       return
     },
 
-    'room/createForClub': async (player, message) => {
-      const rule = message.rule
-
-      if (rule.share) {
-        if (player.model.gem < 1) {
-          player.sendMessage('room/join-fail', {reason: '钻石不足 无法创建房间。'})
-          return
-        }
-      } else {
-        if (player.model.gem < 4) {
-          player.sendMessage('room/join-fail', {reason: '钻石不足 无法创建房间。'})
-          return
-        }
-      }
-      const gameType = rule.type || 'paodekuai'
-      player.requestTo(lobbyQueueNameFrom(gameType), 'createClubRoom', {rule, gameType})
-      return
-    },
-
     'room/next-game': player => {
       player.requestToCurrentRoom('room/next-game')
     },
@@ -108,15 +96,21 @@ export function createHandler(redisClient: AsyncRedisClient) {
       player.requestToCurrentRoom('room/leave')
     },
 
+    // 用户准备
     'room/ready': player => {
       player.requestToCurrentRoom('room/ready', {})
     },
+
+    // 等待界面数据
     'room/awaitInfo': async player => {
       player.requestToCurrentRoom('room/awaitInfo', {})
     },
+
+    // 洗牌&开始游戏
     'room/shuffleDataApply': async player => {
       player.requestToCurrentRoom('room/shuffleDataApply', {})
     },
+
     'room/creatorStartGame': player => {
       player.requestToCurrentRoom('room/creatorStartGame', {})
     },
