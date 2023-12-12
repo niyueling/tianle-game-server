@@ -536,7 +536,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     if (!reconnectPlayer) {
       return
     }
-    this.broadcast('room/rejoin', await this.joinMessageFor(reconnectPlayer))
+    this.broadcast('room/rejoin', {ok: true, data: await this.joinMessageFor(reconnectPlayer)})
   }
 
   abstract async joinMessageFor(newJoinPlayer): Promise<any>

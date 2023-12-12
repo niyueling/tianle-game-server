@@ -566,7 +566,7 @@ class Room extends RoomBase {
   }
 
   async broadcastRejoin(reconnectPlayer) {
-    this.broadcast('room/rejoin', await this.joinMessageFor(reconnectPlayer))
+    this.broadcast('room/rejoin', {ok: true, data: await this.joinMessageFor(reconnectPlayer)})
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
