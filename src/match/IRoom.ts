@@ -218,7 +218,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
 
     this.readyPlayers.push(player._id)
-    this.broadcast('room/readyReady', {
+    this.broadcast('room/readyReply', {
       ok: true,
       data: {
         index: this.players.indexOf(player),

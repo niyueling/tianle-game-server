@@ -46,7 +46,6 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         return found;
       }
       const ret = await this.createRoom(true, roomId, rule);
-      console.warn(ret)
       ret.ownerId = playerId;
       this.publicRooms.set(roomId, ret);
       return ret;
