@@ -141,29 +141,6 @@ export default class RoomProxy {
             newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound})
             return
           }
-          if (room.gameRule.share || room.gameRule.winnerPay) {
-            // aa 或者，赢家支付
-            const fee = room.constructor.roomFee(room.game.rule)
-            if (playerModel.gem < fee) {
-              newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound})
-              return
-            }
-          }
-          if (room.gameRule.useClubGold) {
-            let clubMember = await ClubMember.findOne({club: room.clubId, member: messageBody.from});
-            if (!clubMember) {
-              // 检查联盟的战队
-              const club = await Club.findById(room.clubId);
-              if (!club) {
-                return newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound});
-              }
-              clubMember = await service.club.getUnionMember(club.shortId, messageBody.from);
-            }
-            if (!clubMember) {
-              return newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound});
-            }
-            newPlayer.model.clubGold = clubMember.clubGold;
-          }
 
           const alreadyInRoom = await service.roomRegister.roomNumber(messageBody.from, gameName)
 
@@ -183,21 +160,7 @@ export default class RoomProxy {
           await this.tryBestStore(rabbit.redisClient, room)
           return
         }
-        if (messageBody.name === 'dissolveClubRoom') {
-          const r = await room.clubOwnerdissolve()
-          if (r.ok) {
-            this.channel.publish('userCenter', `user.${messageBody.from}.${gameName}`,
-              new Buffer(JSON.stringify({payload: {info: `房间【${r.roomNum}】已解散`}, name: 'sc/showInfo'})))
-            // 解散成功
-            this.channel.publish('userCenter', `user.${messageBody.from}.${gameName}`,
-              new Buffer(JSON.stringify({payload: {info: `房间【${r.roomNum}】已解散`}, name: 'sc/dissolveSuccess'})))
-          } else {
-            this.channel.publish('userCenter', `user.${messageBody.from}.${gameName}`,
-              new Buffer(JSON.stringify({payload: {info: `房间【${r.roomNum}】游戏已经开始，无法解散`}, name: 'sc/showInfo'})))
-          }
-          await this.tryBestStore(rabbit.redisClient, room)
-          return
-        }
+
         if (messageBody.name === 'specialDissolve') {
           const r = await room.specialDissolve()
           if (r.ok) {

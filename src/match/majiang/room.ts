@@ -713,7 +713,7 @@ class Room extends RoomBase {
     }
     p.room = null
     if (!this.gameState) {
-      this.removeReadyPlayer(p._id)
+      this.removeReadyPlayer(p.model._id.toString())
     }
 
     if (this.dissolveTimeout) {
@@ -722,8 +722,8 @@ class Room extends RoomBase {
 
     this.broadcast('room/playerDisconnect', {index: this.players.indexOf(player)}, player.msgDispatcher)
     this.removePlayer(player)
-    this.disconnected.push([player._id, index])
-    this.emit('disconnect', p._id)
+    this.disconnected.push([player.model._id.toString(), index])
+    this.emit('disconnect', p.model._id.toString())
   }
 
   removeReadyPlayer(playerId: string) {
