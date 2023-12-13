@@ -540,13 +540,13 @@ class Room extends RoomBase {
   }
 
   async reconnect(reconnectPlayer) {
+    console.warn(reconnectPlayer)
+    console.warn(this.disconnected)
     const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer._id))
-    // if (disconnectedItem) {
     reconnectPlayer.room = this
     this.arrangePos(reconnectPlayer, true)
     this.mergeOrder()
     this.listen(reconnectPlayer);
-    // reconnectPlayer.on('disconnect', this.disconnectCallback)
     if (disconnectedItem) {
       this.removeDisconnected(disconnectedItem)
     }
