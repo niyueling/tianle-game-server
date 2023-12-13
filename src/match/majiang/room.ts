@@ -595,12 +595,13 @@ class Room extends RoomBase {
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
+      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString())) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
 
   indexOf(player) {
+    console.warn(this.playersOrder)
     return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder._id === player._id)
   }
 
