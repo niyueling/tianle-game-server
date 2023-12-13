@@ -1363,10 +1363,9 @@ class TableState implements Serializable {
   }
 
   listenRoom(room) {
-    console.log(333)
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       const player = this.players[index]
-      console.error("room connect ", player)
+      console.error("room connect ", this.room._id)
       player.reconnect(playerMsgDispatcher)
       player.sendMessage('game/reconnect', await this.generateReconnectMsg(index))
     })
@@ -1396,6 +1395,7 @@ class TableState implements Serializable {
 
   async generateReconnectMsg(index) {
     const player = this.players[index]
+    console.warn(player)
     let redPocketsData = null
     let validPlayerRedPocket = null
     if (this.room.isHasRedPocket) {
