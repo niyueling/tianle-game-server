@@ -72,19 +72,19 @@ export class BackendProcess {
 
       const unfinishedRoomId = await service.roomRegister.getDisconnectedRoom(messageBody.from, this.gameName);
       if (unfinishedRoomId) {
-        return this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
+        return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
       }
 
       const playerModel = await service.playerService.getPlayerPlainModel(messageBody.from)
       if (playerModel) {
         const alreadyInRoom = await service.roomRegister.roomNumber(playerModel._id, this.gameName)
         if (alreadyInRoom) {
-          return this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
+          return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
         }
 
         await this.joinPublicRoom(playerModel, messageBody);
       } else {
-        this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound}, playerRouteKey);
+        this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.userNotFound}, playerRouteKey);
       }
     }, {noAck: true})
 
@@ -154,7 +154,7 @@ export class BackendProcess {
 
     const roomId = await this.redisClient.lpopAsync('roomIds')
     if (!roomId) {
-      this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomInvalid}, playerRouteKey);
+      this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomInvalid}, playerRouteKey);
       return
     }
     // 创建规则(红包规则等)
@@ -162,10 +162,10 @@ export class BackendProcess {
     // 检查金豆
     const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule.categoryId);
     if (resp.isMoreRuby) {
-      return this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.goldInsufficient}, playerRouteKey);
+      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldInsufficient}, playerRouteKey);
     }
     if (resp.isUpper) {
-      return this.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.goldIsHigh}, playerRouteKey);
+      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldIsHigh}, playerRouteKey);
     }
     // 局数设为 99
     rule.juShu = -1;
