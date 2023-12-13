@@ -279,7 +279,7 @@ class Room extends RoomBase {
   }
 
   getPlayerById(id: string) {
-    return this.players.find(p => p && p._id === id)
+    return this.players.find(p => p && p.model._id.toString() === id)
   }
 
   privateRoomFee(rule): number {
@@ -294,8 +294,8 @@ class Room extends RoomBase {
   }
 
   initScore(player) {
-    if (this.scoreMap[player._id] === undefined) {
-      this.scoreMap[player._id] = this.game.rule.initScore
+    if (this.scoreMap[player.model._id.toString()] === undefined) {
+      this.scoreMap[player.model._id.toString()] = this.game.rule.initScore
     }
   }
 
