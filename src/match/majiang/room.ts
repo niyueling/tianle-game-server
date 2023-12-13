@@ -439,9 +439,6 @@ class Room extends RoomBase {
   async recordRoomScore(roomState = 'normal'): Promise<any> {
     const players = Object.keys(this.playerGainRecord)
 
-    // const scores = this.playersOrder.map(player => ({
-    //
-    // }))
     const scores = [];
     this.playersOrder.forEach(player => {
       if (player) {
