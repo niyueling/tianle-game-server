@@ -1364,7 +1364,6 @@ class TableState implements Serializable {
 
   listenRoom(room) {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
-
       const player = this.players[index]
       console.error("room connect ", player)
       player.reconnect(playerMsgDispatcher)
