@@ -551,7 +551,6 @@ class Room extends RoomBase {
     }
     // Fixme the index may be wrong
     const i = this.snapshot.findIndex(p => p.model._id.toString() === reconnectPlayer.model._id.toString())
-    console.warn(reconnectPlayer, i)
     this.emit('reconnect', reconnectPlayer, i)
     await this.broadcastRejoin(reconnectPlayer)
     if (this.dissolveTimeout) {
