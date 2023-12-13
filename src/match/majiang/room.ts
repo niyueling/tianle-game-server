@@ -250,7 +250,7 @@ class Room extends RoomBase {
     player.on('disconnect', this.disconnectCallback)
     player.on('game/disableRobot', async () => {
       if (this.robotManager) {
-        this.robotManager.disableRobot(player._id);
+        this.robotManager.disableRobot(player.model._id.toString());
       }
     })
   }
@@ -368,7 +368,7 @@ class Room extends RoomBase {
   }
 
   getScore(player) {
-    return this.scoreMap[player._id]
+    return this.scoreMap[player.model._id.toString()]
   }
 
   async recordGameRecord(table, states) {
@@ -581,7 +581,7 @@ class Room extends RoomBase {
       zhuangCounter: this.zhuangCounter,
       juIndex: this.game.juIndex,
       readyPlayers: this.readyPlayers.map(playerId => {
-        const readyPlayer = this.inRoomPlayers.find(p => p._id === playerId)
+        const readyPlayer = this.inRoomPlayers.find(p => p.model._id.toString() === playerId)
         return this.players.indexOf(readyPlayer)
       }),
       disconnectedPlayers: this.disconnected.map(item => this.indexOf({_id: item[0]})),
@@ -601,8 +601,7 @@ class Room extends RoomBase {
   }
 
   indexOf(player) {
-    console.warn(this.playersOrder)
-    return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder._id === player._id)
+    return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder.model._id.toString() === player.model._id.toString())
   }
 
   async join(newJoinPlayer) {
@@ -932,7 +931,7 @@ class Room extends RoomBase {
 
   updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer) {
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === reconnectPlayer.model._id
+      return x._id === reconnectPlayer.model._id.toString()
     })
     if (item) {
       if (item.type === 'agree_offline') {
