@@ -540,9 +540,10 @@ class Room extends RoomBase {
   }
 
   async reconnect(reconnectPlayer) {
-    console.warn(reconnectPlayer)
+    console.warn(reconnectPlayer.model._id.toString())
     console.warn(this.disconnected)
-    const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer._id))
+    console.warn(this.snapshot)
+    const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer.model._id.toString()))
     reconnectPlayer.room = this
     this.arrangePos(reconnectPlayer, true)
     this.mergeOrder()
@@ -555,7 +556,7 @@ class Room extends RoomBase {
       await this.announcePlayerJoin(reconnectPlayer)
     }
     // Fixme the index may be wrong
-    const i = this.snapshot.findIndex(p => p._id === reconnectPlayer._id)
+    const i = this.snapshot.findIndex(p => p._id === reconnectPlayer.model._id.toString())
     this.emit('reconnect', reconnectPlayer, i)
     await this.broadcastRejoin(reconnectPlayer)
     if (this.dissolveTimeout) {
