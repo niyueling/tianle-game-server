@@ -1364,9 +1364,9 @@ class TableState implements Serializable {
 
   listenRoom(room) {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
-      const player = this.players[index]
+      const player = this.players[index];
       console.error("room connect ", this.room._id)
-      player.reconnect(playerMsgDispatcher)
+      player.reconnect(playerMsgDispatcher);
       player.sendMessage('game/reconnect', await this.generateReconnectMsg(index))
     })
 
@@ -1430,7 +1430,6 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn(this.state, "state")
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da]
@@ -1514,8 +1513,6 @@ class TableState implements Serializable {
       default:
         break
     }
-
-    console.warn(pushMsg, "pushMsg")
 
     return pushMsg
   }
