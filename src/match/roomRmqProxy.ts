@@ -275,11 +275,6 @@ export default class RoomProxy {
             return
           }
 
-          // if (room.rule.ro.useClubGold) {
-            // const clubMember = await ClubMember.findOne({club: room.clubId, member: messageBody.from});
-            // playerModel.clubGold = clubMember.clubGold;
-          // }
-
           const newPlayer = new PlayerRmqProxy({
             ...playerModel,
             _id: messageBody.from,

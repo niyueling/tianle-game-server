@@ -213,7 +213,7 @@ export class PublicRoom extends Room {
   async reconnect(reconnectPlayer) {
     // 检查最少金豆是否够
     const resp = await service.gameConfig.rubyRequired(
-      reconnectPlayer.model._id,
+      reconnectPlayer.model._id.toString(),
       this.gameRule.categoryId);
     if (resp.isNeedRuby) {
       // 等待金豆补充，退出房间
