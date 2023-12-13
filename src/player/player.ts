@@ -347,8 +347,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
         try {
           const messageBody = JSON.parse(message.content.toString())
 
-          logger.info(`from ${gameName} [${this.currentRoom}] to ${this._id} message name ${messageBody.name},`
-            + `cmd ${messageBody.cmd}`)
+          logger.info(`from ${gameName} [${this.currentRoom}] to ${this._id} message ${JSON.stringify(messageBody)}`)
           if (messageBody.type === 'cmd' && messageBody.cmd === 'leave' && this.socketId !== messageBody.sid) {
             this.socket.close()
             this.socket.terminate()
