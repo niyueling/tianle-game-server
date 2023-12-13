@@ -1416,7 +1416,7 @@ class TableState implements Serializable {
       redPocketsData,
       validPlayerRedPocket,
     }
-    console.warn(pushMsg, "pushMsg")
+
     let msg;
     for (let i = 0; i < this.players.length; i++) {
       if (i === index) {
@@ -1429,8 +1429,8 @@ class TableState implements Serializable {
         pushMsg.status.push(msg)
       }
     }
-    console.warn(pushMsg, "msg")
 
+    console.warn(this.state, "state")
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da]
@@ -1514,6 +1514,8 @@ class TableState implements Serializable {
       default:
         break
     }
+
+    console.warn(pushMsg, "pushMsg")
 
     return pushMsg
   }
