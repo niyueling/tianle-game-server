@@ -349,7 +349,7 @@ class PlayerState implements Serializable {
     this.recorder.recordUserEvent(this, 'moPai', card)
 
     if (!this.hadQiaoXiang) {
-      for (let i = 1; i < 38; i++) {
+      for (let i = 1; i < 53; i++) {
         if (this.gangForbid.indexOf(i) >= 0) continue
 
         if (i === this.caiShen) continue
