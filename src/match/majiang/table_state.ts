@@ -1688,15 +1688,15 @@ class TableState implements Serializable {
       player.cancelTimeout()
       player.sendMessage('game/daReply', {ok: true, data: card})
 
-      if (player.isTing()) {
-        if (player.events[Enums.anGang] && player.events[Enums.anGang].length > 0) {
-          player.sendMessage('game/showAnGang',
-            {index, cards: player.events[Enums.anGang]})
-          this.room.broadcast('game/oppoShowAnGang',
-            {index, cards: player.events[Enums.anGang]}
-            , player.msgDispatcher)
-        }
-      }
+      // if (player.isTing()) {
+      //   if (player.events[Enums.anGang] && player.events[Enums.anGang].length > 0) {
+      //     player.sendMessage('game/showAnGang',
+      //       {index, cards: player.events[Enums.anGang]})
+      //     this.room.broadcast('game/oppoShowAnGang',
+      //       {index, cards: player.events[Enums.anGang]}
+      //       , player.msgDispatcher)
+      //   }
+      // }
     } else {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard})
       logger.info('da player-%s card:%s 不能打这张牌', index, card)
@@ -1734,6 +1734,7 @@ class TableState implements Serializable {
       const msg = xiajia.takeCard(this.turn, newCard)
 
       if (!msg) {
+        console.error("consume card error msg ", msg)
         return;
       }
       this.state = stateWaitDa;
