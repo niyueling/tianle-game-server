@@ -90,7 +90,7 @@ export class RobotManager extends NewRobotManager {
         }
         break;
       } else {
-        console.warn("guo")
+        console.warn("guo", playerId)
         // 过
         if (this.isPlayerGuo(playerId)) {
           await proxy.guo();
@@ -101,6 +101,7 @@ export class RobotManager extends NewRobotManager {
 
   // 打
   isPlayerDa(playerId) {
+    console.warn(this.room.gameState.stateData[Enums.da])
     return this.room.gameState.stateData[Enums.da] &&
       playerId === this.room.gameState.stateData[Enums.da]._id
   }
