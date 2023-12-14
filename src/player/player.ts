@@ -346,8 +346,8 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
         if (!message) return
         try {
           const messageBody = JSON.parse(message.content.toString())
+          logger.info(`from ${gameName} [${this.currentRoom}] to ${this._id} message name ${messageBody.name} cmd ${messageBody.cmd}`)
 
-          logger.info(`from ${gameName} [${this.currentRoom}] to ${this._id} message ${JSON.stringify(messageBody)}`)
           if (messageBody.type === 'cmd' && messageBody.cmd === 'leave' && this.socketId !== messageBody.sid) {
             this.socket.close()
             this.socket.terminate()
@@ -389,25 +389,8 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
         }
       }, {noAck: true})
 
-      // this.channel.publish('userCenter', `user.${this._id}`, new Buffer(
-      //   JSON.stringify({type: 'cmd', cmd: 'leave', sid: this.socketId})))
-
     } catch (e) {
       logger.error('consume error', this.socketId, e)
-    }
-  }
-
-  async listenClub(clubId = -1) {
-    if (this.channel && clubId) {
-      await this.channel.assertExchange(`exClubCenter`, 'topic', {durable: false})
-      await this.channel.bindQueue(this.myQueue, `exClubCenter`, `club:${this.gameName}:${clubId}`)
-      this.clubId = clubId;
-    }
-  }
-
-  async cancelListenClub(clubId = -1) {
-    if (this.channel && clubId) {
-      await this.channel.unbindQueue(this.myQueue, `exClubCenter`, `club:${this.gameName}:${clubId}`)
     }
   }
 

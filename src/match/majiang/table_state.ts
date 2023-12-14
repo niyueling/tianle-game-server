@@ -650,53 +650,7 @@ class TableState implements Serializable {
     player.on(Enums.da, async (turn, card) => {
       await this.onPlayerDa(player, turn, card);
     })
-    player.on(Enums.chi, (turn, card, otherCard1, otherCard2) => {
-      this.logger.info('chi player-%s ', index)
 
-      if (this.turn !== turn) {
-        player.sendMessage('ChiReply', {errorCode: 1})
-        return
-      }
-
-      if (this.state !== stateWaitAction) {
-        player.sendMessage('ChiReply', {errorCode: 6})
-        return
-      }
-      if (this.stateData[Enums.chi] !== player) {
-        player.sendMessage('ChiReply', {errorCode: 3})
-        return
-      }
-
-      this.actionResolver.requestAction(player, 'chi', () => {
-        const ok = player.chiPai(card, otherCard1, otherCard2, this.lastDa);
-        if (ok) {
-          this.turn++;
-          this.state = stateWaitDa;
-          this.stateData = {da: player};
-          const gangSelection = player.getAvailableGangs()
-
-          player.sendMessage('ChiReply', {
-            errorCode: 0, turn: this.turn,
-            card, suit: [otherCard1, otherCard2],
-            gang: gangSelection.length > 0,
-            gangSelection,
-            forbidCards: player.forbidCards
-          });
-          this.room.broadcast('game/oppoChi', {
-            card,
-            turn,
-            index,
-            suit: [otherCard1, otherCard2]
-          }, player.msgDispatcher);
-        } else {
-          player.sendMessage('ChiReply', {errorCode: 4, msg: '吃不进'});
-        }
-      }, () => {
-        player.sendMessage('ChiReply', {errorCode: 4, msg: '优先级不足'});
-      })
-
-      this.actionResolver.tryResolve()
-    })
     player.on(Enums.peng, (turn, card) => {
       if (this.turn !== turn) {
         logger.info('peng player-%s this.turn:%s turn:%s', index, this.turn, turn)
