@@ -78,7 +78,7 @@ export class PublicRoom extends Room {
   // 更新 ruby
   async addScore(playerId, v) {
     const findPlayer = this.players.find(player => {
-      return player && player.model._id === playerId
+      return player && player.model._id.toString() === playerId
     })
     // 添加倍率
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
@@ -89,15 +89,8 @@ export class PublicRoom extends Room {
         minAmount: 10000,
       }
     }
-    let restoreRuby = v
-    if (!conf.isOpenDouble) {
-      // 不让翻
-      restoreRuby = 0
-    }
-    await service.playerService.updateRoomRuby(this._id.toString(), findPlayer.model._id, findPlayer.model.shortId,
-      restoreRuby)
     const model = await this.updatePlayer(playerId, v);
-    if (findPlayer.isPublicRobot) {
+    if (findPlayer && findPlayer.isPublicRobot) {
       // 金豆机器人,自动加金豆
       if (model.ruby < conf.minAmount) {
         // 金豆不足，添加金豆
