@@ -1765,13 +1765,13 @@ class TableState implements Serializable {
       const j = (from + i) % this.players.length;
       const p = this.players[j]
 
-      const msg = this.actionResolver.allOptions(p)
+      // const msg = this.actionResolver.allOptions(p)
 
-      if (msg) {
-        p.record('choice', card, msg)
-        // 碰、杠等
-        p.sendMessage('game/canDoSomething', {ok: true, data: msg})
-      }
+      // if (msg) {
+      //   p.record('choice', card, msg)
+      //   // 碰、杠等
+      //   p.sendMessage('game/canDoSomething', {ok: true, data: msg})
+      // }
     }
 
     if (check[Enums.pengGang] || check[Enums.hu]) {
