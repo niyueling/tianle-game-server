@@ -1703,8 +1703,8 @@ class TableState implements Serializable {
       return
     }
 
-    from = this.atIndex(this.lastDa)
-    this.turn++
+    from = this.atIndex(this.lastDa);
+    this.turn++;
 
     let check: HuCheck = {card}
     for (let j = 1; j < this.players.length; j++) {
