@@ -807,9 +807,6 @@ class Room extends RoomBase {
   }
 
   broadcast(name, message, except?) {
-    if (name === "game/oppoDa") {
-      console.warn(name, message, except);
-    }
     for (let i = 0; i < this.players.length; ++i) {
       const player = this.players[i]
       if (player && player !== except) {
