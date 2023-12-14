@@ -1429,6 +1429,7 @@ class TableState implements Serializable {
         pushMsg.status.push(msg)
       }
     }
+    console.warn(this.state);
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da]
