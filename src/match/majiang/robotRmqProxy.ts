@@ -10,7 +10,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
 
   // 出牌
   async playCard() {
-    console.log(123123)
+    console.log(777)
     if (this.playerState) {
       // 从牌堆中取出合适的牌
       const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
