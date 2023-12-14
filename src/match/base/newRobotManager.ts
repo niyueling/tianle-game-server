@@ -131,7 +131,6 @@ export class NewRobotManager {
       return;
     }
 
-    console.warn(777);
     await this.readyAndPlay();
   }
 
@@ -558,7 +557,7 @@ export class NewRobotManager {
   }
 
   async readyAndPlay() {
-    console.warn(this.model.step);
+    console.warn(this.model.step, this.model.step === RobotStep.running);
     let isOk;
     if (this.model.step === RobotStep.start) {
       isOk = await this.isHumanPlayerReady();
