@@ -640,7 +640,7 @@ class Room extends RoomBase {
   }
 
   async nextGame(thePlayer) {
-    if (this.game.juShu <= 0) {
+    if (this.game.juShu <= 0 && !this.isPublic) {
       console.warn("room error start")
       thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
       return
