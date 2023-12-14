@@ -1732,7 +1732,7 @@ class TableState implements Serializable {
     if (ok) {
       this.lastDa = player
       player.cancelTimeout()
-      player.sendMessage('game/daReply', {ok: true, data: {}})
+      player.sendMessage('game/daReply', {ok: true, data: card})
 
       if (player.isTing()) {
         if (player.events[Enums.anGang] && player.events[Enums.anGang].length > 0) {
@@ -1744,7 +1744,7 @@ class TableState implements Serializable {
         }
       }
     } else {
-      player.sendMessage('DaReply', {ok: false, info: TianleErrorCode.notDaThisCard})
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard})
       logger.info('da player-%s card:%s 不能打这张牌', index, card)
       return
     }
