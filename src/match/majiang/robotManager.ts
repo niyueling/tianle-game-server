@@ -26,7 +26,7 @@ export class RobotManager extends NewRobotManager {
     let proxy;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
-      if (this.isPlayerDa(proxy.model._id.toString()) || this.isPlayerGuo(proxy.model._id.toString())) {
+      if (this.isPlayerDa(proxy.model._id.toString(), keys) || this.isPlayerGuo(proxy.model._id.toString())) {
         if (this.waitInterval[key]) {
           this.waitInterval[key]++;
         } else {
@@ -81,8 +81,8 @@ export class RobotManager extends NewRobotManager {
       } else if (this.isPlayerChoice(playerId)) {
         console.warn("choice")
         await proxy.choice(this.isPlayerChoice(playerId))
-      } else if (this.isPlayerDa(playerId)) {
-        console.warn("da", this.waitInterval[key], this.getWaitSecond())
+      } else if (this.isPlayerDa(playerId, keys)) {
+        // console.warn("da", this.waitInterval[key], this.getWaitSecond())
         if (this.waitInterval[key] >= this.getWaitSecond()) {
           await proxy.playCard();
           // 重新计时
@@ -100,8 +100,8 @@ export class RobotManager extends NewRobotManager {
   }
 
   // 打
-  isPlayerDa(playerId) {
-    if (this.room._id === 929222) console.warn(this.room.gameState.stateData[Enums.da]._id, playerId)
+  isPlayerDa(playerId, keys) {
+    if (this.room._id === 929222) console.warn(this.room.gameState.stateData[Enums.da]._id, playerId, keys)
     return this.room.gameState.stateData[Enums.da] &&
       playerId === this.room.gameState.stateData[Enums.da]._id.toString()
   }
