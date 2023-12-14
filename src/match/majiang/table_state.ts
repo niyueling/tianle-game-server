@@ -1785,7 +1785,7 @@ class TableState implements Serializable {
       this.state = stateWaitDa;
       this.stateData = {da: xiajia, card: newCard, msg};
       const sendMsg = {index: this.players.indexOf(xiajia)}
-      this.room.broadcast('game/oppoTakeCard', sendMsg, xiajia.msgDispatcher)
+      this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
       logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg))
     })
 
@@ -1805,7 +1805,7 @@ class TableState implements Serializable {
       }
     }
 
-    this.room.broadcast('game/oppoDa', {index, card}, player.msgDispatcher)
+    this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
     for (let i = 1; i < this.players.length; i++) {
 
       const j = (from + i) % this.players.length;
@@ -1816,7 +1816,7 @@ class TableState implements Serializable {
       if (msg) {
         p.record('choice', card, msg)
         // 碰、杠等
-        p.sendMessage('game/canDoSomething', msg)
+        p.sendMessage('game/canDoSomething', {ok: true, data: msg})
       }
     }
 
