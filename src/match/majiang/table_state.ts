@@ -1744,21 +1744,21 @@ class TableState implements Serializable {
       logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg))
     })
 
-    if (check[Enums.hu]) {
-      for (const p of check[Enums.hu]) {
-        this.actionResolver.appendAction(p, 'hu', p.huInfo)
-      }
-    }
-
-    if (check[Enums.pengGang]) {
-      if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
-      if (check[Enums.gang]) {
-        const p = check[Enums.gang]
-        const gangInfo = [card, p.getGangKind(card, p === player)]
-        p.gangForbid.push(card)
-        this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
-      }
-    }
+    // if (check[Enums.hu]) {
+    //   for (const p of check[Enums.hu]) {
+    //     this.actionResolver.appendAction(p, 'hu', p.huInfo)
+    //   }
+    // }
+    //
+    // if (check[Enums.pengGang]) {
+    //   if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
+    //   if (check[Enums.gang]) {
+    //     const p = check[Enums.gang]
+    //     const gangInfo = [card, p.getGangKind(card, p === player)]
+    //     p.gangForbid.push(card)
+    //     this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
+    //   }
+    // }
 
     this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
     for (let i = 1; i < this.players.length; i++) {
@@ -1775,11 +1775,11 @@ class TableState implements Serializable {
       // }
     }
 
-    if (check[Enums.pengGang] || check[Enums.hu]) {
-      // this.state = stateWaitAction;
-      this.stateData = check;
-      this.stateData.hangUp = [];
-    }
+    // if (check[Enums.pengGang] || check[Enums.hu]) {
+    //   // this.state = stateWaitAction;
+    //   this.stateData = check;
+    //   this.stateData.hangUp = [];
+    // }
 
     this.actionResolver.tryResolve()
   }
