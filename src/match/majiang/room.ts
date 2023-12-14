@@ -377,7 +377,7 @@ class Room extends RoomBase {
 
     for (let index = 0; index < states.length; index++) {
       const state = states[index]
-      const id = state.model._id
+      const id = state.model._id.toString()
       const score = state.score
       if (club && this.gameRule.useClubGold) {
         state.model.clubGold += score;

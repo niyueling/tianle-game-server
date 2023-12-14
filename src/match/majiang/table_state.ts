@@ -1860,7 +1860,7 @@ class TableState implements Serializable {
       // 配置失败
       console.error('invalid room level');
     } else {
-      times = conf.minScore;
+      times = conf.maxMultiple;
     }
     let winRuby = 0;
     let lostRuby = 0;
@@ -1873,9 +1873,9 @@ class TableState implements Serializable {
           winRuby += p.balance;
           winnerList.push(p);
         } else {
-          const model = await service.playerService.getPlayerModel(p.model._id);
-          if (model.ruby < -p.balance) {
-            p.balance = -model.ruby;
+          const model = await service.playerService.getPlayerModel(p.model._id.toString());
+          if (model.gold < -p.balance) {
+            p.balance = -model.gold;
             p.isBroke = true;
           }
           lostRuby += p.balance;

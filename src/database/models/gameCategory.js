@@ -23,7 +23,7 @@ const schema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    //底注
+    // 底注
     Ante: {
         type: Number,
         required: true,
