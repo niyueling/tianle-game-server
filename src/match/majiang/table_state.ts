@@ -1862,6 +1862,7 @@ class TableState implements Serializable {
     } else {
       times = conf.maxMultiple;
     }
+
     let winRuby = 0;
     let lostRuby = 0;
     const winnerList = [];
@@ -1890,7 +1891,7 @@ class TableState implements Serializable {
         }
       }
     }
-    console.log('win ruby', winRuby, 'lost ruby', lostRuby);
+    console.log('win ruby', winRuby, 'lost ruby', lostRuby, "conf.maxMultiple", conf.maxMultiple, "this.rule.diFen", this.rule.diFen);
     // 平分奖励
     if (winRuby > 0) {
       for (const p of winnerList) {
