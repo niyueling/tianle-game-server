@@ -99,7 +99,6 @@ export class NewRobotManager {
 
   // 金豆房
   async publicRoomMonit() {
-    console.warn(333);
     let isOk;
     await this.updatePublicRobotTime();
     await this.updateOfflineTime();
@@ -107,7 +106,6 @@ export class NewRobotManager {
     await this.addOfflineRobot();
     await this.addRobotForPublicRoom();
 
-    console.warn(444);
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby) {
       isOk = await this.updateNoRuby();
@@ -120,7 +118,6 @@ export class NewRobotManager {
       await this.save();
     }
 
-    console.warn(555);
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐
@@ -128,7 +125,6 @@ export class NewRobotManager {
       return;
     }
 
-    console.warn(666);
     // 检查是不是全是机器人
     isOk = await this.dissolvePublicRoom();
     if (isOk) {
@@ -562,7 +558,7 @@ export class NewRobotManager {
   }
 
   async readyAndPlay() {
-    console.warn(111);
+    console.warn(this.model.step);
     let isOk;
     if (this.model.step === RobotStep.start) {
       isOk = await this.isHumanPlayerReady();
