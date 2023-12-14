@@ -557,7 +557,6 @@ export class NewRobotManager {
   }
 
   async readyAndPlay() {
-    console.warn(this.model.step, this.model.step === RobotStep.running);
     let isOk;
     if (this.model.step === RobotStep.start) {
       isOk = await this.isHumanPlayerReady();
@@ -571,6 +570,7 @@ export class NewRobotManager {
       await this.robotPlayerReady();
     }
     if (this.model.step === RobotStep.running) {
+      console.warn("playcard")
       // 游戏未结束
       await this.playCard();
     }
