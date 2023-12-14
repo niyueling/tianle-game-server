@@ -53,10 +53,13 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
+    console.log(!this.room.gameState)
     if (!this.room.gameState) {
       return;
     }
+
     const keys = Object.keys(this.disconnectPlayers);
+    console.warn(keys);
     let proxy;
     let playerId;
     for (const key of keys) {
