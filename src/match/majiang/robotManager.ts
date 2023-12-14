@@ -101,9 +101,9 @@ export class RobotManager extends NewRobotManager {
 
   // 打
   isPlayerDa(playerId) {
-    console.warn(this.room.gameState.stateData[Enums.da])
+    console.warn(this.room.gameState.stateData[Enums.da]._id, playerId)
     return this.room.gameState.stateData[Enums.da] &&
-      playerId === this.room.gameState.stateData[Enums.da]._id
+      playerId === this.room.gameState.stateData[Enums.da]._id.toString()
   }
 
   isPlayerBuGang(player) {
