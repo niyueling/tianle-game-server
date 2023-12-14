@@ -1212,7 +1212,7 @@ class TableState implements Serializable {
         const i = states.indexOf(state1);
         state1.model.played += 1
         state1.score = this.players[i].balance * this.rule.diFen
-        await this.room.addScore(state1.model._id, state1.score)
+        await this.room.addScore(state1.model._id.toString(), state1.score)
       }
     }
 
@@ -1278,7 +1278,7 @@ class TableState implements Serializable {
         } else {
           state1.score = this.players[i].balance * this.rule.diFen
         }
-        await this.room.addScore(state1.model._id, state1.score)
+        await this.room.addScore(state1.model._id.toString(), state1.score)
       }
 
       await this.room.recordGameRecord(this, states)

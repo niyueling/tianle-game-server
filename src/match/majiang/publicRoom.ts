@@ -105,8 +105,6 @@ export class PublicRoom extends Room {
     if (findPlayer) {
       findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
       findPlayer.sendMessage('resource/update', pick(findPlayer.model, ['gold', 'gem', 'ruby']))
-    } else {
-      console.warn(this.players, playerId);
     }
 
   }

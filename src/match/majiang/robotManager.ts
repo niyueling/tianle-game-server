@@ -12,7 +12,7 @@ export class RobotManager extends NewRobotManager {
   async createProxy(playerId) {
     const model = await service.playerService.getPlayerPlainModel(playerId);
     if (!model) {
-      console.log('no model for', playerId)
+      console.error('no model for', playerId)
     }
     return new MJRobotRmqProxy(model)
   }
@@ -26,7 +26,7 @@ export class RobotManager extends NewRobotManager {
     let proxy;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
-      if (this.isPlayerDa(proxy.model._id) || this.isPlayerGuo(proxy.model._id)) {
+      if (this.isPlayerDa(proxy.model._id.toString()) || this.isPlayerGuo(proxy.model._id.toString())) {
         if (this.waitInterval[key]) {
           this.waitInterval[key]++;
         } else {
@@ -42,7 +42,7 @@ export class RobotManager extends NewRobotManager {
     let flag = false;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
-      if (proxy.model._id === player._id) {
+      if (proxy.model._id.toString() === player._id.toString()) {
         flag = true;
         break;
       }
@@ -61,7 +61,7 @@ export class RobotManager extends NewRobotManager {
     let playerId;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
-      playerId = proxy.model._id;
+      playerId = proxy.model._id.toString();
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
