@@ -1741,7 +1741,7 @@ class TableState implements Serializable {
       this.stateData = {da: xiajia, card: newCard, msg};
       const sendMsg = {index: this.players.indexOf(xiajia)}
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg))
+      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
     })
 
     // if (check[Enums.hu]) {
