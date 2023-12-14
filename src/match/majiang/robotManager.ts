@@ -91,6 +91,7 @@ export class RobotManager extends NewRobotManager {
         }
         break;
       } else {
+        console.warn("guo")
         // 过
         if (this.isPlayerGuo(playerId)) {
           await proxy.guo();
