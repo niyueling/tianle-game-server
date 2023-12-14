@@ -469,6 +469,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   // 开始下一局
   async nextGame(thePlayer): Promise<boolean> {
     if (!this.isPublic && this.game.juShu <= 0) {
+      console.warn("IRoom error start")
       thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
       return
     }
