@@ -63,7 +63,6 @@ export class RobotManager extends NewRobotManager {
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
       playerId = proxy.model._id.toString();
-      console.warn(proxy.model)
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
