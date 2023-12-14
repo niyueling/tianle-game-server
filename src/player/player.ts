@@ -351,8 +351,11 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
           if (messageBody.type === 'cmd' && messageBody.cmd === 'leave' && this.socketId !== messageBody.sid) {
             this.socket.close()
             this.socket.terminate()
-            await this.channel.cancel(consumerTag)
-            return this.channel.close()
+
+            if (this.channel) {
+              await this.channel.cancel(consumerTag)
+              return this.channel.close()
+            }
           }
 
           if (messageBody.name === 'room/joinReply') {
@@ -361,8 +364,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
             }
 
             this.currentRoom = messageBody.payload.data._id
-            // // 不加 await，先发 room/join
-            // this.cancelListenClub(this.clubId)
           }
 
           if (messageBody.name === 'newClubRoomCreated') {
