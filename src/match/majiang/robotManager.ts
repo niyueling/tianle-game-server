@@ -53,7 +53,7 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    console.log(999)
+    console.warn("gameState", this.room.gameState)
     if (!this.room.gameState) {
       return;
     }

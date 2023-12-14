@@ -552,8 +552,7 @@ export class NewRobotManager {
 
   // 出牌
   async playCard() {
-    console.log(888)
-    console.warn("gameState", this.room.gameState)
+
     if (!this.room.gameState) {
       return;
     }
