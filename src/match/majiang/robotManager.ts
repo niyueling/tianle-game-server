@@ -53,18 +53,17 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    console.log(!this.room.gameState)
     if (!this.room.gameState) {
       return;
     }
 
     const keys = Object.keys(this.disconnectPlayers);
-    console.warn(keys);
     let proxy;
     let playerId;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
       playerId = proxy.model._id.toString();
+      console.warn(proxy.model)
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
