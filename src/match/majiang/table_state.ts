@@ -1744,21 +1744,21 @@ class TableState implements Serializable {
       logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
     })
 
-    // if (check[Enums.hu]) {
-    //   for (const p of check[Enums.hu]) {
-    //     this.actionResolver.appendAction(p, 'hu', p.huInfo)
-    //   }
-    // }
-    //
-    // if (check[Enums.pengGang]) {
-    //   if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
-    //   if (check[Enums.gang]) {
-    //     const p = check[Enums.gang]
-    //     const gangInfo = [card, p.getGangKind(card, p === player)]
-    //     p.gangForbid.push(card)
-    //     this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
-    //   }
-    // }
+    if (check[Enums.hu]) {
+      for (const p of check[Enums.hu]) {
+        this.actionResolver.appendAction(p, 'hu', p.huInfo)
+      }
+    }
+
+    if (check[Enums.pengGang]) {
+      if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
+      if (check[Enums.gang]) {
+        const p = check[Enums.gang]
+        const gangInfo = [card, p.getGangKind(card, p === player)]
+        p.gangForbid.push(card)
+        this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
+      }
+    }
 
     this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
     for (let i = 1; i < this.players.length; i++) {
@@ -1766,20 +1766,20 @@ class TableState implements Serializable {
       const j = (from + i) % this.players.length;
       const p = this.players[j]
 
-      // const msg = this.actionResolver.allOptions(p)
+      const msg = this.actionResolver.allOptions(p)
 
-      // if (msg) {
-      //   p.record('choice', card, msg)
-      //   // 碰、杠等
-      //   p.sendMessage('game/canDoSomething', {ok: true, data: msg})
-      // }
+      if (msg) {
+        p.record('choice', card, msg)
+        // 碰、杠等
+        p.sendMessage('game/canDoSomething', {ok: true, data: msg})
+      }
     }
 
-    // if (check[Enums.pengGang] || check[Enums.hu]) {
-    //   // this.state = stateWaitAction;
-    //   this.stateData = check;
-    //   this.stateData.hangUp = [];
-    // }
+    if (check[Enums.pengGang] || check[Enums.hu]) {
+      this.state = stateWaitAction;
+      this.stateData = check;
+      this.stateData.hangUp = [];
+    }
 
     this.actionResolver.tryResolve()
   }
@@ -1869,7 +1869,7 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       if (p) {
-        p.balance *= times * this.rule.diFen;
+        p.balance *= times * conf.Ante;
         if (p.balance > 0) {
           winRuby += p.balance;
           winnerList.push(p);
@@ -1891,7 +1891,7 @@ class TableState implements Serializable {
         }
       }
     }
-    console.log('win ruby', winRuby, 'lost ruby', lostRuby, "conf.maxMultiple", conf.maxMultiple, "this.rule.diFen", this.rule.diFen);
+    console.log('win ruby', winRuby, 'lost ruby', lostRuby, "conf.maxMultiple", conf.maxMultiple, "this.rule.diFen", conf.Ante);
     // 平分奖励
     if (winRuby > 0) {
       for (const p of winnerList) {

@@ -157,7 +157,7 @@ export class NewRobotManager {
   // 默认出牌间隔 5s
   getWaitSecond() {
     if (this.room.gameRule.isPublic) {
-      return Math.floor(Math.random() * 2 + 2)
+      return Math.floor(Math.random() * 6 + 2)
     }
     return config.game.waitDelayTime;
   }
@@ -291,9 +291,6 @@ export class NewRobotManager {
       console.log('decrease room count');
       await service.roomRegister.decrPublicRoomCount(this.room.gameRule.gameType, this.room.gameRule.categoryId);
     }
-    // for (const key of Object.keys(this.disconnectPlayers)) {
-    //   delete this.disconnectPlayers[key]
-    // }
     // 删除 mongo
     if (this.model) {
       await this.model.remove();
@@ -310,10 +307,6 @@ export class NewRobotManager {
   isProxyOnline(playerId) {
     return this.room.players.filter(x => x && x.model && x.model._id === playerId).length > 0;
   }
-
-  // isHumanPlayerOnline(playerId) {
-  //   return this.room.players.filter(x => x && x.model && x.model._id === playerId && !x.isRobot()).length > 0;
-  // }
 
   isHumanPlayerOffline(proxy) {
     const isOffline = this.room.disconnected.filter(value => value[0] === proxy.model._id).length > 0;
