@@ -17,7 +17,7 @@ module.exports = {
     name: "PC"
   },
   redis: {
-    "port": 6379,
+    "port": 8389,
     "host": "localhost",
   },
   extKey: "0a06ae02-5594-40ec-9979-a278c0f7ae66",
