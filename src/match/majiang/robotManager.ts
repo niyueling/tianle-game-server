@@ -66,22 +66,23 @@ export class RobotManager extends NewRobotManager {
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
-      if (isHu.hu) {
-        console.warn("hu")
-        await proxy.choice(Enums.hu)
-      } else if (AnGangIndex) {
-        console.warn("angang")
-        await proxy.gang(Enums.anGang, AnGangIndex)
-      } else if (buGangIndex) {
-        console.warn("bugang")
-        await proxy.gang(Enums.buGang, buGangIndex)
-      } else if (this.isPlayerGang(playerId)) {
-        console.warn("gang")
-        await proxy.gang(this.isPlayerGang(playerId))
-      } else if (this.isPlayerChoice(playerId)) {
-        console.warn("choice")
-        await proxy.choice(this.isPlayerChoice(playerId))
-      } else if (this.isPlayerDa(playerId)) {
+      // if (isHu.hu) {
+      //   console.warn("hu")
+      //   await proxy.choice(Enums.hu)
+      // } else if (AnGangIndex) {
+      //   console.warn("angang")
+      //   await proxy.gang(Enums.anGang, AnGangIndex)
+      // } else if (buGangIndex) {
+      //   console.warn("bugang")
+      //   await proxy.gang(Enums.buGang, buGangIndex)
+      // } else if (this.isPlayerGang(playerId)) {
+      //   console.warn("gang")
+      //   await proxy.gang(this.isPlayerGang(playerId))
+      // } else if (this.isPlayerChoice(playerId)) {
+      //   console.warn("choice")
+      //   await proxy.choice(this.isPlayerChoice(playerId))
+      // } else
+        if (this.isPlayerDa(playerId)) {
         // console.warn("da", this.waitInterval[key], this.getWaitSecond())
         if (this.waitInterval[key] >= this.getWaitSecond()) {
           await proxy.playCard();
