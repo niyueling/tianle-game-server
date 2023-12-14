@@ -544,7 +544,6 @@ export class NewRobotManager {
       await this.robotPlayerReady();
     }
     if (this.model.step === RobotStep.running) {
-      console.warn("playcard")
       // 游戏未结束
       await this.playCard();
     }
