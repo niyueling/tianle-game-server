@@ -15,7 +15,7 @@ export class RobotRmqProxy extends PlayerRmqProxy {
   sendMessage(name: string, message: any) {
     if (message.info) {
       // 有状况的消息
-      console.log('on robot message', name, 'info', message.info, 'roomId', this.room._id, 'message', message);
+      console.log('on robot message', name, 'info', message.info, 'roomId', this.room._id, 'message', message, 'shortId', this.model.shortId);
     }
   }
 
