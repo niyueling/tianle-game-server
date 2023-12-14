@@ -1676,7 +1676,7 @@ class TableState implements Serializable {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError})
       logger.info('da player-%s card:%s 不能打牌', index, card)
       return
-    } else if (this.stateData[Enums.da]._id !== player._id) {
+    } else if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound})
       logger.info('da player-%s card:%s 不是您的回合', index, card)
       return
