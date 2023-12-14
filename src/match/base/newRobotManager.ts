@@ -391,33 +391,6 @@ export class NewRobotManager {
     }
   }
 
-  // 出牌
-  async playCard() {
-    console.warn(111222333)
-    console.warn("gameState", this.room.gameState)
-    if (!this.room.gameState) {
-      return;
-    }
-    const keys = Object.keys(this.disconnectPlayers);
-    let proxy;
-    let playerId;
-    for (const key of keys) {
-      proxy = this.disconnectPlayers[key];
-      playerId = proxy.model._id;
-      // console.log('currentPlayerStep', this.room.gameState.currentPlayerStep, 'proxy seat index', proxy.seatIndex)
-      const seatIndex = await this.getPlayerIndexByPlayerId(playerId)
-      if (seatIndex === this.room.gameState.currentPlayerStep) {
-        if (this.waitInterval[key] >= this.getWaitSecond()) {
-          await proxy.playCard();
-          // 重新计时
-          this.waitInterval[key] = 0;
-          console.log(playerId, 'play card', this.room._id)
-        }
-        break;
-      }
-    }
-  }
-
   async nextRound() {
     // 更新位置
     if (this.model.step !== RobotStep.running) {
@@ -574,6 +547,32 @@ export class NewRobotManager {
       console.warn("playcard")
       // 游戏未结束
       await this.playCard();
+    }
+  }
+
+  // 出牌
+  async playCard() {
+    console.warn("gameState", this.room.gameState)
+    if (!this.room.gameState) {
+      return;
+    }
+    const keys = Object.keys(this.disconnectPlayers);
+    let proxy;
+    let playerId;
+    for (const key of keys) {
+      proxy = this.disconnectPlayers[key];
+      playerId = proxy.model._id;
+      // console.log('currentPlayerStep', this.room.gameState.currentPlayerStep, 'proxy seat index', proxy.seatIndex)
+      const seatIndex = await this.getPlayerIndexByPlayerId(playerId)
+      if (seatIndex === this.room.gameState.currentPlayerStep) {
+        if (this.waitInterval[key] >= this.getWaitSecond()) {
+          await proxy.playCard();
+          // 重新计时
+          this.waitInterval[key] = 0;
+          console.log(playerId, 'play card', this.room._id)
+        }
+        break;
+      }
     }
   }
 
