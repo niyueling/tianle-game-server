@@ -1387,12 +1387,12 @@ class TableState implements Serializable {
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da]
-        console.warn(daPlayer._id.toString(), player._id.toString());
+        console.warn(this.stateData.msg);
         if (daPlayer._id.toString() === player._id.toString()) {
           pushMsg.current = {
             index,
             state: 'waitDa',
-            msg: this.stateData.msg,
+            msg: this.stateData.msg.data,
           }
         } else {
           pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'}
