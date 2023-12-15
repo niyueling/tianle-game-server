@@ -1789,20 +1789,20 @@ class TableState implements Serializable {
     console.log('guo  player %s card %s', index, playCard)
     // const from = this.atIndex(this.lastDa)
     if (this.turn !== playTurn) {
-      player.sendMessage('GuoReply', {errorCode: 1})
+      player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceAction});
     } else if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
-      player.sendMessage('GuoReply', {errorCode: 2})
+      player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceState});
     } else if (this.state === stateQiangGang && this.stateData.who == player) {
       console.log('stateQiangGang player-%s ', index)
 
-      player.sendMessage('GuoReply', {errorCode: 0})
+      player.sendMessage('game/guoReply', {ok: true, data: {}})
 
       const {whom, card, turn} = this.stateData
       this.state = stateWaitDa
       this.stateData = {[Enums.da]: whom, cancelQiang: true}
       whom.emitter.emit(Enums.gangBySelf, turn, card)
     } else {
-      player.sendMessage('GuoReply', {errorCode: 0});
+      player.sendMessage('game/guoReply', {ok: true, data: {}});
       this.actionResolver.cancel(player)
 
       player.guoOption(playCard)
