@@ -792,7 +792,7 @@ class TableState implements Serializable {
             const nextCard = this.consumeCard(player);
             const msg = player.gangTakeCard(this.turn, nextCard);
             if (msg) {
-              this.room.broadcast('game/oppoTakeCard', {index}, player.msgDispatcher);
+              this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
               this.state = stateWaitDa;
               this.stateData = {da: player, card: nextCard, msg};
             }
@@ -835,7 +835,7 @@ class TableState implements Serializable {
           if (!msg) {
             return;
           }
-          this.room.broadcast('game/oppoTakeCard', {index}, player.msgDispatcher);
+          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
           this.state = stateWaitDa;
           this.stateData = {msg, da: player, card: nextCard};
         })
@@ -932,7 +932,7 @@ class TableState implements Serializable {
           if (!msg) {
             return
           }
-          this.room.broadcast('game/oppoTakeCard', {index}, player.msgDispatcher)
+          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher)
           this.state = stateWaitDa
           this.stateData = {msg, da: player, card: nextCard}
         } else {
@@ -1625,9 +1625,9 @@ class TableState implements Serializable {
         card: nextCard,
         msg,
       }
-      this.room.broadcast('game/oppoTakeCard', {
-        index: this.players.indexOf(xiajia),
-      }, xiajia.msgDispatcher)
+      this.room.broadcast('game/oppoTakeCard', {ok: true, data: {
+          index: this.players.indexOf(xiajia),
+        }}, xiajia.msgDispatcher)
     }
   }
 
