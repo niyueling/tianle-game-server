@@ -1785,6 +1785,7 @@ class TableState implements Serializable {
   }
 
   async onPlayerGuo(player, playTurn, playCard) {
+    console.error(player.model.shortId, playTurn, playCard)
     const index = this.players.indexOf(player);
     console.log('guo  player %s card %s', index, playCard)
     // const from = this.atIndex(this.lastDa)
