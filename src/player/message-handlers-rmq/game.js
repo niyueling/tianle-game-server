@@ -11,6 +11,7 @@ const exportObj = {
   },
 
   'game/da': (player, msg) => {
+    console.warn('game/da', msg)
     player.emit('game/da', msg);
   },
 
@@ -27,6 +28,7 @@ const exportObj = {
   },
 
   'game/guo': (player, msg) => {
+    console.warn('game/guo', msg)
     player.emit('game/guo', msg);
   },
 

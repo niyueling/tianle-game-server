@@ -59,7 +59,6 @@ export class PlayerRmqProxy extends EventEmitter implements SimplePlayer {
   // 通知 websocket server.js
   sendMessage(name: string, message: any) {
     try {
-      console.warn(this.myRouteKey, {payload: message, name})
       this.channel.publish('userCenter', this.myRouteKey, toBuffer({payload: message, name}))
     } catch (e) {
       console.error('playerRmqProxy sendMessage ', name, 'with error', e)
