@@ -312,6 +312,7 @@ export default class RoomProxy {
         console.log('get other message', messageBody.name, messageBody.payload, thePlayer ? thePlayer.model.shortId : 'no the player');
         if (thePlayer) {
           // playerRmqProxy 通知 playerSocket
+          console.warn(messageBody.name, messageBody.payload)
           thePlayer.emit(messageBody.name, messageBody.payload)
         } else {
           console.error('no the player for message body', messageBody)
