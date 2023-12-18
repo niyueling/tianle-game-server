@@ -648,6 +648,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.da, async (turn, card) => {
+      console.warn(Enums.da, turn, card);
       await this.onPlayerDa(player, turn, card);
     })
 
@@ -1052,7 +1053,7 @@ class TableState implements Serializable {
     });
 
     player.on(Enums.guo, async (turn, card) => {
-      console.warn(turn, card)
+      console.warn(Enums.guo, turn, card);
       await this.onPlayerGuo(player, turn, card)
     })
 
