@@ -47,7 +47,7 @@ export class PlayerRmqProxy extends EventEmitter implements SimplePlayer {
   }
 
   get _id(): string {
-    return this.model && this.model._id;
+    return this.model && this.model._id.toString();
   }
 
   sendMessage(name: 'room/join-success', message: { _id: string, rule: any });
@@ -59,6 +59,7 @@ export class PlayerRmqProxy extends EventEmitter implements SimplePlayer {
   // 通知 websocket server.js
   sendMessage(name: string, message: any) {
     try {
+      console.warn(this.myRouteKey, {payload: message, name})
       this.channel.publish('userCenter', this.myRouteKey, toBuffer({payload: message, name}))
     } catch (e) {
       console.error('playerRmqProxy sendMessage ', name, 'with error', e)
