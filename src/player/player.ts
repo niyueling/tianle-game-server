@@ -212,7 +212,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
         return invokeApi(req[0], req[1], packet, this);
       }
       this.requestToCurrentRoom(packet.name, packet.message)
-      console.error(packet)
       console.log(`未知的消息：${JSON.stringify(packet)}`)
     } catch (e) {
       logger.error(e)
@@ -417,7 +416,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
       return
     }
 
-    logger.verbose(name, message)
+    logger.verbose(name, message, this.currentRoom)
     try {
       this.channel.publish(
         'exGameCenter',
