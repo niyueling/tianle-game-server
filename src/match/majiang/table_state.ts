@@ -461,9 +461,10 @@ class TableState implements Serializable {
     return card
   }
 
-  consumeGangOrKeCard() {
+  consumeGangOrKeCard(cardNum?) {
     const isGang = Math.random() < 0.3;
-    const cardNumber = isGang ? 4 : 3;
+
+    const cardNumber = isGang && !cardNum ? 4 : 3;
     let cards = [];
     this.remainCards -= cardNumber;
     const counter = {};
@@ -479,7 +480,6 @@ class TableState implements Serializable {
 
     const result = Object.keys(counter).filter(num => counter[num] >= cardNumber);
     const randomNumber = Math.floor(Math.random() * result.length);
-    console.warn(result, randomNumber);
 
     for (let i = 0; i < cardNumber; i++) {
       const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
@@ -492,18 +492,28 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn(cards);
-
     return cards;
   }
 
   take13Cards(player: PlayerState) {
-    const cards = []
-    this.consumeGangOrKeCard()
-    for (let i = 0; i < 13; i++) {
-      cards.push(this.consumeCard(player))
+    let cards = []
+
+    for (let i = 0; i < 3; i++) {
+      const consumeCards = this.consumeGangOrKeCard();
+      cards = [...cards, ...consumeCards];
     }
-    return cards
+
+    const residueCards = 13 - cards.length;
+    if (residueCards >= 3) {
+      const consumeCards = this.consumeGangOrKeCard(3);
+      cards = [...cards, ...consumeCards];
+    }
+
+    for (let i = 0; i < 13 - cards.length; i++) {
+      cards.push(this.consumeCard(player));
+    }
+
+    return cards;
   }
 
   async start() {
