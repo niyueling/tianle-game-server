@@ -932,7 +932,7 @@ class TableState implements Serializable {
 
         const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
         if (ok) {
-          player.sendMessage('game/gangReply', {ok: true, data: {card, from, gangIndex, type: "mingGang"}});
+          player.sendMessage('game/gangReply', {ok: true, data: {card, from, gangIndex, type: isAnGang ? "anGang" : "mingGang"}});
           this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher);
 
           for (let i = 1; i < this.players.length; i++) {
