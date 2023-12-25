@@ -560,7 +560,7 @@ class TableState implements Serializable {
     if (!player) {
       return
     }
-    return this.players.findIndex(p => p._id === player._id)
+    return this.players.findIndex(p => p._id.toString() === player._id.toString())
   }
 
   listenPlayer(player) {
@@ -808,7 +808,7 @@ class TableState implements Serializable {
             this.turn++;
             const from = this.atIndex(this.lastDa)
             const me = this.atIndex(player)
-            player.sendMessage('game/gangReply', {ok: true, data: {card, from}});
+            player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
             for (let i = 1; i < 4; i++) {
               const playerIndex = (from + i) % this.players.length
               if (playerIndex === me) {
@@ -932,7 +932,7 @@ class TableState implements Serializable {
 
         const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
         if (ok) {
-          player.sendMessage('game/gangReply', {ok: true, data: {card, from, gangIndex}});
+          player.sendMessage('game/gangReply', {ok: true, data: {card, from, gangIndex, type: "mingGang"}});
           this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher);
 
           for (let i = 1; i < this.players.length; i++) {
