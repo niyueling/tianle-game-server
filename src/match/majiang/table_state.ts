@@ -940,7 +940,7 @@ class TableState implements Serializable {
       }
     })
     player.on(Enums.hu, async (turn, card) => {
-      logger.info('hu  player %s ', index)
+      logger.info('hu player %s ', index)
       const chengbaoStarted = this.remainCards <= 3
 
       if (this.turn !== turn) {
@@ -960,13 +960,13 @@ class TableState implements Serializable {
               logger.info('hu  player %s jiepao %s', index, ok)
 
               if (ok) {
-                player.sendMessage('HuReply', {errorCode: 0});
+                player.sendMessage('game/huReply', {ok: true, data: {}});
                 this.stateData[Enums.hu].remove(player);
                 this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
                 if (chengbaoStarted) {
                   this.lastDa.recordGameEvent(Enums.chengBao, {});
                 }
-                this.room.broadcast('game/oppoHu', {turn, card, index}, player.msgDispatcher);
+                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
                 const huPlayerIndex = this.atIndex(player)
                 for (let i = 1; i < this.players.length; i++) {
                   const playerIndex = (huPlayerIndex + i) % this.players.length
@@ -977,18 +977,18 @@ class TableState implements Serializable {
 
                   if (nextPlayer.checkJiePao(card)) {
                     nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa)
-                    nextPlayer.sendMessage('game/genHu', {})
-                    this.room.broadcast('game/oppoHu', {turn, card, index: playerIndex}, nextPlayer.msgDispatcher)
+                    nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
+                    this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index: playerIndex}}, nextPlayer.msgDispatcher)
                   }
                 }
-                await this.gameOver();
+                // await this.gameOver();
                 logger.info('hu  player %s gameover', index)
               } else {
-                player.sendMessage('HuReply', {errorCode: 2});
+                player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
               }
             },
             () => {
-              player.sendMessage('HuReply', {errorCode: 3, msg: '竞争失败'});
+              player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huPriorityInsufficient});
             }
           )
 
@@ -996,12 +996,12 @@ class TableState implements Serializable {
         } else if (isZiMo) {
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
           if (ok) {
-            player.sendMessage('HuReply', {errorCode: 0});
-            this.room.broadcast('game/oppoZiMo', {turn, card, index}, player.msgDispatcher);
+            player.sendMessage('game/huReply', {ok: true, data: {}});
+            this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
             await this.gameOver();
             this.logger.info('hu  player %s zimo gameover', index)
           } else {
-            player.sendMessage('HuReply', {errorCode: 2, msg: '不能自摸'});
+            player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
           }
         } else if (this.state === stateQiangGang) {
           if (this.stateData.who === player && turn === this.stateData.turn) {
@@ -1015,10 +1015,10 @@ class TableState implements Serializable {
                 this.stateData.whom.recordGameEvent(Enums.chengBao, {});
               }
 
-              player.sendMessage('HuReply', {errorCode: 0})
+              player.sendMessage('game/huReply', {ok: true, data: {}})
               this.stateData.whom.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
               // this.stateData.whom.recordGameEvent(Enums.chengBao, {})
-              this.room.broadcast('game/oppoHu', {turn, card, index}, player.msgDispatcher);
+              this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
               const huPlayerIndex = this.atIndex(player)
               for (let i = 1; i < this.players.length; i++) {
                 const playerIndex = (huPlayerIndex + i) % this.players.length
@@ -1030,21 +1030,21 @@ class TableState implements Serializable {
                 if (nextPlayer.checkJiePao(card, true)) {
                   nextPlayer.cards.qiangGang = true
                   nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.stateData.whom)
-                  nextPlayer.sendMessage('game/genHu', {})
-                  this.room.broadcast('game/oppoHu', {turn, card, index: playerIndex}, nextPlayer.msgDispatcher)
+                  nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
+                  this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index: playerIndex}}, nextPlayer.msgDispatcher)
                 }
               }
-              await this.gameOver()
+              // await this.gameOver()
               logger.info('hu  player %s stateQiangGang jiePao gameOver', index)
             } else {
               player.cards.qiangGang = false
             }
           } else {
-            player.sendMessage('HuReply', {errorCode: 2, message: '不是您能抢'})
+            player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huPriorityInsufficient})
             logger.info('hu  player %s stateQiangGang 不是您能抢', index)
           }
         } else {
-          player.sendMessage('HuReply', {errorCode: 3});
+          player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
           logger.info('hu  player %s stateQiangGang HuReply', index)
         }
       }
