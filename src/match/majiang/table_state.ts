@@ -477,15 +477,12 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn(counter);
-
     const result = Object.keys(counter).filter(num => counter[num] >= cardNumber);
     const randomNumber = Math.floor(Math.random() * result.length);
     console.warn(result, randomNumber);
 
-
     for (let i = 0; i < cardNumber; i++) {
-      const index = this.cards.findIndex(card => card === result[randomNumber]);
+      const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
 
       if (index !== -1) {
         const card = this.cards[index];
@@ -494,6 +491,8 @@ class TableState implements Serializable {
         this.lastTakeCard = card;
       }
     }
+
+    console.warn(cards);
 
     return cards;
   }
