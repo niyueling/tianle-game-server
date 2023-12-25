@@ -754,8 +754,6 @@ class TableState implements Serializable {
             }
           }
 
-
-
           for (let i = 1; i < 4; i++) {
             const playerIndex = (from + i) % this.players.length
             if (playerIndex === me) {
@@ -993,7 +991,7 @@ class TableState implements Serializable {
       const chengbaoStarted = this.remainCards <= 3
 
       if (this.turn !== turn) {
-        player.sendMessage('HuReply', {errorCode: 1});
+        player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huParamTurnInvaid});
       } else {
         const recordCard = this.stateData.card;
 
@@ -1031,7 +1029,7 @@ class TableState implements Serializable {
                   }
                 }
                 // await this.gameOver();
-                logger.info('hu  player %s gameover', index)
+                logger.info('hu player %s gameover', index)
               } else {
                 player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
               }
