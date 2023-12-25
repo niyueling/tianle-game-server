@@ -461,22 +461,46 @@ class TableState implements Serializable {
     return card
   }
 
-  consumeGangOrKeCard(playerState: PlayerState) {
-    const player = playerState
+  consumeGangOrKeCard() {
     const isGang = Math.random() < 0.3;
+    const cardNumber = isGang ? 4 : 3;
+    let cards = [];
+    this.remainCards -= cardNumber;
+    const counter = {};
 
-    const cardIndex = --this.remainCards
-    if (cardIndex === 0 && player) {
-      player.takeLastCard = true
+    for (let i = 0; i < this.cards.length; i++) {
+      const card = this.cards[i];
+      if (counter[card]) {
+        counter[card]++;
+      } else {
+        counter[card] = 1;
+      }
     }
-    const card = this.cards[cardIndex]
-    this.cards.splice(cardIndex, 1);
-    this.lastTakeCard = card;
-    return card
+
+    console.warn(counter);
+
+    const result = Object.keys(counter).filter(num => counter[num] >= cardNumber);
+    const randomNumber = Math.floor(Math.random() * result.length);
+    console.warn(result, randomNumber);
+
+
+    for (let i = 0; i < cardNumber; i++) {
+      const index = this.cards.findIndex(card => card === result[randomNumber]);
+
+      if (index !== -1) {
+        const card = this.cards[index];
+        cards.push(card);
+        this.cards.splice(index, 1);
+        this.lastTakeCard = card;
+      }
+    }
+
+    return cards;
   }
 
   take13Cards(player: PlayerState) {
     const cards = []
+    this.consumeGangOrKeCard()
     for (let i = 0; i < 13; i++) {
       cards.push(this.consumeCard(player))
     }
