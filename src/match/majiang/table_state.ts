@@ -735,11 +735,15 @@ class TableState implements Serializable {
           this.state = stateWaitDa
           const nextStateData = {da: player}
           const gangSelection = player.getAvailableGangs()
+          this.stateData = nextStateData
+          const from = this.atIndex(this.lastDa)
+          const me = this.atIndex(player)
           player.sendMessage('game/pengReply', {
             ok: true,
             data: {
               turn: this.turn,
               card,
+              from,
               gang: gangSelection.length > 0,
               gangSelection
             }
@@ -750,9 +754,7 @@ class TableState implements Serializable {
             }
           }
 
-          this.stateData = nextStateData
-          const from = this.atIndex(this.lastDa)
-          const me = this.atIndex(player)
+
 
           for (let i = 1; i < 4; i++) {
             const playerIndex = (from + i) % this.players.length
