@@ -656,18 +656,18 @@ class TableState implements Serializable {
       if (this.turn !== turn) {
         logger.info('peng player-%s this.turn:%s turn:%s', index, this.turn, turn)
         player.emitter.emit(Enums.guo, turn, card)
-        player.sendMessage('PengReply', {errorCode: 1})
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamTurnInvaid});
         return
       }
       if (this.state !== stateWaitAction) {
         logger.info('peng player-%s this.state:%s stateWaitAction:%s', index, this.state, stateWaitAction)
         player.emitter.emit(Enums.guo, turn, card)
-        player.sendMessage('PengReply', {errorCode: 6})
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamStateInvaid});
         return
       }
       if (this.hasPlayerHu()) {
         logger.info('peng player-%s card:%s but has player hu', index, card)
-        player.sendMessage('PengReply', {errorCode: 2})
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengButPlayerHu});
         player.lockMessage()
         player.emitter.emit(Enums.guo, turn, card)
         player.unlockMessage()
@@ -677,11 +677,9 @@ class TableState implements Serializable {
       if (this.stateData.pengGang !== player || this.stateData.card !== card) {
         logger.info('peng player-%s card:%s has player pengGang or curCard not is this card', index, card)
         player.emitter.emit(Enums.guo, turn, card)
-        player.sendMessage('PengReply', {errorCode: 3, msg: '错误的碰参数'})
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamInvaid});
         return
       }
-
-      // const from = this.atIndex(this.lastDa)
 
       this.actionResolver.requestAction(player, 'peng', () => {
         const ok = player.pengPai(card, this.lastDa);
@@ -691,11 +689,13 @@ class TableState implements Serializable {
           this.state = stateWaitDa
           const nextStateData = {da: player}
           const gangSelection = player.getAvailableGangs()
-          player.sendMessage('PengReply', {
-            errorCode: 0,
-            turn: this.turn,
-            gang: gangSelection.length > 0,
-            gangSelection
+          player.sendMessage('game/pengReply', {
+            ok: true,
+            data: {
+              turn: this.turn,
+              gang: gangSelection.length > 0,
+              gangSelection
+            }
           })
           for (const gangCard of gangSelection) {
             if (gangCard === card) {
@@ -715,11 +715,11 @@ class TableState implements Serializable {
             this.players[playerIndex].pengForbidden = []
           }
 
-          this.room.broadcast('game/oppoPeng', {
-            card,
-            index,
-            turn, from
-          }, player.msgDispatcher)
+          this.room.broadcast('game/oppoPeng', {ok: true, data: {
+              card,
+              index,
+              turn, from
+            }}, player.msgDispatcher)
           if (hangUpList.length > 0) {    // 向所有挂起的玩家回复
             hangUpList.forEach(hangUpMsg => {
               hangUpMsg[0].emitter.emit(hangUpMsg[1], ...hangUpMsg[2])
@@ -727,11 +727,11 @@ class TableState implements Serializable {
           }
         } else {
           logger.info('PengReply player-%s card:%s has player hu ,not contain self', index, card)
-          player.sendMessage('PengReply', {errorCode: 4});
+          player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengButPlayerHu});
           return;
         }
       }, () => {
-        player.sendMessage('PengReply', {errorCode: 4, msg: '竞争失败'})
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengPriorityInsufficient});
       })
 
       this.actionResolver.tryResolve()
