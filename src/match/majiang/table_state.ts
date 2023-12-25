@@ -478,7 +478,7 @@ class TableState implements Serializable {
       }
     }
 
-    const result = Object.keys(counter).filter(num => counter[num] >= cardNumber);
+    const result = Object.keys(counter).filter(num => counter[num] >= cardNumber && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(Number(num)));
     const randomNumber = Math.floor(Math.random() * result.length);
 
     for (let i = 0; i < cardNumber; i++) {
