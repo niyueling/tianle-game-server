@@ -461,10 +461,23 @@ class TableState implements Serializable {
     return card
   }
 
+  consumeGangOrKeCard(playerState: PlayerState) {
+    const player = playerState
+    const isGang = Math.random() < 0.3;
+
+    const cardIndex = --this.remainCards
+    if (cardIndex === 0 && player) {
+      player.takeLastCard = true
+    }
+    const card = this.cards[cardIndex]
+    this.cards.splice(cardIndex, 1);
+    this.lastTakeCard = card;
+    return card
+  }
+
   take13Cards(player: PlayerState) {
     const cards = []
-    // logger.info(`${player.model.shortId}目前有${player.helpCards.length}张牌`);
-    for (let i = 0; i < 13 - player.helpCards.length || 0; i++) {
+    for (let i = 0; i < 13; i++) {
       cards.push(this.consumeCard(player))
     }
     return cards
@@ -693,6 +706,7 @@ class TableState implements Serializable {
             ok: true,
             data: {
               turn: this.turn,
+              card,
               gang: gangSelection.length > 0,
               gangSelection
             }
@@ -923,7 +937,7 @@ class TableState implements Serializable {
         const broadcastMsg = {turn, card, index}
         const ok = player.buBySelf(card, broadcastMsg)
         if (ok) {
-          player.sendMessage('game/buReply', {ok: true, data: {}})
+          player.sendMessage('game/buReply', {ok: true, data: {card}})
           this.room.broadcast('game/oppoBuBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
           this.turn++
           const nextCard = this.consumeCard(player)
@@ -960,7 +974,7 @@ class TableState implements Serializable {
               logger.info('hu  player %s jiepao %s', index, ok)
 
               if (ok) {
-                player.sendMessage('game/huReply', {ok: true, data: {}});
+                player.sendMessage('game/huReply', {ok: true, data: {card}});
                 this.stateData[Enums.hu].remove(player);
                 this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
                 if (chengbaoStarted) {
@@ -996,7 +1010,7 @@ class TableState implements Serializable {
         } else if (isZiMo) {
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
           if (ok) {
-            player.sendMessage('game/huReply', {ok: true, data: {}});
+            player.sendMessage('game/huReply', {ok: true, data: {card}});
             this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
             await this.gameOver();
             this.logger.info('hu  player %s zimo gameover', index)
@@ -1015,7 +1029,7 @@ class TableState implements Serializable {
                 this.stateData.whom.recordGameEvent(Enums.chengBao, {});
               }
 
-              player.sendMessage('game/huReply', {ok: true, data: {}})
+              player.sendMessage('game/huReply', {ok: true, data: {card}})
               this.stateData.whom.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
               // this.stateData.whom.recordGameEvent(Enums.chengBao, {})
               this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
