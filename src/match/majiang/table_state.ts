@@ -998,171 +998,174 @@ class TableState implements Serializable {
       } else {
         const recordCard = this.stateData.card;
 
-        const isJiePao = this.state === stateWaitAction &&
-          recordCard === card &&
-          this.stateData[Enums.hu].contains(player)
+        try {
+            const isJiePao = this.state === stateWaitAction &&
+                recordCard === card &&
+                this.stateData[Enums.hu].contains(player)
 
-        const isZiMo = this.state === stateWaitDa && recordCard === card
+            const isZiMo = this.state === stateWaitDa && recordCard === card
 
-        if (isJiePao) {
-          this.actionResolver.requestAction(player, 'hu', async () => {
-              const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
-              logger.info('hu  player %s jiepao %s', index, ok)
+            if (isJiePao) {
+                this.actionResolver.requestAction(player, 'hu', async () => {
+                        const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
+                        logger.info('hu  player %s jiepao %s', index, ok)
 
-              if (ok) {
-                player.sendMessage('game/huReply', {ok: true, data: {card}});
-                this.stateData[Enums.hu].remove(player);
-                this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-                if (chengbaoStarted) {
-                  this.lastDa.recordGameEvent(Enums.chengBao, {});
+                        if (ok) {
+                            player.sendMessage('game/huReply', {ok: true, data: {card}});
+                            this.stateData[Enums.hu].remove(player);
+                            this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
+                            if (chengbaoStarted) {
+                                this.lastDa.recordGameEvent(Enums.chengBao, {});
+                            }
+                            this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+                            const huPlayerIndex = this.atIndex(player)
+                            for (let i = 1; i < this.players.length; i++) {
+                                const playerIndex = (huPlayerIndex + i) % this.players.length
+                                const nextPlayer = this.players[playerIndex]
+                                if (nextPlayer === this.lastDa) {
+                                    break
+                                }
+
+                                if (nextPlayer.checkJiePao(card)) {
+                                    nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa)
+                                    nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
+                                    this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index: playerIndex}}, nextPlayer.msgDispatcher)
+                                }
+                            }
+                            // await this.gameOver();
+                            // logger.info('hu player %s gameover', index)
+
+                            from = this.atIndex(this.lastDa);
+                            this.turn++;
+                            const xiajia = this.players[(index + 1) % this.players.length]
+
+                            const env = {card, from, turn: this.turn}
+                            this.actionResolver = new ActionResolver(env, () => {
+                                const newCard = this.consumeCard(xiajia)
+                                const msg = xiajia.takeCard(this.turn, newCard)
+
+                                if (!msg) {
+                                    console.error("consume card error msg ", msg)
+                                    return;
+                                }
+                                this.state = stateWaitDa;
+                                this.stateData = {da: xiajia, card: newCard, msg};
+                                const sendMsg = {index: this.players.indexOf(xiajia)}
+                                this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                                logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                            })
+                        } else {
+                            player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "jiePao"}});
+                        }
+                    },
+                    () => {
+                        player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huPriorityInsufficient});
+                    }
+                )
+
+                this.actionResolver.tryResolve()
+            } else if (isZiMo) {
+                const ok = player.zimo(card, turn === 1, this.remainCards === 0);
+                if (ok) {
+                    player.sendMessage('game/huReply', {ok: true, data: {card}});
+                    this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+                    // await this.gameOver();
+                    // this.logger.info('hu  player %s zimo gameover', index)
+
+                    from = this.atIndex(this.lastDa);
+                    this.turn++;
+                    const xiajia = this.players[(index + 1) % this.players.length]
+
+                    const env = {card, from, turn: this.turn}
+                    this.actionResolver = new ActionResolver(env, () => {
+                        const newCard = this.consumeCard(xiajia)
+                        const msg = xiajia.takeCard(this.turn, newCard)
+
+                        if (!msg) {
+                            console.error("consume card error msg ", msg)
+                            return;
+                        }
+                        this.state = stateWaitDa;
+                        this.stateData = {da: xiajia, card: newCard, msg};
+                        const sendMsg = {index: this.players.indexOf(xiajia)}
+                        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                        logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                    })
+
+                    this.actionResolver.tryResolve()
+                } else {
+                    player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
                 }
-                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
-                const huPlayerIndex = this.atIndex(player)
-                for (let i = 1; i < this.players.length; i++) {
-                  const playerIndex = (huPlayerIndex + i) % this.players.length
-                  const nextPlayer = this.players[playerIndex]
-                  if (nextPlayer === this.lastDa) {
-                    break
-                  }
+            } else if (this.state === stateQiangGang) {
+                if (this.stateData.who === player && turn === this.stateData.turn) {
+                    player.cards.qiangGang = true
 
-                  if (nextPlayer.checkJiePao(card)) {
-                    nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa)
-                    nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
-                    this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index: playerIndex}}, nextPlayer.msgDispatcher)
-                  }
-                }
-                // await this.gameOver();
-                // logger.info('hu player %s gameover', index)
+                    const qiangGangJiePao = player.jiePao(card, turn === 2, this.remainCards === 0, this.stateData.whom)
+                    logger.info('hu  player %s stateQiangGang jiePao %s', index, qiangGangJiePao)
+                    if (qiangGangJiePao) {
 
-                from = this.atIndex(this.lastDa);
-                this.turn++;
-                const xiajia = this.players[(index + 1) % this.players.length]
+                        if (chengbaoStarted) {
+                            this.stateData.whom.recordGameEvent(Enums.chengBao, {});
+                        }
 
-                const env = {card, from, turn: this.turn}
-                this.actionResolver = new ActionResolver(env, () => {
-                  const newCard = this.consumeCard(xiajia)
-                  const msg = xiajia.takeCard(this.turn, newCard)
+                        player.sendMessage('game/huReply', {ok: true, data: {card}})
+                        this.stateData.whom.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
+                        // this.stateData.whom.recordGameEvent(Enums.chengBao, {})
+                        this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+                        const huPlayerIndex = this.atIndex(player)
+                        for (let i = 1; i < this.players.length; i++) {
+                            const playerIndex = (huPlayerIndex + i) % this.players.length
+                            const nextPlayer = this.players[playerIndex]
+                            if (nextPlayer === this.stateData.whom) {
+                                break
+                            }
 
-                  if (!msg) {
-                    console.error("consume card error msg ", msg)
-                    return;
-                  }
-                  this.state = stateWaitDa;
-                  this.stateData = {da: xiajia, card: newCard, msg};
-                  const sendMsg = {index: this.players.indexOf(xiajia)}
-                  this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                  logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                })
-              } else {
-                player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "jiePao"}});
-              }
-            },
-            () => {
-              player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huPriorityInsufficient});
-            }
-          )
+                            if (nextPlayer.checkJiePao(card, true)) {
+                                nextPlayer.cards.qiangGang = true
+                                nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.stateData.whom)
+                                nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
+                                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index: playerIndex}}, nextPlayer.msgDispatcher)
+                            }
+                        }
+                        // await this.gameOver()
+                        // logger.info('hu  player %s stateQiangGang jiePao gameOver', index)
 
-          this.actionResolver.tryResolve()
-        } else if (isZiMo) {
-          const ok = player.zimo(card, turn === 1, this.remainCards === 0);
-          if (ok) {
-            player.sendMessage('game/huReply', {ok: true, data: {card}});
-            this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
-            // await this.gameOver();
-            // this.logger.info('hu  player %s zimo gameover', index)
+                        from = this.atIndex(this.lastDa);
+                        this.turn++;
+                        const xiajia = this.players[(index + 1) % this.players.length]
 
-            from = this.atIndex(this.lastDa);
-            this.turn++;
-            const xiajia = this.players[(index + 1) % this.players.length]
+                        const env = {card, from, turn: this.turn}
+                        this.actionResolver = new ActionResolver(env, () => {
+                            const newCard = this.consumeCard(xiajia)
+                            const msg = xiajia.takeCard(this.turn, newCard)
 
-            const env = {card, from, turn: this.turn}
-            this.actionResolver = new ActionResolver(env, () => {
-              const newCard = this.consumeCard(xiajia)
-              const msg = xiajia.takeCard(this.turn, newCard)
-
-              if (!msg) {
-                console.error("consume card error msg ", msg)
-                return;
-              }
-              this.state = stateWaitDa;
-              this.stateData = {da: xiajia, card: newCard, msg};
-              const sendMsg = {index: this.players.indexOf(xiajia)}
-              this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-              logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-            })
-
-            this.actionResolver.tryResolve()
-          } else {
-            player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
-          }
-        } else if (this.state === stateQiangGang) {
-          if (this.stateData.who === player && turn === this.stateData.turn) {
-            player.cards.qiangGang = true
-
-            const qiangGangJiePao = player.jiePao(card, turn === 2, this.remainCards === 0, this.stateData.whom)
-            logger.info('hu  player %s stateQiangGang jiePao %s', index, qiangGangJiePao)
-            if (qiangGangJiePao) {
-
-              if (chengbaoStarted) {
-                this.stateData.whom.recordGameEvent(Enums.chengBao, {});
-              }
-
-              player.sendMessage('game/huReply', {ok: true, data: {card}})
-              this.stateData.whom.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-              // this.stateData.whom.recordGameEvent(Enums.chengBao, {})
-              this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
-              const huPlayerIndex = this.atIndex(player)
-              for (let i = 1; i < this.players.length; i++) {
-                const playerIndex = (huPlayerIndex + i) % this.players.length
-                const nextPlayer = this.players[playerIndex]
-                if (nextPlayer === this.stateData.whom) {
-                  break
+                            if (!msg) {
+                                console.error("consume card error msg ", msg)
+                                return;
+                            }
+                            this.state = stateWaitDa;
+                            this.stateData = {da: xiajia, card: newCard, msg};
+                            const sendMsg = {index: this.players.indexOf(xiajia)}
+                            this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                            logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                        })
+                    } else {
+                        player.cards.qiangGang = false
+                    }
+                } else {
+                    player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huPriorityInsufficient})
+                    logger.info('hu  player %s stateQiangGang 不是您能抢', index)
                 }
 
-                if (nextPlayer.checkJiePao(card, true)) {
-                  nextPlayer.cards.qiangGang = true
-                  nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.stateData.whom)
-                  nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
-                  this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index: playerIndex}}, nextPlayer.msgDispatcher)
-                }
-              }
-              // await this.gameOver()
-              // logger.info('hu  player %s stateQiangGang jiePao gameOver', index)
-
-              from = this.atIndex(this.lastDa);
-              this.turn++;
-              const xiajia = this.players[(index + 1) % this.players.length]
-
-              const env = {card, from, turn: this.turn}
-              this.actionResolver = new ActionResolver(env, () => {
-                const newCard = this.consumeCard(xiajia)
-                const msg = xiajia.takeCard(this.turn, newCard)
-
-                if (!msg) {
-                  console.error("consume card error msg ", msg)
-                  return;
-                }
-                this.state = stateWaitDa;
-                this.stateData = {da: xiajia, card: newCard, msg};
-                const sendMsg = {index: this.players.indexOf(xiajia)}
-                this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-              })
+                this.actionResolver.tryResolve()
             } else {
-              player.cards.qiangGang = false
+                player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
+                logger.info('hu  player %s stateQiangGang HuReply', index)
             }
-          } else {
-            player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huPriorityInsufficient})
-            logger.info('hu  player %s stateQiangGang 不是您能抢', index)
-          }
-
-          this.actionResolver.tryResolve()
-        } else {
-          player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
-          logger.info('hu  player %s stateQiangGang HuReply', index)
+        } catch (e) {
+            console.warn(this.stateData)
         }
       }
-
     });
 
 
