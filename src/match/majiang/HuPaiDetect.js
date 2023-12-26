@@ -43,13 +43,16 @@ function spreadCardAndCaiShen(countMap) {
   //取出财神
 
   let caiCount = 0;
-  caiShen.map((v) => {
-    caiCount += cards[v];
-    //规避财神是白板
-    cards[v] = 0;
-    //白板代替财神的初始位置
-    cards[v] = cards[Enums.bai];
-  })
+  if (caiShen) {
+    caiShen.map((v) => {
+      caiCount += cards[v];
+      //规避财神是白板
+      cards[v] = 0;
+      //白板代替财神的初始位置
+      cards[v] = cards[Enums.bai];
+    })
+  }
+
 
   cards[Enums.bai] = 0;
 
