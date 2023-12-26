@@ -70,7 +70,7 @@ export class RobotManager extends NewRobotManager {
         console.warn("hu")
         await proxy.choice(Enums.hu)
       } else if (this.isPlayerGang(playerId)) {
-        console.warn("gang", this.isPlayerGang(playerId), proxy.model.shortId)
+        console.warn(playerId, this.isPlayerGang(playerId), proxy.model.shortId)
         await proxy.gang(this.isPlayerGang(playerId))
       } else if (this.isPlayerChoice(playerId)) {
         console.warn("choice")
