@@ -964,7 +964,6 @@ class TableState implements Serializable {
       } else if (this.state !== stateWaitDa) {
         player.sendMessage('game/buReply', {ok: false, info: TianleErrorCode.buGangParamStateInvaid});
       } else if (this.stateData[Enums.da] !== player) {
-        console.log(this.stateData)
         player.sendMessage('game/buReply', {ok: false, info: TianleErrorCode.buGangButNotPlayerDa});
       } else {
         const broadcastMsg = {turn, card, index}
@@ -1098,7 +1097,6 @@ class TableState implements Serializable {
     });
 
     player.on(Enums.guo, async (turn, card) => {
-      console.warn(Enums.guo, turn, card);
       await this.onPlayerGuo(player, turn, card)
     })
 
@@ -1366,7 +1364,6 @@ class TableState implements Serializable {
   listenRoom(room) {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       const player = this.players[index];
-      console.error("room connect ", this.room._id)
       player.reconnect(playerMsgDispatcher);
       player.sendMessage('game/reconnect', {ok: true, data: await this.generateReconnectMsg(index)})
     })
@@ -1430,11 +1427,10 @@ class TableState implements Serializable {
         pushMsg.status.push(msg)
       }
     }
-    console.warn(this.state);
+
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da]
-        console.warn(this.stateData.msg);
         if (daPlayer._id.toString() === player._id.toString()) {
           pushMsg.current = {
             index,
@@ -1832,7 +1828,6 @@ class TableState implements Serializable {
   }
 
   async onPlayerGuo(player, playTurn, playCard) {
-    console.error(player.model.shortId, playTurn, playCard)
     const index = this.players.indexOf(player);
     console.log('guo  player %s card %s', index, playCard)
     // const from = this.atIndex(this.lastDa)

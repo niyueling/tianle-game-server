@@ -35,7 +35,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   }
 
   async gang(action, index = 0) {
-    console.log(`${this.playerState.model.shortId}(${this.playerState.model.name})执行操作：${action}`)
+    console.log(`${this.playerState.model.shortId}(${this.playerState.model.nickname})执行操作：${action}`)
 
     switch (action) {
       case Enums.gang:
