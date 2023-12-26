@@ -69,11 +69,8 @@ export class RobotManager extends NewRobotManager {
       if (isHu.hu) {
         console.warn("hu")
         await proxy.choice(Enums.hu)
-      } else if (buGangIndex) {
-        console.warn("bugang")
-        await proxy.gang(Enums.buGang, buGangIndex)
       } else if (this.isPlayerGang(playerId)) {
-        console.warn("gang")
+        console.warn("gang", this.isPlayerGang(playerId), proxy.model.shortId)
         await proxy.gang(this.isPlayerGang(playerId))
       } else if (this.isPlayerChoice(playerId)) {
         console.warn("choice")
@@ -82,6 +79,9 @@ export class RobotManager extends NewRobotManager {
         if (AnGangIndex) {
           console.warn("angang")
           await proxy.gang(Enums.anGang, AnGangIndex)
+        } else if (buGangIndex) {
+          console.warn("bugang")
+          await proxy.gang(Enums.buGang, buGangIndex)
         } else {
           if (this.waitInterval[key] >= this.getWaitSecond()) {
             await proxy.playCard();
@@ -138,10 +138,12 @@ export class RobotManager extends NewRobotManager {
   }
 
   isPlayerGang(playerId) {
-    const actionList = [Enums.gang, Enums.anGang, Enums.mingGang];
+    const actionList = [Enums.gang, Enums.mingGang];
     for (const action of actionList) {
-      if ([Enums.gang, Enums.anGang, Enums.mingGang].includes(action) && this.room.gameState.stateData[action]) {
-        if (playerId === this.room.gameState.stateData[action]._id.toString()) return action;
+      if ([Enums.gang, Enums.mingGang].includes(action) && this.room.gameState.stateData[action]) {
+        if (playerId === this.room.gameState.stateData[action]._id.toString()) {
+          return action;
+        }
       }
     }
 
