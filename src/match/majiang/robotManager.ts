@@ -66,13 +66,13 @@ export class RobotManager extends NewRobotManager {
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
-      if (isHu.hu) {
+      if (isHu.hu && this.room.gameState.state === 1) {
         console.warn("hu")
         await proxy.choice(Enums.hu)
-      } else if (this.isPlayerGang(playerId)) {
+      } else if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
         console.warn(playerId, this.isPlayerGang(playerId), proxy.model.shortId)
         await proxy.gang(this.isPlayerGang(playerId))
-      } else if (this.isPlayerChoice(playerId)) {
+      } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
         console.warn("choice")
         await proxy.choice(this.isPlayerChoice(playerId))
       } else if (this.isPlayerDa(playerId)) {
