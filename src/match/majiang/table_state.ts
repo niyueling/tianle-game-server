@@ -1054,7 +1054,7 @@ class TableState implements Serializable {
                   logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
                 })
               } else {
-                player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
+                player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "jiePao"}});
               }
             },
             () => {
@@ -1091,7 +1091,7 @@ class TableState implements Serializable {
               logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
             })
           } else {
-            player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
+            player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
           }
 
           this.actionResolver.tryResolve()
