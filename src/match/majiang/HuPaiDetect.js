@@ -243,9 +243,11 @@ const HuPaiDetect = {
     const caiCount = cards[caiShen]
     let baiCount = countMap[Enums.bai]
 
-    caiShen.map((v) => {
-      cards[v] = 0;
-    })
+    if (caiShen) {
+      caiShen.map((v) => {
+        cards[v] = 0;
+      })
+    }
 
     for (let useBai = 0; useBai <= baiCount; useBai++) {
       cards[caiShen] += baiCount - useBai
