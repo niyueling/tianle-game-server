@@ -72,7 +72,7 @@ const HuPaiDetect = {
 
   checkHuType(originCountMap, events, seatIndex, rule) {
     const maybes = this.allAvailableHuResult(originCountMap, events, seatIndex)
-    console.warn(maybes)
+    console.warn("maybes", maybes)
     return this.maxHuResult(originCountMap, events, maybes, rule)
   },
 
