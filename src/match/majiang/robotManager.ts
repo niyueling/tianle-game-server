@@ -69,9 +69,6 @@ export class RobotManager extends NewRobotManager {
       if (isHu.hu) {
         console.warn("hu")
         await proxy.choice(Enums.hu)
-      } else if (AnGangIndex) {
-        console.warn("angang")
-        await proxy.gang(Enums.anGang, AnGangIndex)
       } else if (buGangIndex) {
         console.warn("bugang")
         await proxy.gang(Enums.buGang, buGangIndex)
@@ -81,13 +78,18 @@ export class RobotManager extends NewRobotManager {
       } else if (this.isPlayerChoice(playerId)) {
         console.warn("choice")
         await proxy.choice(this.isPlayerChoice(playerId))
-      } else
-        if (this.isPlayerDa(playerId)) {
-        if (this.waitInterval[key] >= this.getWaitSecond()) {
-          await proxy.playCard();
-          // 重新计时
-          this.waitInterval[key] = 0;
+      } else if (this.isPlayerDa(playerId)) {
+        if (AnGangIndex) {
+          console.warn("angang")
+          await proxy.gang(Enums.anGang, AnGangIndex)
+        } else {
+          if (this.waitInterval[key] >= this.getWaitSecond()) {
+            await proxy.playCard();
+            // 重新计时
+            this.waitInterval[key] = 0;
+          }
         }
+
         break;
       } else {
         // console.warn("guo", playerId)
