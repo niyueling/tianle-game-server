@@ -253,12 +253,13 @@ const HuPaiDetect = {
 
     const {caiShen, caiCount, lastTakeCard} = spreadCardAndCaiShen(sourceCountMap)
 
-
     const cards = sourceCountMap.slice()
 
     caiShen.map((v) => {
       cards[v] = 0;
     })
+
+    console.warn("caiCount", caiCount)
 
     for (let i = 0; i < cards.length; i++) {
       switch (cards[i]) {
