@@ -80,13 +80,9 @@ const HuPaiDetect = {
     console.warn("caiShen:", caiShen)
 
     const lastTakeCardAndCaiShen = {lastTakeCard, caiShen}
+    console.warn("lastTakeCardAndCaiShen:", lastTakeCardAndCaiShen)
     const checkHuFuncArray = [
       {func: this.checkQiDui, args: [sourceCardMap, result]},
-      // {func: this.checkQiFeng, args: [sourceCardMap, events, result]},
-      // {func: this.checkPengPengHu, args: [sourceCardMap, events, result, caiCount]},
-      // {func: this.checkLuanFeng, args: [sourceCardMap, events, result]},
-      // {func: this.check13bukao, args: [sourceCardMap, events, result]},
-      // {func: this.checkQiShouSanCai, args: [sourceCardMap, events, result, seatIndex]},
       {func: this.checkPingHu, args: [sourceCardMap, lastTakeCardAndCaiShen, result]},
     ]
 
