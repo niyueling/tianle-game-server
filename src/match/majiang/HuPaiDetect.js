@@ -43,6 +43,7 @@ function spreadCardAndCaiShen(countMap) {
   //取出财神
 
   let caiCount = 0;
+  console.warn("caiShen", caiShen)
   caiShen.map((v) => {
     caiCount += cards[v];
     //规避财神是白板
