@@ -43,7 +43,6 @@ function spreadCardAndCaiShen(countMap) {
   //取出财神
 
   let caiCount = 0;
-  console.warn("caiShen", caiShen)
   caiShen.map((v) => {
     caiCount += cards[v];
     //规避财神是白板
@@ -52,7 +51,7 @@ function spreadCardAndCaiShen(countMap) {
     cards[v] = cards[Enums.bai];
   })
 
-  cards[Enums.bai] = 0
+  cards[Enums.bai] = 0;
 
   return {
     cards,
@@ -73,6 +72,7 @@ const HuPaiDetect = {
 
   checkHuType(originCountMap, events, seatIndex, rule) {
     const maybes = this.allAvailableHuResult(originCountMap, events, seatIndex)
+    console.warn(maybes)
     return this.maxHuResult(originCountMap, events, maybes, rule)
   },
 
@@ -83,7 +83,6 @@ const HuPaiDetect = {
     const {caiShen} = sourceCardMap
 
     const lastTakeCardAndCaiShen = {lastTakeCard, caiShen}
-    console.warn("lastTakeCardAndCaiShen:", lastTakeCardAndCaiShen)
     const checkHuFuncArray = [
       {func: this.checkQiDui, args: [sourceCardMap, result]},
       {func: this.checkPingHu, args: [sourceCardMap, lastTakeCardAndCaiShen, result]},
