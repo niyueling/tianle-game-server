@@ -36,10 +36,12 @@ const changShaMajiangCards =
   ];
 
 function spreadCardAndCaiShen(countMap) {
+  console.warn("countMap: ", countMap)
   const caiShen = countMap.caiShen
   const cards = countMap.slice()
   const lastTakeCard = countMap.lastTakeCard
   const baiCount = countMap[Enums.bai]
+  console.warn("cards: ", cards)
   //取出财神
   const caiCount = cards[caiShen] || 0
   //规避财神是白板
@@ -75,6 +77,7 @@ const HuPaiDetect = {
     let maybes = []
     const {caiCount, lastTakeCard} = spreadCardAndCaiShen(sourceCardMap);
     const {caiShen} = sourceCardMap
+    console.warn("caiShen:", caiShen)
 
     const lastTakeCardAndCaiShen = {lastTakeCard, caiShen}
     const checkHuFuncArray = [
