@@ -1048,7 +1048,7 @@ class TableState implements Serializable {
           if (ok) {
             player.sendMessage('game/huReply', {ok: true, data: {card}});
             this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
-            await this.gameOver();
+            // await this.gameOver();
             this.logger.info('hu  player %s zimo gameover', index)
           } else {
             player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
