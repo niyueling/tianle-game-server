@@ -138,9 +138,11 @@ const HuPaiDetect = {
   combineOtherProps(originCountMap, events, result) {
     const {first, alreadyTakenCard, haiDi, takeSelfCard, gang, qiangGang, qiaoXiang, caiShen} = originCountMap
     let caiCount = 0;
-    caiShen.map((v) => {
-      caiCount += originCountMap[v];
-    })
+    if (caiShen) {
+      caiShen.map((v) => {
+        caiCount += originCountMap[v];
+      })
+    }
     const clearCaiShenHolder2Flat = () => {
       let flatCards = []
       for (let groupName in result.huCards) {
@@ -257,11 +259,11 @@ const HuPaiDetect = {
 
     const cards = sourceCountMap.slice()
 
-    caiShen.map((v) => {
-      cards[v] = 0;
-    })
-
-    console.warn("caiCount", caiCount)
+    if (caiShen) {
+      caiShen.map((v) => {
+        cards[v] = 0;
+      })
+    }
 
     for (let i = 0; i < cards.length; i++) {
       switch (cards[i]) {
