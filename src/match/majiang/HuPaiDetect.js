@@ -55,13 +55,6 @@ function spreadCardAndCaiShen(countMap) {
 
   cards[Enums.bai] = 0;
 
-  console.warn({
-    cards,
-    caiCount,
-    caiShen,
-    lastTakeCard,
-    baiCount
-  });
 
   return {
     cards,
