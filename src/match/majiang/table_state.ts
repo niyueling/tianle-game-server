@@ -995,14 +995,12 @@ class TableState implements Serializable {
 
       if (this.turn !== turn) {
         player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huParamTurnInvaid});
-      } else if (!this.stateData[Enums.hu]) {
-        player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "stateData not exists"}});
       } else {
         const recordCard = this.stateData.card;
 
         try {
             const isJiePao = this.state === stateWaitAction &&
-                recordCard === card &&
+                recordCard === card && this.stateData[Enums.hu] &&
                 this.stateData[Enums.hu].contains(player)
 
             const isZiMo = this.state === stateWaitDa && recordCard === card
