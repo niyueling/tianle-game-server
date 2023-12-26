@@ -800,60 +800,64 @@ class TableState implements Serializable {
         return
       }
 
-      this.actionResolver.requestAction(
-        player, 'gang',
-        () => {
-          const ok = player.gangByPlayerDa(card, this.lastDa);
-          if (ok) {
-            this.turn++;
-            const from = this.atIndex(this.lastDa)
-            const me = this.atIndex(player)
-            player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
-            for (let i = 1; i < 4; i++) {
-              const playerIndex = (from + i) % this.players.length
-              if (playerIndex === me) {
-                break
+      try{
+        this.actionResolver.requestAction(
+          player, 'gang',
+          () => {
+            const ok = player.gangByPlayerDa(card, this.lastDa);
+            if (ok) {
+              this.turn++;
+              const from = this.atIndex(this.lastDa)
+              const me = this.atIndex(player)
+              player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
+              for (let i = 1; i < 4; i++) {
+                const playerIndex = (from + i) % this.players.length
+                if (playerIndex === me) {
+                  break
+                }
+                this.players[playerIndex].pengForbidden = []
               }
-              this.players[playerIndex].pengForbidden = []
-            }
 
-            this.room.broadcast(
-              'game/oppoGangByPlayerDa',
-              {ok: true, data: {card, index, turn, from}},
-              player.msgDispatcher
-            );
+              this.room.broadcast(
+                'game/oppoGangByPlayerDa',
+                {ok: true, data: {card, index, turn, from}},
+                player.msgDispatcher
+              );
 
-            if (player.isTing()) {
-              logger.info('gangByOtherDa player-%s card:%s ting', index, card)
-              if (player.events[Enums.anGang] && player.events[Enums.anGang].length > 0) {
-                player.sendMessage('game/showAnGang',
-                  {ok: true, data: {index, cards: player.events[Enums.anGang]}})
-                this.room.broadcast('game/oppoShowAnGang',
-                  {ok: true, data: {index, cards: player.events[Enums.anGang]}}
-                  , player.msgDispatcher)
+              if (player.isTing()) {
+                logger.info('gangByOtherDa player-%s card:%s ting', index, card)
+                if (player.events[Enums.anGang] && player.events[Enums.anGang].length > 0) {
+                  player.sendMessage('game/showAnGang',
+                    {ok: true, data: {index, cards: player.events[Enums.anGang]}})
+                  this.room.broadcast('game/oppoShowAnGang',
+                    {ok: true, data: {index, cards: player.events[Enums.anGang]}}
+                    , player.msgDispatcher)
+                }
               }
-            }
-            logger.info('gangByOtherDa player-%s card:%s gang ok, take card', index, card)
+              logger.info('gangByOtherDa player-%s card:%s gang ok, take card', index, card)
 
-            const nextCard = this.consumeCard(player);
-            const msg = player.gangTakeCard(this.turn, nextCard);
-            if (msg) {
-              this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
-              this.state = stateWaitDa;
-              this.stateData = {da: player, card: nextCard, msg};
+              const nextCard = this.consumeCard(player);
+              const msg = player.gangTakeCard(this.turn, nextCard);
+              if (msg) {
+                this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
+                this.state = stateWaitDa;
+                this.stateData = {da: player, card: nextCard, msg};
+              }
+            } else {
+              logger.info('gangByOtherDa player-%s card:%s GangReply error:4', index, card)
+              player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
+              return;
             }
-          } else {
-            logger.info('gangByOtherDa player-%s card:%s GangReply error:4', index, card)
-            player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
-            return;
+          },
+          () => {
+            player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
           }
-        },
-        () => {
-          player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
-        }
-      )
+        )
 
-      this.actionResolver.tryResolve()
+        this.actionResolver.tryResolve()
+      } catch(e) {
+        console.warn(this.actionResolver);
+      }
     })
 
     player.on(Enums.gangBySelf, (turn, card) => {
