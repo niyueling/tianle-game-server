@@ -60,7 +60,7 @@ function spreadCardAndCaiShen(countMap) {
 const CAISHEN_HOLDER = -999
 
 const HuPaiDetect = {
-  backup: (new Array(38)).fill(0),
+  backup: (new Array(52)).fill(0),
   check(originCountMap, events, rule, seatIndex) {
     return this.checkHuType(originCountMap, events, seatIndex, rule)
   },

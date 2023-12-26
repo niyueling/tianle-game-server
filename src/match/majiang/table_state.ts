@@ -1090,11 +1090,11 @@ class TableState implements Serializable {
               this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
               logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
             })
+
+            this.actionResolver.tryResolve()
           } else {
             player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
           }
-
-          this.actionResolver.tryResolve()
         } else if (this.state === stateQiangGang) {
           if (this.stateData.who === player && turn === this.stateData.turn) {
             player.cards.qiangGang = true
