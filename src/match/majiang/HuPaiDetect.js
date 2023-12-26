@@ -36,18 +36,21 @@ const changShaMajiangCards =
   ];
 
 function spreadCardAndCaiShen(countMap) {
-  console.warn("countMap: ", countMap)
   const caiShen = countMap.caiShen
   const cards = countMap.slice()
   const lastTakeCard = countMap.lastTakeCard
   const baiCount = countMap[Enums.bai]
-  console.warn("cards: ", cards)
   //取出财神
-  const caiCount = cards[caiShen] || 0
-  //规避财神是白板
-  cards[caiShen] = 0
-  //白板代替财神的初始位置
-  cards[caiShen] = cards[Enums.bai]
+
+  let caiCount = 0;
+  caiShen.map((v) => {
+    caiCount += cards[v];
+    //规避财神是白板
+    cards[v] = 0;
+    //白板代替财神的初始位置
+    cards[v] = cards[Enums.bai];
+  })
+
   cards[Enums.bai] = 0
 
   return {
@@ -77,7 +80,6 @@ const HuPaiDetect = {
     let maybes = []
     const {caiCount, lastTakeCard} = spreadCardAndCaiShen(sourceCardMap);
     const {caiShen} = sourceCardMap
-    console.warn("caiShen:", caiShen)
 
     const lastTakeCardAndCaiShen = {lastTakeCard, caiShen}
     console.warn("lastTakeCardAndCaiShen:", lastTakeCardAndCaiShen)
@@ -133,7 +135,10 @@ const HuPaiDetect = {
 
   combineOtherProps(originCountMap, events, result) {
     const {first, alreadyTakenCard, haiDi, takeSelfCard, gang, qiangGang, qiaoXiang, caiShen} = originCountMap
-    const caiCount = originCountMap[caiShen]
+    let caiCount = 0;
+    caiShen.map((v) => {
+      caiCount += originCountMap[v];
+    })
     const clearCaiShenHolder2Flat = () => {
       let flatCards = []
       for (let groupName in result.huCards) {
@@ -227,7 +232,9 @@ const HuPaiDetect = {
     const caiCount = cards[caiShen]
     let baiCount = countMap[Enums.bai]
 
-    cards[caiShen] = 0
+    caiShen.map((v) => {
+      cards[v] = 0;
+    })
 
     for (let useBai = 0; useBai <= baiCount; useBai++) {
       cards[caiShen] += baiCount - useBai
@@ -248,7 +255,10 @@ const HuPaiDetect = {
 
 
     const cards = sourceCountMap.slice()
-    cards[caiShen] = 0
+
+    caiShen.map((v) => {
+      cards[v] = 0;
+    })
 
     for (let i = 0; i < cards.length; i++) {
       switch (cards[i]) {
@@ -292,7 +302,7 @@ const HuPaiDetect = {
       }
 
       //非财神 单数即为爆头
-      if (cards[lastTakeCard] % 2 === 1 && caiShen !== lastTakeCard) {
+      if (cards[lastTakeCard] % 2 === 1 && !caiShen.includes(lastTakeCard)) {
         if (cards[lastTakeCard] === 3) {
           resMap.baoTou = true
         } else {
@@ -303,7 +313,7 @@ const HuPaiDetect = {
 
       if (remainCaiCount === 2) {
         resMap.caiShenTou = true
-        if (caiShen === lastTakeCard) {
+        if (caiShen.includes(lastTakeCard)) {
           resMap.baoTou = true
         }
         duiZi.push(CAISHEN_HOLDER)
