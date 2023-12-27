@@ -1920,10 +1920,8 @@ class TableState implements Serializable {
       whom.emitter.emit(Enums.gangBySelf, turn, card)
     } else {
       player.sendMessage('game/guoReply', {ok: true, data: {}});
-      this.actionResolver.cancel(player)
-
       player.guoOption(playCard)
-
+      this.actionResolver.cancel(player)
       this.actionResolver.tryResolve()
       return;
     }
