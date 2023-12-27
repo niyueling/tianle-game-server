@@ -867,9 +867,9 @@ class TableState implements Serializable {
       } else if (this.state !== stateWaitDa) {
         logger.info(`this.state !== stateWaitDa, this.state:${this.state}, stateWaitDa:${stateWaitDa}`);
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamStateInvaid});
-      } else if (this.stateData[Enums.da] !== player) {
+      } else if (this.stateData[Enums.da]._id.toString() !== player.model._id.toString()) {
         logger.info(`this.stateData[Enums.da] !== player,
-        this.stateData[Enums.da]:${this.stateData[Enums.da].model.shortId}, player:${player.model.shortId}`);
+        this.stateData[Enums.da]:${this.stateData[Enums.da]._id.toString()}, player:${player.model._id.toString()}`);
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
       } else {
         const isAnGang = player.cards[card] >= 3
