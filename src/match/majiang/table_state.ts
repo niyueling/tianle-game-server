@@ -1403,16 +1403,15 @@ class TableState implements Serializable {
 
   nextZhuang(): PlayerState {
     const currentZhuangIndex = this.atIndex(this.zhuang)
+      console.warn("currentZhuangIndex", currentZhuangIndex);
     const huPlayers = this.players.filter(p => p.huPai())
+      console.warn("huPlayers", huPlayers);
 
     let nextZhuangIndex = currentZhuangIndex
+      console.warn("nextZhuangIndex", nextZhuangIndex);
 
-    if (huPlayers.length === 1) {
-      nextZhuangIndex = this.atIndex(huPlayers[0])
-    } else if (huPlayers.length > 1) {
-      const loser = this.players.find(p => p.events[Enums.dianPao])
-      nextZhuangIndex = this.atIndex(loser)
-    }
+    nextZhuangIndex = this.atIndex(huPlayers[0])
+      console.warn("nextZhuang", nextZhuangIndex);
 
     return this.players[nextZhuangIndex]
   }
