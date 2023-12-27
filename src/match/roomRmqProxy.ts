@@ -280,13 +280,13 @@ export default class RoomProxy {
 
         if (messageBody.name === 'room/buildInChat') {
           messageBody.payload.index = this.room.indexOf(thePlayer) || 0
-          this.room.broadcast(messageBody.name, messageBody.payload)
+          this.room.broadcast(messageBody.name, {ok: true, data: messageBody.payload})
           return
         }
 
         if (messageBody.name === 'room/sound-chat') {
           messageBody.payload.index = this.room.indexOf(thePlayer) || 0
-          this.room.broadcast(messageBody.name, messageBody.payload)
+          this.room.broadcast(messageBody.name, {ok: true, data: messageBody.payload})
           return
         }
 
