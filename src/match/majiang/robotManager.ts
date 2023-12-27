@@ -70,17 +70,13 @@ export class RobotManager extends NewRobotManager {
         console.warn(playerId, this.isPlayerGang(playerId), proxy.model.shortId)
         await proxy.gang(this.isPlayerGang(playerId))
       } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
-        console.warn("choice")
         await proxy.choice(this.isPlayerChoice(playerId))
       } else if (this.isPlayerDa(playerId)) {
         if (isHu.hu) {
-          console.warn("hu")
           await proxy.choice(Enums.hu)
         } else if (AnGangIndex) {
-          console.warn("angang")
           await proxy.gang(Enums.anGang, AnGangIndex)
         } else if (buGangIndex) {
-          console.warn("bugang")
           await proxy.gang(Enums.buGang, buGangIndex)
         } else {
           if (this.waitInterval[key] >= this.getWaitSecond()) {

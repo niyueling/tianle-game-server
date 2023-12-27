@@ -422,7 +422,7 @@ class TableState implements Serializable {
       const stateDataName = ['player', 'pengGang', 'HangUpPeng', 'gangPlayer', 'hangUpBu', 'HangUpGang', 'whom',
         'who', 'HangUpChi']
       for (const name of stateDataName) {
-        if (this.stateData[name] && this.stateData[name]._id === p._id) {
+        if (this.stateData[name] && this.stateData[name]._id.toString() === p._id.toString()) {
           this.stateData[name] = p;
         }
       }
@@ -430,9 +430,9 @@ class TableState implements Serializable {
       for (const name of stateDataArrayNames) {
         if (this.stateData[name]) {
           for (let j = 0; j < this.stateData[name].length; j++) {
-            if (this.stateData[name][j]._id === p._id)
-              console.log(name, ` <= name ${p.model.name}, shortId  `, p.model.shortId)
-            if (this.stateData[name][j]._id === p._id) {
+            if (this.stateData[name][j]._id.toString() === p._id.toString())
+              console.log(name, ` <= name ${p.model.nickname}, shortId  `, p.model.shortId)
+            if (this.stateData[name][j]._id.toString() === p._id.toString()) {
               this.stateData[name][j] = p
             }
           }
@@ -644,7 +644,6 @@ class TableState implements Serializable {
       player.deposit(() => {
         const card = msg.card
         const todo = player.ai.onCanDoSomething(msg, player.cards, card)
-        console.log(`${player.model.shortId}选项:${todo}`)
         switch (todo) {
           case Enums.peng:
             player.emitter.emit(Enums.peng, this.turn, card)
@@ -1539,7 +1538,7 @@ class TableState implements Serializable {
       }
 
       this.room.broadcast('game/game-over', gameOverMsg)
-      await this.room.gameOver(nextZhuang.model._id, states)
+      await this.room.gameOver(nextZhuang._id.toString(), states)
       this.logger.info('game/game-over  %s', JSON.stringify(gameOverMsg))
     }
     this.logger.close()
@@ -2028,7 +2027,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    logger.info(`${player.model.shortId}游戏操作:${todo}`);
+    console.warn(`${player.model.shortId}游戏操作:${todo}`);
 
     switch (todo) {
       case Enums.peng:
