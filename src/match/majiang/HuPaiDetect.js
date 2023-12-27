@@ -233,11 +233,12 @@ const HuPaiDetect = {
     const allSearch = true
     const cards = countMap.slice()
     const caiShen = countMap.caiShen
-    const caiCount = cards[caiShen]
+    let caiCount = 0;
     let baiCount = countMap[Enums.bai]
 
     if (caiShen) {
       caiShen.map((v) => {
+        caiCount += cards[v];
         cards[v] = 0;
       })
     }
@@ -376,13 +377,11 @@ const HuPaiDetect = {
         delete option.multiOptions
         result.options.push(option)
       }
-      //console.log(`${__filename}:315 huRecur`, result)
+
       return exit        //   递归退出条件：如果没有剩牌，则和牌返回。
     }
     let i = 1;
-    for (; !countMap[i] && i < 53; i++) ;    //   找到有牌的地方，i就是当前牌,   PAI[i]是个数
-
-    // console.log("i   =   ", i);                         //   跟踪信息
+    for (; !countMap[i] && i < 53; i++);    //   找到有牌的地方，i就是当前牌,   PAI[i]是个数
 
     //   4张组合(杠子)
     if (countMap[i] === 4) {                               //   如果当前牌数等于4张
@@ -458,7 +457,7 @@ const HuPaiDetect = {
       useJiang.push(CAISHEN_HOLDER)
       result.caiShenTou = true
       result.wuCai = false
-      if (lastTakeCardAndCaiShen.lastTakeCard === lastTakeCardAndCaiShen.caiShen) {
+      if (lastTakeCardAndCaiShen.caiShen.includes(lastTakeCardAndCaiShen.lastTakeCard)) {
         result.baoTou = true
       }
       if (this.huRecur(countMap, true, caiCount - 2, lastTakeCardAndCaiShen, result, allSearch)) {
@@ -546,7 +545,7 @@ const HuPaiDetect = {
       countMap[i + 1]--;
       shunZi.push(i, i + 1, CAISHEN_HOLDER)
       const originGuiWeiCount = result.guiWeiCount
-      if (lastTakeCardAndCaiShen.caiShen === i + 2) {
+      if (lastTakeCardAndCaiShen.caiShen.includes(i + 2)) {
         result.caiShenGuiWei = true
         result.wuCai = true
         result.guiWeiCount += 1
@@ -569,7 +568,7 @@ const HuPaiDetect = {
       shunZi.push(CAISHEN_HOLDER, i, i + 1)
       result.wuCai = false
       const originGuiWeiCount = result.guiWeiCount
-      if (lastTakeCardAndCaiShen.caiShen === i - 1) {
+      if (lastTakeCardAndCaiShen.caiShen.includes(i - 1)) {
         result.caiShenGuiWei = true
         result.wuCai = true
         result.guiWeiCount += 1
@@ -591,7 +590,7 @@ const HuPaiDetect = {
       countMap[i + 2]--;
       shunZi.push(i, CAISHEN_HOLDER, i + 2)
       const originGuiWeiCount = result.guiWeiCount
-      if (lastTakeCardAndCaiShen.caiShen === i + 1) {
+      if (lastTakeCardAndCaiShen.caiShen.includes(i + 1)) {
         result.caiShenGuiWei = true
         result.wuCai = true
         result.guiWeiCount += 1
@@ -712,7 +711,10 @@ const HuPaiDetect = {
     const {lastTakeCard} = countMap
     const {cards, caiShen, baiCount} = spreadCardAndCaiShen(countMap)
     cards[Enums.bai] = baiCount
-    cards[caiShen] = 0
+
+      caiShen.map((v) => {
+          cards[v] = 0
+      })
 
     for (let i = 1; i < 53; i++) {
       if (cards[i] === 3) {
@@ -796,7 +798,7 @@ const HuPaiDetect = {
     const {caiShen} = sourceCountMap
     let color = 0
     const each = (card) => {
-      if (card == caiShen) return
+      if (caiShen.includes(card)) return
       if (card < Enums.dong) {
         color = 1
       }
@@ -1021,7 +1023,7 @@ const HuPaiDetect = {
     let feng = false;
     const recordSe = (card) => {
       if (card === Enums.bai) {
-        card = caiShen
+        card = caiShen[0]
       }
       switch (getType(card)) {
         case 0:
@@ -1043,19 +1045,19 @@ const HuPaiDetect = {
     flatCards.forEach(recordSe)
 
     events[Enums.peng] && events[Enums.peng].forEach(x => {
-      if (checkQingYiSe && x == Enums.bai) x = caiShen
+      if (checkQingYiSe && x == Enums.bai) x = caiShen[0]
       recordSe(x);
     });
     events[Enums.chi] && events[Enums.chi].forEach(combol => {
-      if (checkQingYiSe && combol[0] == Enums.bai) combol[0] = caiShen
+      if (checkQingYiSe && combol[0] == Enums.bai) combol[0] = caiShen[0]
       recordSe(combol[0]);
     });
     events[Enums.mingGang] && events[Enums.mingGang].forEach(x => {
-      if (checkQingYiSe && x == Enums.bai) x = caiShen
+      if (checkQingYiSe && x == Enums.bai) x = caiShen[0]
       recordSe(x);
     });
     events[Enums.anGang] && events[Enums.anGang].forEach(x => {
-      if (checkQingYiSe && x == Enums.bai) x = caiShen
+      if (checkQingYiSe && x == Enums.bai) x = caiShen[0]
       recordSe(x);
     });
 
@@ -1186,7 +1188,7 @@ const HuPaiDetect = {
     const qiDuiQiaoXiangCards = Object.assign([], sourceCards)
     let canAddCard = -1
     for (let i = 1; i < Enums.bai; i++) {
-      if (qiDuiQiaoXiangCards[i] == 0 && i !== caiShen) {
+      if (qiDuiQiaoXiangCards[i] == 0 && !caiShen.includes(i)) {
         canAddCard = i
         break
       }
