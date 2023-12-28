@@ -1989,6 +1989,7 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       if (p) {
+          console.warn("balance: ", p.balance)
         p.balance *= times * conf.Ante;
         if (p.balance > 0) {
           winRuby += p.balance;
@@ -2018,9 +2019,8 @@ class TableState implements Serializable {
         p.balance = Math.floor(p.balance / winRuby * lostRuby * -1);
         console.log('after balance', p.balance, p.model.shortId)
       }
-      // tempScore = Math.floor(tempScore / winRuby * lostRuby * -1);
+
     }
-    // return {winner, score: tempScore};
   }
 
   getPlayerByShortId(shortId) {
