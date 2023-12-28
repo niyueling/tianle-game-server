@@ -530,6 +530,8 @@ class PlayerState implements Serializable {
       canHu = check.hu && check.fan > this.huForbiddenFan
     }
 
+    console.warn("canHu: ", canHu);
+
     if (canHu) {
       const refMap = map
       if (refMap.hu) {
@@ -543,6 +545,8 @@ class PlayerState implements Serializable {
         }
       }
       refMap.check = check
+
+      console.warn("refMap: ", refMap);
 
       return refMap
     } else {
