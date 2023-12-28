@@ -1330,7 +1330,6 @@ class TableState implements Serializable {
     }
 
     if (check[Enums.pengGang] || check[Enums.hu]) {
-      if (check[Enums.hu]) console.warn("check-end: ",check[Enums.hu]);
       this.state = stateWaitAction;
       this.stateData = check;
       this.stateData.hangUp = [];
@@ -1417,7 +1416,6 @@ class TableState implements Serializable {
             nextZhuangIndex = this.atIndex(huPlayers[random])
         }
 
-        console.warn("nextZhuangIndex", nextZhuangIndex)
         return this.players[nextZhuangIndex]
     }
 

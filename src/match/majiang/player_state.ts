@@ -515,12 +515,6 @@ class PlayerState implements Serializable {
     let check = this.checkHuState(card)
     let canHu;
 
-    console.warn("check: ", check);
-
-    console.warn("this.rule: ", this.rule);
-
-    console.warn("this.huForbiddenFan: ", this.huForbiddenFan);
-
     let newHuForbidCards = []
     if (ignore && check.hu) {
       canHu = true
@@ -529,8 +523,6 @@ class PlayerState implements Serializable {
     } else {
       canHu = check.hu && check.fan > this.huForbiddenFan
     }
-
-    console.warn("canHu: ", canHu);
 
     if (canHu) {
       const refMap = map
@@ -545,8 +537,6 @@ class PlayerState implements Serializable {
         }
       }
       refMap.check = check
-
-      console.warn("refMap: ", refMap);
 
       return refMap
     } else {
@@ -839,7 +829,7 @@ class PlayerState implements Serializable {
       this.record('da', card)
       return true
     }
-    console.log('my cards', JSON.stringify(this.cards));
+
     return false
   }
 
