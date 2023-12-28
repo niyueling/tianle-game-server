@@ -525,7 +525,7 @@ class PlayerState implements Serializable {
     if (ignore && check.hu) {
       canHu = true
       console.warn("check.hu-1: ", 1);
-    } else if (!this.rule.keJiePao) {
+    } else if (this.rule.keJiePao) {
       canHu = check.fan > 1 && check.fan > this.huForbiddenFan
       console.warn("check.hu-2: ", 1);
     } else {
