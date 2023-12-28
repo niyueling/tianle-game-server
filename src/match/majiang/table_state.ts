@@ -1268,6 +1268,7 @@ class TableState implements Serializable {
         if (!check.hu) check.hu = []
         check.hu.push(p)
         p.huInfo = r.check
+        console.warn("huInfo: ", p.huInfo);
       }
     }
 
@@ -1298,6 +1299,7 @@ class TableState implements Serializable {
 
     if (check[Enums.hu]) {
       for (const p of check[Enums.hu]) {
+        console.warn("huInfo-1: ", p.huInfo);
         this.actionResolver.appendAction(p, 'hu', p.huInfo)
       }
     }
@@ -1328,6 +1330,7 @@ class TableState implements Serializable {
     }
 
     if (check[Enums.pengGang] || check[Enums.hu]) {
+      if (check[Enums.hu]) console.warn("check-end: ",check[Enums.hu]);
       this.state = stateWaitAction;
       this.stateData = check;
       this.stateData.hangUp = [];
