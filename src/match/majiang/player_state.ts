@@ -524,13 +524,10 @@ class PlayerState implements Serializable {
     let newHuForbidCards = []
     if (ignore && check.hu) {
       canHu = true
-      console.warn("check.hu-1: ", 1);
     } else if (this.rule.keJiePao) {
       canHu = check.fan > 1 && check.fan > this.huForbiddenFan
-      console.warn("check.hu-2: ", 1);
     } else {
       canHu = check.hu && check.fan > this.huForbiddenFan
-      console.warn("check.hu-3: ", 1);
     }
 
     console.warn("canHu: ", canHu);
