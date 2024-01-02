@@ -513,6 +513,8 @@ class TableState implements Serializable {
       cards.push(this.consumeCard(player));
     }
 
+    console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}`)
+
     return cards;
   }
 
