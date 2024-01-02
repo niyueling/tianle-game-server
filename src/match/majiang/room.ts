@@ -557,7 +557,6 @@ class Room extends RoomBase {
       this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
     }
     return true
-    // }
   }
 
   async broadcastRejoin(reconnectPlayer) {
@@ -609,10 +608,10 @@ class Room extends RoomBase {
     if (!this.canJoin(newJoinPlayer)) {
       return false
     }
+
     this.listen(newJoinPlayer);
     newJoinPlayer.room = this
     this.arrangePos(newJoinPlayer, false)
-
     this.mergeOrder()
 
     this.initScore(newJoinPlayer)
