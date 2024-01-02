@@ -769,6 +769,7 @@ class PlayerState implements Serializable {
     if (checkResult.hu) {
       checkResult.zhuang = this.zhuang || dianPaoPlayer.zhuang
       this.recordGameEvent(Enums.jiePao, card)
+      this.recordGameEvent(Enums.huCards, card)
       this.recordGameEvent(Enums.hu, checkResult)
 
       this.room.recordPlayerEvent(`fan${checkResult.fan}`, this.model._id)
@@ -794,6 +795,7 @@ class PlayerState implements Serializable {
       if (checkResult.hu) {
         checkResult.zhuang = this.zhuang
 
+        this.recordGameEvent(Enums.huCards, card)
         this.recordGameEvent(Enums.hu, checkResult)
         this.recordGameEvent(Enums.zimo, card)
         this.emitter.emit('recordZiMo', checkResult)
@@ -808,7 +810,6 @@ class PlayerState implements Serializable {
   }
 
   daPai(card) {
-
     const forbidCards = this.forbidCards || []
     if (this.getCardsArray().length > 2) {
       if (forbidCards.indexOf(card) >= 0 && card !== this.freeCard) {
