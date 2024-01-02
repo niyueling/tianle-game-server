@@ -1017,7 +1017,7 @@ class TableState implements Serializable {
                             if (chengbaoStarted) {
                                 this.lastDa.recordGameEvent(Enums.chengBao, {});
                             }
-                            this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+                            this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, from, index}}, player.msgDispatcher);
                             const huPlayerIndex = this.atIndex(player)
                             for (let i = 1; i < this.players.length; i++) {
                                 const playerIndex = (huPlayerIndex + i) % this.players.length
@@ -1068,7 +1068,7 @@ class TableState implements Serializable {
                 if (ok) {
                   from = this.atIndex(this.lastDa);
                     player.sendMessage('game/huReply', {ok: true, data: {card, from}});
-                    this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+                    this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, from, index}}, player.msgDispatcher);
                     await this.gameOver(false);
                     this.logger.info('hu  player %s zimo gameover', index)
 
@@ -1110,7 +1110,7 @@ class TableState implements Serializable {
                         player.sendMessage('game/huReply', {ok: true, data: {card, from}})
                         this.stateData.whom.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
                         // this.stateData.whom.recordGameEvent(Enums.chengBao, {})
-                        this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+                        this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, from, index}}, player.msgDispatcher);
                         const huPlayerIndex = this.atIndex(player)
                         for (let i = 1; i < this.players.length; i++) {
                             const playerIndex = (huPlayerIndex + i) % this.players.length
