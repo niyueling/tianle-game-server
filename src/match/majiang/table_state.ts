@@ -854,7 +854,7 @@ class TableState implements Serializable {
 
         this.actionResolver.tryResolve()
       } catch(e) {
-        console.warn(this.actionResolver);
+        console.warn(this.actionResolver, e);
       }
     })
 

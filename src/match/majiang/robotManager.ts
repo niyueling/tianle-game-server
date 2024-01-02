@@ -67,7 +67,6 @@ export class RobotManager extends NewRobotManager {
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
       if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
-        console.warn(playerId, this.isPlayerGang(playerId), proxy.model.shortId)
         await proxy.gang(this.isPlayerGang(playerId))
       } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
         await proxy.choice(this.isPlayerChoice(playerId))
