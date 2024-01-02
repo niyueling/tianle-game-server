@@ -461,7 +461,7 @@ class TableState implements Serializable {
     return card
   }
 
-  consumeGangOrKeCard(cardNum?) {
+  async consumeGangOrKeCard(cardNum?) {
     const isGang = Math.random() < 0.3;
 
     const cardNumber = isGang && !cardNum ? 4 : 3;
@@ -495,17 +495,17 @@ class TableState implements Serializable {
     return cards;
   }
 
-  take13Cards(player: PlayerState) {
+  async take13Cards(player: PlayerState) {
     let cards = []
 
     for (let i = 0; i < 3; i++) {
-      const consumeCards = this.consumeGangOrKeCard();
+      const consumeCards = await this.consumeGangOrKeCard();
       cards = [...cards, ...consumeCards];
     }
 
     const residueCards = 13 - cards.length;
     if (residueCards >= 3) {
-      const consumeCards = this.consumeGangOrKeCard(3);
+      const consumeCards = await this.consumeGangOrKeCard(3);
       cards = [...cards, ...consumeCards];
     }
 
@@ -529,7 +529,7 @@ class TableState implements Serializable {
     const needShuffle = this.room.shuffleData.length > 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i]
-      const cards13 = this.take13Cards(p)
+      const cards13 = await this.take13Cards(p)
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle)
     }
 
@@ -1029,7 +1029,7 @@ class TableState implements Serializable {
                                 if (nextPlayer.checkJiePao(card)) {
                                     nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa)
                                     nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
-                                    this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index: playerIndex}}, nextPlayer.msgDispatcher)
+                                    this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, from, index: playerIndex}}, nextPlayer.msgDispatcher)
                                 }
                             }
                             await this.gameOver(false);
