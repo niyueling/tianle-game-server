@@ -1038,23 +1038,30 @@ class TableState implements Serializable {
                             logger.info('hu player %s gameover', index)
 
                             this.turn++;
-                            const xiajia= this.players[(index + 1) % this.players.length]
-
+                            const xiajia= this.players[(index + 1) % this.players.length];
+                            console.warn(`xiajia: ${xiajia.model._id}`);
                             const env = {card, from, turn: this.turn}
-                            this.actionResolver = new ActionResolver(env, () => {
-                                const newCard = this.consumeCard(xiajia)
-                                const msg = xiajia.takeCard(this.turn, newCard)
 
-                                if (!msg) {
-                                    console.error("consume card error msg ", msg)
-                                    return;
-                                }
-                                this.state = stateWaitDa;
-                                this.stateData = {da: xiajia, card: newCard, msg};
-                                const sendMsg = {index: this.players.indexOf(xiajia)}
-                                this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                                logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                          try {
+                            this.actionResolver = new ActionResolver(env, () => {
+                              const newCard = this.consumeCard(xiajia)
+                              const msg = xiajia.takeCard(this.turn, newCard)
+
+                              if (!msg) {
+                                console.error("consume card error msg ", msg)
+                                return;
+                              }
+                              this.state = stateWaitDa;
+                              this.stateData = {da: xiajia, card: newCard, msg};
+                              const sendMsg = {index: this.players.indexOf(xiajia)}
+                              this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                              logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
                             })
+
+                            this.actionResolver.tryResolve()
+                          } catch(e) {
+                              console.warn(e);
+                          }
                         } else {
                             player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "jiePao"}});
                         }
@@ -1076,24 +1083,30 @@ class TableState implements Serializable {
 
                     this.turn++;
                     const xiajia = this.players[(index + 1) % this.players.length]
+                  console.warn(`xiajia: ${xiajia.model._id}`);
 
                     const env = {card, from, turn: this.turn}
+                  try {
                     this.actionResolver = new ActionResolver(env, () => {
-                        const newCard = this.consumeCard(xiajia)
-                        const msg = xiajia.takeCard(this.turn, newCard)
+                      const newCard = this.consumeCard(xiajia)
+                      const msg = xiajia.takeCard(this.turn, newCard)
 
-                        if (!msg) {
-                            console.error("consume card error msg ", msg)
-                            return;
-                        }
-                        this.state = stateWaitDa;
-                        this.stateData = {da: xiajia, card: newCard, msg};
-                        const sendMsg = {index: this.players.indexOf(xiajia)}
-                        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                        logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                      if (!msg) {
+                        console.error("consume card error msg ", msg)
+                        return;
+                      }
+                      this.state = stateWaitDa;
+                      this.stateData = {da: xiajia, card: newCard, msg};
+                      const sendMsg = {index: this.players.indexOf(xiajia)}
+                      this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
                     })
 
                     this.actionResolver.tryResolve()
+                  } catch(e) {
+                      console.warn(e);
+                  }
+
                 } else {
                     player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
                 }
