@@ -229,6 +229,7 @@ class PlayerState implements Serializable {
     this.msgDispatcher = userSocket
     this.events = {}
     this.dropped = []
+    this.huCards = []
     this.lastDa = false
     // 不激活旧的机器人托管
     this.onDeposit = false
