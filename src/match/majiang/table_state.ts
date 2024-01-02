@@ -1038,7 +1038,7 @@ class TableState implements Serializable {
                             logger.info('hu player %s gameover', index)
 
                             this.turn++;
-                            const xiajia= this.players[(index + 1) % this.players.length];
+                            const xiajia= this.players[(from + 1) % this.players.length];
                             console.warn(`xiajia: ${xiajia.model._id}`);
                             const env = {card, from, turn: this.turn}
 
