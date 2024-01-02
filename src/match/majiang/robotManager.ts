@@ -72,23 +72,22 @@ export class RobotManager extends NewRobotManager {
       } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
         await proxy.choice(this.isPlayerChoice(playerId))
       } else if (this.isPlayerDa(playerId)) {
-        if (isHu.hu) {
-          await proxy.choice(Enums.hu)
-        } else if (AnGangIndex) {
-          await proxy.gang(Enums.anGang, AnGangIndex)
-        } else if (buGangIndex) {
-          await proxy.gang(Enums.buGang, buGangIndex)
-        } else {
-          if (this.waitInterval[key] >= this.getWaitSecond()) {
+        if (this.waitInterval[key] >= this.getWaitSecond()) {
+          if (isHu.hu) {
+            await proxy.choice(Enums.hu)
+          } else if (AnGangIndex) {
+            await proxy.gang(Enums.anGang, AnGangIndex)
+          } else if (buGangIndex) {
+            await proxy.gang(Enums.buGang, buGangIndex)
+          } else {
             await proxy.playCard();
-            // 重新计时
-            this.waitInterval[key] = 0;
           }
+
+          this.waitInterval[key] = 0;
         }
 
         break;
       } else {
-        // console.warn("guo", playerId)
         // 过
         if (this.isPlayerGuo(playerId)) {
           await proxy.guo();
