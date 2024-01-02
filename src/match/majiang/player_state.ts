@@ -1002,6 +1002,7 @@ class PlayerState implements Serializable {
     if (oldTbl) {
       oldTbl.push(info)
     } else {
+      console.warn(`recordGameEvent:key=${key},value=${info}`)
       this.events[key] = [info]
     }
     if (key === 'chi' || key === 'peng' || key === 'mingGang' || key === 'anGang') {
