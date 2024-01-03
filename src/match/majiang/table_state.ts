@@ -396,7 +396,6 @@ class TableState implements Serializable {
 
     this.setGameRecorder(new GameRecorder(this))
     this.stateData = {}
-    this.sleepTime = 2000;
   }
 
   toJSON() {
@@ -534,6 +533,7 @@ class TableState implements Serializable {
 
   async fapai() {
     this.shuffle()
+    this.sleepTime = 0;
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
@@ -1269,11 +1269,11 @@ class TableState implements Serializable {
       return
     }
 
-    const ok = player.daPai(card)
+    const ok = player.daPai(card);
     if (ok) {
-      this.lastDa = player
-      player.cancelTimeout()
-      player.sendMessage('game/daReply', {ok: true, data: card})
+      this.lastDa = player;
+      player.cancelTimeout();
+      player.sendMessage('game/daReply', {ok: true, data: card});
 
       // if (player.isTing()) {
       //   if (player.events[Enums.anGang] && player.events[Enums.anGang].length > 0) {
@@ -1316,21 +1316,27 @@ class TableState implements Serializable {
         check = p.checkPengGang(card, check)
       }
     }
-    const env = {card, from, turn: this.turn}
-    this.actionResolver = new ActionResolver(env, () => {
-      const newCard = this.consumeCard(xiajia)
-      const msg = xiajia.takeCard(this.turn, newCard)
 
-      if (!msg) {
-        console.error("consume card error msg ", msg)
-        return;
-      }
-      this.state = stateWaitDa;
-      this.stateData = {da: xiajia, card: newCard, msg};
-      const sendMsg = {index: this.players.indexOf(xiajia)}
-      this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-    })
+    // 延迟2秒给下家摸牌
+    const nextDo = () => {
+      const env = {card, from, turn: this.turn}
+      this.actionResolver = new ActionResolver(env, () => {
+        const newCard = this.consumeCard(xiajia)
+        const msg = xiajia.takeCard(this.turn, newCard)
+
+        if (!msg) {
+          console.error("consume card error msg ", msg)
+          return;
+        }
+        this.state = stateWaitDa;
+        this.stateData = {da: xiajia, card: newCard, msg};
+        const sendMsg = {index: this.players.indexOf(xiajia)}
+        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+        logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+      })
+    }
+
+    setTimeout(nextDo, 2000);
 
     if (check[Enums.hu]) {
       for (const p of check[Enums.hu]) {
