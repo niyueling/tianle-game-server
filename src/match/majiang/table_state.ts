@@ -155,7 +155,7 @@ export function cardChangeDebugger<T extends new(...args: any[]) => {
     }
 
     changePlayerCards(player, cards) {
-      for (let i = 0; i < 38; i++) {
+      for (let i = 0; i < 53; i++) {
         player.cards[i] = 0
       }
       cards.forEach(c => {
@@ -254,19 +254,19 @@ export class ActionResolver implements Serializable {
 
   tryResolve() {
     for (const ao of this.actionsOptions) {
-      if (ao.state === 'waiting') return
+      if (ao.state === 'waiting') return;
 
       if (ao.state === 'cancel') continue;
 
       if (ao.state === 'try') {
-        this.notifyWaitingPlayer()
-        ao.onResolve()
-        this.fireAndCleanAllAfterAction()
-        return
+        this.notifyWaitingPlayer();
+        ao.onResolve();
+        this.fireAndCleanAllAfterAction();
+        return;
       }
     }
 
-    this.next()
+    this.next();
   }
 
   notifyWaitingPlayer() {
@@ -539,8 +539,8 @@ class TableState implements Serializable {
 
     const needShuffle = this.room.shuffleData.length > 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
-      const p = this.players[i]
-      const cards13 = await this.take13Cards(p)
+      const p = this.players[i];
+      const cards13 = await this.take13Cards(p);
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle)
     }
 
@@ -1290,90 +1290,94 @@ class TableState implements Serializable {
       return
     }
 
-    from = this.atIndex(this.lastDa);
-    this.turn++;
+    // 打牌后，延迟2秒给其他用户发牌
+    const nextDo = () => {
+      from = this.atIndex(this.lastDa);
+      this.turn++;
 
-    let check: HuCheck = {card}
-    for (let j = 1; j < this.players.length; j++) {
-      const result = {card}
-      const i = (index + j) % this.players.length
-      const p = this.players[i]
-      const r = p.markJiePao(card, result)
-      if (r.hu) {
-        if (!check.hu) check.hu = []
-        check.hu.push(p)
-        p.huInfo = r.check
-        console.warn("huInfo: ", p.huInfo);
+      console.warn(`from: ${from}, turn: ${this.turn}`);
+
+      let check: HuCheck = {card}
+      for (let j = 1; j < this.players.length; j++) {
+        const result = {card}
+        const i = (index + j) % this.players.length
+        const p = this.players[i]
+        const r = p.markJiePao(card, result)
+        if (r.hu) {
+          if (!check.hu) check.hu = []
+          check.hu.push(p)
+          p.huInfo = r.check
+        }
       }
+
+      const xiajia = this.players[(index + 1) % this.players.length]
+
+      for (let j = 1; j < this.players.length; j++) {
+        const i = (index + j) % this.players.length
+        const p = this.players[i]
+        if (p.contacted(this.lastDa) < 2) {
+          check = p.checkPengGang(card, check)
+        }
+      }
+
+      const env = {card, from, turn: this.turn}
+      this.actionResolver = new ActionResolver(env, () => {
+        const newCard = this.consumeCard(xiajia)
+        const msg = xiajia.takeCard(this.turn, newCard)
+
+        if (!msg) {
+          console.error("consume card error msg ", msg)
+          return;
+        }
+        this.state = stateWaitDa;
+        this.stateData = {da: xiajia, card: newCard, msg};
+        const sendMsg = {index: this.players.indexOf(xiajia)}
+        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+        logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+      })
+
+      if (check[Enums.hu]) {
+        for (const p of check[Enums.hu]) {
+          console.warn("huInfo-1: ", p.huInfo);
+          this.actionResolver.appendAction(p, 'hu', p.huInfo)
+        }
+      }
+
+      if (check[Enums.pengGang]) {
+        if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
+        if (check[Enums.gang]) {
+          const p = check[Enums.gang]
+          const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())]
+          p.gangForbid.push(card)
+          this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
+        }
+      }
+
+      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
+      for (let i = 1; i < this.players.length; i++) {
+
+        const j = (from + i) % this.players.length;
+        const p = this.players[j]
+
+        const msg = this.actionResolver.allOptions(p)
+
+        if (msg) {
+          p.record('choice', card, msg)
+          // 碰、杠等
+          p.sendMessage('game/canDoSomething', {ok: true, data: msg})
+        }
+      }
+
+      if (check[Enums.pengGang] || check[Enums.hu]) {
+        this.state = stateWaitAction;
+        this.stateData = check;
+        this.stateData.hangUp = [];
+      }
+
+      this.actionResolver.tryResolve()
     }
 
-    const xiajia = this.players[(index + 1) % this.players.length]
-
-    for (let j = 1; j < this.players.length; j++) {
-      const i = (index + j) % this.players.length
-      const p = this.players[i]
-      if (p.contacted(this.lastDa) < 2) {
-        check = p.checkPengGang(card, check)
-      }
-    }
-
-    // 延迟2秒给下家摸牌
-
-    const env = {card, from, turn: this.turn}
-    this.actionResolver = new ActionResolver(env, () => {
-      const newCard = this.consumeCard(xiajia)
-      const msg = xiajia.takeCard(this.turn, newCard)
-
-      if (!msg) {
-        console.error("consume card error msg ", msg)
-        return;
-      }
-      this.state = stateWaitDa;
-      this.stateData = {da: xiajia, card: newCard, msg};
-      const sendMsg = {index: this.players.indexOf(xiajia)}
-      this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-    })
-
-    if (check[Enums.hu]) {
-      for (const p of check[Enums.hu]) {
-        console.warn("huInfo-1: ", p.huInfo);
-        this.actionResolver.appendAction(p, 'hu', p.huInfo)
-      }
-    }
-
-    if (check[Enums.pengGang]) {
-      if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
-      if (check[Enums.gang]) {
-        const p = check[Enums.gang]
-        const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())]
-        p.gangForbid.push(card)
-        this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
-      }
-    }
-
-    this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
-    for (let i = 1; i < this.players.length; i++) {
-
-      const j = (from + i) % this.players.length;
-      const p = this.players[j]
-
-      const msg = this.actionResolver.allOptions(p)
-
-      if (msg) {
-        p.record('choice', card, msg)
-        // 碰、杠等
-        p.sendMessage('game/canDoSomething', {ok: true, data: msg})
-      }
-    }
-
-    if (check[Enums.pengGang] || check[Enums.hu]) {
-      this.state = stateWaitAction;
-      this.stateData = check;
-      this.stateData.hangUp = [];
-    }
-
-    this.actionResolver.tryResolve()
+    setTimeout(nextDo, 2000);
   }
 
   multiTimesSettleWithSpecial(states, specialId, times) {
