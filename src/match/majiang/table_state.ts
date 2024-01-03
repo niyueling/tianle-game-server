@@ -396,6 +396,7 @@ class TableState implements Serializable {
 
     this.setGameRecorder(new GameRecorder(this))
     this.stateData = {}
+    this.sleepTime = 2000;
   }
 
   toJSON() {
@@ -461,6 +462,15 @@ class TableState implements Serializable {
     return card
   }
 
+  async consumeSimpleCard() {
+
+    const cardIndex = --this.remainCards;
+    const card = this.cards[cardIndex];
+    this.cards.splice(cardIndex, 1);
+    this.lastTakeCard = card;
+    return card;
+  }
+
   async consumeGangOrKeCard(cardNum?) {
     const isGang = Math.random() < 0.3;
 
@@ -510,7 +520,7 @@ class TableState implements Serializable {
     }
 
     for (let i = 0; i < 13 - cards.length; i++) {
-      cards.push(this.consumeCard(player));
+      cards.push(await this.consumeSimpleCard());
     }
 
     console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}`)
@@ -524,7 +534,6 @@ class TableState implements Serializable {
 
   async fapai() {
     this.shuffle()
-    this.sleepTime = 0
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
