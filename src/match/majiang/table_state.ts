@@ -1058,9 +1058,18 @@ class TableState implements Serializable {
                   logger.info('hu player %s gameover', index)
 
                   this.turn++;
-                  const xiajia = this.players[(from + 1) % this.players.length];
-                  console.warn(`xiajia: ${xiajia.model._id}`);
-                  const env = {card, from, turn: this.turn}
+                  let xiajia = null;
+
+                  // 获取下家，需要判断用户是否已经破产
+                  for (let i = from + 1; i % this.players.length < this.players.length; i++) {
+                    if (!this.players[i].isBroke) {
+                      xiajia = this.players[i];
+                      break;
+                    }
+                  }
+
+                  console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.atIndex(xiajia)}`);
+                  const env = {card, from, turn: this.turn};
 
                   try {
                     this.actionResolver = new ActionResolver(env, () => {
