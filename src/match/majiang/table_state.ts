@@ -890,62 +890,6 @@ class TableState implements Serializable {
         this.turn++;
 
         const broadcastMsg = {turn: this.turn, card, index, isAnGang}
-        this.actionResolver = new ActionResolver({turn, card, from}, () => {
-          const nextCard = this.consumeCard(player);
-          const msg = player.gangTakeCard(this.turn, nextCard);
-          if (!msg) {
-            return;
-          }
-          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
-          this.state = stateWaitDa;
-          this.stateData = {msg, da: player, card: nextCard};
-        })
-
-        const check: IActionCheck = {card};
-
-        if (!isAnGang) {
-          const qiangGangCheck: HuCheck = {card}
-          let qiang = null
-
-          gangIndex = this.atIndex(player)
-
-          for (let i = 1; i < this.players.length; i++) {
-            const playerIndex = (gangIndex + i) % this.players.length
-            const otherPlayer = this.players[playerIndex]
-
-            if (otherPlayer != player) {
-              const r = otherPlayer.markJiePao(card, qiangGangCheck, true)
-              if (r.hu) {
-                if (!check.hu) check.hu = []
-                check.hu.push(otherPlayer)
-                otherPlayer.huInfo = r.check
-                qiang = otherPlayer
-                break
-              }
-            }
-          }
-
-          if (qiang && !this.stateData.cancelQiang) {
-            logger.info(qiang, this.stateData.cancelQiang);
-            this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
-            qiang.sendMessage('game/canDoSomething', {
-              ok: true, data: {
-                card, turn: this.turn, hu: true,
-                chi: false, chiCombol: [],
-                peng: false, gang: false, bu: false,
-              }
-            })
-
-            this.state = stateQiangGang
-            this.stateData = {
-              whom: player,
-              who: qiang,
-              event: Enums.gangBySelf,
-              card, turn: this.turn
-            }
-            return
-          }
-        }
 
         const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
         if (ok) {
@@ -954,6 +898,63 @@ class TableState implements Serializable {
             data: {card, from, gangIndex, type: isAnGang ? "anGang" : "mingGang"}
           });
           this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher);
+
+          this.actionResolver = new ActionResolver({turn, card, from}, () => {
+            const nextCard = this.consumeCard(player);
+            const msg = player.gangTakeCard(this.turn, nextCard);
+            if (!msg) {
+              return;
+            }
+            this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
+            this.state = stateWaitDa;
+            this.stateData = {msg, da: player, card: nextCard};
+          })
+
+          const check: IActionCheck = {card};
+
+          if (!isAnGang) {
+            const qiangGangCheck: HuCheck = {card}
+            let qiang = null
+
+            gangIndex = this.atIndex(player)
+
+            for (let i = 1; i < this.players.length; i++) {
+              const playerIndex = (gangIndex + i) % this.players.length
+              const otherPlayer = this.players[playerIndex]
+
+              if (otherPlayer != player) {
+                const r = otherPlayer.markJiePao(card, qiangGangCheck, true)
+                if (r.hu) {
+                  if (!check.hu) check.hu = []
+                  check.hu.push(otherPlayer)
+                  otherPlayer.huInfo = r.check
+                  qiang = otherPlayer
+                  break
+                }
+              }
+            }
+
+            if (qiang && !this.stateData.cancelQiang) {
+              logger.info(qiang, this.stateData.cancelQiang);
+              this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
+              qiang.sendMessage('game/canDoSomething', {
+                ok: true, data: {
+                  card, turn: this.turn, hu: true,
+                  chi: false, chiCombol: [],
+                  peng: false, gang: false, bu: false,
+                }
+              })
+
+              this.state = stateQiangGang
+              this.stateData = {
+                whom: player,
+                who: qiang,
+                event: Enums.gangBySelf,
+                card, turn: this.turn
+              }
+              return
+            }
+          }
 
           for (let i = 1; i < this.players.length; i++) {
             const j = (from + i) % this.players.length;
