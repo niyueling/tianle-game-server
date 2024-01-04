@@ -1563,6 +1563,20 @@ class TableState implements Serializable {
         await this.room.addScore(state1.model._id.toString(), state1.score)
       }
 
+      // 判断是否破产，破产提醒客户端充值钻石
+      let brokePlayers = [];
+      for (let i = 0; i < this.players.length; i++) {
+        const p = this.players[i];
+        const model = await service.playerService.getPlayerModel(p.model._id.toString());
+        if (model.gold <= 0) {
+          brokePlayers.push({index: this.atIndex(p), _id: p.model._id.toString()});
+        }
+      }
+
+      if (brokePlayers.length > 0) {
+        this.room.broadcast("game/playerBroke", brokePlayers);
+      }
+
       if (isOver) {
         await this.room.recordGameRecord(this, states)
         await this.room.recordRoomScore()
