@@ -1569,6 +1569,7 @@ class TableState implements Serializable {
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p.model._id.toString());
         if (model.gold <= 0) {
+          p.isBroke = true;
           brokePlayers.push({index: this.atIndex(p), _id: p.model._id.toString()});
         }
       }
