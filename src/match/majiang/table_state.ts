@@ -1339,7 +1339,6 @@ class TableState implements Serializable {
 
       if (check[Enums.hu]) {
         for (const p of check[Enums.hu]) {
-          console.warn("huInfo-1: ", p.huInfo);
           this.actionResolver.appendAction(p, 'hu', p.huInfo)
         }
       }
@@ -1502,23 +1501,6 @@ class TableState implements Serializable {
     if (this.state !== stateGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
 
-      if (isOver) {
-        this.state = stateGameOver;
-
-        const winner = this.players.filter(x => x.events.jiePao)[0]
-
-        // 没胡牌 也没放冲
-        if (winner) {
-          this.players.filter(x => !x.events.jiePao && !x.events.dianPao)
-            .forEach(x => {
-              x.events.hunhun = winner.events.hu
-            })
-        }
-        this.players.forEach(x => x.gameOver())
-        this.room.removeListener('reconnect', this.onReconnect)
-        this.room.removeListener('empty', this.onRoomEmpty)
-      }
-
       const nextZhuang = this.nextZhuang()
       const niaos = this.generateNiao()
       this.assignNiaos()
@@ -1576,37 +1558,56 @@ class TableState implements Serializable {
 
       if (brokePlayers.length > 0) {
         this.room.broadcast("game/playerBroke", brokePlayers);
-      }
 
-      if (isOver) {
-        await this.room.recordGameRecord(this, states)
-        await this.room.recordRoomScore()
-        // 更新大赢家
-        await this.room.updateBigWinner();
-        await this.room.charge();
-
-        const gameOverMsg = {
-          niaos,
-          creator: this.room.creator.model._id,
-          juShu: this.restJushu,
-          juIndex: this.room.game.juIndex,
-          useKun: this.rule.useKun,
-          states,
-          // 金豆奖池
-          rubyReward: 0,
-          ruleType: this.rule.ruleType,
-          isPublic: this.room.isPublic,
-          caiShen: this.caishen,
-          base: this.room.currentBase,
-          maiDi: this.rule.maiDi
+        if (brokePlayers.length >= 3) {
+          await this.gameAllOver(states, niaos, nextZhuang);
         }
-
-        this.room.broadcast('game/game-over', gameOverMsg)
-        await this.room.gameOver(nextZhuang._id.toString(), states)
-        this.logger.info('game/game-over  %s', JSON.stringify(gameOverMsg))
       }
     }
     this.logger.close()
+  }
+
+  async gameAllOver(states, niaos, nextZhuang) {
+    this.state = stateGameOver;
+
+    const winner = this.players.filter(x => x.events.jiePao)[0]
+
+    // 没胡牌 也没放冲
+    if (winner) {
+      this.players.filter(x => !x.events.jiePao && !x.events.dianPao)
+        .forEach(x => {
+          x.events.hunhun = winner.events.hu
+        })
+    }
+    this.players.forEach(x => x.gameOver())
+    this.room.removeListener('reconnect', this.onReconnect)
+    this.room.removeListener('empty', this.onRoomEmpty)
+
+    await this.room.recordGameRecord(this, states)
+    await this.room.recordRoomScore()
+    // 更新大赢家
+    await this.room.updateBigWinner();
+    await this.room.charge();
+
+    const gameOverMsg = {
+      niaos,
+      creator: this.room.creator.model._id,
+      juShu: this.restJushu,
+      juIndex: this.room.game.juIndex,
+      useKun: this.rule.useKun,
+      states,
+      // 金豆奖池
+      rubyReward: 0,
+      ruleType: this.rule.ruleType,
+      isPublic: this.room.isPublic,
+      caiShen: this.caishen,
+      base: this.room.currentBase,
+      maiDi: this.rule.maiDi
+    }
+
+    this.room.broadcast('game/game-over', gameOverMsg)
+    await this.room.gameOver(nextZhuang._id.toString(), states)
+    this.logger.info('game/game-over  %s', JSON.stringify(gameOverMsg))
   }
 
   dissolve() {
