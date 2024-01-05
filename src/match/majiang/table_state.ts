@@ -1364,7 +1364,23 @@ class TableState implements Serializable {
         }
       }
 
-      const xiajia = this.players[(index + 1) % this.players.length]
+      let xiajia = null;
+      let startIndex = (index + 1) % this.players.length;
+
+      // 从 startIndex 开始查找未破产的玩家
+      for (let i = startIndex; i < startIndex + this.players.length; i++) {
+        let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+        if (!this.players[index].isBroke) {
+          xiajia = this.players[index];
+          break;
+        }
+      }
+
+      if (xiajia) {
+        console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+      } else {
+         return console.warn('No unbroke player found as the next player');
+      }
 
       for (let j = 1; j < this.players.length; j++) {
         const i = (index + j) % this.players.length
@@ -1376,18 +1392,18 @@ class TableState implements Serializable {
 
       const env = {card, from, turn: this.turn}
       this.actionResolver = new ActionResolver(env, () => {
-        const newCard = this.consumeCard(xiajia)
-        const msg = xiajia.takeCard(this.turn, newCard)
+        const newCard = this.consumeCard(xiajia);
+        const msg = xiajia.takeCard(this.turn, newCard);
 
         if (!msg) {
-          console.error("consume card error msg ", msg)
+          console.error("consume card error msg ", msg);
           return;
         }
         this.state = stateWaitDa;
         this.stateData = {da: xiajia, card: newCard, msg};
         const sendMsg = {index: this.players.indexOf(xiajia)}
-        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-        logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
+        logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
       })
 
       if (check[Enums.hu]) {
