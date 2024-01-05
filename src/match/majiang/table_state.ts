@@ -461,14 +461,14 @@ class TableState implements Serializable {
     return card
   }
 
-  async consumeSimpleCard() {
+  async consumeSimpleCard(p: PlayerState) {
 
     const cardIndex = --this.remainCards;
     const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
-    console.log(`card: ${card}`);
+    console.log(`shortId: ${p.model.shortId}, card: ${card}`);
     return card;
   }
 
@@ -521,14 +521,12 @@ class TableState implements Serializable {
     }
 
     for (let i = 0; i < 13 - cards.length; i++) {
-      cards.push(await this.consumeSimpleCard());
+      cards.push(await this.consumeSimpleCard(player));
     }
 
     if (cards.length < 13) {
-      console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}`)
+      console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}, number: ${cards.length}`)
     }
-
-    // console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}`)
 
     return cards;
   }
