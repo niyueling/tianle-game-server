@@ -1112,16 +1112,22 @@ class TableState implements Serializable {
 
               this.turn++;
               let xiajia = null;
+              let startIndex = (from + 1) % this.players.length;
 
-              // 获取下家，需要判断用户是否已经破产
-              for (let i = from + 1; i % this.players.length < this.players.length; i++) {
-                if (!this.players[i].isBroke) {
-                  xiajia = this.players[i];
+              // 从 startIndex 开始查找未破产的玩家
+              for (let i = startIndex; i < startIndex + this.players.length; i++) {
+                let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+                if (!this.players[index].isBroke) {
+                  xiajia = this.players[index];
                   break;
                 }
               }
 
-              console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.atIndex(xiajia)}`);
+              if (xiajia) {
+                console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+              } else {
+                console.warn('No unbroke player found as the next player');
+              }
 
               const env = {card, from, turn: this.turn}
               try {
@@ -1186,7 +1192,23 @@ class TableState implements Serializable {
                 logger.info('hu  player %s stateQiangGang jiePao gameOver', index)
 
                 this.turn++;
-                const xiajia = this.players[(index + 1) % this.players.length]
+                let xiajia = null;
+                let startIndex = (from + 1) % this.players.length;
+
+                // 从 startIndex 开始查找未破产的玩家
+                for (let i = startIndex; i < startIndex + this.players.length; i++) {
+                  let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+                  if (!this.players[index].isBroke) {
+                    xiajia = this.players[index];
+                    break;
+                  }
+                }
+
+                if (xiajia) {
+                  console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+                } else {
+                  console.warn('No unbroke player found as the next player');
+                }
 
                 const env = {card, from, turn: this.turn}
                 this.actionResolver = new ActionResolver(env, () => {
