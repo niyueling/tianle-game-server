@@ -468,7 +468,6 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
-    console.log(`shortId: ${p.model.shortId}, card: ${card}`);
     return card;
   }
 
@@ -520,7 +519,9 @@ class TableState implements Serializable {
       cards = [...cards, ...consumeCards];
     }
 
-    for (let i = 0; i < 13 - cards.length; i++) {
+    const cardCount = 13 - cards.length;
+
+    for (let i = 0; i < cardCount; i++) {
       cards.push(await this.consumeSimpleCard(player));
     }
 
