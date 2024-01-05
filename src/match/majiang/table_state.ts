@@ -412,10 +412,10 @@ class TableState implements Serializable {
 
     for (const [i, p] of this.players.entries()) {
       p.resume(tableStateJson.gameState.players[i])
-      if (this.lastDa && this.lastDa._id === p._id) {
+      if (this.lastDa && this.lastDa._id.toString() === p._id.toString()) {
         this.lastDa = p;
       }
-      if (this.zhuang && this.zhuang._id === p._id) {
+      if (this.zhuang && this.zhuang._id.toString() === p._id.toString()) {
         this.lastDa = p;
       }
 
@@ -467,6 +467,8 @@ class TableState implements Serializable {
     const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
+
+    console.log(`card: ${card}`);
     return card;
   }
 
@@ -522,7 +524,11 @@ class TableState implements Serializable {
       cards.push(await this.consumeSimpleCard());
     }
 
-    console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}`)
+    if (cards.length < 13) {
+      console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}`)
+    }
+
+    // console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}`)
 
     return cards;
   }
