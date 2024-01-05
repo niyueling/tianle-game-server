@@ -1058,45 +1058,47 @@ class TableState implements Serializable {
                   await this.gameOver(false);
                   logger.info('hu player %s gameover', index)
 
-                  this.turn++;
-                  let xiajia = null;
-                  let startIndex = (from + 1) % this.players.length;
+                  if (this.state !== stateGameOver) {
+                    this.turn++;
+                    let xiajia = null;
+                    let startIndex = (from + 1) % this.players.length;
 
-                  // 从 startIndex 开始查找未破产的玩家
-                  for (let i = startIndex; i < startIndex + this.players.length; i++) {
-                    let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-                    if (!this.players[index].isBroke) {
-                      xiajia = this.players[index];
-                      break;
-                    }
-                  }
-
-                  if (xiajia) {
-                    console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
-                  } else {
-                    console.warn('No unbroke player found as the next player');
-                  }
-                  const env = {card, from, turn: this.turn};
-
-                  try {
-                    this.actionResolver = new ActionResolver(env, () => {
-                      const newCard = this.consumeCard(xiajia)
-                      const msg = xiajia.takeCard(this.turn, newCard)
-
-                      if (!msg) {
-                        console.error("consume card error msg ", msg)
-                        return;
+                    // 从 startIndex 开始查找未破产的玩家
+                    for (let i = startIndex; i < startIndex + this.players.length; i++) {
+                      let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+                      if (!this.players[index].isBroke) {
+                        xiajia = this.players[index];
+                        break;
                       }
-                      this.state = stateWaitDa;
-                      this.stateData = {da: xiajia, card: newCard, msg};
-                      const sendMsg = {index: this.players.indexOf(xiajia)}
-                      this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                    })
+                    }
 
-                    this.actionResolver.tryResolve()
-                  } catch (e) {
-                    console.warn(e);
+                    if (xiajia) {
+                      console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+                    } else {
+                      console.warn('No unbroke player found as the next player');
+                    }
+                    const env = {card, from, turn: this.turn};
+
+                    try {
+                      this.actionResolver = new ActionResolver(env, () => {
+                        const newCard = this.consumeCard(xiajia)
+                        const msg = xiajia.takeCard(this.turn, newCard)
+
+                        if (!msg) {
+                          console.error("consume card error msg ", msg)
+                          return;
+                        }
+                        this.state = stateWaitDa;
+                        this.stateData = {da: xiajia, card: newCard, msg};
+                        const sendMsg = {index: this.players.indexOf(xiajia)}
+                        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                        logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                      })
+
+                      this.actionResolver.tryResolve()
+                    } catch (e) {
+                      console.warn(e);
+                    }
                   }
                 } else {
                   player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "jiePao"}});
@@ -1118,47 +1120,48 @@ class TableState implements Serializable {
               await this.gameOver(false);
               this.logger.info('hu  player %s zimo gameover', index)
 
-              this.turn++;
-              let xiajia = null;
-              let startIndex = (from + 1) % this.players.length;
+             if (this.state !== stateGameOver) {
+               this.turn++;
+               let xiajia = null;
+               let startIndex = (from + 1) % this.players.length;
 
-              // 从 startIndex 开始查找未破产的玩家
-              for (let i = startIndex; i < startIndex + this.players.length; i++) {
-                let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-                if (!this.players[index].isBroke) {
-                  xiajia = this.players[index];
-                  break;
-                }
-              }
+               // 从 startIndex 开始查找未破产的玩家
+               for (let i = startIndex; i < startIndex + this.players.length; i++) {
+                 let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+                 if (!this.players[index].isBroke) {
+                   xiajia = this.players[index];
+                   break;
+                 }
+               }
 
-              if (xiajia) {
-                console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
-              } else {
-                console.warn('No unbroke player found as the next player');
-              }
+               if (xiajia) {
+                 console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+               } else {
+                 console.warn('No unbroke player found as the next player');
+               }
 
-              const env = {card, from, turn: this.turn}
-              try {
-                this.actionResolver = new ActionResolver(env, () => {
-                  const newCard = this.consumeCard(xiajia)
-                  const msg = xiajia.takeCard(this.turn, newCard)
+               const env = {card, from, turn: this.turn}
+               try {
+                 this.actionResolver = new ActionResolver(env, () => {
+                   const newCard = this.consumeCard(xiajia)
+                   const msg = xiajia.takeCard(this.turn, newCard)
 
-                  if (!msg) {
-                    console.error("consume card error msg ", msg)
-                    return;
-                  }
-                  this.state = stateWaitDa;
-                  this.stateData = {da: xiajia, card: newCard, msg};
-                  const sendMsg = {index: this.players.indexOf(xiajia)}
-                  this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                  logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                })
+                   if (!msg) {
+                     console.error("consume card error msg ", msg)
+                     return;
+                   }
+                   this.state = stateWaitDa;
+                   this.stateData = {da: xiajia, card: newCard, msg};
+                   const sendMsg = {index: this.players.indexOf(xiajia)}
+                   this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                   logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                 })
 
-                this.actionResolver.tryResolve()
-              } catch (e) {
-                console.warn(e);
-              }
-
+                 this.actionResolver.tryResolve()
+               } catch (e) {
+                 console.warn(e);
+               }
+             }
             } else {
               player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
             }
