@@ -1423,7 +1423,7 @@ class TableState implements Serializable {
         if (msg && !p.isBroke) {
           p.record('choice', card, msg)
           // 碰、杠等
-          p.sendMessage('game/canDoSomething', {ok: true, data: msg})
+          p.sendMessage('game/canDoSomething', {ok: true, data: msg});
         }
       }
 
@@ -1616,7 +1616,7 @@ class TableState implements Serializable {
       }
 
       if (brokePlayers.length > 0) {
-        this.room.broadcast("game/playerBroke", brokePlayers);
+        this.room.broadcast("game/playerBroke", {ok: true, data: brokePlayers});
 
         if (brokePlayers.length >= 3) {
           await this.gameAllOver(states, niaos, nextZhuang);
@@ -1664,9 +1664,9 @@ class TableState implements Serializable {
       maiDi: this.rule.maiDi
     }
 
-    this.room.broadcast('game/game-over', gameOverMsg)
+    this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
     await this.room.gameOver(nextZhuang._id.toString(), states)
-    this.logger.info('game/game-over  %s', JSON.stringify(gameOverMsg))
+    this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
   }
 
   dissolve() {

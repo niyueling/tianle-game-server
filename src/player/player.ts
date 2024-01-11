@@ -469,6 +469,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
       return;
     }
     const model = await service.playerService.getPlayerModel(this.model._id);
-    this.sendMessage('resource/update', {gold: model.gold, gem: model.gem, ruby: model.ruby });
+    this.sendMessage('resource/update', {ok: true, data: {gold: model.gold, gem: model.gem, ruby: model.ruby }});
   }
 }
