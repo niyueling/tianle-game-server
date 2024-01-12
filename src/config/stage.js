@@ -23,6 +23,7 @@ module.exports = {
   redis: {
     port: 6379,
     host: "localhost",
+    password: "8fkaetmR@@@@"
   },
   extKKey: "0a06ae02-5594-40ec-9979-a278c0f7ae66",
   http: {
