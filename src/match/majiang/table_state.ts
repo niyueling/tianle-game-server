@@ -904,16 +904,17 @@ class TableState implements Serializable {
           });
           this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher);
 
-          this.actionResolver = new ActionResolver({turn, card, from}, () => {
-            const nextCard = this.consumeCard(player);
-            const msg = player.gangTakeCard(this.turn, nextCard);
-            if (!msg) {
-              return;
-            }
+          const nextCard = this.consumeCard(player);
+          const msg = player.gangTakeCard(this.turn, nextCard);
+          if (msg) {
             this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
             this.state = stateWaitDa;
             this.stateData = {msg, da: player, card: nextCard};
-          })
+          }  else {
+            logger.info('gangByOtherDa player-%s card:%s GangReply error:4', index, card)
+            player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
+            return;
+          }
 
           const check: IActionCheck = {card};
 
