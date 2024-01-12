@@ -142,6 +142,7 @@ export class PublicRoom extends Room {
 
   // 检查房间是否升级
   async nextGame(thePlayer) {
+    console.log('public room next game start')
     if (!this.robotManager && thePlayer) {
       console.warn("public room error start")
       return thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
