@@ -1614,10 +1614,10 @@ class TableState implements Serializable {
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p.model._id.toString());
+        playersModifyGolds.push({index: this.atIndex(p), _id: p.model._id.toString(), gold: this.getGameChangeGold()});
         if (model.gold <= 0) {
           p.isBroke = true;
           brokePlayers.push({index: this.atIndex(p), _id: p.model._id.toString(), cards: p.cards});
-          playersModifyGolds.push({index: this.atIndex(p), _id: p.model._id.toString(), gold: this.getGameChangeGold()});
         }
       }
 
