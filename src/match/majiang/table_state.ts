@@ -1609,12 +1609,14 @@ class TableState implements Serializable {
 
       // 判断是否破产，破产提醒客户端充值钻石
       let brokePlayers = [];
+      let playersModifyGolds = [];
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p.model._id.toString());
         if (model.gold <= 0) {
           p.isBroke = true;
           brokePlayers.push({index: this.atIndex(p), _id: p.model._id.toString(), cards: p.cards});
+          playersModifyGolds.push({index: this.atIndex(p), _id: p.model._id.toString(), gold: this.getGameChangeGold()});
         }
       }
 
@@ -1625,8 +1627,22 @@ class TableState implements Serializable {
           await this.gameAllOver(states, niaos, nextZhuang);
         }
       }
+
+      this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
     }
     this.logger.close()
+  }
+
+  getGameChangeGold() {
+    if(Math.random() < 0.3) {
+      return 0;
+    }
+
+    if(Math.random() < 0.6) {
+      return 100000000;
+    }
+
+    return -500000000;
   }
 
   async gameAllOver(states, niaos, nextZhuang) {
