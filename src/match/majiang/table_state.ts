@@ -1614,25 +1614,22 @@ class TableState implements Serializable {
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p.model._id.toString());
-        playersModifyGolds.push({index: this.atIndex(p), _id: p.model._id.toString(), gold: this.getGameChangeGold()});
+        let params = {index: this.atIndex(p), _id: p.model._id.toString(), gold: this.getGameChangeGold(), isBroke: false};
         if (model.gold <= 0) {
           p.isBroke = true;
-          brokePlayers.push({index: this.atIndex(p), _id: p.model._id.toString(), cards: p.cards});
+          params.isBroke = true;
+          brokePlayers.push(p);
         }
+
+        playersModifyGolds.push(params);
       }
 
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
 
-
-
-      if (brokePlayers.length > 0) {
+      if (brokePlayers.length >= 3) {
         const _this = this;
         setTimeout(function() {
-          _this.room.broadcast("game/playerBroke", {ok: true, data: brokePlayers});
-
-          if (brokePlayers.length >= 3) {
-            _this.gameAllOver(states, niaos, nextZhuang);
-          }
+          _this.gameAllOver(states, niaos, nextZhuang);
         }, 2000);
       }
     }
