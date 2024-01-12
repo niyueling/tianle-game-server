@@ -1621,15 +1621,20 @@ class TableState implements Serializable {
         }
       }
 
-      if (brokePlayers.length > 0) {
-        this.room.broadcast("game/playerBroke", {ok: true, data: brokePlayers});
-
-        if (brokePlayers.length >= 3) {
-          await this.gameAllOver(states, niaos, nextZhuang);
-        }
-      }
-
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+
+
+
+      if (brokePlayers.length > 0) {
+        const _this = this;
+        setTimeout(function() {
+          _this.room.broadcast("game/playerBroke", {ok: true, data: brokePlayers});
+
+          if (brokePlayers.length >= 3) {
+            _this.gameAllOver(states, niaos, nextZhuang);
+          }
+        }, 2000);
+      }
     }
     this.logger.close()
   }
