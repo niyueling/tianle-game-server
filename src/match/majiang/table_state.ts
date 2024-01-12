@@ -1148,14 +1148,16 @@ class TableState implements Serializable {
                try {
                  this.actionResolver = new ActionResolver(env, () => {
                    const newCard = this.consumeCard(xiajia)
-                   const msg = xiajia.takeCard(this.turn, newCard)
+                   const msg = xiajia.takeCard(this.turn, newCard);
 
                    if (!msg) {
                      console.error("consume card error msg ", msg)
                      return;
                    }
-                   this.state = stateWaitDa;
+
                    this.stateData = {da: xiajia, card: newCard, msg};
+                   this.state = stateWaitDa;
+
                    const sendMsg = {index: this.players.indexOf(xiajia)}
                    this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
                    logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
@@ -1611,7 +1613,7 @@ class TableState implements Serializable {
         const model = await service.playerService.getPlayerModel(p.model._id.toString());
         if (model.gold <= 0) {
           p.isBroke = true;
-          brokePlayers.push({index: this.atIndex(p), _id: p.model._id.toString()});
+          brokePlayers.push({index: this.atIndex(p), _id: p.model._id.toString(), cards: p.cards});
         }
       }
 
