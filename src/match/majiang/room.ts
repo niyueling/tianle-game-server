@@ -25,6 +25,7 @@ import Game from './game'
 import {eqlModelId} from "./modelId"
 import {RobotManager} from "./robotManager";
 import TableState from "./table_state"
+import RoomGoldRecord from "../../database/models/roomGoldRecord";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -517,12 +518,18 @@ class Room extends RoomBase {
       if (p) {
         p.addGold(gains)
       } else {
-        PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
+        await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
           if (err) {
             logger.error(err)
           } else {
             return;
           }
+        })
+
+        await RoomGoldRecord.create({
+          playerId: playerId,
+          amount: gains,
+          roomId: this._id
         })
       }
     }

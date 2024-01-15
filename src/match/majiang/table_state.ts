@@ -998,11 +998,11 @@ class TableState implements Serializable {
         if (ok) {
           player.sendMessage('game/buReply', {ok: true, data: {card}})
           this.room.broadcast('game/oppoBuBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
-          this.turn++
-          const nextCard = this.consumeCard(player)
-          const msg = player.takeCard(this.turn, nextCard)
+          this.turn++;
+          const nextCard = this.consumeCard(player);
+          const msg = player.takeCard(this.turn, nextCard);
           if (!msg) {
-            return
+            return;
           }
           this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher)
           this.state = stateWaitDa
@@ -1015,7 +1015,7 @@ class TableState implements Serializable {
     player.on(Enums.hu, async (turn, card) => {
       logger.info('hu player %s state %s card %s', index, this.state, card)
       let from
-      const chengbaoStarted = this.remainCards <= 3
+      const chengbaoStarted = this.remainCards <= 3;
 
       if (this.turn !== turn) {
         player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huParamTurnInvaid});
@@ -1025,7 +1025,7 @@ class TableState implements Serializable {
         try {
           const isJiePao = this.state === stateWaitAction &&
             recordCard === card && this.stateData[Enums.hu] &&
-            this.stateData[Enums.hu].contains(player)
+            this.stateData[Enums.hu].contains(player);
 
           const isZiMo = this.state === stateWaitDa && recordCard === card
 
@@ -1046,10 +1046,10 @@ class TableState implements Serializable {
                   this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, from, index}}, player.msgDispatcher);
                   const huPlayerIndex = this.atIndex(player)
                   for (let i = 1; i < this.players.length; i++) {
-                    const playerIndex = (huPlayerIndex + i) % this.players.length
-                    const nextPlayer = this.players[playerIndex]
+                    const playerIndex = (huPlayerIndex + i) % this.players.length;
+                    const nextPlayer = this.players[playerIndex];
                     if (nextPlayer === this.lastDa) {
-                      break
+                      break;
                     }
 
                     if (nextPlayer.checkJiePao(card)) {
@@ -1080,7 +1080,6 @@ class TableState implements Serializable {
 
                     if (xiajia) {
                       console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
-
                       const env = {card, from, turn: this.turn};
 
                       try {
@@ -1582,7 +1581,7 @@ class TableState implements Serializable {
         })
 
       if (huPlayers.length > 0) {
-        this.calcGangScore()
+        this.calcGangScore();
       }
 
       await this.recordRubyReward();
@@ -1605,7 +1604,7 @@ class TableState implements Serializable {
         } else {
           state1.score = this.players[i].balance * this.rule.diFen
         }
-        await this.room.addScore(state1.model._id.toString(), state1.score)
+        await this.room.addScore(state1.model._id.toString(), state1.score);
       }
 
       // 判断是否破产，破产提醒客户端充值钻石
