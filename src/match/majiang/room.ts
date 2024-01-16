@@ -626,7 +626,7 @@ class Room extends RoomBase {
 
     this.emit('join')
     console.log('join ---')
-    // await this.announcePlayerJoin(newJoinPlayer)
+    await this.announcePlayerJoin(newJoinPlayer)
 
     this.pushToSnapshot(newJoinPlayer)
     return true
@@ -663,7 +663,7 @@ class Room extends RoomBase {
     thePlayer.sendMessage("nextGameReply", {ok: true, data: {}})
 
     console.log('nextGame ---')
-    await this.announcePlayerJoin(thePlayer)
+    // await this.announcePlayerJoin(thePlayer)
     return true
   }
 
