@@ -372,6 +372,9 @@ class TableState implements Serializable {
   // 本局是否补助
   isHelp: boolean = false;
 
+  // 胡牌类型
+  cardTypes: any[] = []
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -538,6 +541,7 @@ class TableState implements Serializable {
   }
 
   async fapai() {
+    await this.getCardTypes();
     this.shuffle()
     this.sleepTime = 0;
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
@@ -570,6 +574,13 @@ class TableState implements Serializable {
       nextDo()
     } else {
       setTimeout(nextDo, this.sleepTime)
+    }
+  }
+
+  async getCardTypes() {
+    const records = CardTypeModel.where({level: 1}).find();
+    if (records.length > 0) {
+      this.cardTypes = records;
     }
   }
 
@@ -1029,6 +1040,8 @@ class TableState implements Serializable {
             this.stateData[Enums.hu].contains(player);
 
           const isZiMo = this.state === stateWaitDa && recordCard === card;
+
+          console.warn(this.cardTypes)
 
           if (isJiePao) {
             this.actionResolver.requestAction(player, 'hu', async () => {
