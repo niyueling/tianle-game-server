@@ -626,7 +626,7 @@ class Room extends RoomBase {
 
     this.emit('join')
     console.log('join ---')
-    await this.announcePlayerJoin(newJoinPlayer)
+    // await this.announcePlayerJoin(newJoinPlayer)
 
     this.pushToSnapshot(newJoinPlayer)
     return true
