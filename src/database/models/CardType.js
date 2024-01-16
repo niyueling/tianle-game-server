@@ -7,6 +7,11 @@ const CardTypeSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  //牌型ID
+  cardId: {
+    type: Number,
+    required: true
+  },
   //牌型倍数
   multiple: {
     type: Number,
