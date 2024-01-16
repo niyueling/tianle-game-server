@@ -479,7 +479,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       return false
     }
 
-    // await this.announcePlayerJoin(thePlayer)
+    await this.announcePlayerJoin(thePlayer)
     // this.evictFromOldTable(thePlayer)
 
     return true
