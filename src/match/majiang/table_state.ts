@@ -373,7 +373,7 @@ class TableState implements Serializable {
   isHelp: boolean = false;
 
   // 胡牌类型
-  cardTypes: any[] = []
+  cardTypes: object = {}
 
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
@@ -1038,7 +1038,9 @@ class TableState implements Serializable {
           const isZiMo = this.state === stateWaitDa && recordCard === card;
 
           const cardTypes = await this.getCardTypes();
-          console.warn(cardTypes)
+          const random = Math.floor(Math.random() * cardTypes.length);
+          this.cardTypes = cardTypes[random];
+          console.warn(this.cardTypes)
 
           if (isJiePao) {
             this.actionResolver.requestAction(player, 'hu', async () => {
