@@ -1630,7 +1630,6 @@ class TableState implements Serializable {
             failList.push(p.model._id.toString());
           }
         }
-
       }
 
       //增加胡牌用户金币
@@ -1786,20 +1785,20 @@ class TableState implements Serializable {
     await this.room.updateBigWinner();
     await this.room.charge();
 
+    //获取用户当局对局流水
+    const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
+
     const gameOverMsg = {
       niaos,
       creator: this.room.creator.model._id,
       juShu: this.restJushu,
       juIndex: this.room.game.juIndex,
-      useKun: this.rule.useKun,
       states,
-      // 金豆奖池
-      rubyReward: 0,
+      records,
       ruleType: this.rule.ruleType,
       isPublic: this.room.isPublic,
       caiShen: this.caishen,
-      base: this.room.currentBase,
-      maiDi: this.rule.maiDi
+      base: this.room.currentBase
     }
 
     this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
