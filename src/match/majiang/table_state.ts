@@ -1606,24 +1606,28 @@ class TableState implements Serializable {
       // 将分数 * 倍率
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
-      // 点炮胡
+      this.players.map((p) => {
+        p.balance = 0;
+      })
+
+        // 点炮胡
       if (from) {
         // 扣除点炮用户金币
-        from.model.gold -= conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+        from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
         await this.room.addScore(from.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
       } else {
         // 自摸胡
         for (const p of this.players) {
           // 扣除三家金币
           if (p.model._id.toString() !== to.model._id.toString()) {
-            p.model.gold -= conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+            p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
             await this.room.addScore(p.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
           }
         }
       }
 
       //增加胡牌用户金币
-      to.model.gold += conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+      to.balance = conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
       await this.room.addScore(to.model._id.toString(), conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
 
       // await this.recordRubyReward();
@@ -1655,7 +1659,7 @@ class TableState implements Serializable {
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p.model._id.toString());
-        let params = {index: this.atIndex(p), _id: p.model._id.toString(), gold: this.getGameChangeGold(), isBroke: false, huType: this.cardTypes};
+        let params = {index: this.atIndex(p), _id: p.model._id.toString(), gold: p.balance, isBroke: false, huType: this.cardTypes};
         if (model.gold <= 0) {
           p.isBroke = true;
           params.isBroke = true;
