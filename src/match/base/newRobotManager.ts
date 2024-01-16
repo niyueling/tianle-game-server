@@ -350,6 +350,7 @@ export class NewRobotManager {
 
   // 机器人准备
   async robotPlayerReady() {
+    console.warn(this.room.gameState, this.room.readyPlayers.length, this.room.capacity)
     if (this.room.gameState || this.room.readyPlayers.length === this.room.capacity) {
       // 不需要准备
       return true;
