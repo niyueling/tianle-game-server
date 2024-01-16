@@ -340,8 +340,8 @@ export class NewRobotManager {
           console.warn(proxy.model._id.toString(), proxy.model.shortId, this.room.readyPlayers);
           // 有在线用户没点下一局
           console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`);
-          this.room.ready(proxy);
-          return false;
+          await this.room.ready(proxy);
+          return true;
         }
       }
     }
