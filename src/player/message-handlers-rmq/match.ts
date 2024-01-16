@@ -22,7 +22,7 @@ function getLobby(gameType) {
 
 export function createHandler(redisClient: AsyncRedisClient) {
 
-  const handlers = {
+  return {
     'room/reconnect': async (player, message) => {
       const room = await service.roomRegister.getDisconnectedRoom(player.model._id.toString(), message.gameType);
       console.warn("reconnction roomId: ", room)
@@ -41,7 +41,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
         // 战队房
         const club = await Club.findById(roomInfo.clubId);
         if (!club) {
-          return player.sendMessage('room/joinReply', { ok: false, info: TianleErrorCode.roomInvalid })
+          return player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomInvalid})
         }
         const unionMember = await service.club.getUnionMember(club.shortId, player.model._id);
         if (unionMember) {
@@ -179,12 +179,11 @@ export function createHandler(redisClient: AsyncRedisClient) {
         player.requestToRoom(message._id, 'specialDissolve', {})
       } else {
         player.requestTo(`${message.gameType}DealQuestion`, 'clearRoomInfoFromRedis', {
-          roomId: message._id, myGameType: player.gameName, gameType: message.gameType})
+          roomId: message._id, myGameType: player.gameName, gameType: message.gameType
+        })
       }
     }
   }
-
-  return handlers
 }
 
 // 是否创始人或者管理员
