@@ -1682,7 +1682,7 @@ class TableState implements Serializable {
 
           if (!p.isGameOver) {
             p.isGameOver = true;
-            await this.playerGameOver(p);
+            await this.playerGameOver(p, niaos, p.genGameStatus(this.atIndex(p), 1));
           }
         }
 
@@ -1740,9 +1740,25 @@ class TableState implements Serializable {
     await CardTypeModel.insertMany(cardTypes);
   }
 
-  async playerGameOver(p) {
+  async playerGameOver(p, niaos, states) {
     p.gameOver();
-    p.sendMessage('game/player-over', {ok: true, data: {}})
+
+    //获取用户当局对局流水
+    const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
+
+    const gameOverMsg = {
+      niaos,
+      creator: this.room.creator.model._id,
+      juShu: this.restJushu,
+      juIndex: this.room.game.juIndex,
+      states,
+      ruleType: this.rule.ruleType,
+      isPublic: this.room.isPublic,
+      caiShen: this.caishen,
+      records
+    }
+
+    p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
 
   }
 
