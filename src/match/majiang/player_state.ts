@@ -210,6 +210,8 @@ class PlayerState implements Serializable {
   // 补助的棋牌
   helpCards: any[] = []
 
+  isGameOver: boolean = false
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -218,6 +220,8 @@ class PlayerState implements Serializable {
     this.model = userSocket.model
     this.emitter = new EventEmitter()
     this.cards = new SourceCardMap(53).fill(0)
+    this.balance = 0
+    this.isGameOver = false
     this.score = room.getScore(userSocket)
     this.disconnectCallBack = player => {
       if (player === this.msgDispatcher) {

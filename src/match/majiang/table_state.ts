@@ -1664,6 +1664,11 @@ class TableState implements Serializable {
           p.isBroke = true;
           params.isBroke = true;
           brokePlayers.push(p);
+
+          if (!p.isGameOver) {
+            p.isGameOver = true;
+            await this.playerGameOver(p, niaos, p.genGameStatus(this.atIndex(p), 1));
+          }
         }
 
         playersModifyGolds.push(params);
@@ -1720,16 +1725,21 @@ class TableState implements Serializable {
     await CardTypeModel.insertMany(cardTypes);
   }
 
-  getGameChangeGold() {
-    if(Math.random() < 0.3) {
-      return 0;
+  async playerGameOver(p, niaos, states) {
+    p.gameOver();
+    const gameOverMsg = {
+      niaos,
+      creator: this.room.creator.model._id,
+      juShu: this.restJushu,
+      juIndex: this.room.game.juIndex,
+      states,
+      ruleType: this.rule.ruleType,
+      isPublic: this.room.isPublic,
+      caiShen: this.caishen,
     }
 
-    if(Math.random() < 0.6) {
-      return 100000000;
-    }
+    this.room.broadcast('game/player-over', {ok: true, data: gameOverMsg})
 
-    return -500000000;
   }
 
   async gameAllOver(states, niaos, nextZhuang) {
@@ -1748,7 +1758,7 @@ class TableState implements Serializable {
     this.room.removeListener('reconnect', this.onReconnect)
     this.room.removeListener('empty', this.onRoomEmpty)
 
-    await this.room.recordGameRecord(this, states)
+    await this.room.recordGameRecord(this, states);
     await this.room.recordRoomScore()
     // 更新大赢家
     await this.room.updateBigWinner();
