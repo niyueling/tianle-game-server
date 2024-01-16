@@ -340,7 +340,7 @@ export class NewRobotManager {
           console.warn(proxy.model._id.toString(), proxy.model.shortId, this.room.readyPlayers);
           // 有在线用户没点下一局
           console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`);
-          await this.room.ready(proxy);
+          // await this.room.ready(proxy);
           return false;
         }
       }
@@ -530,7 +530,7 @@ export class NewRobotManager {
       isOk = await this.isHumanPlayerReady();
       if (!isOk) {
         console.log(`human player not ready`, this.room._id);
-        // return;
+        return;
       }
       this.model.step = RobotStep.running;
       await this.save();
