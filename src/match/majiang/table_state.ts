@@ -1602,7 +1602,7 @@ class TableState implements Serializable {
 
       const recordCount = await CardTypeModel.count();
       if (recordCount > 0) {
-        await CardTypeModel.where({_id: {$ne: null}}).delete();
+        await CardTypeModel.where({_id: {$ne: null}}).remove();
         await this.saveCardType();
       }
 
