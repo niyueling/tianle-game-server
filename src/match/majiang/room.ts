@@ -554,6 +554,7 @@ class Room extends RoomBase {
     }
 
     if (!this.gameState) {
+      console.log('reconnect ---')
       await this.announcePlayerJoin(reconnectPlayer)
     }
     // Fixme the index may be wrong
@@ -608,7 +609,7 @@ class Room extends RoomBase {
 
   async join(newJoinPlayer) {
     const isReconnect = this.indexOf(newJoinPlayer) >= 0
-    if (isReconnect || this.disconnected.find(x => x[0] === newJoinPlayer._id)) {
+    if (isReconnect || this.disconnected.find(x => x[0] === newJoinPlayer._id.toString())) {
       return this.reconnect(newJoinPlayer)
     }
 
@@ -624,6 +625,7 @@ class Room extends RoomBase {
     this.initScore(newJoinPlayer)
 
     this.emit('join')
+    console.log('join ---')
     await this.announcePlayerJoin(newJoinPlayer)
 
     this.pushToSnapshot(newJoinPlayer)
@@ -660,6 +662,7 @@ class Room extends RoomBase {
 
     thePlayer.sendMessage("nextGameReply", {ok: true, data: {}})
 
+    console.log('nextGame ---')
     await this.announcePlayerJoin(thePlayer)
     return true
   }

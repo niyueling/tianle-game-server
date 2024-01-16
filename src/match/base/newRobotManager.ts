@@ -530,7 +530,7 @@ export class NewRobotManager {
       isOk = await this.isHumanPlayerReady();
       if (!isOk) {
         console.log(`human player not ready`, this.room._id);
-        // return;
+        return;
       }
       this.model.step = RobotStep.running;
       await this.save();
