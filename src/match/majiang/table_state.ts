@@ -21,6 +21,7 @@ import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
 import {TianleErrorCode} from "@fm/common/constants";
+import RoomGoldRecord from "../../database/models/roomGoldRecord";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1580,6 +1581,11 @@ class TableState implements Serializable {
 
       if (huPlayers.length > 0) {
         this.calcGangScore();
+      }
+
+      const recordCount = await RoomGoldRecord.count();
+      if (recordCount === 0) {
+
       }
 
       await this.recordRubyReward();
