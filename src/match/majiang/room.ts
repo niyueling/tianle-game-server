@@ -514,25 +514,19 @@ class Room extends RoomBase {
     const p = PlayerManager.getInstance().getPlayer(playerId)
     this.scoreMap[playerId] += gains
 
-    if (gains > 0) {
-      if (p) {
-        p.addGold(gains)
+    await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
+      if (err) {
+        logger.error(err)
       } else {
-        await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
-          if (err) {
-            logger.error(err)
-          } else {
-            return;
-          }
-        })
-
-        await RoomGoldRecord.create({
-          playerId: playerId,
-          amount: gains,
-          roomId: this._id
-        })
+        return;
       }
-    }
+    })
+
+    await RoomGoldRecord.create({
+      playerId: playerId,
+      amount: gains,
+      roomId: this._id
+    })
   }
 
   removeDisconnected(item) {
