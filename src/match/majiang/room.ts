@@ -510,22 +510,16 @@ class Room extends RoomBase {
     await this.updateBigWinner();
   }
 
-  async addScore(playerId: string, gains: number) {
+  async addScore(playerId: string, gains: number, cardTypes) {
     const p = PlayerManager.getInstance().getPlayer(playerId)
     this.scoreMap[playerId] += gains
 
-    await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
-      if (err) {
-        logger.error(err)
-      } else {
-        return;
-      }
-    })
-
+    await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}})
     await RoomGoldRecord.create({
       playerId: playerId,
       amount: gains,
-      roomId: this._id
+      roomId: this._id,
+      cardTypes
     })
   }
 

@@ -1568,7 +1568,7 @@ class TableState implements Serializable {
         const i = states.indexOf(state1);
         state1.model.played += 1
         state1.score = this.players[i].balance * this.rule.diFen
-        await this.room.addScore(state1.model._id.toString(), state1.score)
+        await this.room.addScore(state1.model._id.toString(), state1.score, this.cardTypes)
       }
     }
   }
@@ -1614,21 +1614,21 @@ class TableState implements Serializable {
       if (from) {
         // 扣除点炮用户金币
         from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-        await this.room.addScore(from.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
+        await this.room.addScore(from.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
       } else {
         // 自摸胡
         for (const p of this.players) {
           // 扣除三家金币
           if (p.model._id.toString() !== to.model._id.toString()) {
             p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-            await this.room.addScore(p.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
+            await this.room.addScore(p.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
           }
         }
       }
 
       //增加胡牌用户金币
       to.balance = conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-      await this.room.addScore(to.model._id.toString(), conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
+      await this.room.addScore(to.model._id.toString(), conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
 
       // await this.recordRubyReward();
       // for (const state1 of states) {
@@ -1727,6 +1727,9 @@ class TableState implements Serializable {
 
   async playerGameOver(p, niaos, states) {
     p.gameOver();
+
+    //获取用户当局对局流水
+
     const gameOverMsg = {
       niaos,
       creator: this.room.creator.model._id,

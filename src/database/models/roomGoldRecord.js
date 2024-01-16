@@ -14,6 +14,10 @@ const RoomGoldRecordSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  cardTypes: {
+    type: Object,
+    required: true
+  },
   createAt: {type: Date, default: Date.now},
 })
 
