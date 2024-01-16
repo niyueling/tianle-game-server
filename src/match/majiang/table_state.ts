@@ -1609,42 +1609,45 @@ class TableState implements Serializable {
       // 点炮胡
       if (from) {
         // 扣除点炮用户金币
+        from.model.gold -= conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
         await this.room.addScore(from.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
       } else {
         // 自摸胡
         for (const p of this.players) {
           // 扣除三家金币
           if (p.model._id.toString() !== to.model._id.toString()) {
+            p.model.gold -= conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
             await this.room.addScore(p.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
           }
         }
       }
 
       //增加胡牌用户金币
+      to.model.gold += conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
       await this.room.addScore(to.model._id.toString(), conf.Ante * conf.maxMultiple * this.cardTypes.multiple);
 
-      await this.recordRubyReward();
-      for (const state1 of states) {
-        const i = states.indexOf(state1);
-        const player = this.players[i];
-        state1.model.played += 1
-        if (this.room.isPublic) {
-          // 金豆房
-          if (player.balance < 0 && this.room.preventTimes[player.model.shortId] > 0) {
-            // 输豆，扣掉一次免输次数
-            this.room.preventTimes[player.model.shortId]--;
-          }
-          state1.score = player.balance;
-          state1.rubyReward = 0;
-          // 是否破产
-          state1.isBroke = player.isBroke;
-          // mvp 次数
-          state1.mvpTimes = 0;
-        } else {
-          state1.score = this.players[i].balance * this.rule.diFen
-        }
-        await this.room.addScore(state1.model._id.toString(), state1.score);
-      }
+      // await this.recordRubyReward();
+      // for (const state1 of states) {
+      //   const i = states.indexOf(state1);
+      //   const player = this.players[i];
+      //   state1.model.played += 1
+      //   if (this.room.isPublic) {
+      //     // 金豆房
+      //     if (player.balance < 0 && this.room.preventTimes[player.model.shortId] > 0) {
+      //       // 输豆，扣掉一次免输次数
+      //       this.room.preventTimes[player.model.shortId]--;
+      //     }
+      //     state1.score = player.balance;
+      //     state1.rubyReward = 0;
+      //     // 是否破产
+      //     state1.isBroke = player.isBroke;
+      //     // mvp 次数
+      //     state1.mvpTimes = 0;
+      //   } else {
+      //     state1.score = this.players[i].balance * this.rule.diFen
+      //   }
+      //   await this.room.addScore(state1.model._id.toString(), state1.score);
+      // }
 
       // 判断是否破产，破产提醒客户端充值钻石
       let brokePlayers = [];
