@@ -22,6 +22,7 @@ import Room from './room'
 import Rule from './Rule'
 import {TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
+import RoomGoldRecord from "../../database/models/roomGoldRecord";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1609,9 +1610,11 @@ class TableState implements Serializable {
       this.players.map((p) => {
         p.balance = 0;
       })
+      let failList = [];
 
         // 点炮胡
       if (from) {
+        failList.push(from.model._id.toString());
         // 扣除点炮用户金币
         from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
         await this.room.addScore(from.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
@@ -1622,13 +1625,25 @@ class TableState implements Serializable {
           if (p.model._id.toString() !== to.model._id.toString()) {
             p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
             await this.room.addScore(p.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
+            failList.push(p.model._id.toString());
           }
         }
+
       }
 
       //增加胡牌用户金币
       to.balance = conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
       await this.room.addScore(to.model._id.toString(), conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
+
+      // 生成金豆记录
+      await RoomGoldRecord.create({
+        winnerGoldReward: conf.Ante * conf.maxMultiple * this.cardTypes.multiple,
+        winnerId: to.model._id.toString(),
+        roomId: this.room._id,
+        failList,
+        juIndex: this.room.game.juIndex,
+        cardTypes: this.cardTypes
+      })
 
       // await this.recordRubyReward();
       // for (const state1 of states) {

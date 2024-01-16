@@ -515,12 +515,6 @@ class Room extends RoomBase {
     this.scoreMap[playerId] += gains
 
     await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}})
-    await RoomGoldRecord.create({
-      playerId: playerId,
-      amount: gains,
-      roomId: this._id,
-      cardTypes
-    })
   }
 
   removeDisconnected(item) {
