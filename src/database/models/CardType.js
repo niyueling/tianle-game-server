@@ -19,7 +19,8 @@ const CardTypeSchema = new mongoose.Schema({
   },
   //序数牌牌型
   ordinalCard: {
-    type: Array
+    type: Array,
+    default: []
   },
   //序数牌牌类型
   ordinalCardType: {
@@ -32,15 +33,29 @@ const CardTypeSchema = new mongoose.Schema({
   },
   //其他牌型
   extraCard: {
-    type: Array
+    type: Array,
+    default: []
   },
-  //是否起手胡
-  isTianHu: {
+  // 星座牌个数
+  constellateCount: {
     type: Number,
     default: 0
   },
+  condition: {
+    type: Object,
+    default: []
+  },
+  //是否起手胡
+  isTianHu: {
+    type: Boolean,
+    default: false
+  },
   //是否纯星座胡牌
   isConstellate: {
+    type: Boolean,
+    default: false
+  },
+  level: {
     type: Number,
     default: 0
   },
