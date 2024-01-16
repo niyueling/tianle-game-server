@@ -688,7 +688,7 @@ class TableState implements Serializable {
     player.on('willTakeCard', async denyFunc => {
       if (this.remainCards < 0) {
         denyFunc()
-        await this.gameOver()
+        await this.gameOver(null, player);
         return
       }
       this.logger.info('willTakeCard player-%s', index)
@@ -1027,7 +1027,7 @@ class TableState implements Serializable {
             recordCard === card && this.stateData[Enums.hu] &&
             this.stateData[Enums.hu].contains(player);
 
-          const isZiMo = this.state === stateWaitDa && recordCard === card
+          const isZiMo = this.state === stateWaitDa && recordCard === card;
 
           if (isJiePao) {
             this.actionResolver.requestAction(player, 'hu', async () => {
@@ -1061,7 +1061,7 @@ class TableState implements Serializable {
                       }, nextPlayer.msgDispatcher)
                     }
                   }
-                  await this.gameOver(false);
+                  await this.gameOver(this.players[from], player);
                   logger.info('hu player %s gameover', index)
 
                   if (this.state !== stateGameOver) {
@@ -1122,7 +1122,7 @@ class TableState implements Serializable {
               this.lastDa = player;
               player.sendMessage('game/huReply', {ok: true, data: {card, from: this.atIndex(player), type: "zimo"}});
               this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, from, index}}, player.msgDispatcher);
-              await this.gameOver(false);
+              await this.gameOver(null, player);
               this.logger.info('hu  player %s zimo gameover', index)
 
              if (this.state !== stateGameOver) {
@@ -1206,7 +1206,7 @@ class TableState implements Serializable {
                     }, nextPlayer.msgDispatcher)
                   }
                 }
-                await this.gameOver(false)
+                await this.gameOver(null, player);
                 logger.info('hu  player %s stateQiangGang jiePao gameOver', index)
 
                 this.turn++;
@@ -1541,11 +1541,11 @@ class TableState implements Serializable {
   }
 
   async drawGame() {
-    logger.info('state:', this.state);
+    // logger.info('state:', this.state);
     if (this.state !== stateGameOver) {
       this.state = stateGameOver
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      this.assignNiaos()
+      // this.assignNiaos()
       this.calcGangScore()
 
       for (const state1 of states) {
@@ -1555,11 +1555,9 @@ class TableState implements Serializable {
         await this.room.addScore(state1.model._id.toString(), state1.score)
       }
     }
-
-    // await this.room.recordRoomScore('dissolve')
   }
 
-  async gameOver(isOver = true) {
+  async gameOver(from, to) {
     if (this.state !== stateGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
 
