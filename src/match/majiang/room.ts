@@ -593,13 +593,13 @@ class Room extends RoomBase {
 
   async announcePlayerJoin(newJoinPlayer) {
     this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
-    for (const alreadyInRoomPlayer of this.players
-      .map((p, index) => {
-        return p || this.playersOrder[index]
-      })
-      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString())) {
-      newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
-    }
+    // for (const alreadyInRoomPlayer of this.players
+    //   .map((p, index) => {
+    //     return p || this.playersOrder[index]
+    //   })
+    //   .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString())) {
+    //   newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
+    // }
   }
 
   indexOf(player) {
@@ -657,6 +657,8 @@ class Room extends RoomBase {
       thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
       return false
     }
+
+    thePlayer.sendMessage("nextGameReply", {ok: true, data: {}})
 
     await this.announcePlayerJoin(thePlayer)
     return true
