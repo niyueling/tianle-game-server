@@ -541,7 +541,6 @@ class TableState implements Serializable {
   }
 
   async fapai() {
-    await this.getCardTypes();
     this.shuffle()
     this.sleepTime = 0;
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
@@ -578,10 +577,7 @@ class TableState implements Serializable {
   }
 
   async getCardTypes() {
-    const records = CardTypeModel.where({level: 1}).find();
-    if (records.length > 0) {
-      this.cardTypes = records;
-    }
+    return CardTypeModel.where({level: 1}).find();
   }
 
   atIndex(player: PlayerState) {
@@ -1041,7 +1037,8 @@ class TableState implements Serializable {
 
           const isZiMo = this.state === stateWaitDa && recordCard === card;
 
-          console.warn(this.cardTypes)
+          const cardTypes = await this.getCardTypes();
+          console.warn(cardTypes)
 
           if (isJiePao) {
             this.actionResolver.requestAction(player, 'hu', async () => {
