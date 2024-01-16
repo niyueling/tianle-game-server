@@ -1637,7 +1637,7 @@ class TableState implements Serializable {
 
       // 生成金豆记录
       await RoomGoldRecord.create({
-        winnerGoldReward: conf.Ante * conf.maxMultiple * this.cardTypes.multiple,
+        winnerGoldReward: conf.Ante * conf.maxMultiple * this.cardTypes.multiple * (from ? 1 : 3),
         winnerId: to.model._id.toString(),
         roomId: this.room._id,
         failList,
@@ -1744,6 +1744,7 @@ class TableState implements Serializable {
     p.gameOver();
 
     //获取用户当局对局流水
+    const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
 
     const gameOverMsg = {
       niaos,
@@ -1754,9 +1755,10 @@ class TableState implements Serializable {
       ruleType: this.rule.ruleType,
       isPublic: this.room.isPublic,
       caiShen: this.caishen,
+      records
     }
 
-    this.room.broadcast('game/player-over', {ok: true, data: gameOverMsg})
+    p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
 
   }
 
