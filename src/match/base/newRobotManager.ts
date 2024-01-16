@@ -350,15 +350,15 @@ export class NewRobotManager {
 
   // 机器人准备
   async robotPlayerReady() {
-    console.warn(this.room.gameState, this.room.readyPlayers.length, this.room.capacity)
     if (this.room.gameState || this.room.readyPlayers.length === this.room.capacity) {
       // 不需要准备
       return true;
     }
     let index;
     for (const proxy of Object.values(this.disconnectPlayers)) {
-      index = this.room.readyPlayers.indexOf(proxy.model._id);
+      index = this.room.readyPlayers.indexOf(proxy.model._id.toString());
       if (index === -1) {
+        console.warn(`${proxy.model._id}已准备`);
         await this.room.nextGame(proxy);
         this.room.ready(proxy);
       }
