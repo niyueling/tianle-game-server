@@ -209,7 +209,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   async ready(player) {
-    if (this.isReadyPlayer(player._id)) {
+    if (this.isReadyPlayer(player._id.toString())) {
       return
     }
 
@@ -217,7 +217,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       return
     }
 
-    this.readyPlayers.push(player._id)
+    this.readyPlayers.push(player._id.toString())
     this.broadcast('room/readyReply', {
       ok: true,
       data: {

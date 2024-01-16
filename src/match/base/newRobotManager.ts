@@ -373,7 +373,7 @@ export class NewRobotManager {
       if (playerId !== "") {
         // 有人离线
         if (this.model.offlineTimes[playerId] > config.game.offlineDelayTime) {
-          // 离线时间超过 120s
+          // 离线时间超过 5s
           await this.addRobot(playerId, i);
           this.model.offlineTimes[playerId] = 0;
           console.log('add robot', playerId, i, this.room._id)
@@ -529,8 +529,8 @@ export class NewRobotManager {
     if (this.model.step === RobotStep.start) {
       isOk = await this.isHumanPlayerReady();
       if (!isOk) {
-        // console.log('human player not ready', this.room._id);
-        return;
+        console.log(`human player not ready`, this.room._id);
+        // return;
       }
       this.model.step = RobotStep.running;
       await this.save();
