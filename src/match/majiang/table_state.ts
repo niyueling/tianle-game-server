@@ -1632,7 +1632,7 @@ class TableState implements Serializable {
       }
 
       //增加胡牌用户金币
-      to.balance = conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+      to.balance = conf.Ante * conf.maxMultiple * this.cardTypes.multiple * (from ? 1 : 3);
       await this.room.addScore(to.model._id.toString(), conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
 
       // 生成金豆记录
