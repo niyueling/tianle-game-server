@@ -727,6 +727,7 @@ class Room extends RoomBase {
   }
 
   leave(player) {
+    console.warn("room")
     if (!player) {
       // 玩家不存在
       console.warn("玩家不存在");
