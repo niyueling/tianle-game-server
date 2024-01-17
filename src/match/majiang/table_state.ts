@@ -2,7 +2,7 @@
  * Created by Color on 2016/7/6.
  */
 // @ts-ignore
-import {pick, random} from 'lodash'
+import {isNaN, pick, random} from 'lodash'
 import * as moment from 'moment'
 import * as logger from "winston";
 import * as winston from "winston";
@@ -1666,11 +1666,12 @@ class TableState implements Serializable {
           if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
             p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
             console.warn("zimo", p.balance, p.model.gold)
+            if (isNaN(p.balance)) console.warn("zimo", -conf.Ante, conf.maxMultiple, this.cardTypes.multiple);
             if (Math.abs(p.balance) > p.model.gold) {
               p.balance = -p.model.gold;
             }
             winBalance += Math.abs(p.balance);
-            console.warn("zimo", p.balance, winBalance)
+            // console.warn("zimo", p.balance, winBalance)
             await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
             failList.push(p.model._id.toString());
           }
