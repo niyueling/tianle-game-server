@@ -1652,10 +1652,12 @@ class TableState implements Serializable {
         failList.push(from.model._id.toString());
         // 扣除点炮用户金币
         from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+        console.warn("from", from.balance, from.model.gold)
         if (Math.abs(from.balance) > from.model.gold) {
           from.balance = -from.model.gold;
         }
         winBalance += Math.abs(from.balance);
+        console.warn("from", from.balance, winBalance)
         await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
       } else {
         // 自摸胡
@@ -1663,10 +1665,12 @@ class TableState implements Serializable {
           // 扣除三家金币
           if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
             p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+            console.warn("zimo", p.balance, p.model.gold)
             if (Math.abs(p.balance) > p.model.gold) {
               p.balance = -p.model.gold;
             }
             winBalance += Math.abs(p.balance);
+            console.warn("zimo", p.balance, winBalance)
             await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
             failList.push(p.model._id.toString());
           }
@@ -1675,6 +1679,7 @@ class TableState implements Serializable {
 
       //增加胡牌用户金币
       to.balance = winBalance;
+      console.warn("to", to.balance, winBalance)
       await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
 
       // 生成金豆记录
