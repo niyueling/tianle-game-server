@@ -1679,7 +1679,7 @@ class TableState implements Serializable {
 
       // 生成金豆记录
       await RoomGoldRecord.create({
-        winnerGoldReward: conf.Ante * conf.maxMultiple * this.cardTypes.multiple * (from ? 1 : 3),
+        winnerGoldReward: winBalance,
         winnerId: to.model._id.toString(),
         roomId: this.room._id,
         failList,
