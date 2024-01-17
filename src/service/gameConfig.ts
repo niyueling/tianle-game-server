@@ -12,7 +12,7 @@ export default class GameConfig extends BaseService {
       isOpen: true,
     })
     const result = await GameCategory.find({
-      category: 'ruby',
+      category: 'gold',
       isOpen: true,
     });
     // 获取游戏人数
@@ -28,7 +28,7 @@ export default class GameConfig extends BaseService {
 
   async getPublicRoomOpenDouble(categoryId) {
     const result = await GameCategory.findOne({
-      category: 'ruby',
+      category: 'gold',
       isOpen: true,
       _id: categoryId
     });
@@ -90,7 +90,7 @@ export default class GameConfig extends BaseService {
       maxAmount: {
         $gt: maxAmount,
       },
-      category: 'ruby',
+      category: 'gold',
       gameCategory,
     });
   }
@@ -104,9 +104,9 @@ export default class GameConfig extends BaseService {
     }
     const model = await service.playerService.getPlayerModel(playerId);
     // 房间要升级
-    const isUpgrade = model.ruby > conf.maxAmount;
+    const isUpgrade = model.gold > conf.maxAmount;
     // 需要更金豆
-    const isNeedRuby = model.ruby < conf.minAmount;
+    const isNeedRuby = model.gold < conf.minAmount;
     return {isUpgrade, isNeedRuby}
   }
 

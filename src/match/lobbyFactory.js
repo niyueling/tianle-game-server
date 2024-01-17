@@ -209,14 +209,14 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         return { isUpper, isMoreRuby: true };
       }
       // 检查金豆是否够扣
-      isMoreRuby = model.ruby < conf.roomRate || model.ruby < conf.minAmount;
+      isMoreRuby = model.gold < conf.roomRate || model.gold < conf.minAmount;
       if (isMoreRuby) {
-        console.error("no enough roomRate or minAmount", conf.roomRate, conf.minAmount, "with ruby", model.ruby)
+        console.error("no enough roomRate or minAmount", conf.roomRate, conf.minAmount, "with gold", model.gold)
         return { isMoreRuby, isUpper };
       }
       if (conf.maxAmount) {
         // 有最大值上限
-        isUpper = model.ruby > conf.maxAmount;
+        isUpper = model.gold > conf.maxAmount;
       }
       if (isUpper) {
         // 检查是不是还有更高等级的场次
