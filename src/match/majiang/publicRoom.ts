@@ -57,8 +57,8 @@ export class PublicRoom extends Room {
   }
 
   leave(player) {
-    if (this.gameState && this.gameState.state !== stateGameOver || !player) {
-      // 游戏已开始 or 玩家不存在
+    if (!player) {
+      // 玩家不存在
       console.debug('game start', this.gameState.state);
       return false
     }
@@ -67,10 +67,10 @@ export class PublicRoom extends Room {
     }
     player.removeListener('disconnect', this.disconnectCallback)
     this.removePlayer(player)
-    this.removeReadyPlayer(player.model._id)
+    this.removeReadyPlayer(player.model._id.toString())
     player.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {_id: player.model._id}})
-    this.clearScore(player.model._id)
+    this.broadcast('room/leaveReply', {ok: true, data: {_id: player.model._id.toString()}})
+    this.clearScore(player.model._id.toString())
 
     return true
   }

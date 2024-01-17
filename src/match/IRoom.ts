@@ -414,23 +414,23 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       return true
     }
 
-    if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
+    // if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
 
     this.removePlayer(player)
 
     player.room = null
 
-    this.broadcast('room/leaveReply', {ok: true, data: {_id: player._id}})
-    this.cancelReady(player._id)
+    this.broadcast('room/leaveReply', {ok: true, data: {_id: player._id.toString()}})
+    this.cancelReady(player._id.toString())
 
-    this.emit('leave', {_id: player._id})
+    this.emit('leave', {_id: player._id.toString()})
     if (this.isEmpty()) {
       this.emit('empty', this.disconnected);
       this.readyPlayers = [];
     }
 
-    this.removeReadyPlayer(player._id);
-    this.clearScore(player._id);
+    this.removeReadyPlayer(player._id.toString());
+    this.clearScore(player._id.toString());
     return true
   }
 
