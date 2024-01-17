@@ -1158,6 +1158,7 @@ class TableState implements Serializable {
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
           if (ok && player.daHuPai(card, null)) {
             this.lastDa = player;
+            from = this.atIndex(this.lastDa);
             player.sendMessage('game/huReply', {
               ok: true,
               data: {
