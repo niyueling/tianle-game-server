@@ -1788,6 +1788,12 @@ class TableState implements Serializable {
     //获取用户当局对局流水
     const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
 
+    // 算分
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+    for (let i = 0; i < states.length; i++) {
+      states[i].score = states[i].score * conf.Ante * conf.maxMultiple;
+    }
+
     const gameOverMsg = {
       niaos,
       creator: this.room.creator.model._id,
