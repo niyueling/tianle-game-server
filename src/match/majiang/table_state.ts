@@ -1120,25 +1120,32 @@ class TableState implements Serializable {
                     console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
                     const env = {card, from, turn: this.turn};
 
-                    try {
-                      this.actionResolver = new ActionResolver(env, () => {
-                        const newCard = this.consumeCard(xiajia)
-                        const msg = xiajia.takeCard(this.turn, newCard)
+                    if (!this.isFaPai) {
+                      this.isFaPai = true;
 
-                        if (!msg) {
-                          console.error("consume card error msg ", msg)
-                          return;
-                        }
-                        this.state = stateWaitDa;
-                        this.stateData = {da: xiajia, card: newCard, msg};
-                        const sendMsg = {index: this.players.indexOf(xiajia)}
-                        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                        logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                      })
+                      try {
+                        this.actionResolver = new ActionResolver(env, () => {
+                          const newCard = this.consumeCard(xiajia)
+                          const msg = xiajia.takeCard(this.turn, newCard)
 
-                      this.actionResolver.tryResolve()
-                    } catch (e) {
-                      console.warn(e);
+                          if (!msg) {
+                            this.isFaPai = false;
+                            console.error("consume card error msg ", msg)
+                            return;
+                          }
+                          this.state = stateWaitDa;
+                          this.stateData = {da: xiajia, card: newCard, msg};
+                          const sendMsg = {index: this.players.indexOf(xiajia)}
+                          this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                          logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                          this.isFaPai = false;
+                        })
+
+                        this.actionResolver.tryResolve()
+                      } catch (e) {
+                        this.isFaPai = false;
+                        console.warn(e);
+                      }
                     }
                   } else {
                     console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
@@ -1189,28 +1196,35 @@ class TableState implements Serializable {
               if (xiajia) {
                 console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
-                const env = {card, from, turn: this.turn}
-                try {
-                  this.actionResolver = new ActionResolver(env, () => {
-                    const newCard = this.consumeCard(xiajia)
-                    const msg = xiajia.takeCard(this.turn, newCard);
+                if (!this.isFaPai) {
+                  this.isFaPai = true;
 
-                    if (!msg) {
-                      console.error("consume card error msg ", msg)
-                      return;
-                    }
+                  const env = {card, from, turn: this.turn}
+                  try {
+                    this.actionResolver = new ActionResolver(env, () => {
+                      const newCard = this.consumeCard(xiajia)
+                      const msg = xiajia.takeCard(this.turn, newCard);
 
-                    this.stateData = {da: xiajia, card: newCard, msg};
-                    this.state = stateWaitDa;
+                      if (!msg) {
+                        this.isFaPai = false;
+                        console.error("consume card error msg ", msg)
+                        return;
+                      }
 
-                    const sendMsg = {index: this.players.indexOf(xiajia)}
-                    this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                    logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                  })
+                      this.stateData = {da: xiajia, card: newCard, msg};
+                      this.state = stateWaitDa;
 
-                  this.actionResolver.tryResolve()
-                } catch (e) {
-                  console.warn(e);
+                      const sendMsg = {index: this.players.indexOf(xiajia)}
+                      this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                      this.isFaPai = false;
+                    })
+
+                    this.actionResolver.tryResolve()
+                  } catch (e) {
+                    this.isFaPai = false;
+                    console.warn(e);
+                  }
                 }
               } else {
                 console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
