@@ -1440,6 +1440,8 @@ class TableState implements Serializable {
         // 碰、杠等
         p.sendMessage('game/canDoSomething', {ok: true, data: msg});
       }
+
+      this.actionResolver.tryResolve()
     }
 
     if (check[Enums.pengGang] || check[Enums.hu]) {
@@ -1447,6 +1449,8 @@ class TableState implements Serializable {
       this.stateData = check;
       this.stateData.hangUp = [];
     }
+
+    this.actionResolver.tryResolve()
 
     // 打牌后，延迟2秒给其他用户发牌
     const nextDo = () => {
@@ -1486,8 +1490,6 @@ class TableState implements Serializable {
         return console.warn('No unbroke player found as the next player');
       }
     }
-
-    this.actionResolver.tryResolve()
 
     setTimeout(nextDo, 2000);
   }
