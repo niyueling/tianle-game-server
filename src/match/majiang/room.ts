@@ -530,22 +530,23 @@ class Room extends RoomBase {
     reconnectPlayer.room = this
     this.arrangePos(reconnectPlayer, true)
     this.mergeOrder()
-    this.listen(reconnectPlayer);
     if (disconnectedItem) {
       this.removeDisconnected(disconnectedItem)
     }
 
     if (!this.gameState) {
-      console.log('reconnect ---')
       await this.announcePlayerJoin(reconnectPlayer)
     }
     // Fixme the index may be wrong
     const i = this.snapshot.findIndex(p => p.model._id.toString() === reconnectPlayer.model._id.toString())
-    this.emit('reconnect', reconnectPlayer, i)
     await this.broadcastRejoin(reconnectPlayer)
     if (this.dissolveTimeout) {
       this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
     }
+
+    this.emit('reconnect', reconnectPlayer, i);
+    this.listen(reconnectPlayer);
+
     return true
   }
 
