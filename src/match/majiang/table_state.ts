@@ -1638,60 +1638,56 @@ class TableState implements Serializable {
         await this.saveCardType();
       }
 
-      // 将分数 * 倍率
-      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+      if (this.cardTypes.multiple) {
+        // 将分数 * 倍率
+        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
-      this.players.map((p) => {
-        p.balance = 0;
-      })
-      let failList = [];
-      let winBalance = 0;
+        this.players.map((p) => {
+          p.balance = 0;
+        })
+        let failList = [];
+        let winBalance = 0;
 
-      // 点炮胡
-      if (from) {
-        failList.push(from.model._id.toString());
-        // 扣除点炮用户金币
-        from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-        console.warn("from", from.balance, from.model.gold)
-        if (Math.abs(from.balance) > from.model.gold) {
-          from.balance = -from.model.gold;
-        }
-        winBalance += Math.abs(from.balance);
-        console.warn("from", from.balance, winBalance)
-        await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
-      } else {
-        // 自摸胡
-        for (const p of this.players) {
-          // 扣除三家金币
-          if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
-            p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-            console.warn("zimo", p.balance, p.model.gold)
-            if (isNaN(p.balance)) console.warn("zimo", -conf.Ante, conf.maxMultiple, this.cardTypes.multiple);
-            if (Math.abs(p.balance) > p.model.gold) {
-              p.balance = -p.model.gold;
+        // 点炮胡
+        if (from) {
+          failList.push(from.model._id.toString());
+          // 扣除点炮用户金币
+          from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+          if (Math.abs(from.balance) > from.model.gold) {
+            from.balance = -from.model.gold;
+          }
+          winBalance += Math.abs(from.balance);
+          await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
+        } else {
+          // 自摸胡
+          for (const p of this.players) {
+            // 扣除三家金币
+            if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
+              p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+              if (Math.abs(p.balance) > p.model.gold) {
+                p.balance = -p.model.gold;
+              }
+              winBalance += Math.abs(p.balance);
+              await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
+              failList.push(p.model._id.toString());
             }
-            winBalance += Math.abs(p.balance);
-            // console.warn("zimo", p.balance, winBalance)
-            await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
-            failList.push(p.model._id.toString());
           }
         }
+
+        //增加胡牌用户金币
+        to.balance = winBalance;
+        await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
+
+        // 生成金豆记录
+        await RoomGoldRecord.create({
+          winnerGoldReward: winBalance,
+          winnerId: to.model._id.toString(),
+          roomId: this.room._id,
+          failList,
+          juIndex: this.room.game.juIndex,
+          cardTypes: this.cardTypes
+        })
       }
-
-      //增加胡牌用户金币
-      to.balance = winBalance;
-      console.warn("to", to.balance, winBalance)
-      await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
-
-      // 生成金豆记录
-      await RoomGoldRecord.create({
-        winnerGoldReward: winBalance,
-        winnerId: to.model._id.toString(),
-        roomId: this.room._id,
-        failList,
-        juIndex: this.room.game.juIndex,
-        cardTypes: this.cardTypes
-      })
 
       // await this.recordRubyReward();
       // for (const state1 of states) {
