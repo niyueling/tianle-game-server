@@ -727,7 +727,7 @@ class Room extends RoomBase {
   }
 
   leave(player) {
-    if (this.gameState || !player) {
+    if (!player) {
       // 游戏已开始 or 玩家不存在
       return false
     }
@@ -740,7 +740,7 @@ class Room extends RoomBase {
       return true
     }
 
-    if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
+    // if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
 
     p.removeListener('disconnect', this.disconnectCallback)
     this.emit('leave', {_id: player._id})

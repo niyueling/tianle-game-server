@@ -220,14 +220,14 @@ export default class RoomProxy {
 
         if (messageBody.name === 'room/leave') {
           if (room.leave(thePlayer)) {
-
             await service.roomRegister.removePlayerFromGameRoom(messageBody.from, gameName)
 
             thePlayer.sendMessage('room/leaveReply', {ok: true, data: {_id: room._id}})
             await this.tryBestStore(rabbit.redisClient, room)
             return
           }
-          thePlayer.sendMessage('room/leaveReply', {ok: false, data: {_id: room._id}})
+
+          thePlayer.sendMessage('room/leaveReply', {ok: false, data: {_id: room._id, msg: "离开失败"}})
           return
         }
 
