@@ -1637,9 +1637,7 @@ class TableState implements Serializable {
         this.calcGangScore();
       }
 
-      console.warn(`this.remainCards:`, this.remainCards);
-      if (this.remainCards === 0) {
-
+      if (this.remainCards <= 0) {
         return await this.gameAllOver(states, niaos, nextZhuang);
       }
 
