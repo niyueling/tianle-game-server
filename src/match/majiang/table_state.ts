@@ -1632,6 +1632,12 @@ class TableState implements Serializable {
         this.calcGangScore();
       }
 
+      console.warn(`this.remainCards:`, this.remainCards);
+      if (this.remainCards === 0) {
+
+        return await this.gameAllOver(states, niaos, nextZhuang);
+      }
+
       const recordCount = await CardTypeModel.count();
       if (recordCount > 0) {
         await CardTypeModel.where({_id: {$ne: null}}).remove();
