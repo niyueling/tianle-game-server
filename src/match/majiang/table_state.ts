@@ -1366,6 +1366,7 @@ class TableState implements Serializable {
     const index = this.players.indexOf(player);
     this.logger.info('da player-%s card:%s', index, card)
     let from
+
     if (this.state !== stateWaitDa) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError})
       logger.info('da player-%s card:%s 不能打牌', index, card)
@@ -1419,7 +1420,25 @@ class TableState implements Serializable {
 
       if (xiajia) {
         console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+
+        const env = {card, from, turn: this.turn}
+        this.actionResolver = new ActionResolver(env, () => {
+          const newCard = this.consumeCard(xiajia);
+          const msg = xiajia.takeCard(this.turn, newCard);
+
+          if (!msg) {
+            console.error("consume card error msg ", msg);
+            this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "consume card error msg"}}, xiajia.msgDispatcher);
+            return;
+          }
+          this.state = stateWaitDa;
+          this.stateData = {da: xiajia, card: newCard, msg};
+          const sendMsg = {index: this.players.indexOf(xiajia)}
+          this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
+          logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
+        })
       } else {
+        this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "No unbroke player found as the next player"}});
         return console.warn('No unbroke player found as the next player');
       }
 
@@ -1430,22 +1449,6 @@ class TableState implements Serializable {
           check = p.checkPengGang(card, check)
         }
       }
-
-      const env = {card, from, turn: this.turn}
-      this.actionResolver = new ActionResolver(env, () => {
-        const newCard = this.consumeCard(xiajia);
-        const msg = xiajia.takeCard(this.turn, newCard);
-
-        if (!msg) {
-          console.error("consume card error msg ", msg);
-          return;
-        }
-        this.state = stateWaitDa;
-        this.stateData = {da: xiajia, card: newCard, msg};
-        const sendMsg = {index: this.players.indexOf(xiajia)}
-        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
-        logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
-      })
 
       if (check[Enums.hu]) {
         for (const p of check[Enums.hu]) {
