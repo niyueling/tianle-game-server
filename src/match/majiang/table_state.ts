@@ -1381,79 +1381,32 @@ class TableState implements Serializable {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard})
       logger.info('da player-%s card:%s 不能打这张牌', index, card)
       return
+
     }
 
     this.lastDa = player;
     player.cancelTimeout();
     await player.sendMessage('game/daReply', {ok: true, data: card});
-
-    from = this.atIndex(this.lastDa);
-    this.turn++;
-
-    let check: HuCheck = {card}
-    for (let j = 1; j < this.players.length; j++) {
-      const result = {card}
-      const i = (index + j) % this.players.length
-      const p = this.players[i]
-      const r = p.markJiePao(card, result)
-      if (r.hu) {
-        if (!check.hu) check.hu = []
-        check.hu.push(p)
-        p.huInfo = r.check
-      }
-    }
-
-    for (let j = 1; j < this.players.length; j++) {
-      const i = (index + j) % this.players.length
-      const p = this.players[i]
-      if (p.contacted(this.lastDa) < 2) {
-        check = p.checkPengGang(card, check)
-      }
-    }
-
-    if (check[Enums.hu]) {
-      for (const p of check[Enums.hu]) {
-        this.actionResolver.appendAction(p, 'hu', p.huInfo)
-      }
-    }
-
-    if (check[Enums.pengGang]) {
-      if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
-      if (check[Enums.gang]) {
-        const p = check[Enums.gang]
-        const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())]
-        p.gangForbid.push(card)
-        this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
-      }
-    }
-
     this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
-    for (let i = 1; i < this.players.length; i++) {
-
-      const j = (from + i) % this.players.length;
-      const p = this.players[j]
-
-      const msg = this.actionResolver.allOptions(p)
-
-      if (msg && !p.isBroke) {
-        p.record('choice', card, msg)
-        // 碰、杠等
-        p.sendMessage('game/canDoSomething', {ok: true, data: msg});
-      }
-
-      this.actionResolver.tryResolve()
-    }
-
-    if (check[Enums.pengGang] || check[Enums.hu]) {
-      this.state = stateWaitAction;
-      this.stateData = check;
-      this.stateData.hangUp = [];
-    }
-
-    this.actionResolver.tryResolve()
 
     // 打牌后，延迟2秒给其他用户发牌
     const nextDo = () => {
+      from = this.atIndex(this.lastDa);
+      this.turn++;
+
+      let check: HuCheck = {card}
+      for (let j = 1; j < this.players.length; j++) {
+        const result = {card}
+        const i = (index + j) % this.players.length
+        const p = this.players[i]
+        const r = p.markJiePao(card, result)
+        if (r.hu) {
+          if (!check.hu) check.hu = []
+          check.hu.push(p)
+          p.huInfo = r.check
+        }
+      }
+
       let xiajia = null;
       let startIndex = (index + 1) % this.players.length;
 
@@ -1489,6 +1442,52 @@ class TableState implements Serializable {
         this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "No unbroke player found as the next player"}});
         return console.warn('No unbroke player found as the next player');
       }
+
+      for (let j = 1; j < this.players.length; j++) {
+        const i = (index + j) % this.players.length
+        const p = this.players[i]
+        if (p.contacted(this.lastDa) < 2) {
+          check = p.checkPengGang(card, check)
+        }
+      }
+
+      if (check[Enums.hu]) {
+        for (const p of check[Enums.hu]) {
+          this.actionResolver.appendAction(p, 'hu', p.huInfo)
+        }
+      }
+
+      if (check[Enums.pengGang]) {
+        if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
+        if (check[Enums.gang]) {
+          const p = check[Enums.gang]
+          const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())]
+          p.gangForbid.push(card)
+          this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
+        }
+      }
+
+      for (let i = 1; i < this.players.length; i++) {
+
+        const j = (from + i) % this.players.length;
+        const p = this.players[j]
+
+        const msg = this.actionResolver.allOptions(p)
+
+        if (msg && !p.isBroke) {
+          p.record('choice', card, msg)
+          // 碰、杠等
+          p.sendMessage('game/canDoSomething', {ok: true, data: msg});
+        }
+      }
+
+      if (check[Enums.pengGang] || check[Enums.hu]) {
+        this.state = stateWaitAction;
+        this.stateData = check;
+        this.stateData.hangUp = [];
+      }
+
+      this.actionResolver.tryResolve()
     }
 
     setTimeout(nextDo, 2000);
