@@ -1645,28 +1645,37 @@ class TableState implements Serializable {
         p.balance = 0;
       })
       let failList = [];
+      let winBalance = 0;
 
       // 点炮胡
       if (from) {
         failList.push(from.model._id.toString());
         // 扣除点炮用户金币
         from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-        await this.room.addScore(from.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
+        if (Math.abs(from.balance) > from.model.gold) {
+          from.balance = -from.model.gold;
+        }
+        winBalance += Math.abs(from.balance);
+        await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
       } else {
         // 自摸胡
         for (const p of this.players) {
           // 扣除三家金币
           if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
             p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-            await this.room.addScore(p.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
+            if (Math.abs(p.balance) > p.model.gold) {
+              p.balance = -p.model.gold;
+            }
+            winBalance += Math.abs(p.balance);
+            await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
             failList.push(p.model._id.toString());
           }
         }
       }
 
       //增加胡牌用户金币
-      to.balance = conf.Ante * conf.maxMultiple * this.cardTypes.multiple * (from ? 1 : 3);
-      await this.room.addScore(to.model._id.toString(), conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
+      to.balance = winBalance;
+      await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
 
       // 生成金豆记录
       await RoomGoldRecord.create({
