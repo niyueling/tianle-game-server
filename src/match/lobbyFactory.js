@@ -37,7 +37,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         if (!room.isFull() &&
           room.isPublic &&
           room.gameRule.categoryId === rule.categoryId &&
-          room.owner !== playerId
+          !room.gameState
         ) {
           found = room;
           break;
