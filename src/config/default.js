@@ -114,9 +114,9 @@ module.exports = {
     // 是否生成炸蛋卡
     isBoomCard: false,
     // 掉线以后推迟出牌的时间(秒)
-    offlineDelayTime: 5,
+    offlineDelayTime: 60,
     // 出牌等待时间(秒)
-    waitDelayTime: 60,
+    waitDelayTime: 5,
     // 等待用户加入金豆房的时间
     waitRubyPlayer: 2,
     // 房卡兑换金豆
