@@ -1141,7 +1141,7 @@ class TableState implements Serializable {
                       console.warn(e);
                     }
                   } else {
-                    console.warn('No unbroke player found as the next player');
+                    console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
                   }
                 }
               } else {
