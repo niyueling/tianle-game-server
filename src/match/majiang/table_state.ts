@@ -1624,7 +1624,7 @@ class TableState implements Serializable {
         // 自摸胡
         for (const p of this.players) {
           // 扣除三家金币
-          if (p.model._id.toString() !== to.model._id.toString()) {
+          if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
             p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
             await this.room.addScore(p.model._id.toString(), -conf.Ante * conf.maxMultiple * this.cardTypes.multiple, this.cardTypes);
             failList.push(p.model._id.toString());

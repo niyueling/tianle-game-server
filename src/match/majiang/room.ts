@@ -546,7 +546,7 @@ class Room extends RoomBase {
 
     this.emit('reconnect', reconnectPlayer, i);
 
-    return true
+    return true;
   }
 
   async broadcastRejoin(reconnectPlayer) {
