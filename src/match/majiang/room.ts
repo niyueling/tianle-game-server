@@ -352,7 +352,7 @@ class Room extends RoomBase {
 
   removePlayer(player) {
     for (let i = 0; i < this.players.length; i++) {
-      if (this.players[i] === player) {
+      if (this.players[i]._id.toString() === player._id.toString()) {
         this.players[i] = null
         break
       }
@@ -728,40 +728,38 @@ class Room extends RoomBase {
 
   leave(player) {
     if (!player) {
-      // 游戏已开始 or 玩家不存在
-      return false
+      // 玩家不存在
+      console.warn("玩家不存在");
+      return false;
     }
     const p = player
     if (p.room !== this) {
+      console.warn("用户不在此房间");
       return false
     }
 
     if (this.indexOf(player) < 0) {
+      console.warn("用户已经离开房间");
       return true
     }
 
     // if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
 
     p.removeListener('disconnect', this.disconnectCallback)
-    this.emit('leave', {_id: player._id})
+    this.emit('leave', {_id: player._id.toString()})
     this.removePlayer(player)
 
     for (let i = 0; i < this.playersOrder.length; i++) {
       const po = this.playersOrder[i]
-      if (po && po.model._id === player.model._id) {
+      if (po && po.model._id.toString() === player.model._id.toString()) {
         this.playersOrder[i] = null
       }
     }
 
     p.room = null
-    // if (this.players.every(x => (x == null || x.isRobot()))) {
-    //   for (let i = 0; i < this.players.length; i++) {
-    //     this.players[i] = null
-    //   }
-    // }
-    this.broadcast('room/leaveReply', {ok: true, data: {_id: p._id}})
-    this.removeReadyPlayer(p._id)
-    this.clearScore(player._id)
+    this.broadcast('room/leaveReply', {ok: true, data: {_id: p._id.toString()}})
+    this.removeReadyPlayer(p._id.toString())
+    this.clearScore(player._id.toString())
 
     return true
   }
