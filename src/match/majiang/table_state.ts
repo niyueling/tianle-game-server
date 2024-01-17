@@ -1081,7 +1081,7 @@ class TableState implements Serializable {
                 if (chengbaoStarted) {
                   this.lastDa.recordGameEvent(Enums.chengBao, {});
                 }
-                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, from, index}}, player.msgDispatcher);
+                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, from, index, huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}}}, player.msgDispatcher);
                 const huPlayerIndex = this.atIndex(player)
                 for (let i = 1; i < this.players.length; i++) {
                   const playerIndex = (huPlayerIndex + i) % this.players.length;
@@ -1095,7 +1095,7 @@ class TableState implements Serializable {
                     nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
                     this.room.broadcast('game/oppoHu', {
                       ok: true,
-                      data: {turn, card, from, index: playerIndex}
+                      data: {turn, card, from, index: playerIndex, huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}}
                     }, nextPlayer.msgDispatcher)
                   }
                 }
@@ -1170,7 +1170,7 @@ class TableState implements Serializable {
                 huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
               }
             });
-            this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, from, index}}, player.msgDispatcher);
+            this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, from, index, huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}}}, player.msgDispatcher);
             await this.gameOver(null, player);
             this.logger.info('hu  player %s zimo gameover', index)
 
@@ -1221,7 +1221,6 @@ class TableState implements Serializable {
               }
             }
           } else {
-            console.warn("ok:", ok);
             player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
           }
         } else if (this.state === stateQiangGang) {
