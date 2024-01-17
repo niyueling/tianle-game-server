@@ -36,7 +36,8 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         const room = kv[1];
         if (!room.isFull() &&
           room.isPublic &&
-          room.gameRule.categoryId === rule.categoryId
+          room.gameRule.categoryId === rule.categoryId &&
+          room.owner !== playerId
         ) {
           found = room;
           break;
