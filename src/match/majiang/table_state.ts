@@ -1221,6 +1221,7 @@ class TableState implements Serializable {
               }
             }
           } else {
+            console.warn("ok:", ok);
             player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
           }
         } else if (this.state === stateQiangGang) {
@@ -1487,7 +1488,6 @@ class TableState implements Serializable {
         this.stateData.hangUp = [];
       }
 
-      this.actionResolver.tryResolve()
     }
 
     setTimeout(nextDo, 2000);
