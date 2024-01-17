@@ -1423,8 +1423,9 @@ class TableState implements Serializable {
         }
       }
 
-      if (xiajia) {
+      if (xiajia && !this.isFaPai) {
         console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+        this.isFaPai = true;
 
         const env = {card, from, turn: this.turn}
         this.actionResolver = new ActionResolver(env, () => {
@@ -1442,6 +1443,8 @@ class TableState implements Serializable {
           this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
           logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
         })
+
+        this.isFaPai = false;
       } else {
         this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "No unbroke player found as the next player"}});
         return console.warn('No unbroke player found as the next player');
