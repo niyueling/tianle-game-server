@@ -990,7 +990,7 @@ class PlayerState implements Serializable {
       this.onDeposit = false
       const cards = genCardArray(this.cards)
       this.cancelTimeout()
-      this.sendMessage('game/cancelDeposit-ok', {cards})
+      this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
     })
     playerSocket.on('game/refreshQuiet', () => {
       this.emitter.emit('refreshQuiet', playerSocket, this.seatIndex)
@@ -1273,7 +1273,7 @@ class PlayerState implements Serializable {
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
         this.onDeposit = true
-        this.sendMessage('game/startDeposit', {})
+        this.sendMessage('game/startDeposit', {ok: true, data: {}})
         callback()
         this.timeoutTask = null
       }, minutes)
