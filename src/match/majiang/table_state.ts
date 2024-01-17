@@ -910,8 +910,8 @@ class TableState implements Serializable {
       }
 
       const isAnGang = player.cards[card] >= 3
-      gangIndex = this.atIndex(player)
-      const from = gangIndex
+      gangIndex = this.atIndex(player);
+      const from = gangIndex;
       this.turn++;
 
       const broadcastMsg = {turn: this.turn, card, index, isAnGang}
@@ -941,8 +941,6 @@ class TableState implements Serializable {
 
           this.isFaPai = false;
         }
-
-
 
         const check: IActionCheck = {card};
 
@@ -990,24 +988,24 @@ class TableState implements Serializable {
           }
         }
 
-        for (let i = 1; i < this.players.length; i++) {
-          const j = (from + i) % this.players.length;
-          const p = this.players[j]
-          const msg = this.actionResolver.allOptions(p)
-          if (msg) {
-            p.sendMessage('game/canDoSomething', {ok: true, data: msg})
-            this.state = stateWaitAction
-            this.stateData = {
-              whom: player,
-              event: Enums.gangBySelf,
-              card, turn,
-              hu: check.hu,
-              huInfo: p.huInfo,
-            }
-            this.lastDa = player
-          }
-        }
-        this.actionResolver.tryResolve()
+        // for (let i = 1; i < this.players.length; i++) {
+        //   const j = (from + i) % this.players.length;
+        //   const p = this.players[j]
+        //   const msg = this.actionResolver.allOptions(p)
+        //   if (msg) {
+        //     p.sendMessage('game/canDoSomething', {ok: true, data: msg})
+        //     this.state = stateWaitAction
+        //     this.stateData = {
+        //       whom: player,
+        //       event: Enums.gangBySelf,
+        //       card, turn,
+        //       hu: check.hu,
+        //       huInfo: p.huInfo,
+        //     }
+        //     this.lastDa = player
+        //   }
+        // }
+        // this.actionResolver.tryResolve()
       } else {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
       }
