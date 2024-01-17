@@ -1485,9 +1485,9 @@ class TableState implements Serializable {
         this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "No unbroke player found as the next player"}});
         return console.warn('No unbroke player found as the next player');
       }
-
-      this.actionResolver.tryResolve()
     }
+
+    this.actionResolver.tryResolve()
 
     setTimeout(nextDo, 2000);
   }
