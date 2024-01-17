@@ -117,18 +117,25 @@ export class PublicRoom extends Room {
       return;
     }
     // 添加金豆
-    if (model.gold + addRuby <= 0) {
-      model.gold = 0;
-    } else {
-      model.gold += addRuby;
+    if (!isNaN(addRuby)) {
+      if (model.gold + addRuby <= 0) {
+        model.gold = 0;
+      } else {
+        model.gold += addRuby;
+      }
     }
+
     // 添加房卡
-    if (model.diamond + addGem <= 0) {
-      model.diamond = 0;
-    } else {
-      model.diamond += addGem;
+    if (!isNaN(addGem)) {
+      if (model.diamond + addGem <= 0) {
+        model.diamond = 0;
+      } else {
+        model.diamond += addGem;
+      }
     }
+
     await model.save();
+
     return model;
   }
 
