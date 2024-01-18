@@ -480,26 +480,26 @@ export class NewRobotManager {
         continue;
       }
       const resp = await service.gameConfig.rubyRequired(
-        p.model._id,
+        p.model._id.toString(),
         this.room.gameRule.categoryId);
       if (resp.isNeedRuby) {
-        if (!this.noRubyInterval[p.model._id]) {
-          this.noRubyInterval[p.model._id] = 0;
+        if (!this.noRubyInterval[p.model._id.toString()]) {
+          this.noRubyInterval[p.model._id.toString()] = 0;
         }
-        this.noRubyInterval[p.model._id]++;
+        this.noRubyInterval[p.model._id.toString()]++;
         // 等待 180s 充值时间
-        if (this.noRubyInterval[p.model._id] > config.game.waitForRuby) {
+        if (this.noRubyInterval[p.model._id.toString()] > config.game.waitForRuby) {
           // 30s 过了，金豆还是不够，踢出该用户
           await this.room.leave(p);
           // 删除托管的机器人用户
-          delete this.disconnectPlayers[p.model._id];
-          delete this.noRubyInterval[p.model._id];
+          delete this.disconnectPlayers[p.model._id.toString()];
+          delete this.noRubyInterval[p.model._id.toString()];
         } else {
           waitRuby = true;
         }
       } else {
         // 删除等待时间
-        delete this.noRubyInterval[p.model._id];
+        delete this.noRubyInterval[p.model._id.toString()];
       }
     }
     return waitRuby;

@@ -159,6 +159,10 @@ export class BackendProcess {
     }
     // 创建规则(红包规则等)
     const rule = await this.lobby.normalizeRule(messageBody.payload.rule)
+    // 局数设为 99
+    rule.juShu = -1;
+    const room = await this.lobby.getAvailablePublicRoom(messageBody.from, Number(roomId), rule);
+
     // 检查金豆
     const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule.categoryId);
     if (resp.isMoreRuby) {
@@ -167,9 +171,7 @@ export class BackendProcess {
     if (resp.isUpper) {
       return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldIsHigh}, playerRouteKey);
     }
-    // 局数设为 99
-    rule.juShu = -1;
-    const room = await this.lobby.getAvailablePublicRoom(messageBody.from, Number(roomId), rule);
+
     try {
       const gameChannel = await this.connection.createChannel()
       const roomQueueReply = await gameChannel.assertQueue(`${this.gameName}.${room._id}`, {
