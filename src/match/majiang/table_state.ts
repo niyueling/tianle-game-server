@@ -2414,15 +2414,6 @@ class TableState implements Serializable {
     }
   }
 
-  getPlayerByShortId(shortId) {
-    for (const p of this.players) {
-      if (p && p.model.shortId === shortId) {
-        return p;
-      }
-    }
-    return null;
-  }
-
   promptWithOther(todo, player, card) {
     console.warn(`${player.model.shortId}游戏操作:${todo}`);
 
@@ -2450,339 +2441,48 @@ class TableState implements Serializable {
     if (cards[lastTakeCard] > 0) cards[lastTakeCard]--;
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
-    if (ting.hu) {
+    if (ting.hu && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(lastTakeCard)) {
       if (player.cards[lastTakeCard] > 0) return lastTakeCard;
     }
 
-    // 有中打中,非万能牌优先打
-    const middleCard = this.checkUserHasCard(player.cards, enums.zhong);
-    if (middleCard.count === 1 && !this.room.rule.caiShen) return middleCard.index;
-
-    // 有1,9孤牌打1,9孤牌
-    const lonelyCard = this.getCardOneOrNoneLonelyCard(player);
+    // 有单张打单张
+    const lonelyCard = this.getCardLonelyCard(player);
     if (lonelyCard.code) return lonelyCard.index;
 
-    // 有2,8孤牌打2,8孤牌
-    const twoEightLonelyCard = this.getCardTwoOrEightLonelyCard(player);
+    // 无单张打2张
+    const twoEightLonelyCard = this.getCardTwoCard(player);
     if (twoEightLonelyCard.code) return twoEightLonelyCard.index;
 
-    // 有普通孤牌打普通孤牌
-    const otherLonelyCard = this.getCardOtherLonelyCard(player);
-    if (otherLonelyCard.code) return otherLonelyCard.index;
 
-    // 有1,9卡张打1,9卡张
-    const oneNineCard = this.getCardOneOrNineCard(player);
-    if (oneNineCard.code) return oneNineCard.index;
-
-    // 有2,8卡张打2,8卡张
-    const twoEightCard = this.getCardTwoOrEightCard(player);
-    if (twoEightCard.code) return twoEightCard.index;
-
-    // 有普通卡张打普通卡张
-    const otherCard = this.getCardOtherCard(player);
-    if (otherCard.code) return otherCard.index;
-
-    // 有1,9多张打1,9多张
-    // const oneNineManyCard = this.getCardOneOrNineManyCard(player);
-    // if(oneNineManyCard.code) return oneNineManyCard.index;
-    //
-    // //有2,8多张打2,8多张
-    // const twoEightManyCard = this.getCardTwoOrEightManyCard(player);
-    // if(twoEightManyCard.code) return twoEightManyCard.index;
-    //
-    // //有普通多张打普通多张
-    // const otherManyCard = this.getCardOtherMayCard(player);
-    // if(otherManyCard.code) return otherManyCard.index;
-
-    // 从卡牌随机取一张牌
-    const randCard = this.getCardRandCard(player);
-    if (randCard.code) return randCard.index;
+    // 摸到什么牌打什么牌
+    return lastTakeCard;
   }
 
-  getCardOtherMayCard(player) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 2; j < 9; j++) {
-        const tail = j + i * 10;
-        const tailIndex = this.checkUserHasCard(player.cards, tail);
+  getCardTwoCard(player) {
+    for (let i = 1; i < 53; i++) {
+      if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(i)) {
+        continue;
+      }
 
-        switch (j) {
-          case 3:
-          case 4:
-          case 5:
-          case 6:
-          case 7:
-            if (tailIndex.count === 2 && ((this.checkUserHasCard(player.cards, tail - 2).count === 1
-                && this.checkUserHasCard(player.cards, tail - 1).count === 1) ||
-              (this.checkUserHasCard(player.cards, tail - 1).count === 1
-                && this.checkUserHasCard(player.cards, tail + 1).count === 1) ||
-              (this.checkUserHasCard(player.cards, tail + 2).count === 1
-                && this.checkUserHasCard(player.cards, tail + 1).count === 1)))
-              return {code: true, index: tailIndex.index};
-            break;
-        }
+      const result = this.checkUserHasCard(player.cards, i);
+      if (result.count === 2) {
+        return {code: true, index: result.index};
       }
     }
 
     return {code: false, index: 0};
   }
 
-  getCardTwoOrEightManyCard(player) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 2; j < 9; j++) {
-        const tail = j + i * 10;
-        const tailIndex = this.checkUserHasCard(player.cards, tail);
-        const tailllIndex = this.checkUserHasCard(player.cards, tail - 2);
-        const taillIndex = this.checkUserHasCard(player.cards, tail - 1);
-        const tailrIndex = this.checkUserHasCard(player.cards, tail + 1);
-        const tailrrIndex = this.checkUserHasCard(player.cards, tail + 2);
-
-        if (!tailIndex.count) continue;
-
-        switch (j) {
-          case 2:
-            if (tailIndex.count === 2 && (taillIndex.count === 1 &&
-                tailrIndex.count === 1) ||
-              (tailrrIndex.count === 1 &&
-                tailrIndex.count === 1))
-              return {code: true, index: tailIndex.index};
-            break;
-
-          case 8:
-            if (tailIndex.count === 2 && (tailllIndex.count === 1 &&
-                tailrIndex.count === 1) ||
-              (tailllIndex.count === 1 &&
-                taillIndex.count === 1))
-              return {code: true, index: tailIndex.index};
-            break;
-        }
+  getCardLonelyCard(player) {
+    for (let i = 1; i < 53; i++) {
+      if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(i)) {
+        continue;
       }
-    }
 
-    return {code: false, index: 0};
-  }
-
-  getCardOneOrNineManyCard(player) {
-    for (let i = 0; i < 3; i++) {
-      const tail1 = 1 + i * 10;
-      const tail9 = 9 + i * 10;
-      const tail1Index = this.checkUserHasCard(player.cards, tail1);
-      const tail9Index = this.checkUserHasCard(player.cards, tail9);
-
-      // 判断是否有尾数为1的多牌
-      if (tail1Index.count === 2 && this.checkUserHasCard(player.cards, tail1 + 1).count === 1
-        && this.checkUserHasCard(player.cards, tail1 + 2).count === 1) return {code: true, index: tail1Index.index};
-
-      // 判断是否有尾数为9的多牌
-      if (tail9Index.count === 2 && this.checkUserHasCard(player.cards, tail9 - 1).count === 1
-        && this.checkUserHasCard(player.cards, tail9 - 2).count === 1) return {code: true, index: tail9Index.index};
-    }
-
-    return {code: false, index: 0};
-  }
-
-  getCardRandCard(player) {
-    const nextCard = [];
-
-    player.cards.forEach((value, i) => {
-      if (value > 0) {
-        nextCard.push(i);
+      const result = this.checkUserHasCard(player.cards, i);
+      if (result.count === 1) {
+        return {code: true, index: result.index};
       }
-    });
-
-    for (let i = 0; i < nextCard.length; i++) {
-      const tailIndex = this.checkUserHasCard(player.cards, nextCard[i]);
-      const tailllIndex = this.checkUserHasCard(player.cards, nextCard[i] - 2);
-      const taillIndex = this.checkUserHasCard(player.cards, nextCard[i] - 1);
-      const tailrIndex = this.checkUserHasCard(player.cards, nextCard[i] + 1);
-      const tailrrIndex = this.checkUserHasCard(player.cards, nextCard[i] + 2);
-
-      // 如果是三连张禁止拆牌
-      if (tailIndex.count === 1 && ((taillIndex.count === 1 && tailllIndex.count === 1) ||
-        (taillIndex.count === 1 && tailrIndex.count === 1) ||
-        (tailrIndex.count === 1 && tailrrIndex.count === 1))) continue;
-
-      // 如果单张出现3张禁止拆牌
-      if (tailIndex.count > 2) continue;
-
-      // 如果2+1,则打1
-      if (tailIndex.count === 2 && taillIndex.count === 1 && tailrIndex.count === 0) return {
-        code: true,
-        index: taillIndex.index
-      };
-      if (tailIndex.count === 2 && taillIndex.count === 0 && tailrIndex.count === 1) return {
-        code: true,
-        index: tailrIndex.index
-      };
-
-      return {code: true, index: nextCard[i]};
-    }
-
-    return {code: true, index: nextCard[0]};
-  }
-
-  getCardOtherCard(player) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 2; j < 9; j++) {
-        const tail = j + i * 10;
-        const tailIndex = this.checkUserHasCard(player.cards, tail);
-
-        switch (j) {
-          case 3:
-          case 4:
-          case 5:
-          case 6:
-          case 7:
-            if (tailIndex.count === 1 &&
-              this.checkUserCardCount(player.cards, [tail - 1, tail - 2, tail + 1, tail + 2]).count === 1)
-              return {code: true, index: tailIndex.index};
-            break;
-        }
-      }
-    }
-
-    return {code: false, index: 0};
-  }
-
-  checkUserCardCount(cards, values) {
-    let count = 0;
-    let index = 0;
-    const newCards = [];
-
-    cards.forEach((max, j) => {
-      if (max > 0) {
-        for (let i = 0; i < max; i++) {
-          newCards.push({value: j, index: j});
-        }
-      }
-    });
-
-    newCards.forEach((card, i) => {
-      values.forEach((v: any) => {
-        if (card.value === v) {
-          count++;
-          index = card.index;
-        }
-      })
-    });
-
-    return {index, count};
-  }
-
-  getCardTwoOrEightCard(player) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 2; j < 9; j++) {
-        const tail = j + i * 10;
-        const tailIndex = this.checkUserHasCard(player.cards, tail);
-
-        switch (j) {
-          case 2:
-            if (tailIndex.count === 1 &&
-              this.checkUserCardCount(player.cards, [tail - 1, tail + 1, tail + 2]).count === 1)
-              return {code: true, index: tailIndex.index};
-            break;
-
-          case 8:
-            if (tailIndex.count === 1 &&
-              this.checkUserCardCount(player.cards, [tail - 1, tail + 1, tail - 2]).count === 1)
-              return {code: true, index: tailIndex.index};
-            break;
-        }
-      }
-    }
-
-    return {code: false, index: 0};
-  }
-
-  getCardOneOrNineCard(player) {
-    for (let i = 0; i < 3; i++) {
-      const tail1 = 1 + i * 10;
-      const tail9 = 9 + i * 10;
-      const tail1Index = this.checkUserHasCard(player.cards, tail1);
-      const tail9Index = this.checkUserHasCard(player.cards, tail9);
-
-      // 判断是否有尾数为1的卡张
-      if (tail1Index.count === 1 && ((this.checkUserHasCard(player.cards, tail1 + 1).count === 1
-          && this.checkUserHasCard(player.cards, tail1 + 2).count === 0) ||
-        (this.checkUserHasCard(player.cards, tail1 + 1).count === 0
-          && this.checkUserHasCard(player.cards, tail1 + 2).count === 1))) return {code: true, index: tail1Index.index};
-
-      // 判断是否有尾数为9的卡张
-      if (tail9Index.count === 1 && ((this.checkUserHasCard(player.cards, tail9 - 1).count === 1
-          && this.checkUserHasCard(player.cards, tail9 - 2).count === 0) ||
-        (this.checkUserHasCard(player.cards, tail9 - 1).count === 0
-          && this.checkUserHasCard(player.cards, tail9 - 2).count === 1))) return {code: true, index: tail9Index.index};
-    }
-
-    return {code: false, index: 0};
-  }
-
-  getCardTwoOrEightLonelyCard(player) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 2; j < 9; j++) {
-        const tail = j + i * 10;
-        const tailIndex = this.checkUserHasCard(player.cards, tail);
-
-        switch (j) {
-          case 2:
-            if (tailIndex.count === 1 && this.checkUserHasCard(player.cards, tail + 1).count === 0
-              && this.checkUserHasCard(player.cards, tail + 2).count === 0
-              && this.checkUserHasCard(player.cards, tail - 1).count === 0) return {code: true, index: tailIndex.index};
-            break;
-
-          case 8:
-            if (tailIndex.count === 1 && this.checkUserHasCard(player.cards, tail + 1).count === 0
-              && this.checkUserHasCard(player.cards, tail - 1).count === 0
-              && this.checkUserHasCard(player.cards, tail - 2).count === 0) return {code: true, index: tailIndex.index};
-            break;
-        }
-      }
-    }
-
-    return {code: false, index: 0};
-  }
-
-  getCardOtherLonelyCard(player) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 2; j < 9; j++) {
-        const tail = j + i * 10;
-        const tailIndex = this.checkUserHasCard(player.cards, tail);
-
-        switch (j) {
-          case 3:
-          case 4:
-          case 5:
-          case 6:
-          case 7:
-            if (tailIndex.count === 1 && this.checkUserHasCard(player.cards, tail + 1).count === 0
-              && this.checkUserHasCard(player.cards, tail + 2).count === 0
-              && this.checkUserHasCard(player.cards, tail - 1).count === 0
-              && this.checkUserHasCard(player.cards, tail - 2).count === 0) return {code: true, index: tailIndex.index};
-            break;
-        }
-      }
-    }
-
-    return {code: false, index: 0};
-  }
-
-  getCardOneOrNoneLonelyCard(player) {
-    for (let i = 0; i < 3; i++) {
-      const tail1 = 1 + i * 10;
-      const tail9 = 9 + i * 10;
-      const tail1Index = this.checkUserHasCard(player.cards, tail1);
-      const tail1pIndex = this.checkUserHasCard(player.cards, tail1 + 1);
-      const tail1ppIndex = this.checkUserHasCard(player.cards, tail1 + 2);
-      const tail9Index = this.checkUserHasCard(player.cards, tail9);
-      const tail9pIndex = this.checkUserHasCard(player.cards, tail9 - 1);
-      const tail9ppIndex = this.checkUserHasCard(player.cards, tail9 - 2);
-
-      // 判断是否有尾数为1的孤牌
-      if (tail1Index.count === 1 && tail1pIndex.count === 0
-        && tail1ppIndex.count === 0) return {code: true, index: tail1Index.index};
-
-      // 判断是否有尾数为9的孤牌
-      if (tail9Index.count === 1 && tail9pIndex.count === 0
-        && tail9ppIndex.count === 0) return {code: true, index: tail9Index.index};
     }
 
     return {code: false, index: 0};
@@ -2810,203 +2510,6 @@ class TableState implements Serializable {
 
     if (count > 0) return {index, count};
     return {index: 0, count: 0};
-  }
-
-  robotTingConsumeCard(player) {
-    // 帮机器人摸合适的牌
-    const isMo = Math.random() < 0.4;
-    if (isMo) {
-      const lackCard = this.getCardLack(player);
-      if (lackCard) return lackCard;
-    }
-
-    // const ting = player.isRobotTing(player.cards);
-    // logger.info(`ting:${JSON.stringify(ting)}`);
-    // if(ting.hu) {
-    //   logger.info(`${player.model.shortId}(${player.model.name})的卡牌可胡牌`);
-    //   const isHu = Math.random() < 1;
-    //   if(isHu) {
-    //     let cas = [];
-    //     player.cards.forEach((c, x) => {
-    //       if(c > 0) cas.push({card: x, count: c})
-    //     })
-    //     let huCards = Array.from(new Set([...ting.huCards.useJiang]));
-    //     const index = this.cards.findIndex((c) => huCards.includes(c));
-    //
-    //     if(index !== -1) {
-    //       const cardIndex = --this.remainCards
-    //       if (cardIndex === 0 && player) {
-    //         player.takeLastCard = true
-    //       }
-    //       const card = this.cards[index]
-    //       this.cards.splice(index, 1);
-    //       logger.info('robot-consumeCard %s', card)
-    //       this.lastTakeCard = card;
-    //       return card
-    //     }
-    //   }
-    // }
-
-    return false;
-  }
-
-  getCardLack(player) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 1; j <= 7; j++) {
-        let card = [];
-        const tail = j + i * 10;
-        const tailIndex = this.checkUserHasCard(player.cards, tail);
-        const tailr = this.checkUserHasCard(player.cards, tail + 1);
-        const tailrr = this.checkUserHasCard(player.cards, tail + 2);
-        const isPeng = Math.random() < 0.2;
-
-        if ([1, 3].includes(tailIndex.count) && tailr.count === 0 && [1, 3].includes(tailrr.count))
-          card = [tailr.index];
-        if ([1, 3].includes(tailIndex.count) && [1, 3].includes(tailr.count) && tailrr.count === 0)
-          card = [tailrr.index];
-        if (tailIndex.count === 1 && tailr.count === 1 && tailrr.count === 0)
-          card = [tailrr.index];
-        if (tailIndex.count === 1 && tailr.count === 0 && tailrr.count === 1)
-          card = [tailr.index];
-        if ([1, 3].includes(tailIndex.count) && [1, 3].includes(tailr.count) && tailrr.count === 0)
-          card = [tailrr.index];
-        if ([2].includes(tailIndex.count) && isPeng) card = [tailIndex.index];
-        // if(player.events.peng) card = player.events.peng;
-
-        const index = this.cards.findIndex((c: any) => card.includes(c));
-        if (index !== -1) {
-          const cardIndex = --this.remainCards
-          if (cardIndex === 0 && player) {
-            player.takeLastCard = true
-          }
-
-          const c0 = this.cards[index];
-          this.cards.splice(index, 1);
-          logger.info('robot-getCardLackCard %s', c0)
-          this.lastTakeCard = c0;
-          return card
-        }
-      }
-    }
-
-    return false;
-  }
-
-  async checkPlayerHelper() {
-    const tasks = this.players.map((p: any) => {
-      p.isHelp = false;
-      return this.checkHelper(p);
-    });
-
-    await Promise.all(tasks);
-  }
-
-  async checkHelper(p) {
-    const player = await PlayerModel.findOne({_id: p._id}).lean();
-    const helpInfo = await PlayerHelpDetail.findOne({
-      player: p._id,
-      isHelp: 1,
-      type: {$in: [1, 2]}
-    }).sort({estimateLevel: -1, type: -1}).lean();
-
-    if (!helpInfo) return;
-    if (!this.room.gameState.isHelp) {
-      const PlayerHelpRank = 1 / helpInfo.juCount;
-      const randWithSeed = algorithm.randomBySeed();
-
-      if (randWithSeed > PlayerHelpRank && helpInfo.juCount > helpInfo.count) {
-        await PlayerHelpDetail.findByIdAndUpdate(helpInfo._id, {juCount: helpInfo.juCount - 1});
-        return;
-      }
-
-      const treasure = await TreasureBox.findOne({level: helpInfo.treasureLevel}).lean();
-
-      logger.info(`${new Date()}：${player.shortId}救助概率${PlayerHelpRank},随机种子概率：${randWithSeed}`);
-      logger.info(`${new Date()}：${player.shortId}补助牌型：${treasure.mahjong.cardName},摸牌次数：${treasure.mahjong.moCount}次`)
-      this.room.gameState.isHelp = true;
-      p.isHelp = true;
-
-      // 发放刻子
-      if (treasure.mahjong.cardType === CardType.KeZi) await this.consumeKeziCard(p);
-
-      // 发放对子
-      if (treasure.mahjong.cardType === CardType.DuiZi) await this.consumeDuiziCard(p);
-
-      // 发放顺子
-      if (treasure.mahjong.cardType === CardType.ShunZi) await this.consumeShunziCard(p);
-
-      // 发放杠
-      if (treasure.mahjong.cardType === CardType.Gang) await this.consumeGangziCard(p);
-
-      // 发放七大对
-      if (treasure.mahjong.cardType === CardType.QiDaDui) await this.consumeQiDaDuiCard(p);
-
-      // 发放碰碰胡
-      if (treasure.mahjong.cardType === CardType.PengPengHu) await this.consumePengPengHuCard(p);
-
-      // 发放清一色
-      if (treasure.mahjong.cardType === CardType.QingYiSe) await this.consumeQingYiSeCard(p);
-
-      // 发放地胡
-      if (treasure.mahjong.cardType === CardType.DiHu) await this.consumeDiHuCard(p);
-
-      // 发放天胡
-      if (treasure.mahjong.cardType === CardType.TianHu) await this.consumeTianHuCard(p);
-    }
-  }
-
-  async consumeKeziCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：刻子`);
-  }
-
-  async consumeDuiziCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：对子`);
-  }
-
-  async consumeShunziCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：顺子`);
-    p.helpCards.push(this.playerHelpConsumeCard(Enums.wanzi1));
-    p.helpCards.push(this.playerHelpConsumeCard(Enums.wanzi2));
-    p.helpCards.push(this.playerHelpConsumeCard(Enums.wanzi3));
-    p.helpCards.push(this.playerHelpConsumeCard(Enums.wanzi4));
-    p.helpCards.push(this.playerHelpConsumeCard(Enums.wanzi5));
-  }
-
-  async consumeGangziCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：杠子`);
-  }
-
-  async consumeQiDaDuiCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：七大对`);
-  }
-
-  async consumePengPengHuCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：碰碰胡`);
-  }
-
-  async consumeQingYiSeCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：清一色`);
-  }
-
-  async consumeDiHuCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：地胡`);
-  }
-
-  async consumeTianHuCard(p) {
-    logger.info(`${new Date()}：${p.model.shortId}补助牌型：天胡`);
-  }
-
-  playerHelpConsumeCard(card) {
-    const index = this.cards.findIndex((c: any) => c === card);
-
-    if (index !== -1) {
-      --this.remainCards;
-      const c0 = this.cards[index];
-      this.cards.splice(index, 1);
-      logger.info('player-help-consumeCard %s', c0);
-      this.lastTakeCard = c0;
-      return c0;
-    }
   }
 }
 

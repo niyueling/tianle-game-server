@@ -60,8 +60,8 @@ export class PublicRoom extends Room {
     console.warn("publicRoom")
     if (!player) {
       // 玩家不存在
-      console.debug('game start', this.gameState.state);
-      return false
+      // console.debug('game start', this.gameState.state);
+      return true;
     }
     if (this.indexOf(player) < 0) {
       return true
