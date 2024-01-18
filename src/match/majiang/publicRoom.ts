@@ -93,11 +93,11 @@ export class PublicRoom extends Room {
     const model = await this.updatePlayer(playerId, v);
     if (findPlayer && findPlayer.isPublicRobot) {
       // 金豆机器人,自动加金豆
-      if (model.ruby < conf.minAmount) {
+      if (model.gold < conf.minAmount) {
         // 金豆不足，添加金豆
         const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
         const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
-        model.ruby = service.utils.randomIntBetweenNumber(conf.minAmount, max);
+        model.gold = service.utils.randomIntBetweenNumber(conf.minAmount, max);
         await model.save();
       }
       return;
@@ -105,7 +105,7 @@ export class PublicRoom extends Room {
 
     if (findPlayer) {
       findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
-      findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'gem', 'ruby'])})
+      findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'gem'])})
     }
   }
 
@@ -150,7 +150,6 @@ export class PublicRoom extends Room {
 
   // 检查房间是否升级
   async nextGame(thePlayer) {
-    console.log('public room next game start')
     if (!this.robotManager && thePlayer) {
       console.warn("public room error start")
       return thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
@@ -212,7 +211,7 @@ export class PublicRoom extends Room {
       if (p) {
         p.model = await this.updatePlayer(p.model._id, -conf.roomRate);
         // 通知客户端更新金豆
-        await this.updateResource2Client(p)
+        this.updateResource2Client(p)
       }
     }
   }

@@ -107,7 +107,7 @@ export default class GameConfig extends BaseService {
     const isUpgrade = model.gold > conf.maxAmount;
     // 需要更金豆
     const isNeedRuby = model.gold < conf.minAmount;
-    return {isUpgrade, isNeedRuby}
+    return {isUpgrade, isNeedRuby, minAmount: conf.minAmount}
   }
 
   // 复活礼包倍数

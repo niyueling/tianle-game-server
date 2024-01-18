@@ -288,7 +288,6 @@ export class NewRobotManager {
     if (this.disconnectPlayers) {
       // 扣除房间数
       this.disconnectPlayers = null;
-      console.log('decrease room count');
       await service.roomRegister.decrPublicRoomCount(this.room.gameRule.gameType, this.room.gameRule.categoryId);
     }
     // 删除 mongo
@@ -358,7 +357,6 @@ export class NewRobotManager {
     for (const proxy of Object.values(this.disconnectPlayers)) {
       index = this.room.readyPlayers.indexOf(proxy.model._id.toString());
       if (index === -1) {
-        console.warn(`${proxy.model._id}已准备`);
         await this.room.nextGame(proxy);
         this.room.ready(proxy);
       }
@@ -483,13 +481,14 @@ export class NewRobotManager {
         p.model._id.toString(),
         this.room.gameRule.categoryId);
       if (resp.isNeedRuby) {
+        console.warn(`${p.model.shortId}金豆数量：${p.model.gold},场次最低需要：${resp.minAmount}`)
         if (!this.noRubyInterval[p.model._id.toString()]) {
           this.noRubyInterval[p.model._id.toString()] = 0;
         }
         this.noRubyInterval[p.model._id.toString()]++;
         // 等待 180s 充值时间
         if (this.noRubyInterval[p.model._id.toString()] > config.game.waitForRuby) {
-          // 30s 过了，金豆还是不够，踢出该用户
+          // 180s 过了，金豆还是不够，踢出该用户
           await this.room.leave(p);
           // 删除托管的机器人用户
           delete this.disconnectPlayers[p.model._id.toString()];
