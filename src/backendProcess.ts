@@ -21,7 +21,7 @@ export class BackendProcess {
   rabbitMqServer: string
   gameName: GameTypes
   cluster: string
-  private redisClient: any
+  private readonly redisClient: any
   private lobbyChannel: Channel
   private connection: Connection
   private lobby: any
