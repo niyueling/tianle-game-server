@@ -190,7 +190,8 @@ export class BackendProcess {
         this.gameName
       )
       await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule}})
-      if (room.ownerId === playerRmqProxy._id) {
+      console.warn(room.ownerId, playerRmqProxy._id)
+      if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
         await roomProxy.joinAsCreator(playerRmqProxy)
       } else {
         await room.join(playerRmqProxy);

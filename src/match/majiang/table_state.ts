@@ -1665,7 +1665,7 @@ class TableState implements Serializable {
           failList.push(from.model._id.toString());
           // 扣除点炮用户金币
           from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-          if (Math.abs(from.balance) > from.model.gold) {
+          if (Math.abs(from.balance) >= from.model.gold) {
             from.balance = -from.model.gold;
           }
           winBalance += Math.abs(from.balance);
@@ -1676,7 +1676,7 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-              if (Math.abs(p.balance) > p.model.gold) {
+              if (Math.abs(p.balance) >= p.model.gold) {
                 p.balance = -p.model.gold;
               }
               winBalance += Math.abs(p.balance);

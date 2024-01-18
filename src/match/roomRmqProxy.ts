@@ -406,7 +406,7 @@ export default class RoomProxy {
   async joinAsCreator(theCreator: PlayerRmqProxy) {
     await this.room.join(theCreator)
     this.room.creator = theCreator
-    this.room.creatorName = theCreator.model.name;
+    this.room.creatorName = theCreator.model.nickname;
   }
 }
 
