@@ -1663,10 +1663,11 @@ class TableState implements Serializable {
         // 点炮胡
         if (from) {
           failList.push(from.model._id.toString());
+          const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
           from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-          if (Math.abs(from.balance) >= from.model.gold) {
-            from.balance = -from.model.gold;
+          if (Math.abs(from.balance) >= model.gold) {
+            from.balance = -model.gold;
           }
           winBalance += Math.abs(from.balance);
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
@@ -1675,9 +1676,10 @@ class TableState implements Serializable {
           for (const p of this.players) {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
+              const model = await service.playerService.getPlayerModel(p._id.toString());
               p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-              if (Math.abs(p.balance) >= p.model.gold) {
-                p.balance = -p.model.gold;
+              if (Math.abs(p.balance) >= model.gold) {
+                p.balance = -model.gold;
               }
               winBalance += Math.abs(p.balance);
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
