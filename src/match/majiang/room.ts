@@ -588,7 +588,7 @@ class Room extends RoomBase {
   }
 
   indexOf(player) {
-    return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder.model._id.toString() === player.model._id.toString())
+    return this.playersOrder.findIndex(playerOrder => playerOrder && player && playerOrder.model._id.toString() === player.model._id.toString())
   }
 
   async join(newJoinPlayer) {
