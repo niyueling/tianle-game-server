@@ -192,12 +192,13 @@ export class BackendProcess {
         this.gameName
       )
       await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule}})
-      console.warn(room.ownerId, playerRmqProxy._id)
-      if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
-        await roomProxy.joinAsCreator(playerRmqProxy)
-      } else {
-        await room.join(playerRmqProxy);
-      }
+      // if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
+      //   await roomProxy.joinAsCreator(playerRmqProxy)
+      // } else {
+      //   await room.join(playerRmqProxy);
+      // }
+
+      await roomProxy.joinAsCreator(playerRmqProxy);
 
       // 第一次进房间,保存信息
       await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId)
