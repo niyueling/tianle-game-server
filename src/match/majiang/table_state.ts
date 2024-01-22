@@ -1703,32 +1703,10 @@ class TableState implements Serializable {
         })
       }
 
-      // await this.recordRubyReward();
-      // for (const state1 of states) {
-      //   const i = states.indexOf(state1);
-      //   const player = this.players[i];
-      //   state1.model.played += 1
-      //   if (this.room.isPublic) {
-      //     // 金豆房
-      //     if (player.balance < 0 && this.room.preventTimes[player.model.shortId] > 0) {
-      //       // 输豆，扣掉一次免输次数
-      //       this.room.preventTimes[player.model.shortId]--;
-      //     }
-      //     state1.score = player.balance;
-      //     state1.rubyReward = 0;
-      //     // 是否破产
-      //     state1.isBroke = player.isBroke;
-      //     // mvp 次数
-      //     state1.mvpTimes = 0;
-      //   } else {
-      //     state1.score = this.players[i].balance * this.rule.diFen
-      //   }
-      //   await this.room.addScore(state1.model._id.toString(), state1.score);
-      // }
-
       // 判断是否破产，破产提醒客户端充值钻石
       let brokePlayers = [];
       let playersModifyGolds = [];
+      let waits = [];
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p.model._id.toString());
@@ -1740,20 +1718,28 @@ class TableState implements Serializable {
           huType: this.cardTypes
         };
         if (model.gold <= 0) {
-          p.isBroke = true;
-          params.isBroke = true;
-          brokePlayers.push(p);
-
-          if (!p.isGameOver) {
-            p.isGameOver = true;
-            await this.playerGameOver(p, niaos, p.genGameStatus(this.atIndex(p), 1));
+          if (!p.isBroke) {
+            waits.push(params);
+          } else {
+            params.isBroke = true;
+            brokePlayers.push(p);
           }
+
+          // 需要增加破产接口，用户将用户置于破产状态，并执行playerGameOver
+          // if (!p.isGameOver) {
+          //   p.isGameOver = true;
+          //   await this.playerGameOver(p, niaos, p.genGameStatus(this.atIndex(p), 1));
+          // }
         }
 
         playersModifyGolds.push(params);
       }
 
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+
+      if (waits.length > 0) {
+        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      }
 
       if (brokePlayers.length >= 3) {
         const _this = this;
