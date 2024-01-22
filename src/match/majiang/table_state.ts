@@ -1082,7 +1082,7 @@ class TableState implements Serializable {
                   this.lastDa.recordGameEvent(Enums.chengBao, {});
                 }
                 this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, from, index, huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}}}, player.msgDispatcher);
-                const huPlayerIndex = this.atIndex(player)
+                const huPlayerIndex = this.atIndex(player);
                 for (let i = 1; i < this.players.length; i++) {
                   const playerIndex = (huPlayerIndex + i) % this.players.length;
                   const nextPlayer = this.players[playerIndex];
