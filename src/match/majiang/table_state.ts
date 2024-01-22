@@ -1718,18 +1718,21 @@ class TableState implements Serializable {
           huType: this.cardTypes
         };
         if (model.gold <= 0) {
-          if (!p.isBroke) {
+          if (!p.isBroke && params.index === 0 ) {
             waits.push(params);
           } else {
-            params.isBroke = true;
+            if (!p.isBroke) {
+              // 用户第一次破产
+              p.isBroke = true;
+              params.isBroke = true;
+
+              // 需要增加破产接口，用户将用户置于破产状态，并执行playerGameOver
+              p.isGameOver = true;
+              await this.playerGameOver(p, niaos, p.genGameStatus(this.atIndex(p), 1));
+            }
+
             brokePlayers.push(p);
           }
-
-          // 需要增加破产接口，用户将用户置于破产状态，并执行playerGameOver
-          // if (!p.isGameOver) {
-          //   p.isGameOver = true;
-          //   await this.playerGameOver(p, niaos, p.genGameStatus(this.atIndex(p), 1));
-          // }
         }
 
         playersModifyGolds.push(params);
