@@ -23,6 +23,7 @@ import Rule from './Rule'
 import {TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
+import {RedisKey} from "@fm/common/constants";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -461,7 +462,13 @@ class TableState implements Serializable {
     this.remainCards = this.cards.length
   }
 
-  consumeCard(playerState: PlayerState) {
+  async consumeCard(playerState: PlayerState) {
+    const lock = await service.utils.grantLockOnce(RedisKey.inviteWithdraw + playerState._id, 2);
+    if (!lock) {
+      // 有进程在处理
+      console.log('another processing')
+      return;
+    }
     const player = playerState
 
     const cardIndex = --this.remainCards
@@ -567,8 +574,8 @@ class TableState implements Serializable {
       await this.room.payRubyForStart();
     }
 
-    const nextDo = () => {
-      const nextCard = this.consumeCard(this.zhuang)
+    const nextDo = async () => {
+      const nextCard = await this.consumeCard(this.zhuang)
       const msg = this.zhuang.takeCard(this.turn, nextCard)
       this.logger.info('takeCard player-%s  take %s', this.zhuang._id, nextCard)
 
@@ -840,7 +847,7 @@ class TableState implements Serializable {
       try {
         this.actionResolver.requestAction(
           player, 'gang',
-          () => {
+          async () => {
             const ok = player.gangByPlayerDa(card, this.lastDa);
             if (ok) {
               this.turn++;
@@ -873,7 +880,7 @@ class TableState implements Serializable {
               }
               logger.info('gangByOtherDa player-%s card:%s gang ok, take card', index, card)
 
-              const nextCard = this.consumeCard(player);
+              const nextCard = await this.consumeCard(player);
               const msg = player.gangTakeCard(this.turn, nextCard);
               if (msg) {
                 this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
@@ -897,7 +904,7 @@ class TableState implements Serializable {
       }
     })
 
-    player.on(Enums.gangBySelf, (turn, card) => {
+    player.on(Enums.gangBySelf, async (turn, card) => {
       let gangIndex;
       // if (this.turn !== turn) {
       //   logger.info(`this.turn !== turn, this.turn:${this.turn}, turn:${turn}`);
@@ -931,7 +938,7 @@ class TableState implements Serializable {
         if (!this.isFaPai) {
           this.isFaPai = true;
 
-          const nextCard = this.consumeCard(player);
+          const nextCard = await this.consumeCard(player);
           const msg = player.gangTakeCard(this.turn, nextCard);
           if (msg) {
             this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
@@ -1014,7 +1021,7 @@ class TableState implements Serializable {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
       }
     })
-    player.on(Enums.buBySelf, (turn, card) => {
+    player.on(Enums.buBySelf, async (turn, card) => {
       if (this.turn !== turn) {
         player.sendMessage('game/buReply', {ok: false, info: TianleErrorCode.buGangParamTurnInvaid});
       } else if (this.state !== stateWaitDa) {
@@ -1028,7 +1035,7 @@ class TableState implements Serializable {
           player.sendMessage('game/buReply', {ok: true, data: {card}})
           this.room.broadcast('game/oppoBuBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
           this.turn++;
-          const nextCard = this.consumeCard(player);
+          const nextCard = await this.consumeCard(player);
           const msg = player.takeCard(this.turn, nextCard);
           if (!msg) {
             return;
@@ -1127,7 +1134,7 @@ class TableState implements Serializable {
                       this.isFaPai = true;
 
                       try {
-                        const newCard = this.consumeCard(xiajia)
+                        const newCard = await this.consumeCard(xiajia)
                         const msg = xiajia.takeCard(this.turn, newCard)
 
                         if (!msg) {
@@ -1199,7 +1206,7 @@ class TableState implements Serializable {
                   this.isFaPai = true;
 
                   try {
-                    const newCard = this.consumeCard(xiajia)
+                    const newCard = await this.consumeCard(xiajia)
                     const msg = xiajia.takeCard(this.turn, newCard);
 
                     if (!msg) {
@@ -1285,8 +1292,8 @@ class TableState implements Serializable {
               }
 
               const env = {card, from, turn: this.turn}
-              this.actionResolver = new ActionResolver(env, () => {
-                const newCard = this.consumeCard(xiajia)
+              this.actionResolver = new ActionResolver(env, async () => {
+                const newCard = await this.consumeCard(xiajia)
                 const msg = xiajia.takeCard(this.turn, newCard)
 
                 if (!msg) {
@@ -1439,13 +1446,16 @@ class TableState implements Serializable {
         this.isFaPai = true;
 
         const env = {card, from, turn: this.turn}
-        this.actionResolver = new ActionResolver(env, () => {
-          const newCard = this.consumeCard(xiajia);
+        this.actionResolver = new ActionResolver(env, async () => {
+          const newCard = await this.consumeCard(xiajia);
           const msg = xiajia.takeCard(this.turn, newCard);
 
           if (!msg) {
             console.error("consume card error msg ", msg);
-            this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "consume card error msg"}}, xiajia.msgDispatcher);
+            this.room.broadcast('game/game-error', {
+              ok: false,
+              data: {name: "game/takeCard", msg: "consume card error msg"}
+            }, xiajia.msgDispatcher);
             return;
           }
           this.state = stateWaitDa;
@@ -2117,7 +2127,7 @@ class TableState implements Serializable {
     return -1
   }
 
-  gangShangGoNext(index, player, buzhang, guo) {
+  async gangShangGoNext(index, player, buzhang, guo) {
     const xiajiaIndex = (index + 1) % this.players.length
     const xiajia = this.players[xiajiaIndex]
     const checks =
@@ -2244,7 +2254,7 @@ class TableState implements Serializable {
       }
     } else {
       console.log('can do nothing')
-      const nextCard = this.consumeCard(xiajia)
+      const nextCard = await this.consumeCard(xiajia)
       const msg = xiajia.takeCard(this.turn, nextCard)
       if (!msg) {
         return
