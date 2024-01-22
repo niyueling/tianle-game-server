@@ -88,6 +88,7 @@ const enums = {
   zimo: 'zimo',
   da: 'da',
   pengGang: 'pengGang',
+  broke: 'broke',
 
   guo: 'guo',
   gangByOtherDa: 'gangByOtherDa',

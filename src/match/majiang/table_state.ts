@@ -729,6 +729,10 @@ class TableState implements Serializable {
       await this.onPlayerDa(player, turn, card);
     })
 
+    player.on(Enums.broke, async () => {
+      await this.onPlayerBroke(player);
+    })
+
     player.on(Enums.peng, (turn, card) => {
       // if (this.turn !== turn) {
       //   logger.info('peng player-%s this.turn:%s turn:%s', index, this.turn, turn)
@@ -1363,6 +1367,13 @@ class TableState implements Serializable {
         }
       })
     });
+  }
+
+  async onPlayerBroke(player) {
+    // 用户第一次破产
+    player.isBroke = true;
+    player.isGameOver = true;
+    await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
 
   async onPlayerDa(player, turn, card) {
