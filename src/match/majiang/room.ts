@@ -597,6 +597,7 @@ class Room extends RoomBase {
       return this.reconnect(newJoinPlayer)
     }
 
+    console.warn("room", this.canJoin(newJoinPlayer))
     if (!this.canJoin(newJoinPlayer)) {
       return false
     }

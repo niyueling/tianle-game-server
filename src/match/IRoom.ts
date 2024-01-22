@@ -376,9 +376,11 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async join(newJoinPlayer) {
     const isReconnect = this.indexOf(newJoinPlayer) >= 0
 
-    if (isReconnect || this.disconnected.find(x => x[0] === newJoinPlayer._id)) {
+    if (isReconnect || this.disconnected.find(x => x[0] === newJoinPlayer._id.toString())) {
       return this.reconnect(newJoinPlayer)
     }
+
+    console.warn("IRoom", this.canJoin(newJoinPlayer))
     if (!this.canJoin(newJoinPlayer)) {
       return false
     }
