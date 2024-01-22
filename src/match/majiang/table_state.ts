@@ -1724,12 +1724,13 @@ class TableState implements Serializable {
         let params = {
           index: this.atIndex(p),
           _id: p.model._id.toString(),
-          gold: p.balance,
+          gold: p.balance <= 0 ? 0 : p.balance,
+          currentGold: model.gold,
           isBroke: false,
           huType: this.cardTypes
         };
         if (model.gold <= 0) {
-          if (!p.isBroke && params.index === 0 ) {
+          if (!p.isBroke && params.index === 0) {
             waits.push(params);
           } else {
             if (!p.isBroke) {
