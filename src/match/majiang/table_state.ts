@@ -471,8 +471,8 @@ class TableState implements Serializable {
     }
     const player = playerState;
     const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    console.log(`card-length: ${sum}, cards: ${JSON.stringify(player.cards)}`)
     if (![1, 4, 7, 10, 13].includes(sum)) {
+      console.log(`card-length: ${sum}, cards: ${JSON.stringify(player.cards)}`)
       return;
     }
 
@@ -1415,18 +1415,26 @@ class TableState implements Serializable {
       return
     }
 
+    const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    if (![14, 11, 8, 5, 2].includes(sum)) {
+      logger.info('player-cards: ', sum)
+      return;
+    }
+
     const ok = player.daPai(card);
     if (!ok) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard})
       logger.info('da player-%s card:%s 不能打这张牌', index, card)
-      return
-
+      // return;
     }
 
     this.lastDa = player;
     player.cancelTimeout();
-    await player.sendMessage('game/daReply', {ok: true, data: card});
-    this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
+
+    if (ok) {
+      await player.sendMessage('game/daReply', {ok: true, data: card});
+      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
+    }
 
     // 打牌后，延迟2秒给其他用户发牌
     const nextDo = () => {
