@@ -2495,6 +2495,7 @@ class TableState implements Serializable {
     if (twoEightLonelyCard.code) return twoEightLonelyCard.index;
 
     // 摸到什么牌打什么牌
+    console.warn(player.cards);
     return player.cards.findIndex(value => value > 0);
   }
 
