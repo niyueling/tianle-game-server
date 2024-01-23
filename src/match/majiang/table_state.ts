@@ -1054,7 +1054,7 @@ class TableState implements Serializable {
       }
     })
     player.on(Enums.hu, async (turn, card) => {
-      logger.info('hu player %s state %s card %s', index, this.state, card)
+      logger.info('hu player %s state %s card %s cards %s', index, this.state, card, JSON.stringify(player.cards));
       let from
       const chengbaoStarted = this.remainCards <= 3;
 
