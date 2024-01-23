@@ -13,7 +13,8 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
     if (this.playerState) {
       // 从牌堆中取出合适的牌
       const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
-      await this.room.gameState.onPlayerDa(this.playerState, null, index);
+      console.log(`moCard: ${index}`)
+      await this.room.gameState.onPlayerDa(this.playerState, this.room.gameState.turn, index);
     }
   }
 
