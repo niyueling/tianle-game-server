@@ -1418,13 +1418,13 @@ class TableState implements Serializable {
     const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     if (![14, 11, 8, 5, 2].includes(sum)) {
       logger.info('player-cards: ', sum)
-      return;
+      // return;
     }
 
     const ok = player.daPai(card);
     if (!ok) {
-      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard})
-      logger.info('da player-%s card:%s 不能打这张牌', index, card)
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard});
+      logger.info('da player-%s card:%s 不能打这张牌', index, card);
       // return;
     }
 
