@@ -2494,9 +2494,8 @@ class TableState implements Serializable {
     const twoEightLonelyCard = this.getCardTwoCard(player);
     if (twoEightLonelyCard.code) return twoEightLonelyCard.index;
 
-
     // 摸到什么牌打什么牌
-    return lastTakeCard;
+    return player.cards.findIndex(value => value > 0);
   }
 
   getCardTwoCard(player) {
