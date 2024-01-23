@@ -1417,7 +1417,7 @@ class TableState implements Serializable {
 
     const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     if (![14, 11, 8, 5, 2].includes(sum)) {
-      logger.info('player-cards: ', sum)
+      logger.info('player-cards: ', sum);
       // return;
     }
 
@@ -1433,7 +1433,7 @@ class TableState implements Serializable {
 
     if (ok) {
       await player.sendMessage('game/daReply', {ok: true, data: card});
-      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher)
+      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
     }
 
     // 打牌后，延迟2秒给其他用户发牌
@@ -1443,14 +1443,14 @@ class TableState implements Serializable {
 
       let check: HuCheck = {card}
       for (let j = 1; j < this.players.length; j++) {
-        const result = {card}
-        const i = (index + j) % this.players.length
-        const p = this.players[i]
-        const r = p.markJiePao(card, result)
+        const result = {card};
+        const i = (index + j) % this.players.length;
+        const p = this.players[i];
+        const r = p.markJiePao(card, result);
         if (r.hu) {
-          if (!check.hu) check.hu = []
-          check.hu.push(p)
-          p.huInfo = r.check
+          if (!check.hu) check.hu = [];
+          check.hu.push(p);
+          p.huInfo = r.check;
         }
       }
 
@@ -1494,7 +1494,7 @@ class TableState implements Serializable {
 
         this.isFaPai = false;
       } else {
-        this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "No unbroke player found as the next player"}});
+        this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "No unbroke player found as the next player", data: {players: this.players, isFaPai: this.isFaPai}}});
         return console.warn('No unbroke player found as the next player');
       }
 

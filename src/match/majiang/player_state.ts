@@ -825,14 +825,14 @@ class PlayerState implements Serializable {
       }
     }
     if (this.cards[card] > 0) {
-      this.cards[card]--
-      this.dropped.push(card)
-      this.lastDa = true
-      this.pengForbidden = []
-      this.huForbiddenFan = 0
-      this.huForbiddenCards = []
-      this.forbidCards = []
-      this.freeCard = Enums.slotNoCard
+      this.cards[card]--;
+      this.dropped.push(card);
+      this.lastDa = true;
+      this.pengForbidden = [];
+      this.huForbiddenFan = 0;
+      this.huForbiddenCards = [];
+      this.forbidCards = [];
+      this.freeCard = Enums.slotNoCard;
 
       this.emitter.emit('lastDa')
       this.record('da', card)
