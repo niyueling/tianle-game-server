@@ -82,6 +82,8 @@ export class BackendProcess {
           return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
         }
 
+        console.warn("joinPublicRoom")
+
         await this.joinPublicRoom(playerModel, messageBody);
       } else {
         this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.userNotFound}, playerRouteKey);
