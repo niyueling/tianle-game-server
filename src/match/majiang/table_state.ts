@@ -1133,31 +1133,37 @@ class TableState implements Serializable {
                   }
 
                   if (xiajia) {
-                    console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+                    const nextDo = async () => {
+                      console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
-                    if (!this.isFaPai) {
-                      this.isFaPai = true;
+                      if (!this.isFaPai) {
+                        this.isFaPai = true;
 
-                      try {
-                        const newCard = await this.consumeCard(xiajia)
-                        const msg = xiajia.takeCard(this.turn, newCard)
+                        try {
+                          const newCard = await this.consumeCard(xiajia)
+                          if (newCard) {
+                            const msg = xiajia.takeCard(this.turn, newCard)
 
-                        if (!msg) {
+                            if (!msg) {
+                              this.isFaPai = false;
+                              console.error("consume card error msg ", msg)
+                              return;
+                            }
+                            this.state = stateWaitDa;
+                            this.stateData = {da: xiajia, card: newCard, msg};
+                            const sendMsg = {index: this.players.indexOf(xiajia)}
+                            this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                            logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                            this.isFaPai = false;
+                          }
+                        } catch (e) {
                           this.isFaPai = false;
-                          console.error("consume card error msg ", msg)
-                          return;
+                          console.warn(e);
                         }
-                        this.state = stateWaitDa;
-                        this.stateData = {da: xiajia, card: newCard, msg};
-                        const sendMsg = {index: this.players.indexOf(xiajia)}
-                        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                        logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                        this.isFaPai = false;
-                      } catch (e) {
-                        this.isFaPai = false;
-                        console.warn(e);
                       }
                     }
+
+                    setTimeout(nextDo, 2000);
                   } else {
                     console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
                   }
@@ -1205,33 +1211,39 @@ class TableState implements Serializable {
               }
 
               if (xiajia) {
-                console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+                const nextDo = async () => {
+                  console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
-                if (!this.isFaPai) {
-                  this.isFaPai = true;
+                  if (!this.isFaPai) {
+                    this.isFaPai = true;
 
-                  try {
-                    const newCard = await this.consumeCard(xiajia)
-                    const msg = xiajia.takeCard(this.turn, newCard);
+                    try {
+                      const newCard = await this.consumeCard(xiajia)
+                      if (newCard) {
+                        const msg = xiajia.takeCard(this.turn, newCard);
 
-                    if (!msg) {
+                        if (!msg) {
+                          this.isFaPai = false;
+                          console.error("consume card error msg ", msg)
+                          return;
+                        }
+
+                        this.stateData = {da: xiajia, card: newCard, msg};
+                        this.state = stateWaitDa;
+
+                        const sendMsg = {index: this.players.indexOf(xiajia)}
+                        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                        logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                        this.isFaPai = false;
+                      }
+                    } catch (e) {
                       this.isFaPai = false;
-                      console.error("consume card error msg ", msg)
-                      return;
+                      console.warn(e);
                     }
-
-                    this.stateData = {da: xiajia, card: newCard, msg};
-                    this.state = stateWaitDa;
-
-                    const sendMsg = {index: this.players.indexOf(xiajia)}
-                    this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
-                    logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                    this.isFaPai = false;
-                  } catch (e) {
-                    this.isFaPai = false;
-                    console.warn(e);
                   }
                 }
+
+                setTimeout(nextDo, 2000);
               } else {
                 console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
               }
@@ -1453,21 +1465,23 @@ class TableState implements Serializable {
         const env = {card, from, turn: this.turn}
         this.actionResolver = new ActionResolver(env, async () => {
           const newCard = await this.consumeCard(xiajia);
-          const msg = xiajia.takeCard(this.turn, newCard);
+          if (newCard) {
+            const msg = xiajia.takeCard(this.turn, newCard);
 
-          if (!msg) {
-            console.error("consume card error msg ", msg);
-            this.room.broadcast('game/game-error', {
-              ok: false,
-              data: {name: "game/takeCard", msg: "consume card error msg"}
-            }, xiajia.msgDispatcher);
-            return;
+            if (!msg) {
+              console.error("consume card error msg ", msg);
+              this.room.broadcast('game/game-error', {
+                ok: false,
+                data: {name: "game/takeCard", msg: "consume card error msg"}
+              }, xiajia.msgDispatcher);
+              return;
+            }
+            this.state = stateWaitDa;
+            this.stateData = {da: xiajia, card: newCard, msg};
+            const sendMsg = {index: this.players.indexOf(xiajia)}
+            this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
+            logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
           }
-          this.state = stateWaitDa;
-          this.stateData = {da: xiajia, card: newCard, msg};
-          const sendMsg = {index: this.players.indexOf(xiajia)}
-          this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
-          logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
         })
 
         this.isFaPai = false;
