@@ -483,7 +483,7 @@ class TableState implements Serializable {
     const card = this.cards[cardIndex]
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
-    return card
+    return card;
   }
 
   async consumeSimpleCard(p: PlayerState) {
@@ -1416,12 +1416,13 @@ class TableState implements Serializable {
     }
 
     const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    if (![14, 11, 8, 5, 2].includes(sum)) {
+    const flag = [14, 11, 8, 5, 2].includes(sum);
+    if (!flag) {
       logger.info('player-cards: ', sum);
       // return;
     }
 
-    const ok = player.daPai(card);
+    const ok = player.daPai(card, flag);
     if (!ok) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard});
       logger.info('da player-%s card:%s 不能打这张牌', index, card);
@@ -1523,12 +1524,10 @@ class TableState implements Serializable {
       }
 
       for (let i = 1; i < this.players.length; i++) {
-
         const j = (from + i) % this.players.length;
         const p = this.players[j]
 
         const msg = this.actionResolver.allOptions(p)
-
         if (msg && !p.isBroke) {
           p.record('choice', card, msg)
           // 碰、杠等

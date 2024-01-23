@@ -817,7 +817,9 @@ class PlayerState implements Serializable {
     return false
   }
 
-  daPai(card) {
+  daPai(card, flag = true) {
+    if (!flag) return false;
+
     const forbidCards = this.forbidCards || []
     if (this.getCardsArray().length > 2) {
       if (forbidCards.indexOf(card) >= 0 && card !== this.freeCard) {
