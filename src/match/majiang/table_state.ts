@@ -466,7 +466,7 @@ class TableState implements Serializable {
     const lock = await service.utils.grantLockOnce(RedisKey.inviteWithdraw + playerState._id, 2);
     if (!lock) {
       // 有进程在处理
-      console.log('another processing');
+      console.log('consumeCard another processing');
       return;
     }
     const player = playerState;
