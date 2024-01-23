@@ -1415,14 +1415,16 @@ class TableState implements Serializable {
       return
     }
 
-    const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    const flag = [14, 11, 8, 5, 2].includes(sum);
-    if (!flag) {
-      logger.info('player-cards: ', sum);
-      // return;
+    const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
+    if (!lock) {
+      // 有进程在处理
+      console.log('onPlayerDa another processing');
+      return;
     }
 
-    const ok = player.daPai(card, flag);
+    const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+    const ok = player.daPai(card);
     if (!ok) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard});
       logger.info('da player-%s card:%s 不能打这张牌', index, card);
