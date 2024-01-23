@@ -466,12 +466,16 @@ class TableState implements Serializable {
     const lock = await service.utils.grantLockOnce(RedisKey.inviteWithdraw + playerState._id, 2);
     if (!lock) {
       // 有进程在处理
-      console.log('another processing')
+      console.log('another processing');
       return;
     }
-    const player = playerState
+    const player = playerState;
 
-    const cardIndex = --this.remainCards
+    if (![1, 4, 7, 10, 13].includes(player.cards.length)) {
+      return;
+    }
+
+    const cardIndex = --this.remainCards;
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
@@ -1539,26 +1543,26 @@ class TableState implements Serializable {
     }
   }
 
-  generateNiao() {
+  async generateNiao() {
     const playerNiaos = []
     const playerIndex = 0
     if (this.rule.quanFei > 0) {
-      this.players.forEach(p => {
+      for (const p of this.players) {
         p.niaoCards = []
         playerNiaos[playerIndex] = {}
         playerNiaos[playerIndex][p._id] = []
         for (let i = 0; i < this.rule.quanFei; i++) {
-          const niaoPai = this.consumeCard(null)
+          const niaoPai = await this.consumeCard(null)
           if (niaoPai) {
             playerNiaos[playerIndex][p._id].push(niaoPai)
             p.niaoCards.push(niaoPai)
           }
         }
-      })
+      }
     } else {
       this.players[0].niaoCards = []
       for (let i = 0; i < this.rule.feiNiao; i++) {
-        const niaoPai = this.consumeCard(null)
+        const niaoPai = await this.consumeCard(null)
         if (niaoPai) {
           if (!playerNiaos[0]) {
             playerNiaos[0] = {}
@@ -1641,7 +1645,7 @@ class TableState implements Serializable {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
 
       const nextZhuang = this.nextZhuang()
-      const niaos = this.generateNiao()
+      const niaos = await this.generateNiao()
       this.assignNiaos()
       this.niaos = niaos
 
