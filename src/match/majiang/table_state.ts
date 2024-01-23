@@ -470,9 +470,9 @@ class TableState implements Serializable {
       return;
     }
     const player = playerState;
-
-    if (![1, 4, 7, 10, 13].includes(player.cards.length)) {
-      console.log(`card-length: ${player.cards.length}, cards: ${JSON.stringify(player.cards)}`)
+    const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    console.log(`card-length: ${sum}, cards: ${JSON.stringify(player.cards)}`)
+    if (![1, 4, 7, 10, 13].includes(sum)) {
       return;
     }
 
