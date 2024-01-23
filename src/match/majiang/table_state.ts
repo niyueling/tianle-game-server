@@ -1762,7 +1762,7 @@ class TableState implements Serializable {
         let params = {
           index: this.atIndex(p),
           _id: p.model._id.toString(),
-          gold: p.balance <= 0 ? 0 : p.balance,
+          gold: p.balance,
           currentGold: model.gold,
           isBroke: false,
           huType: this.cardTypes
