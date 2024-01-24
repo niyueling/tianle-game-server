@@ -66,32 +66,37 @@ export class RobotManager extends NewRobotManager {
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
-      if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
-        await proxy.gang(this.isPlayerGang(playerId))
-      } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
-        await proxy.choice(this.isPlayerChoice(playerId))
-      } else if (this.isPlayerDa(playerId)) {
-        if (this.waitInterval[key] >= this.getWaitSecond()) {
-          if (isHu.hu) {
-            await proxy.choice(Enums.hu)
-          } else if (AnGangIndex) {
-            await proxy.gang(Enums.anGang, AnGangIndex)
-          } else if (buGangIndex) {
-            await proxy.gang(Enums.buGang, buGangIndex)
-          } else {
-            await proxy.playCard();
+      if (this.room.gameState.state !== 9) {
+        if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
+          await proxy.gang(this.isPlayerGang(playerId))
+        } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
+          await proxy.choice(this.isPlayerChoice(playerId))
+        } else if (this.isPlayerDa(playerId)) {
+          if (this.waitInterval[key] >= this.getWaitSecond()) {
+            if (isHu.hu) {
+              await proxy.choice(Enums.hu)
+            } else if (AnGangIndex) {
+              await proxy.gang(Enums.anGang, AnGangIndex)
+            } else if (buGangIndex) {
+              await proxy.gang(Enums.buGang, buGangIndex)
+            } else {
+              await proxy.playCard();
+            }
+
+            this.waitInterval[key] = 0;
           }
 
-          this.waitInterval[key] = 0;
+          break;
+        } else {
+          // 过
+          if (this.isPlayerGuo(playerId)) {
+            await proxy.guo();
+          }
         }
-
-        break;
       } else {
-        // 过
-        if (this.isPlayerGuo(playerId)) {
-          await proxy.guo();
-        }
+        console.warn("await player invive")
       }
+
     }
   }
 

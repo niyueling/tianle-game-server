@@ -34,6 +34,7 @@ const stateQiangHaiDi = 6
 const stateWaitDaHaiDi = 7
 const stateWaitHaiDiPao = 8
 const stateQiangGang = 9
+const stateWaitRecharge = 10
 
 class HuCheck {
   hu?: any[]
@@ -1397,6 +1398,7 @@ class TableState implements Serializable {
     // 用户第一次破产
     player.isBroke = true;
     player.isGameOver = true;
+    this.state = stateWaitDa;
     await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
 
@@ -1791,6 +1793,7 @@ class TableState implements Serializable {
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
 
       if (waits.length > 0) {
+        this.state = stateWaitRecharge;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
 
