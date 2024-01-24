@@ -647,14 +647,14 @@ class TableState implements Serializable {
     })
 
     player.on('waitForDa', msg => {
-      this.logger.info('waitForDa %s', JSON.stringify(msg))
+      logger.info('waitForDa %s', JSON.stringify(msg))
       if (player.isPublicRobot) {
         // 金豆房机器人， 不打
         return;
       }
       player.deposit(() => {
-        console.log("table_state.js 183 ", "执行自动打")
-        this.logger.info('takeCard player-%s  执行自动打', index)
+        // console.log("table_state.js 183 ", "执行自动打")
+        logger.info('takeCard player-%s  执行自动打', index)
 
         if (msg) {
           const takenCard = msg.card
@@ -663,45 +663,46 @@ class TableState implements Serializable {
             case Enums.gang:
               const gangCard = msg.gang[0][0]
               player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
-              player.sendMessage('game/depositGangBySelf', {card: gangCard, turn: this.turn})
+              player.sendMessage('game/depositGangBySelf', {ok: true, data: {card: gangCard, turn: this.turn}})
               break
             case Enums.hu:
               player.emitter.emit(Enums.hu, this.turn, takenCard)
-              player.sendMessage('game/depositZiMo', {card: takenCard, turn: this.turn})
+              player.sendMessage('game/depositZiMo', {ok: true, data: {card: takenCard, turn: this.turn}})
               break
             default:
               const card = player.ai.getUseLessCard(player.cards, takenCard)
               player.emitter.emit(Enums.da, this.turn, card)
-              player.sendMessage('game/depositDa', {card, turn: this.turn})
+              player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
               break
           }
         } else {
           const card = player.ai.getUseLessCard(player.cards, Enums.slotNoCard)
           player.emitter.emit(Enums.da, this.turn, card)
-          player.sendMessage('game/depositDa', {card, turn: this.turn})
+          player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
         }
       })
     })
     player.on('waitForDoSomeThing', msg => {
+      logger.info('waitForDoSomeThing %s', JSON.stringify(msg))
       player.deposit(() => {
         const card = msg.card
         const todo = player.ai.onCanDoSomething(msg, player.cards, card)
         switch (todo) {
           case Enums.peng:
             player.emitter.emit(Enums.peng, this.turn, card)
-            player.sendMessage('game/depositPeng', {card, turn: this.turn})
+            player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
             break
           case Enums.gang:
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
-            player.sendMessage('game/depositGangByOtherDa', {card, turn: this.turn})
+            player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
             break
           case Enums.hu:
             player.emitter.emit(Enums.hu, this.turn, card)
-            player.sendMessage('game/depositHu', {card, turn: this.turn})
+            player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
             break
           case Enums.chi:
             player.emitter.emit(Enums.chi, this.turn, card, ...msg.chiCombol[0])
-            player.sendMessage('game/depositChi', {card, turn: this.turn, chiCombol: msg.chiCombol[0]})
+            player.sendMessage('game/depositChi', {ok: true, data: {card, turn: this.turn, chiCombol: msg.chiCombol[0]}})
             break
           default:
             player.emitter.emit(Enums.guo, this.turn, card)
