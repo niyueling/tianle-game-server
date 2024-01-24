@@ -1082,7 +1082,7 @@ class TableState implements Serializable {
               from = this.atIndex(this.lastDa);
               if (ok && player.daHuPai(card, this.players[from])) {
                 this.lastDa = player;
-                player.sendMessage('game/huReply', {
+                await player.sendMessage('game/huReply', {
                   ok: true,
                   data: {
                     card,
@@ -1091,6 +1091,13 @@ class TableState implements Serializable {
                     huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
                   }
                 });
+
+                //第一次胡牌自动托管
+                if (!player.onDeposit) {
+                  player.onDeposit = true
+                  await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+                }
+
                 this.stateData[Enums.hu].remove(player);
                 this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
                 if (chengbaoStarted) {
@@ -1182,7 +1189,7 @@ class TableState implements Serializable {
           if (ok && player.daHuPai(card, null)) {
             this.lastDa = player;
             from = this.atIndex(this.lastDa);
-            player.sendMessage('game/huReply', {
+            await player.sendMessage('game/huReply', {
               ok: true,
               data: {
                 card,
@@ -1191,6 +1198,13 @@ class TableState implements Serializable {
                 huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
               }
             });
+
+            //第一次胡牌自动托管
+            if (!player.onDeposit) {
+              player.onDeposit = true
+              await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+            }
+
             this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, from, index, huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}}}, player.msgDispatcher);
             await this.gameOver(null, player);
             this.logger.info('hu  player %s zimo gameover', index)
