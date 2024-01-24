@@ -68,7 +68,6 @@ export class RobotManager extends NewRobotManager {
       const isHu = proxy.playerState.checkZiMo();
 
       if (this.room.gameState.state !== 10) {
-        console.warn("game-state:", this.room.gameState.state);
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
           await proxy.gang(this.isPlayerGang(playerId))
         } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
@@ -96,7 +95,7 @@ export class RobotManager extends NewRobotManager {
           }
         }
       } else {
-        console.warn("await player invive")
+        console.warn("await player invive game-state:", this.room.gameState.state)
       }
 
     }
