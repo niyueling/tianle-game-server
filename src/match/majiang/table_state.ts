@@ -471,11 +471,11 @@ class TableState implements Serializable {
       return;
     }
     const player = playerState;
-    const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    if (![1, 4, 7, 10, 13].includes(sum)) {
-      console.log(`card-length: ${sum}, cards: ${JSON.stringify(player.cards)}`)
-      return;
-    }
+    // const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    // if (![1, 4, 7, 10, 13].includes(sum)) {
+    //   console.log(`card-length: ${sum}, cards: ${JSON.stringify(player.cards)}`)
+    //   return;
+    // }
 
     const cardIndex = --this.remainCards;
     if (cardIndex === 0 && player) {
@@ -488,7 +488,6 @@ class TableState implements Serializable {
   }
 
   async consumeSimpleCard(p: PlayerState) {
-
     const cardIndex = --this.remainCards;
     const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
@@ -1420,8 +1419,6 @@ class TableState implements Serializable {
       console.log('onPlayerDa another processing');
       return;
     }
-
-    const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
     const ok = player.daPai(card);
     if (!ok) {
