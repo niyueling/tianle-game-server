@@ -478,7 +478,7 @@ export class NewRobotManager {
         p.model._id.toString(),
         this.room.gameRule.categoryId);
       if (resp.isNeedRuby) {
-        console.warn(`${p.model.shortId}金豆数量：${p.model.gold},场次最低需要：${resp.minAmount}`)
+        // console.warn(`${p.model.shortId}金豆数量：${p.model.gold},场次最低需要：${resp.minAmount}`)
         if (!this.noRubyInterval[p.model._id.toString()]) {
           this.noRubyInterval[p.model._id.toString()] = 0;
         }

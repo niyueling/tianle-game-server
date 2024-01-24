@@ -380,7 +380,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       return this.reconnect(newJoinPlayer)
     }
 
-    console.warn("IRoom", this.canJoin(newJoinPlayer))
+    // console.warn("IRoom", this.canJoin(newJoinPlayer))
     if (!this.canJoin(newJoinPlayer)) {
       return false
     }
@@ -410,7 +410,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   leave(player) {
-    console.warn("IRoom")
+    // console.warn("IRoom")
     if (!player) return false
 
     if (this.indexOf(player) < 0) {

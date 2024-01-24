@@ -551,9 +551,6 @@ class TableState implements Serializable {
       cards.push(await this.consumeSimpleCard(player));
     }
 
-    if (cards.length < 13) {
-      console.warn(`shortId: ${player.model.shortId},cards: ${JSON.stringify(cards)}, number: ${cards.length}`)
-    }
 
     return cards;
   }
