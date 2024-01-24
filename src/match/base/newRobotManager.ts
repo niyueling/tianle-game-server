@@ -373,7 +373,6 @@ export class NewRobotManager {
           // 离线时间超过 5s
           await this.addRobot(playerId, i);
           this.model.offlineTimes[playerId] = 0;
-          console.log('add robot', playerId, i, this.room._id)
           await this.save();
           // 保存到redis中
           await service.roomRegister.saveRoomInfoToRedis(this.room);
@@ -417,7 +416,6 @@ export class NewRobotManager {
       // 加入房间
       const isOk = await this.room.join(robotProxy);
       if (isOk) {
-        console.log('add public robot', this.room._id)
         // 公共房托管的机器人
         this.model.publicRoomRobot.push([model._id, i]);
         await this.addPublicRobot(model._id, robotProxy, i);
