@@ -95,7 +95,7 @@ export class RobotManager extends NewRobotManager {
           }
         }
       } else {
-        console.warn("await player invive game-state:", this.room.gameState.state)
+        console.warn("await player invive game-state %s current-index %s", this.room.gameState.state, this.room.gameState.atIndex(proxy))
       }
 
     }
