@@ -215,6 +215,8 @@ class PlayerState implements Serializable {
 
   isGameOver: boolean = false
 
+  constellationCards: any[] = []
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -226,6 +228,7 @@ class PlayerState implements Serializable {
     this.balance = 0
     this.isGameOver = false
     this.juScore = 0;
+    this.constellationCards = []
     this.score = room.getScore(userSocket)
     this.disconnectCallBack = player => {
       if (player === this.msgDispatcher) {
@@ -599,20 +602,19 @@ class PlayerState implements Serializable {
     this.cards.takeSelfCard = true
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
-    const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
-    return checkResult
+    return HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
   }
 
-  onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle?: boolean) {
+  onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle?: boolean, constellationCards?) {
     cards.forEach(x => {
-      this.cards[x]++
+      this.cards[x]++;
     })
-    this.caiShen = caiShen
-    this.cards['caiShen'] = caiShen
-    this.seatIndex = seatIndex
+    this.caiShen = caiShen;
+    this.cards['caiShen'] = caiShen;
+    this.seatIndex = seatIndex;
 
-    this.recorder.recordUserEvent(this, 'shuffle')
-    this.sendMessage('game/Shuffle', {ok: true, data: {juShu, cards, caiShen, remainCards, juIndex, needShuffle: !!needShuffle}})
+    this.recorder.recordUserEvent(this, 'shuffle');
+    this.sendMessage('game/Shuffle', {ok: true, data: {juShu, cards, caiShen, remainCards, juIndex, needShuffle: !!needShuffle, constellationCards}});
   }
 
   @triggerAfterAction

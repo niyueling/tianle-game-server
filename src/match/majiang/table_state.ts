@@ -550,7 +550,6 @@ class TableState implements Serializable {
       cards.push(await this.consumeSimpleCard(player));
     }
 
-
     return cards;
   }
 
@@ -568,7 +567,15 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const cards13 = await this.take13Cards(p);
-      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle)
+
+      const constellationCards = [];
+      for (let i = 0; i < cards13.length; i++) {
+        if (cards13[i] > Enums.athena && !constellationCards.includes(cards13[i])) {
+          constellationCards.push(cards13[i]);
+        }
+      }
+      p.constellationCards = constellationCards;
+      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards)
     }
 
     // 金豆房扣除开局金豆
