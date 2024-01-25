@@ -1737,16 +1737,15 @@ class TableState implements Serializable {
         })
         let failList = [];
         let winBalance = 0;
+        let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
         // 点炮胡
         if (from) {
           failList.push(from.model._id.toString());
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
-          from.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-          if (Math.abs(from.balance) >= model.gold) {
-            from.balance = -model.gold;
-          }
+          const balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+          from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           from.juScore += from.balance;
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
@@ -1756,10 +1755,8 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              p.balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
-              if (Math.abs(p.balance) >= model.gold) {
-                p.balance = -model.gold;
-              }
+              const balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+              p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               p.juScore += p.balance;
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
@@ -1771,6 +1768,7 @@ class TableState implements Serializable {
         //增加胡牌用户金币
         to.balance = winBalance;
         to.juScore += winBalance;
+        console.warn(`player index %s balance %s score %s`, this.atIndex(to), to.balance, to.juScore);
         await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
 
         // 生成金豆记录
