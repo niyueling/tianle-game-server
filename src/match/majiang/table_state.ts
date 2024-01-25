@@ -471,11 +471,6 @@ class TableState implements Serializable {
       return;
     }
     const player = playerState;
-    // const sum = player.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    // if (![1, 4, 7, 10, 13].includes(sum)) {
-    //   console.log(`card-length: ${sum}, cards: ${JSON.stringify(player.cards)}`)
-    //   return;
-    // }
 
     const cardIndex = --this.remainCards;
     if (cardIndex === 0 && player) {
@@ -484,6 +479,11 @@ class TableState implements Serializable {
     const card = this.cards[cardIndex]
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
+
+    if (card > Enums.athena && !playerState.constellationCards.includes(card)) {
+      playerState.constellationCards.push(card);
+      playerState.sendMessage("game/specialCardReply", {ok: true, data: playerState.constellationCards});
+    }
     return card;
   }
 
