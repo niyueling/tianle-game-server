@@ -1061,9 +1061,6 @@ class TableState implements Serializable {
       const recordCard = this.stateData.card;
 
       try {
-        if (this.stateData[Enums.hu]) {
-          console.log(this.stateData[Enums.hu]);
-        }
         const isJiePao = this.state === stateWaitAction &&
           recordCard === card && this.stateData[Enums.hu] &&
           this.stateData[Enums.hu].contains(player);
@@ -1771,7 +1768,7 @@ class TableState implements Serializable {
 
       // 打点日志查看用户本局积分
       const states_1 = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      console.warn(`states_1: ${states_1}`);
+      console.warn(`states_1: ${JSON.stringify(states_1)}`);
 
       // 判断是否破产，破产提醒客户端充值钻石
       let brokePlayers = [];
