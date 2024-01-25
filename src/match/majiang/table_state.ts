@@ -647,7 +647,7 @@ class TableState implements Serializable {
     })
 
     player.on('waitForDa', msg => {
-      logger.info('waitForDa %s', JSON.stringify(msg))
+
       if (player.isPublicRobot) {
         // 金豆房机器人， 不打
         return;
@@ -659,6 +659,7 @@ class TableState implements Serializable {
         if (msg) {
           const takenCard = msg.card
           const todo = player.ai.onWaitForDa(msg, player.cards)
+          logger.info('waitForDa %s todo %s', JSON.stringify(msg), todo)
           switch (todo) {
             case Enums.gang:
               const gangCard = msg.gang[0][0]
@@ -683,9 +684,9 @@ class TableState implements Serializable {
       })
     })
     player.on('waitForDoSomeThing', msg => {
-      logger.info('waitForDoSomeThing %s card %s', JSON.stringify(msg.data), msg.card)
+      logger.info('waitForDoSomeThing %s card %s', JSON.stringify(msg.data), msg.data.card)
       player.deposit(() => {
-        const card = msg.card
+        const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         logger.info('waitForDoSomeThing TODO %s', todo)
         switch (todo) {
@@ -700,10 +701,6 @@ class TableState implements Serializable {
           case Enums.hu:
             player.emitter.emit(Enums.hu, this.turn, card)
             player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
-            break
-          case Enums.chi:
-            player.emitter.emit(Enums.chi, this.turn, card, ...msg.chiCombol[0])
-            player.sendMessage('game/depositChi', {ok: true, data: {card, turn: this.turn, chiCombol: msg.chiCombol[0]}})
             break
           default:
             player.emitter.emit(Enums.guo, this.turn, card)

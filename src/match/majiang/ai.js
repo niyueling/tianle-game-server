@@ -101,14 +101,17 @@ export default {
 
 export const playerAi = {
   getUseLessCard(cards, current) {
-    if (current) {
-      return current
-    }
     return getUseLessCard(cards)
   },
 
   onWaitForDa(actions, cards) {
-    return Enums.guo
+    if (actions.hu) {
+      return Enums.hu;
+    }
+    if (actions.gang) {
+      return Enums.gang;
+    }
+    return Enums.guo;
   },
 
   onCanDoSomething(actions, cards, card) {
