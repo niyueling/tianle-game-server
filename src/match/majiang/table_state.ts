@@ -1177,6 +1177,9 @@ class TableState implements Serializable {
 
                     setTimeout(nextDo, 2000);
                   } else {
+                    const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+                    const nextZhuang = this.nextZhuang()
+                    await this.gameAllOver(states, [], nextZhuang);
                     console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
                   }
                 }
@@ -1265,6 +1268,9 @@ class TableState implements Serializable {
                 setTimeout(nextDo, 2000);
               } else {
                 console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
+                const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+                const nextZhuang = this.nextZhuang()
+                await this.gameAllOver(states, [], nextZhuang);
               }
             }
           } else {
@@ -1324,6 +1330,9 @@ class TableState implements Serializable {
               if (xiajia) {
                 console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
               } else {
+                const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+                const nextZhuang = this.nextZhuang()
+                await this.gameAllOver(states, [], nextZhuang);
                 console.warn('No unbroke player found as the next player');
               }
 
@@ -1451,7 +1460,7 @@ class TableState implements Serializable {
     }
 
     // 打牌后，延迟2秒给其他用户发牌
-    const nextDo = () => {
+    const nextDo = async () => {
       from = this.atIndex(this.lastDa);
       this.turn++;
 
@@ -1508,7 +1517,16 @@ class TableState implements Serializable {
 
         this.isFaPai = false;
       } else {
-        this.room.broadcast('game/game-error', {ok: false, data: {name: "game/takeCard", msg: "No unbroke player found as the next player", data: {players: this.players, isFaPai: this.isFaPai}}});
+        this.room.broadcast('game/game-error', {ok: false,
+          data: {
+            name: "game/takeCard",
+            msg: "No unbroke player found as the next player",
+            data: {players: this.players, isFaPai: this.isFaPai}
+          }
+        });
+        const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+        const nextZhuang = this.nextZhuang()
+        await this.gameAllOver(states, [], nextZhuang);
         return console.warn('No unbroke player found as the next player');
       }
 
