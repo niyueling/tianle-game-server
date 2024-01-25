@@ -1783,8 +1783,8 @@ class TableState implements Serializable {
       }
 
       // 打点日志查看用户本局积分
-      const states_1 = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      console.warn(`states_1: ${JSON.stringify(states_1)}`);
+      // const states_1 = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+      // console.warn(`states_1: ${JSON.stringify(states_1)}`);
 
       // 判断是否破产，破产提醒客户端充值钻石
       let brokePlayers = [];
