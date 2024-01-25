@@ -1064,14 +1064,16 @@ class TableState implements Serializable {
       const recordCard = this.stateData.card;
 
       try {
+        if (this.stateData[Enums.hu]) {
+          console.log(this.stateData[Enums.hu]);
+        }
         const isJiePao = this.state === stateWaitAction &&
           recordCard === card && this.stateData[Enums.hu] &&
-          this.stateData[Enums.hu]._id.toString() === player._id.toString();
+          this.stateData[Enums.hu].contains(player);
 
         const isZiMo = this.state === stateWaitDa && recordCard === card;
 
-        console.warn(`state %s recordCard %s card %s isZiMo %s this.stateData[Enums.hu].contains(player) %s`, this.state, recordCard, card, isZiMo, this.stateData[Enums.hu] &&
-          this.stateData[Enums.hu]._id.toString() === player._id.toString() )
+        console.warn(`state %s recordCard %s card %s isZiMo %s this.stateData[Enums.hu].contains(player) %s`, this.state, recordCard, card, isZiMo, this.stateData[Enums.hu].contains(player) )
 
         const cardTypes = await this.getCardTypes();
         const random = Math.floor(Math.random() * cardTypes.length);
