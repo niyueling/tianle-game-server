@@ -81,6 +81,8 @@ export class RobotManager extends NewRobotManager {
               return;
             }
 
+            this.waitInterval[key] = 0;
+
             if (isHu.hu) {
               await proxy.choice(Enums.hu)
             } else if (AnGangIndex) {
@@ -90,8 +92,6 @@ export class RobotManager extends NewRobotManager {
             } else {
               await proxy.playCard();
             }
-
-            this.waitInterval[key] = 0;
           }
 
           break;
