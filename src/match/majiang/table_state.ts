@@ -1733,6 +1733,7 @@ class TableState implements Serializable {
             from.balance = -model.gold;
           }
           winBalance += Math.abs(from.balance);
+          from.juScore += from.balance;
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
         } else {
           // 自摸胡
@@ -1745,6 +1746,7 @@ class TableState implements Serializable {
                 p.balance = -model.gold;
               }
               winBalance += Math.abs(p.balance);
+              p.juScore += p.balance;
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
               failList.push(p.model._id.toString());
             }
@@ -1753,6 +1755,7 @@ class TableState implements Serializable {
 
         //增加胡牌用户金币
         to.balance = winBalance;
+        to.juScore += winBalance;
         await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
 
         // 生成金豆记录

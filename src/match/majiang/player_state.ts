@@ -210,6 +210,9 @@ class PlayerState implements Serializable {
   // 补助的棋牌
   helpCards: any[] = []
 
+  // 本局积分
+  juScore = 0
+
   isGameOver: boolean = false
 
   constructor(userSocket, room, rule) {
@@ -222,6 +225,7 @@ class PlayerState implements Serializable {
     this.cards = new SourceCardMap(53).fill(0)
     this.balance = 0
     this.isGameOver = false
+    this.juScore = 0;
     this.score = room.getScore(userSocket)
     this.disconnectCallBack = player => {
       if (player === this.msgDispatcher) {
@@ -1125,62 +1129,62 @@ class PlayerState implements Serializable {
       }
     }
 
-    let score = 0
-
-    const oppoCount = (this.rule.playerCount - 1)
-
-    if (this.events[Enums.zimo]) {
-      this.events.hu.forEach(
-        result => {
-          score += 2 * oppoCount * result.fan
-        }
-      )
-    }
-
-    if (this.events[Enums.taJiaZiMo]) {
-      this.events[Enums.taJiaZiMo].forEach(result => {
-        score -= 2 * result.fan
-      })
-    }
-    if (this.events[Enums.jiePao]) {
-      this.events.hu.forEach(
-        result => {
-          const base = result.fan === 1 ? 1 : oppoCount
-          const singleScore = result.fan * base
-          score += singleScore
-        })
-    }
-
-    if (this.events[Enums.dianPao]) {
-      this.events[Enums.dianPao].forEach(result => {
-
-        const base = result.fan === 1 ? 1 : oppoCount
-        score -= result.fan * base
-      })
-    }
-
-    if (this.events[Enums.hunhun]) {
-      this.events.hunhun.forEach(
-        result => {
-          score = 0 // score_fan * result.fan
-        }
-      )
-    }
-    // if (!this.events[Enums.dianPao] && !this.events[Enums.jiePao]) {
-    //   console.log("player_state.js genGameStatus 862",this.events)
-    //   score -= calFan(result, false, result.zhuang) * score_fan;
+    // let score = 0
+    //
+    // const oppoCount = (this.rule.playerCount - 1)
+    //
+    // if (this.events[Enums.zimo]) {
+    //   this.events.hu.forEach(
+    //     result => {
+    //       score += 2 * oppoCount * result.fan
+    //     }
+    //   )
     // }
-
-    if (this.events.hu) {
-      const hu = Array.prototype.slice.call(this.events.hu)[0]
-      if (hu.baoTou || hu.qiDuiZiBaoTou || hu.gangBao || hu.gangShangKaiHua || hu.haiDiLaoYue) {
-        // delete this.events.zimo
-      }
-    }
+    //
+    // if (this.events[Enums.taJiaZiMo]) {
+    //   this.events[Enums.taJiaZiMo].forEach(result => {
+    //     score -= 2 * result.fan
+    //   })
+    // }
+    // if (this.events[Enums.jiePao]) {
+    //   this.events.hu.forEach(
+    //     result => {
+    //       const base = result.fan === 1 ? 1 : oppoCount
+    //       const singleScore = result.fan * base
+    //       score += singleScore
+    //     })
+    // }
+    //
+    // if (this.events[Enums.dianPao]) {
+    //   this.events[Enums.dianPao].forEach(result => {
+    //
+    //     const base = result.fan === 1 ? 1 : oppoCount
+    //     score -= result.fan * base
+    //   })
+    // }
+    //
+    // if (this.events[Enums.hunhun]) {
+    //   this.events.hunhun.forEach(
+    //     result => {
+    //       score = 0 // score_fan * result.fan
+    //     }
+    //   )
+    // }
+    // // if (!this.events[Enums.dianPao] && !this.events[Enums.jiePao]) {
+    // //   console.log("player_state.js genGameStatus 862",this.events)
+    // //   score -= calFan(result, false, result.zhuang) * score_fan;
+    // // }
+    //
+    // if (this.events.hu) {
+    //   const hu = Array.prototype.slice.call(this.events.hu)[0]
+    //   if (hu.baoTou || hu.qiDuiZiBaoTou || hu.gangBao || hu.gangShangKaiHua || hu.haiDiLaoYue) {
+    //     // delete this.events.zimo
+    //   }
+    // }
 
     return {
       index,
-      score,
+      score: this.juScore,
       cards,
       niaoCount: this.niaoCount,
       niaoCards: this.niaoCards,
