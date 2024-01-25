@@ -74,13 +74,8 @@ export class RobotManager extends NewRobotManager {
         } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
           await proxy.choice(this.isPlayerChoice(playerId))
         } else if (this.isPlayerDa(playerId)) {
-          if (this.waitInterval[key] >= this.getWaitSecond()) {
-            const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + playerId, 2);
-            if (!lock) {
-              console.log('robot daCard another processing index %s', this.room.gameState.atIndex(proxy));
-              return;
-            }
-
+          const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + playerId, 3);
+          if (this.waitInterval[key] >= this.getWaitSecond() && lock) {
             this.waitInterval[key] = 0;
 
             if (isHu.hu) {
