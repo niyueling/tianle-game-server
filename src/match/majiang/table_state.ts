@@ -482,7 +482,7 @@ class TableState implements Serializable {
 
     if (card > Enums.athena && !playerState.constellationCards.includes(card)) {
       playerState.constellationCards.push(card);
-      playerState.sendMessage("game/specialCardReply", {ok: true, data: playerState.constellationCards});
+      playerState.sendMessage("game/specialCardReply", {ok: true, data: {constellationCards: playerState.constellationCards, card}});
     }
     return card;
   }
