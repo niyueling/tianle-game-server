@@ -132,7 +132,6 @@ export class GoodsApi extends BaseApi {
     // 查询用户游戏币余额
     const balanceUrl = `https://api.weixin.qq.com/wxa/game/getbalance?access_token=${accessToken}&signature=${signature}&sig_method=hmac_sha256&pay_sig=${paySign}`;
     const response = await this.service.base.postByJson(balanceUrl, userPostBody);
-    console.warn(response)
     if (response.data.errcode !== 0) {
       return this.replyFail(TianleErrorCode.payFail);
     }

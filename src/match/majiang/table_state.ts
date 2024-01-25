@@ -2436,7 +2436,6 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       if (p) {
-        console.warn("balance: ", p.balance)
         p.balance *= times * conf.Ante;
         if (p.balance > 0) {
           winRuby += p.balance;
@@ -2510,7 +2509,6 @@ class TableState implements Serializable {
     if (twoEightLonelyCard.code) return twoEightLonelyCard.index;
 
     // 摸到什么牌打什么牌
-    console.warn(player.cards);
     return player.cards.findIndex(value => value > 0);
   }
 
