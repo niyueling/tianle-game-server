@@ -1435,13 +1435,6 @@ class TableState implements Serializable {
       return
     }
 
-    const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
-    if (!lock) {
-      // 有进程在处理
-      console.log('onPlayerDa another processing');
-      return;
-    }
-
     const ok = player.daPai(card);
     if (!ok) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard});

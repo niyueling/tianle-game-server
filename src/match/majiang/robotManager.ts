@@ -2,6 +2,7 @@ import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
 import Enums from "./enums";
 import {MJRobotRmqProxy} from "./robotRmqProxy";
+import {RedisKey} from "@fm/common/constants";
 
 // 机器人出牌
 export class RobotManager extends NewRobotManager {
@@ -74,6 +75,12 @@ export class RobotManager extends NewRobotManager {
           await proxy.choice(this.isPlayerChoice(playerId))
         } else if (this.isPlayerDa(playerId)) {
           if (this.waitInterval[key] >= this.getWaitSecond()) {
+            const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + playerId, 2);
+            if (!lock) {
+              console.log('robot daCard another processing index %s', this.room.gameState.atIndex(proxy));
+              return;
+            }
+
             if (isHu.hu) {
               await proxy.choice(Enums.hu)
             } else if (AnGangIndex) {
