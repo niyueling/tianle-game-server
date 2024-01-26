@@ -1747,6 +1747,7 @@ class TableState implements Serializable {
           const balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
+          console.warn(`dianpao index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(from), from.model.shortId, from.juScore, from.balance, from.juScore += from.balance)
           from.juScore += from.balance;
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
         } else {
@@ -1758,6 +1759,7 @@ class TableState implements Serializable {
               const balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
+              console.warn(`zimo index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(p), p.model.shortId, p.juScore, p.balance, p.juScore += p.balance)
               p.juScore += p.balance;
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
               failList.push(p.model._id.toString());
@@ -1767,6 +1769,7 @@ class TableState implements Serializable {
 
         //增加胡牌用户金币
         to.balance = winBalance;
+        console.warn(`win index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(to), to.model.shortId, to.juScore, to.balance, to.juScore += to.balance)
         to.juScore += winBalance;
         console.warn(`player index %s balance %s score %s`, this.atIndex(to), to.balance, to.juScore);
         await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
