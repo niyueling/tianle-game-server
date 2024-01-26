@@ -482,8 +482,16 @@ class TableState implements Serializable {
 
     if (card > Enums.athena && !playerState.constellationCards.includes(card)) {
       playerState.constellationCards.push(card);
-      playerState.sendMessage("game/specialCardReply", {ok: true, data: {constellationCards: playerState.constellationCards, card}});
+
+      let constellationCardLists = [];
+
+      for (let i = 0, iMax = this.players.length; i < iMax; i++) {
+        const p = this.players[i];
+        constellationCardLists.push({index: i, _id: p._id, constellationCards: p.constellationCards, multiple: Math.pow(2, p.constellationCards.length)})
+        this.players[i].sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
+      }
     }
+
     return card;
   }
 
@@ -564,6 +572,7 @@ class TableState implements Serializable {
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
     const needShuffle = this.room.shuffleData.length > 0;
+    const constellationCardLists = [];
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const cards13 = await this.take13Cards(p);
@@ -575,7 +584,12 @@ class TableState implements Serializable {
         }
       }
       p.constellationCards = constellationCards;
+      constellationCardLists.push({index: i, _id: p._id, constellationCards, multiple: Math.pow(2, constellationCards.length)})
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards)
+    }
+
+    for (let i = 0, iMax = this.players.length; i < iMax; i++) {
+      this.players[i].sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
     }
 
     // 金豆房扣除开局金豆
