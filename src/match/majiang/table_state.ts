@@ -487,7 +487,7 @@ class TableState implements Serializable {
 
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
-        constellationCardLists.push({index: i, _id: p._id, constellationCards: p.constellationCards, multiple: 2 * p.constellationCards.length})
+        constellationCardLists.push({index: i, _id: p._id, constellationCards: p.constellationCards, multiple: this.calcConstellationCardScore(p)})
       }
 
       for (let i = 0; i < this.players.length; i++) {
@@ -497,6 +497,146 @@ class TableState implements Serializable {
     }
 
     return card;
+  }
+
+  async calcConstellationCardScore(player) {
+    const constellationCards = player.constellationCards;
+    const cardCount = constellationCards.length;
+    let score = 0;
+
+    if (cardCount <= 3) {
+      score += 2 * cardCount;
+    }
+    if (cardCount > 3 || cardCount <= 6) {
+      score += 4 * cardCount;
+    }
+    if (cardCount > 6 || cardCount <= 9) {
+      score += 6 * cardCount;
+    }
+
+    if (cardCount > 9 || cardCount <= 12) {
+      score += 8 * cardCount;
+    }
+
+    // 生肖图大世界
+    if (cardCount === 12) {
+      score *= 24;
+    }
+
+    // 生肖图-圆六角
+    const sixArrs = [Enums.constellation2, Enums.constellation3, Enums.constellation5, Enums.constellation8, Enums.constellation10, Enums.constellation11];
+    let check = true;
+    for (let i = 0; i < sixArrs.length; i++) {
+      if (!constellationCards.includes(sixArrs[i])) {
+        check = false;
+      }
+    }
+
+    if (check) {
+      score *= 16;
+    }
+
+    // 生肖图-小世界
+    const minWorldArrs = [
+      [Enums.constellation1, Enums.constellation2, Enums.constellation5, Enums.constellation6],
+      [Enums.constellation2, Enums.constellation3, Enums.constellation6, Enums.constellation7],
+      [Enums.constellation3, Enums.constellation4, Enums.constellation7, Enums.constellation8],
+      [Enums.constellation5, Enums.constellation6, Enums.constellation9, Enums.constellation10],
+      [Enums.constellation6, Enums.constellation7, Enums.constellation10, Enums.constellation11],
+      [Enums.constellation7, Enums.constellation8, Enums.constellation11, Enums.constellation12],
+    ];
+
+    let check1 = true;
+    for (let i = 0; i < minWorldArrs.length; i++) {
+      for (let j = 0; j < minWorldArrs[i].length; j++) {
+        if (!constellationCards.includes(minWorldArrs[i][j])) {
+          check1 = false;
+        }
+      }
+    }
+
+    if (check1) {
+      score *= 4;
+    }
+
+    // 生肖图-一线天
+    const oneSkyArrs = [
+      [Enums.constellation1, Enums.constellation5, Enums.constellation9],
+      [Enums.constellation2, Enums.constellation6, Enums.constellation10],
+      [Enums.constellation3, Enums.constellation7, Enums.constellation11],
+      [Enums.constellation4, Enums.constellation8, Enums.constellation12],
+    ];
+
+    let check2 = true;
+    for (let i = 0; i < oneSkyArrs.length; i++) {
+      for (let j = 0; j < oneSkyArrs[i].length; j++) {
+        if (!constellationCards.includes(oneSkyArrs[i][j])) {
+          check2 = false;
+        }
+      }
+    }
+
+    if (check2) {
+      score *= 6;
+    }
+
+    // 生肖图-一字禅
+    const oneWordArrs = [
+      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4],
+      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8],
+      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12],
+    ];
+
+    let check3 = true;
+    for (let i = 0; i < oneWordArrs.length; i++) {
+      for (let j = 0; j < oneWordArrs[i].length; j++) {
+        if (!constellationCards.includes(oneWordArrs[i][j])) {
+          check3 = false;
+        }
+      }
+    }
+
+    if (check3) {
+      score *= 8;
+    }
+
+    // 生肖图-铁拐李
+    const IronCalliArrs = [
+      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4, Enums.constellation5, Enums.constellation9],
+      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4, Enums.constellation8, Enums.constellation12],
+      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8, Enums.constellation1, Enums.constellation9],
+      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8, Enums.constellation4, Enums.constellation12],
+      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12, Enums.constellation1, Enums.constellation5],
+      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12, Enums.constellation4, Enums.constellation8],
+    ];
+
+    let check4 = true;
+    for (let i = 0; i < IronCalliArrs.length; i++) {
+      for (let j = 0; j < IronCalliArrs[i].length; j++) {
+        if (!constellationCards.includes(IronCalliArrs[i][j])) {
+          check4 = false;
+        }
+      }
+    }
+
+    if (check4) {
+      score *= 16;
+    }
+
+    // 生肖图-圆六角
+    const squareArrs = [Enums.constellation1, Enums.constellation4, Enums.constellation9, Enums.constellation12];
+    let check5 = true;
+    for (let i = 0; i < squareArrs.length; i++) {
+      if (!constellationCards.includes(squareArrs[i])) {
+        check5 = false;
+      }
+    }
+
+    if (check5) {
+      score *= 10;
+    }
+
+    return score;
   }
 
   async consumeSimpleCard(p: PlayerState) {
@@ -588,7 +728,7 @@ class TableState implements Serializable {
         }
       }
       p.constellationCards = constellationCards;
-      constellationCardLists.push({index: i, _id: p._id, constellationCards, multiple: 2 * p.constellationCards.length})
+      constellationCardLists.push({index: i, _id: p._id, constellationCards, multiple: this.calcConstellationCardScore(p)})
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards)
     }
 
