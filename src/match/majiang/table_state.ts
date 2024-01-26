@@ -507,14 +507,14 @@ class TableState implements Serializable {
     if (cardCount <= 3) {
       score = 2 * cardCount;
     }
-    if (cardCount > 3 || cardCount <= 6) {
+    if (cardCount > 3 && cardCount <= 6) {
       score = 4 * cardCount;
     }
-    if (cardCount > 6 || cardCount <= 9) {
+    if (cardCount > 6 && cardCount <= 9) {
       score = 6 * cardCount;
     }
 
-    if (cardCount > 9 || cardCount <= 12) {
+    if (cardCount > 9 && cardCount <= 12) {
       score = 8 * cardCount;
     }
 
