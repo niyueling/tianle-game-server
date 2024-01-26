@@ -487,7 +487,7 @@ class TableState implements Serializable {
 
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
-        constellationCardLists.push({index: i, _id: p._id, constellationCards: p.constellationCards, multiple: 2 * p.constellationCards.length})
+        constellationCardLists.push({index: i, _id: p._id, constellationCards: p.constellationCards, multiple: Math.pow(2, p.constellationCards.length)})
         this.players[i].sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
       }
     }
@@ -584,7 +584,7 @@ class TableState implements Serializable {
         }
       }
       p.constellationCards = constellationCards;
-      constellationCardLists.push({index: i, _id: p._id, constellationCards, multiple: 2 * p.constellationCards.length})
+      constellationCardLists.push({index: i, _id: p._id, constellationCards, multiple: Math.pow(2, constellationCards.length)})
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards)
     }
 
