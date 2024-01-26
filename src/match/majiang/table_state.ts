@@ -505,21 +505,22 @@ class TableState implements Serializable {
     let score = 0;
 
     if (cardCount <= 3) {
-      score += 2 * cardCount;
+      score = 2 * cardCount;
     }
     if (cardCount > 3 || cardCount <= 6) {
-      score += 4 * cardCount;
+      score = 4 * cardCount;
     }
     if (cardCount > 6 || cardCount <= 9) {
-      score += 6 * cardCount;
+      score = 6 * cardCount;
     }
 
     if (cardCount > 9 || cardCount <= 12) {
-      score += 8 * cardCount;
+      score = 8 * cardCount;
     }
 
-    // 生肖图大世界
+    // 生肖图-大世界
     if (cardCount === 12) {
+      console.warn("生肖图-大世界")
       score *= 24;
     }
 
@@ -533,6 +534,7 @@ class TableState implements Serializable {
     }
 
     if (check) {
+      console.warn("生肖图-圆六角")
       score *= 16;
     }
 
@@ -556,6 +558,7 @@ class TableState implements Serializable {
     }
 
     if (check1) {
+      console.warn("生肖图-小世界")
       score *= 4;
     }
 
@@ -577,6 +580,7 @@ class TableState implements Serializable {
     }
 
     if (check2) {
+      console.warn("生肖图-一线天")
       score *= 6;
     }
 
@@ -597,6 +601,7 @@ class TableState implements Serializable {
     }
 
     if (check3) {
+      console.warn("生肖图-一字禅")
       score *= 8;
     }
 
@@ -620,10 +625,11 @@ class TableState implements Serializable {
     }
 
     if (check4) {
+      console.warn("生肖图-铁拐李")
       score *= 16;
     }
 
-    // 生肖图-圆六角
+    // 生肖图-四方阵
     const squareArrs = [Enums.constellation1, Enums.constellation4, Enums.constellation9, Enums.constellation12];
     let check5 = true;
     for (let i = 0; i < squareArrs.length; i++) {
@@ -633,6 +639,7 @@ class TableState implements Serializable {
     }
 
     if (check5) {
+      console.warn("生肖图-四方阵")
       score *= 10;
     }
 
