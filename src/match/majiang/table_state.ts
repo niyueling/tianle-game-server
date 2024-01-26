@@ -985,26 +985,26 @@ class TableState implements Serializable {
             }
           }
 
-          if (qiang && !this.stateData.cancelQiang) {
-            logger.info(qiang, this.stateData.cancelQiang);
-            this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
-            qiang.sendMessage('game/canDoSomething', {
-              ok: true, data: {
-                card, turn: this.turn, hu: true,
-                chi: false, chiCombol: [],
-                peng: false, gang: false, bu: false,
-              }
-            })
-
-            this.state = stateQiangGang
-            this.stateData = {
-              whom: player,
-              who: qiang,
-              event: Enums.gangBySelf,
-              card, turn: this.turn
-            }
-            return
-          }
+          // if (qiang && !this.stateData.cancelQiang) {
+          //   logger.info(qiang, this.stateData.cancelQiang);
+          //   this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
+          //   qiang.sendMessage('game/canDoSomething', {
+          //     ok: true, data: {
+          //       card, turn: this.turn, hu: true,
+          //       chi: false, chiCombol: [],
+          //       peng: false, gang: false, bu: false,
+          //     }
+          //   })
+          //
+          //   this.state = stateQiangGang
+          //   this.stateData = {
+          //     whom: player,
+          //     who: qiang,
+          //     event: Enums.gangBySelf,
+          //     card, turn: this.turn
+          //   }
+          //   return
+          // }
         }
 
         // for (let i = 1; i < this.players.length; i++) {
