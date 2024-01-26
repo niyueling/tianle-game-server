@@ -82,12 +82,12 @@ export function createHandler(redisClient: AsyncRedisClient) {
     },
 
     'room/create': async (player, message) => {
-      const rule = message.rule
-      const gameType = message.gameType
-      rule.gameType = gameType;
-      const playerId = message.playerId
+      const rule = message.rule;
+      const gameType = message.gameType;
+      rule.gameType = gameType;;
+      const playerId = message.playerId;
       player.model = await PlayerModel.findOne({_id: playerId}).lean();
-      player.setGameName(gameType)
+      player.setGameName(gameType);
       await player.connectToBackend(player.gameName);
       player.requestTo(lobbyQueueNameFrom(gameType), 'createRoom', {rule, gameType})
       return

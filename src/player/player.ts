@@ -343,12 +343,15 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
       await this.channel.bindQueue(this.myQueue, 'userCenter', `user.${this._id}`)
       await this.channel.bindQueue(this.myQueue, 'userCenter', `user.${this._id}.${gameName}`)
       const {consumerTag} = await this.channel.consume(this.myQueue, async message => {
-        if (!message) return
+        if (!message) {
+          logger.error('message error')
+          return;
+        }
         try {
           const messageBody = JSON.parse(message.content.toString())
           logger.info(`from ${gameName} [${this.currentRoom}] to ${this._id} message name ${messageBody.name} cmd ${messageBody.cmd}`)
 
-          if (messageBody.type === 'cmd' && messageBody.cmd === 'leave' && this.socketId !== messageBody.sid) {
+          if (messageBody.type === 'cmd' && messageBody.cmd === 'leave' && this.socket && this.socketId !== messageBody.sid) {
             this.socket.close()
             this.socket.terminate()
 
@@ -390,7 +393,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
       }, {noAck: true})
 
     } catch (e) {
-      logger.error('consume error', this.socketId, e)
+      logger.error('connectToBackend error', this.socketId, e)
     }
   }
 
