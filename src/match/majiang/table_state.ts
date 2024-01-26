@@ -488,7 +488,11 @@ class TableState implements Serializable {
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         constellationCardLists.push({index: i, _id: p._id, constellationCards: p.constellationCards, multiple: Math.pow(2, p.constellationCards.length)})
-        this.players[i].sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
+      }
+
+      for (let i = 0; i < this.players.length; i++) {
+        const p = this.players[i];
+        p.sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
       }
     }
 
