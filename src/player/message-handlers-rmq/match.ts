@@ -30,6 +30,8 @@ export function createHandler(redisClient: AsyncRedisClient) {
         player.currentRoom = room
         player.setGameName(message.gameType)
         player.requestToCurrentRoom('room/reconnect')
+      } else {
+        player.sendMessage('room/reconnect', {ok: false, data: {}})
       }
     },
 
@@ -82,15 +84,19 @@ export function createHandler(redisClient: AsyncRedisClient) {
     },
 
     'room/create': async (player, message) => {
-      const rule = message.rule;
-      const gameType = message.gameType;
-      rule.gameType = gameType;;
-      const playerId = message.playerId;
-      player.model = await PlayerModel.findOne({_id: playerId}).lean();
-      player.setGameName(gameType);
-      await player.connectToBackend(player.gameName);
-      player.requestTo(lobbyQueueNameFrom(gameType), 'createRoom', {rule, gameType})
-      return
+      try {
+        const rule = message.rule;
+        const gameType = message.gameType;
+        rule.gameType = gameType;;
+        const playerId = message.playerId;
+        player.model = await PlayerModel.findOne({_id: playerId}).lean();
+        // player.setGameName(gameType);
+        // await player.connectToBackend(player.gameName);
+        return player.requestTo(lobbyQueueNameFrom(gameType), 'createRoom', {rule, gameType});
+      } catch (e) {
+        console.warn(e);
+      }
+
     },
 
     'room/next-game': player => {
