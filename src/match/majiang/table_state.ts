@@ -487,7 +487,7 @@ class TableState implements Serializable {
 
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
-        constellationCardLists.push({index: i, _id: p._id, constellationCards: p.constellationCards, multiple: this.calcConstellationCardScore(p)})
+        constellationCardLists.push({index: i, _id: p._id, constellationCards: p.constellationCards, multiple: await this.calcConstellationCardScore(p)})
       }
 
       for (let i = 0; i < this.players.length; i++) {
@@ -728,7 +728,7 @@ class TableState implements Serializable {
         }
       }
       p.constellationCards = constellationCards;
-      constellationCardLists.push({index: i, _id: p._id, constellationCards, multiple: this.calcConstellationCardScore(p)})
+      constellationCardLists.push({index: i, _id: p._id, constellationCards, multiple: await this.calcConstellationCardScore(p)})
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards)
     }
 
