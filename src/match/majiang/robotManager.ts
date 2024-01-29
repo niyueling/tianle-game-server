@@ -59,6 +59,7 @@ export class RobotManager extends NewRobotManager {
     }
 
     const keys = Object.keys(this.disconnectPlayers);
+    let disabled = false;
     let proxy;
     let playerId;
     for (const key of keys) {

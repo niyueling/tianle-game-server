@@ -18,6 +18,7 @@ export class NewRobotManager {
   watchTimer: any
   isWatching: boolean
   waitPublicRobot: number
+  isPlayed: boolean
   constructor(room, depositCount) {
     // 房间管理器
     this.room = room;
@@ -27,6 +28,7 @@ export class NewRobotManager {
     this.waitInterval = {};
     this.isWatching = false;
     this.waitPublicRobot = 0;
+    this.isPlayed = true;
     this.startMonit();
   }
 
@@ -541,28 +543,28 @@ export class NewRobotManager {
 
   // 出牌
   async playCard() {
-
-    if (!this.room.gameState) {
+    if (!this.room.gameState || !this.isPlayed) {
       return;
     }
+    this.isPlayed = false;
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
     let playerId;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
       playerId = proxy.model._id;
-      // console.log('currentPlayerStep', this.room.gameState.currentPlayerStep, 'proxy seat index', proxy.seatIndex)
       const seatIndex = await this.getPlayerIndexByPlayerId(playerId)
       if (seatIndex === this.room.gameState.currentPlayerStep) {
         if (this.waitInterval[key] >= this.getWaitSecond()) {
-          await proxy.playCard();
-          // 重新计时
           this.waitInterval[key] = 0;
+          await proxy.playCard();
           console.log(playerId, 'play card', this.room._id)
         }
         break;
       }
     }
+
+    this.isPlayed = true;
   }
 
   // 有位置离线

@@ -4,6 +4,7 @@ import * as config from "../../config";
 import LuckyBless from "../../database/models/luckyBless";
 import {service} from "../../service/importService";
 import {BaseApi} from "./baseApi";
+import moment = require("moment");
 
 // 游戏
 export class GameApi extends BaseApi {
