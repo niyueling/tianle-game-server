@@ -2263,6 +2263,17 @@ class TableState implements Serializable {
       validPlayerRedPocket,
     }
 
+    for (let i = 0; i < this.players.length; i++) {
+      let p = this.players[i];
+      p.constellationCards = [];
+
+      for (let j = 0; j < p.cards.length; j++) {
+        if (p.cards[i] > Enums.athena && !p.constellationCards.includes(p.cards[i])) {
+          p.constellationCards.push(p.cards[i]);
+        }
+      }
+    }
+
     let msg;
     for (let i = 0; i < this.players.length; i++) {
       if (i === index) {
