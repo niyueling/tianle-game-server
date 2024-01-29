@@ -2175,7 +2175,7 @@ class TableState implements Serializable {
 
     // 计算胜率
     for (let i = 0; i < this.players.length; i++) {
-      const model = Player.findOne({_id: this.players[i]._id});
+      const model = await Player.findOne({_id: this.players[i]._id});
 
       model.juCount++;
       if (this.players[i].juScore > 0) {
