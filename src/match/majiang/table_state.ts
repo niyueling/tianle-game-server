@@ -2269,11 +2269,13 @@ class TableState implements Serializable {
         msg = this.players[i].genSelfStates(i);
         msg.roomRubyReward = roomRubyReward;
         msg.constellationCards = this.players[i].constellationCards;
+        msg.constellationCardLevel = this.calcConstellationCardScore(this.players[i]);
         pushMsg.status.push(msg)
       } else {
         msg = this.players[i].genOppoStates(i);
         msg.roomRubyReward = roomRubyReward;
         msg.constellationCards = this.players[i].constellationCards;
+        msg.constellationCardLevel = this.calcConstellationCardScore(this.players[i]);
         pushMsg.status.push(msg)
       }
     }
