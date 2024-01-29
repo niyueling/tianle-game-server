@@ -8,10 +8,14 @@ import moment = require("moment");
 
 // 游戏
 export class GameApi extends BaseApi {
-// 获取金豆房配置
-  @addApi()
-  async getPublicRoomCategory() {
-    const resp = await service.gameConfig.getPublicRoomCategory();
+  // 获取金豆房配置
+  @addApi({
+    rule: {
+      gameType: 'string'
+    }
+  })
+  async getPublicRoomCategory(message) {
+    const resp = await this.service.gameConfig.getPublicRoomCategory(message);
     this.replySuccess(resp);
   }
 

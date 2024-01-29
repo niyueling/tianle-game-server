@@ -7,23 +7,19 @@ import {service} from "./importService";
 
 export default class GameConfig extends BaseService {
 
-  async getPublicRoomCategory() {
-    const items = await GameItem.find({
-      isOpen: true,
-    })
+  async getPublicRoomCategory(message) {
     const result = await GameCategory.find({
       category: 'gold',
-      isOpen: true,
+      game: message.gameType,
+      isOpen: true
     });
+
     // 获取游戏人数
     result.sort((a, b) => {
       return a.level - b.level
     });
-    const resp = {};
-    for (const gameType of GameTypeList) {
-      resp[gameType] = await this.getCategoryByGameType(items, result, gameType);
-    }
-    return resp;
+
+    return result;
   }
 
   async getPublicRoomOpenDouble(categoryId) {
