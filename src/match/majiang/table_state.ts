@@ -2268,8 +2268,8 @@ class TableState implements Serializable {
       let p = this.players[i];
       p.constellationCards = [];
 
-      for (let j = 0; j < p.cards.length; j++) {
-        if (p.cards[j] > Enums.athena && !p.constellationCards.includes(p.cards[j])) {
+      for (let j = Enums.constellation1; j <= Enums.constellation12; j++) {
+        if (!p.constellationCards.includes(j) && p.cards[j] > 0) {
           p.constellationCards.push(p.cards[j]);
         }
       }
