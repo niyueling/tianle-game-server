@@ -84,11 +84,11 @@ function onCanDoSomething(actions, cards, card) {
 export default {
   getUseLessCard,
   onWaitForDa(actions, cards) {
-    if (actions.hu) {
-      return Enums.hu;
-    }
     if (actions.gang) {
       return Enums.gang;
+    }
+    if (actions.hu) {
+      return Enums.hu;
     }
     return Enums.guo;
   },
@@ -104,11 +104,11 @@ export const playerAi = {
   },
 
   onWaitForDa(actions, cards) {
-    if (actions.hu) {
-      return Enums.hu;
-    }
     if (actions.gang) {
       return Enums.gang;
+    }
+    if (actions.hu) {
+      return Enums.hu;
     }
     return Enums.guo;
   },
