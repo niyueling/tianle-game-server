@@ -439,7 +439,7 @@ class Room extends RoomBase {
       if (player) {
         scores.push({
           score: player.juScore,
-          name: player.model.userName,
+          name: player.model.nickname,
           headImgUrl: player.model.avatar,
           shortId: player.model.shortId
         })
