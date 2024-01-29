@@ -2138,8 +2138,8 @@ class TableState implements Serializable {
       model.juWinCount ++;
     }
     model.juRank = (model.juWinCount / model.juCount).toFixed(2);
-
     model.save();
+    p.isCalcJu = true;
 
     p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
 
