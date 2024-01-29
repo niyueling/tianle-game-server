@@ -2131,6 +2131,16 @@ class TableState implements Serializable {
       records
     }
 
+    const model = await Player.findOne({_id: p._id});
+
+    model.juCount++;
+    if (p.juScore > 0) {
+      model.juWinCount ++;
+    }
+    model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+
+    model.save();
+
     p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
 
   }
@@ -2175,14 +2185,17 @@ class TableState implements Serializable {
 
     // 计算胜率
     for (let i = 0; i < this.players.length; i++) {
-      const model = await Player.findOne({_id: this.players[i]._id});
+      if (!this.players[i].isCalcJu) {
+        const model = await Player.findOne({_id: this.players[i]._id});
 
-      model.juCount++;
-      if (this.players[i].juScore > 0) {
-        model.juWinCount ++;
+        model.juCount++;
+        if (this.players[i].juScore > 0) {
+          model.juWinCount ++;
+        }
+        model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+
+        model.save();
       }
-      model.juRank = (model.juWinCount / model.juCount).toFixed(2);
-      model.save();
     }
 
     this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
