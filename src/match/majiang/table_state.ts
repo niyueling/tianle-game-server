@@ -2162,7 +2162,7 @@ class TableState implements Serializable {
     this.room.removeListener('empty', this.onRoomEmpty)
 
     await this.room.recordGameRecord(this, states);
-    await this.room.recordRoomScore()
+    await this.room.recordRoomScore('normal', states)
     // 更新大赢家
     // await this.room.updateBigWinner();
     // await this.room.charge();
