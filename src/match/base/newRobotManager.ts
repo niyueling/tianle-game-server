@@ -157,7 +157,7 @@ export class NewRobotManager {
   // 默认出牌间隔 5s
   getWaitSecond() {
     if (this.room.gameRule.isPublic) {
-      return Math.floor(Math.random() * 8 + 3);
+      return Math.floor(Math.random() * 3 + 3);
     }
     return config.game.waitDelayTime;
   }
