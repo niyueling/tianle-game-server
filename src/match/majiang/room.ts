@@ -431,15 +431,17 @@ class Room extends RoomBase {
   }
 
   async recordRoomScore(roomState = 'normal'): Promise<any> {
-    const players = Object.keys(this.playerGainRecord)
+    const players = [];
+    this.players.map((v) => players.push(v._id.toString()));
 
     const scores = [];
-    this.playersOrder.forEach(player => {
+    this.players.map((player, idx) => {
       if (player) {
+        const state = player.genGameStatus(idx, 1);
         scores.push({
-          score: this.playerGainRecord[player.model._id] || 0,
-          name: player.model.name,
-          headImgUrl: player.model.headImgUrl,
+          score: state.score,
+          name: player.model.userName,
+          headImgUrl: player.model.avatar,
           shortId: player.model.shortId
         })
       }
@@ -449,9 +451,6 @@ class Room extends RoomBase {
     //   roomState = 'zero_ju'
     // }
     const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
-    if (this.isPayClubGold(roomState)) {
-      await this.updatePlayerClubGold();
-    }
 
     const roomRecord = {
       players, scores,
