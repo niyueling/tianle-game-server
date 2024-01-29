@@ -430,15 +430,16 @@ class Room extends RoomBase {
     }
   }
 
-  async recordRoomScore(roomState = 'normal', states): Promise<any> {
+  async recordRoomScore(roomState = 'normal'): Promise<any> {
     const players = [];
     this.players.map((v) => players.push(v._id.toString()));
 
     const scores = [];
-    this.players.map((player, idx) => {
+    this.gameState.players.map((player, idx) => {
       if (player) {
+        const state = player.genGameStatus(idx, 1);
         scores.push({
-          score: states[idx].score,
+          score: state.score,
           name: player.model.nickname,
           headImgUrl: player.model.avatar,
           shortId: player.model.shortId
@@ -481,7 +482,7 @@ class Room extends RoomBase {
     }
 
     const states = this.gameState.players.map((player, idx) => player.genGameStatus(idx, 1))
-    await this.recordRoomScore('dissolve', states)
+    await this.recordRoomScore('dissolve')
     DissolveRecord.create({
         roomNum: this._id,
         juIndex: this.game.juIndex,
