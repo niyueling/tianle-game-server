@@ -2270,7 +2270,7 @@ class TableState implements Serializable {
 
       for (let j = Enums.constellation1; j <= Enums.constellation12; j++) {
         if (!p.constellationCards.includes(j) && p.cards[j] > 0) {
-          p.constellationCards.push(p.cards[j]);
+          p.constellationCards.push(j);
         }
       }
     }
