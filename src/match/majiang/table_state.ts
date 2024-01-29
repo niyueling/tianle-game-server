@@ -2164,8 +2164,8 @@ class TableState implements Serializable {
     await this.room.recordGameRecord(this, states);
     await this.room.recordRoomScore()
     // 更新大赢家
-    await this.room.updateBigWinner();
-    await this.room.charge();
+    // await this.room.updateBigWinner();
+    // await this.room.charge();
 
     //获取用户当局对局流水
     const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
