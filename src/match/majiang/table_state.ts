@@ -24,6 +24,7 @@ import {TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import {RedisKey} from "@fm/common/constants";
+import Player from "../../database/models/player";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -2170,6 +2171,18 @@ class TableState implements Serializable {
       isPublic: this.room.isPublic,
       caiShen: this.caishen,
       base: this.room.currentBase
+    }
+
+    // 计算胜率
+    for (let i = 0; i < this.players.length; i++) {
+      const model = Player.findOne({_id: this.players[i]._id});
+
+      model.juCount++;
+      if (this.players[i].juScore > 0) {
+        model.juWinCount ++;
+      }
+      model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+      model.save();
     }
 
     this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})

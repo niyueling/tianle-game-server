@@ -11,6 +11,7 @@ const schema = new Schema({
   diamond: {type: Number, default: 0}, // 钻石
   gold: {type: Number, default: 0}, // 金豆
   juCount: {type: Number, default: 0}, // 累计局数
+  juWinCount: {type: Number, default: 0}, // 赢局局数
   juRank: {type: Number, default: 1}, // 胜率
   redPocket: {type: Number, default: 0}, // 红包
   activityTimes: {type: Number, default: 0}, // 在线时长
