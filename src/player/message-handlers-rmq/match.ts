@@ -105,7 +105,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
     },
     'room/leave': player => {
       if (!player.room) {
-        return player.sendMessage("room/leave", {ok: true, data: {}})
+        return player.sendMessage("room/leaveReply", {ok: true, data: {}})
       }
 
       player.requestToCurrentRoom('room/leave')
