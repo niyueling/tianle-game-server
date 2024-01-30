@@ -880,7 +880,10 @@ class TableState implements Serializable {
     player.on('willTakeCard', async denyFunc => {
       if (this.remainCards < 0) {
         denyFunc()
-        await this.gameOver(null, player);
+        const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+        const nextZhuang = this.nextZhuang()
+        const niaos = await this.generateNiao()
+        await this.gameAllOver(states, niaos, nextZhuang);
         return
       }
       this.logger.info('willTakeCard player-%s', index)

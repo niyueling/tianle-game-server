@@ -88,7 +88,7 @@ export class NewRobotManager {
       }
       await this.onMonit();
       this.isWatching = false;
-    }, 1000);
+    }, 2000);
   }
 
   async onMonit() {
