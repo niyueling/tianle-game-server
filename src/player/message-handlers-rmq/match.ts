@@ -105,7 +105,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
     },
     'room/leave': player => {
       if (!player.room) {
-        return player.sendMessage("room/leaveReply", {ok: true, data: {}})
+        return player.sendMessage("room/leaveReply", {ok: false, info: TianleErrorCode.roomIsFinish})
       }
 
       player.requestToCurrentRoom('room/leave')
