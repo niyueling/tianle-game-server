@@ -102,10 +102,15 @@ export class NewRobotManager {
   // 金豆房
   async publicRoomMonit() {
     let isOk;
+    // 更新金豆房离线时间
     await this.updatePublicRobotTime();
+    // 更新离线时间
     await this.updateOfflineTime();
+    // 更新出牌时间
     await this.updateWaitPlayTime();
+    // 添加离线机器人
     await this.addOfflineRobot();
+    // 添加公共房机器人
     await this.addRobotForPublicRoom();
 
     // 查看金豆

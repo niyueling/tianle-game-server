@@ -93,7 +93,7 @@ export class PublicRoom extends Room {
     const model = await this.updatePlayer(playerId, v);
     if (findPlayer && findPlayer.isPublicRobot) {
       // 金豆机器人,自动加金豆
-      if (model.gold < conf.minAmount) {
+      if (model.gold < conf.minAmount && !this.gameState) {
         // 金豆不足，添加金豆
         const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
         const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
