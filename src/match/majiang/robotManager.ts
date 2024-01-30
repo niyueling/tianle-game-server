@@ -54,12 +54,13 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    if (!this.room.gameState) {
+    if (!this.room.gameState && !this.isPlayed) {
       return;
     }
 
+    this.isPlayed = false;
+
     const keys = Object.keys(this.disconnectPlayers);
-    let disabled = false;
     let proxy;
     let playerId;
     for (const key of keys) {
@@ -100,8 +101,9 @@ export class RobotManager extends NewRobotManager {
       } else {
         console.warn("await player invive game-state %s current-index %s", this.room.gameState.state, this.room.gameState.atIndex(proxy))
       }
-
     }
+
+    this.isPlayed = true;
   }
 
   // 打
