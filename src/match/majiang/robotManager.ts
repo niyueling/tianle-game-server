@@ -29,7 +29,7 @@ export class RobotManager extends NewRobotManager {
       proxy = this.disconnectPlayers[key];
       if (this.isPlayerDa(proxy.model._id.toString()) || this.isPlayerGuo(proxy.model._id.toString())) {
         if (this.waitInterval[key]) {
-          this.waitInterval[key]+=2;
+          this.waitInterval[key]++;
         } else {
           this.waitInterval[key] = 1;
         }
