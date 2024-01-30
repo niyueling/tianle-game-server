@@ -104,6 +104,10 @@ export function createHandler(redisClient: AsyncRedisClient) {
       player.requestToCurrentRoom('room/next-game')
     },
     'room/leave': player => {
+      if (!player.room) {
+        return player.sendMessage("room/leave", {ok: true, data: {}})
+      }
+
       player.requestToCurrentRoom('room/leave')
     },
 
