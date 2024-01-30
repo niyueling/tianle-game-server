@@ -1735,7 +1735,7 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     }
 
-    setTimeout(nextDo, 2000);
+    setTimeout(nextDo, 0);
   }
 
   multiTimesSettleWithSpecial(states, specialId, times) {
