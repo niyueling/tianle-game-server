@@ -481,7 +481,6 @@ class Room extends RoomBase {
       await this.gameState.drawGame()
     }
 
-    const states = this.gameState.players.map((player, idx) => player.genGameStatus(idx, 1))
     await this.recordRoomScore('dissolve')
     DissolveRecord.create({
         roomNum: this._id,
