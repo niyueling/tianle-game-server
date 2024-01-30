@@ -1102,7 +1102,7 @@ class TableState implements Serializable {
       if (ok) {
         player.sendMessage('game/gangReply', {
           ok: true,
-          data: {card, from, gangIndex, type: isAnGang ? "anGang" : "mingGang"}
+          data: {card, from, gangIndex, type: isAnGang ? "anGang" : "buGang"}
         });
         this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher);
 
