@@ -104,9 +104,9 @@ export function createHandler(redisClient: AsyncRedisClient) {
       player.requestToCurrentRoom('room/next-game')
     },
     'room/leave': player => {
-      if (!player.room) {
-        return player.sendMessage("room/leaveReply", {ok: false, info: TianleErrorCode.roomIsFinish})
-      }
+      // if (!player.room) {
+      //   return player.sendMessage("room/leaveReply", {ok: false, info: TianleErrorCode.roomIsFinish})
+      // }
 
       player.requestToCurrentRoom('room/leave')
     },
