@@ -411,7 +411,10 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   leave(player) {
     // console.warn("IRoom")
-    if (!player) return false
+    if (!player) {
+      player.sendMessage("room/leaveReply", {ok: true, data: {}})
+      return false;
+    }
 
     if (this.indexOf(player) < 0) {
       return true
