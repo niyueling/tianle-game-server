@@ -1,6 +1,7 @@
-import {GameType} from "@fm/common/constants";
+import {GameType, RedisKey} from "@fm/common/constants";
 import {RobotRmqProxy} from "../base/robotRmqProxy";
 import Enums from "./enums";
+import {service} from "../../service/importService";
 
 // 机器人
 export class MJRobotRmqProxy extends RobotRmqProxy {
@@ -10,7 +11,8 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
 
   // 出牌
   async playCard() {
-    if (this.playerState) {
+    const lock = await service.utils.grantLockOnce(RedisKey.inviteWithdraw + this.playerState._id, 1);
+    if (this.playerState && lock) {
       // 从牌堆中取出合适的牌
       const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
       console.log(`moCard: ${index}, cards: ${JSON.stringify(this.playerState.cards)}`)

@@ -535,7 +535,7 @@ export class NewRobotManager {
       // 离线用户准备
       await this.robotPlayerReady();
     }
-    if (this.model.step === RobotStep.running) {
+    if (this.model.step === RobotStep.running && this.isPlayed) {
       // 游戏未结束
       await this.playCard();
     }

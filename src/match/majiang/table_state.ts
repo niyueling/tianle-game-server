@@ -465,12 +465,6 @@ class TableState implements Serializable {
   }
 
   async consumeCard(playerState: PlayerState) {
-    const lock = await service.utils.grantLockOnce(RedisKey.inviteWithdraw + playerState._id, 1);
-    if (!lock) {
-      // 有进程在处理
-      console.log('consumeCard another processing');
-      return;
-    }
     const player = playerState;
 
     const cardIndex = --this.remainCards;
@@ -927,14 +921,14 @@ class TableState implements Serializable {
         player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamStateInvaid});
         return
       }
-      if (this.hasPlayerHu()) {
-        logger.info('peng player-%s card:%s but has player hu', index, card)
-        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengButPlayerHu});
-        player.lockMessage()
-        player.emitter.emit(Enums.guo, turn, card)
-        player.unlockMessage()
-        return
-      }
+      // if (this.hasPlayerHu()) {
+      //   logger.info('peng player-%s card:%s but has player hu', index, card)
+      //   player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengButPlayerHu});
+      //   player.lockMessage()
+      //   player.emitter.emit(Enums.guo, turn, card)
+      //   player.unlockMessage()
+      //   return
+      // }
 
       if (this.stateData.pengGang !== player || this.stateData.card !== card) {
         logger.info('peng player-%s card:%s has player pengGang or curCard not is this card', index, card)
