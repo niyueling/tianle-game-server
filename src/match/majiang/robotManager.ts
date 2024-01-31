@@ -66,11 +66,12 @@ export class RobotManager extends NewRobotManager {
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
       playerId = proxy.model._id.toString();
+      const model = await service.playerService.getPlayerModel(playerId);
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
 
-      if (this.room.gameState.state !== 10) {
+      if (this.room.gameState.state !== 10 && model.gold > 0) {
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
           await proxy.gang(this.isPlayerGang(playerId))
         } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
