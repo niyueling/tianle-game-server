@@ -1733,7 +1733,8 @@ class TableState implements Serializable {
         const p = this.players[j]
 
         const msg = this.actionResolver.allOptions(p)
-        if (msg && !p.isBroke) {
+        const model = await service.playerService.getPlayerModel(p.model._id);
+        if (msg && model.gold > 0) {
           p.record('choice', card, msg)
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
