@@ -25,6 +25,7 @@ import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import {RedisKey} from "@fm/common/constants";
 import Player from "../../database/models/player";
+import CombatGain from "../../database/models/combatGain";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -2148,6 +2149,16 @@ class TableState implements Serializable {
     model.juRank = (model.juWinCount / model.juCount).toFixed(2);
     model.save();
     p.isCalcJu = true;
+
+    await CombatGain.create({
+      uid: this.room._id,
+      room: this.room.uid,
+      playerId: p.model._id,
+      gameName: "十二星座",
+      caregoryName: "majiang",
+      time: new Date(),
+      score: p.juScore
+    });
 
     p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
 
