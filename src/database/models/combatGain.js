@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const schema = new Schema({
   uid: {type: Number, required: true},
   room: {type: String, required: true},
+  juIndex: {type: Number, required: true},
   playerId: {type: String, required: true},
   gameName: {type: String, required: true},
   caregoryName: {type: String, required: true},

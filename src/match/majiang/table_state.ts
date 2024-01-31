@@ -2157,6 +2157,7 @@ class TableState implements Serializable {
     await CombatGain.create({
       uid: this.room._id,
       room: this.room.uid,
+      juIndex: this.room.game.juIndex,
       playerId: p.model._id,
       gameName: "十二星座",
       caregoryName: category.title,
@@ -2186,9 +2187,27 @@ class TableState implements Serializable {
 
     await this.room.recordGameRecord(this, states);
     await this.room.recordRoomScore('normal')
-    // 更新大赢家
-    // await this.room.updateBigWinner();
-    // await this.room.charge();
+
+    // 更新战绩
+    for (let i = 0; i< states.length; i++) {
+      // 判断是否已经录入战绩
+      const exists = CombatGain.count({playerId: states[i].model._id, uid: this.room._id, juIndex: this.room.game.juIndex});
+
+      if (!exists) {
+        const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
+
+        await CombatGain.create({
+          uid: this.room._id,
+          room: this.room.uid,
+          juIndex: this.room.game.juIndex,
+          playerId: states[i].model._id,
+          gameName: "十二星座",
+          caregoryName: category.title,
+          time: new Date(),
+          score: states[i].juScore / 2
+        });
+      }
+    }
 
     //获取用户当局对局流水
     const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
