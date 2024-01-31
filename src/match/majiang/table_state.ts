@@ -26,6 +26,7 @@ import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import {RedisKey} from "@fm/common/constants";
 import Player from "../../database/models/player";
 import CombatGain from "../../database/models/combatGain";
+import GameCategory from "../../database/models/gameCategory";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -2150,12 +2151,14 @@ class TableState implements Serializable {
     model.save();
     p.isCalcJu = true;
 
+    const category = await GameCategory.findOne({_id: this.room.rule.categoryId}).lean();
+
     await CombatGain.create({
       uid: this.room._id,
       room: this.room.uid,
       playerId: p.model._id,
       gameName: "十二星座",
-      caregoryName: "majiang",
+      caregoryName: category.title,
       time: new Date(),
       score: p.juScore
     });
