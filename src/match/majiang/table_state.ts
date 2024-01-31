@@ -823,31 +823,35 @@ class TableState implements Serializable {
         // console.log("table_state.js 183 ", "执行自动打")
         logger.info('takeCard player-%s  执行自动打', index)
 
-        if (msg) {
-          const takenCard = msg.card
-          const todo = player.ai.onWaitForDa(msg, player.cards)
-          logger.info('waitForDa %s todo %s', JSON.stringify(msg), todo)
-          switch (todo) {
-            case Enums.gang:
-              const gangCard = msg.gang[0][0]
-              player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
-              player.sendMessage('game/depositGangBySelf', {ok: true, data: {card: gangCard, turn: this.turn}})
-              break
-            case Enums.hu:
-              player.emitter.emit(Enums.hu, this.turn, takenCard)
-              player.sendMessage('game/depositZiMo', {ok: true, data: {card: takenCard, turn: this.turn}})
-              break
-            default:
-              const card = player.ai.getUseLessCard(player.cards, takenCard)
-              player.emitter.emit(Enums.da, this.turn, card)
-              player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
-              break
+        const nextDo = async () => {
+          if (msg) {
+            const takenCard = msg.card
+            const todo = player.ai.onWaitForDa(msg, player.cards)
+            logger.info('waitForDa %s todo %s', JSON.stringify(msg), todo)
+            switch (todo) {
+              case Enums.gang:
+                const gangCard = msg.gang[0][0]
+                player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
+                player.sendMessage('game/depositGangBySelf', {ok: true, data: {card: gangCard, turn: this.turn}})
+                break
+              case Enums.hu:
+                player.emitter.emit(Enums.hu, this.turn, takenCard)
+                player.sendMessage('game/depositZiMo', {ok: true, data: {card: takenCard, turn: this.turn}})
+                break
+              default:
+                const card = player.ai.getUseLessCard(player.cards, takenCard)
+                player.emitter.emit(Enums.da, this.turn, card)
+                player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
+                break
+            }
+          } else {
+            const card = player.ai.getUseLessCard(player.cards, Enums.slotNoCard)
+            player.emitter.emit(Enums.da, this.turn, card)
+            player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
           }
-        } else {
-          const card = player.ai.getUseLessCard(player.cards, Enums.slotNoCard)
-          player.emitter.emit(Enums.da, this.turn, card)
-          player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
         }
+
+        setTimeout(nextDo, 2000);
       })
     })
     player.on('waitForDoSomeThing', msg => {
@@ -856,26 +860,31 @@ class TableState implements Serializable {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         logger.info('waitForDoSomeThing TODO %s', todo)
-        switch (todo) {
-          case Enums.peng:
-            player.emitter.emit(Enums.peng, this.turn, card)
-            player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
-            break
-          case Enums.gang:
-            player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
-            player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
-            break
-          case Enums.hu:
-            player.emitter.emit(Enums.hu, this.turn, card)
-            player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
-            break
-          default:
-            player.emitter.emit(Enums.guo, this.turn, card)
-            break
+
+        const nextDo = async () => {
+          switch (todo) {
+            case Enums.peng:
+              player.emitter.emit(Enums.peng, this.turn, card)
+              player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
+              break
+            case Enums.gang:
+              player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
+              player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
+              break
+            case Enums.hu:
+              player.emitter.emit(Enums.hu, this.turn, card)
+              player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
+              break
+            default:
+              player.emitter.emit(Enums.guo, this.turn, card)
+              break
+          }
         }
+
+        setTimeout(nextDo, 2000);
       })
 
-      this.logger.info('waitForDoSomeThing player %s', index)
+      logger.info('waitForDoSomeThing player %s', index)
     })
     player.on('willTakeCard', async denyFunc => {
       if (this.remainCards < 0) {
@@ -886,7 +895,7 @@ class TableState implements Serializable {
         await this.gameAllOver(states, niaos, nextZhuang);
         return
       }
-      this.logger.info('willTakeCard player-%s', index)
+      logger.info('willTakeCard player-%s', index)
     })
 
     player.on("mayQiaoXiang", () => {
