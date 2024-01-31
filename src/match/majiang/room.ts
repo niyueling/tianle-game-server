@@ -464,7 +464,6 @@ class Room extends RoomBase {
       rule: this.rule.getOriginData()
     }
 
-    console.warn('roomRecord:', roomRecord);
 
     RoomRecord
       .update({room: this.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})

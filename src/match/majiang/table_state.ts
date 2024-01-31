@@ -2160,7 +2160,7 @@ class TableState implements Serializable {
       gameName: "十二星座",
       caregoryName: category.title,
       time: new Date(),
-      score: p.juScore
+      score: p.juScore / 2
     });
 
     p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
