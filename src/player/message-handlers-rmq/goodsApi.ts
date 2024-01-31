@@ -69,7 +69,7 @@ export class GoodsApi extends BaseApi {
     await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -gem2ExchangeNum, this.player.model.diamond, `成功兑换${gem2ExchangeNum}钻石成${temp}金豆`);
 
     this.replySuccess({diamond: gem2ExchangeNum, gold, goldFormat: temp});
-    await this.player.updateResource2Client();
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond}})
   }
 
   // 安卓虚拟支付
@@ -216,6 +216,8 @@ export class GoodsApi extends BaseApi {
       config: goodInfo
     });
 
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: user.gold, diamond: user.diamond}})
+
     return this.replySuccess(record);
   }
 
@@ -344,6 +346,6 @@ export class GoodsApi extends BaseApi {
     await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `成功兑换${exchangeConf.diamond}钻石成${temp}金豆`);
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
-    await this.player.updateResource2Client();
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond}})
   }
 }
