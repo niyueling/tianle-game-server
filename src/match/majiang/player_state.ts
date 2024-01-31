@@ -213,6 +213,9 @@ class PlayerState implements Serializable {
   // 本局积分
   juScore = 0
 
+  // 本局是否胡牌
+  isGameHu = false
+
   // 是否计算对局
   isCalcJu = false
 
@@ -233,6 +236,7 @@ class PlayerState implements Serializable {
     this.juScore = 0;
     this.isCalcJu = false;
     this.constellationCards = []
+    this.isGameHu = false;
     this.score = room.getScore(userSocket)
     this.disconnectCallBack = player => {
       if (player === this.msgDispatcher) {

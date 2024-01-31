@@ -477,7 +477,7 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
-    if (card > Enums.athena && !playerState.constellationCards.includes(card)) {
+    if (card > Enums.athena && !playerState.constellationCards.includes(card) && !playerState.isGameHu) {
       playerState.constellationCards.push(card);
 
       let constellationCardLists = [];
@@ -1278,6 +1278,10 @@ class TableState implements Serializable {
                   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                 }
 
+                if (!player.isGameHu) {
+                  player.isGameHu = true;
+                }
+
                 this.stateData[Enums.hu].remove(player);
                 this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
                 if (chengbaoStarted) {
@@ -1386,6 +1390,10 @@ class TableState implements Serializable {
             if (!player.onDeposit) {
               player.onDeposit = true
               await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+            }
+
+            if (!player.isGameHu) {
+              player.isGameHu = true;
             }
 
             this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, from, index, huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}}}, player.msgDispatcher);
