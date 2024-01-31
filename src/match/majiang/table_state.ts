@@ -2151,6 +2151,7 @@ class TableState implements Serializable {
     model.save();
     p.isCalcJu = true;
 
+    console.warn(this.room.rule, this.room.gameRule)
     const category = await GameCategory.findOne({_id: this.room.rule.categoryId}).lean();
 
     await CombatGain.create({
