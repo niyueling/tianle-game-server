@@ -2199,7 +2199,7 @@ class TableState implements Serializable {
     // 更新战绩
     for (let i = 0; i< states.length; i++) {
       // 判断是否已经录入战绩
-      const exists = CombatGain.count({playerId: states[i].model._id, uid: this.room._id, juIndex: this.room.game.juIndex});
+      const exists = await CombatGain.count({playerId: states[i].model._id, uid: this.room._id, juIndex: this.room.game.juIndex});
 
       if (!exists) {
         const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
