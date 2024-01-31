@@ -2212,7 +2212,7 @@ class TableState implements Serializable {
           gameName: "十二星座",
           caregoryName: category.title,
           time: new Date(),
-          score: states[i].juScore / 2
+          score: states[i].score
         });
       }
     }
