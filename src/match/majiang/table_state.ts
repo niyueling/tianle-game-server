@@ -1968,8 +1968,10 @@ class TableState implements Serializable {
           huType: this.cardTypes
         };
         if (model.gold <= 0) {
-          if (!p.isBroke && params.index === 0) {
-            waits.push(params);
+          if (params.index === 0) {
+            if (!p.isBroke) {
+              waits.push(params);
+            }
           } else {
             if (!p.isBroke) {
               // 用户第一次破产
