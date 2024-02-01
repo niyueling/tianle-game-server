@@ -2187,6 +2187,11 @@ class TableState implements Serializable {
 
     // 如果目前打牌的是破产用户，找到下一个正常用户
     if (this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
+      // 去除摸牌
+      if (p.cards[this.lastTakeCard] > 0) {
+        p.cards[this.lastTakeCard]--;
+      }
+
       this.turn++;
       let xiajia = null;
       let startIndex = (this.atIndex(p) + 1) % this.players.length;
@@ -2214,6 +2219,9 @@ class TableState implements Serializable {
 
                 if (!msg) {
                   this.isFaPai = false;
+                  const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+                  const nextZhuang = this.nextZhuang()
+                  await this.gameAllOver(states, [], nextZhuang);
                   console.error("consume card error msg ", msg)
                   return;
                 }
