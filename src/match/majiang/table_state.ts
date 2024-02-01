@@ -2186,7 +2186,7 @@ class TableState implements Serializable {
     p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
 
     // 如果目前打牌的是破产用户，找到下一个正常用户
-    if (this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
+    if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
       // 去除摸牌
       if (p.cards[this.lastTakeCard] > 0) {
         p.cards[this.lastTakeCard]--;
