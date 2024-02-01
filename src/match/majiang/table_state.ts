@@ -2138,6 +2138,23 @@ class TableState implements Serializable {
         level: 1,
         cardId: 33
       },
+      {cardName: "地胡", multiple: 32, isOrdinal: false, condition: {anGangCount: 4}, cardId: 34},
+      {cardName: "景星麟凤", multiple: 36, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 35},
+      {cardName: "天胡", multiple: 48, isOrdinal: false, condition: {anGangCount: 4}, cardId: 36},
+      {cardName: "一路福星", multiple: 72, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 37},
+      {cardName: "三星高照", multiple: 99, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 38},
+      {cardName: "星流电击", multiple: 188, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 39},
+      {cardName: "流星望电", multiple: 246, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 40},
+      {cardName: "星离月会", multiple: 266, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 41},
+      {cardName: "棋布星陈", multiple: 288, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 42},
+      {cardName: "一天星斗", multiple: 288, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 43},
+      {cardName: "移星换斗", multiple: 299, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 44},
+      {cardName: "星流影集", multiple: 318, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 45},
+      {cardName: "大步流星", multiple: 333, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 46},
+      {cardName: "月落星沉", multiple: 366, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 47},
+      {cardName: "众星捧月", multiple: 377, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 48},
+      {cardName: "摩羯之吻", multiple: 399, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 49},
+      {cardName: "星蝎交辉", multiple: 488, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 50},
     ];
     await CardTypeModel.insertMany(cardTypes);
   }
