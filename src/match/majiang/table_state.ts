@@ -2304,8 +2304,10 @@ class TableState implements Serializable {
     if (lastRecord) {
       roomRubyReward = lastRecord.balance;
     }
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
     const pushMsg = {
       index, status: [],
+      category,
       remainCards: this.remainCards,
       base: this.room.currentBase,
       juIndex: this.room.game.juIndex,
