@@ -12,6 +12,7 @@ import RoomProxy, {recoverFunc} from "./match/roomRmqProxy"
 import {service} from "./service/importService";
 import createClient from "./utils/redis";
 import { TianleErrorCode } from "@fm/common/constants";
+import GameCategory from "./database/models/gameCategory";
 
 const alwaysOk = () => true
 
@@ -193,7 +194,8 @@ export class BackendProcess {
         gameChannel,
         this.gameName
       )
-      await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule}})
+      const category = await GameCategory.findOne({_id: room.rule.ro.categoryId}).lean();
+      await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, category}})
       // if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
       //   await roomProxy.joinAsCreator(playerRmqProxy)
       // } else {
