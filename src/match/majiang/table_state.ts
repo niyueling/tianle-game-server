@@ -2185,6 +2185,59 @@ class TableState implements Serializable {
 
     p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
 
+    // 如果目前打牌的是破产用户，找到下一个正常用户
+    if (this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
+      this.turn++;
+      let xiajia = null;
+      let startIndex = (this.atIndex(p) + 1) % this.players.length;
+
+      // 从 startIndex 开始查找未破产的玩家
+      for (let i = startIndex; i < startIndex + this.players.length; i++) {
+        let index = i % this.players.length;
+        if (!this.players[index].isBroke) {
+          xiajia = this.players[index];
+          break;
+        }
+      }
+
+      if (xiajia) {
+        const nextDo = async () => {
+          console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+
+          if (!this.isFaPai) {
+            this.isFaPai = true;
+
+            try {
+              const newCard = await this.consumeCard(xiajia)
+              if (newCard) {
+                const msg = xiajia.takeCard(this.turn, newCard)
+
+                if (!msg) {
+                  this.isFaPai = false;
+                  console.error("consume card error msg ", msg)
+                  return;
+                }
+                this.state = stateWaitDa;
+                this.stateData = {da: xiajia, card: newCard, msg};
+                const sendMsg = {index: this.players.indexOf(xiajia)}
+                this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
+                this.isFaPai = false;
+              }
+            } catch (e) {
+              this.isFaPai = false;
+              console.warn(e);
+            }
+          }
+        }
+
+        setTimeout(nextDo, 200);
+      } else {
+        const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+        const nextZhuang = this.nextZhuang()
+        await this.gameAllOver(states, [], nextZhuang);
+        console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
+      }
+    }
   }
 
   async gameAllOver(states, niaos, nextZhuang) {
