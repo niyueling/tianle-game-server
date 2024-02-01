@@ -843,19 +843,19 @@ class TableState implements Serializable {
                 player.sendMessage('game/depositZiMo', {ok: true, data: {card: takenCard, turn: this.turn}})
                 break
               default:
-                const card = player.ai.getUseLessCard(player.cards, takenCard)
+                const card = this.promptWithPattern(player, this.lastTakeCard);
                 player.emitter.emit(Enums.da, this.turn, card)
                 player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
                 break
             }
           } else {
-            const card = player.ai.getUseLessCard(player.cards, Enums.slotNoCard)
+            const card = this.promptWithPattern(player, this.lastTakeCard);
             player.emitter.emit(Enums.da, this.turn, card)
             player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
           }
         }
 
-        setTimeout(nextDo, 1000);
+        setTimeout(nextDo, 500);
       })
     })
     player.on('waitForDoSomeThing', msg => {
@@ -885,7 +885,7 @@ class TableState implements Serializable {
           }
         }
 
-        setTimeout(nextDo, 1000);
+        setTimeout(nextDo, 500);
       })
 
       logger.info('waitForDoSomeThing player %s', index)
@@ -2766,7 +2766,7 @@ class TableState implements Serializable {
     if (cards[lastTakeCard] > 0) cards[lastTakeCard]--;
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
-    if (ting.hu && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(lastTakeCard)) {
+    if (ting.hu) {
       if (player.cards[lastTakeCard] > 0) return lastTakeCard;
     }
 
