@@ -214,7 +214,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         console.error("no enough roomRate or minAmount", conf.roomRate, conf.minAmount, "with gold", model.gold)
         return { isMoreRuby, isUpper };
       }
-      if (conf.maxAmount) {
+      if (conf.maxAmount && conf.maxAmount !== -1) {
         // 有最大值上限
         isUpper = model.gold > conf.maxAmount;
       }
