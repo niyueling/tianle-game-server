@@ -729,8 +729,7 @@ class TableState implements Serializable {
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
 
     const recordCount = await CardTypeModel.count();
-    if (recordCount > 0) {
-      await CardTypeModel.where({_id: {$ne: null}}).remove();
+    if (recordCount === 0) {
       await this.saveCardType();
     }
 
