@@ -2293,12 +2293,6 @@ class TableState implements Serializable {
 
   async generateReconnectMsg(index) {
     const player = this.players[index]
-    let redPocketsData = null
-    let validPlayerRedPocket = null
-    if (this.room.isHasRedPocket) {
-      redPocketsData = this.room.redPockets;
-      validPlayerRedPocket = this.room.vaildPlayerRedPocketArray;
-    }
     let roomRubyReward = 0;
     const lastRecord = await service.rubyReward.getLastRubyRecord(this.room.uid);
     if (lastRecord) {
@@ -2312,9 +2306,7 @@ class TableState implements Serializable {
       base: this.room.currentBase,
       juIndex: this.room.game.juIndex,
       juShu: this.restJushu,
-      current: {},
-      redPocketsData,
-      validPlayerRedPocket,
+      current: {}
     }
 
 
