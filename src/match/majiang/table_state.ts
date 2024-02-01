@@ -870,18 +870,18 @@ class TableState implements Serializable {
             case Enums.peng:
               player.emitter.emit(Enums.peng, this.turn, card)
               player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
-              break
+              break;
             case Enums.gang:
               player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
               player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
-              break
+              break;
             case Enums.hu:
               player.emitter.emit(Enums.hu, this.turn, card)
               player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
-              break
+              break;
             default:
               player.emitter.emit(Enums.guo, this.turn, card)
-              break
+              break;
           }
         }
 
@@ -2768,6 +2768,11 @@ class TableState implements Serializable {
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
       if (player.cards[lastTakeCard] > 0) return lastTakeCard;
+    }
+
+    // 如果用户已经胡牌，则直接打摸牌
+    if (player.isGameHu && player.cards[lastTakeCard] > 0) {
+      return lastTakeCard;
     }
 
     // 有单张打单张
