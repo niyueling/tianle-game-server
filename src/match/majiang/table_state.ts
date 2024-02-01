@@ -727,6 +727,13 @@ class TableState implements Serializable {
     this.shuffle()
     this.sleepTime = 0;
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
+
+    const recordCount = await CardTypeModel.count();
+    if (recordCount > 0) {
+      await CardTypeModel.where({_id: {$ne: null}}).remove();
+      await this.saveCardType();
+    }
+
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
     const needShuffle = this.room.shuffleData.length > 0;
