@@ -469,10 +469,20 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
 
+
     const cardIndex = --this.remainCards;
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
+
+    if (this.remainCards < 0) {
+      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+      const nextZhuang = this.nextZhuang()
+      const niaos = await this.generateNiao()
+      await this.gameAllOver(states, niaos, nextZhuang);
+      return;
+    }
+
     const card = this.cards[cardIndex]
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
@@ -889,7 +899,7 @@ class TableState implements Serializable {
       logger.info('waitForDoSomeThing player %s', index)
     })
     player.on('willTakeCard', async denyFunc => {
-      if (this.remainCards <= 0) {
+      if (this.remainCards < 0) {
         denyFunc()
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
