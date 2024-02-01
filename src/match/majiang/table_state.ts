@@ -475,14 +475,6 @@ class TableState implements Serializable {
       player.takeLastCard = true
     }
 
-    if (this.remainCards < 0) {
-      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      const nextZhuang = this.nextZhuang()
-      const niaos = await this.generateNiao()
-      await this.gameAllOver(states, niaos, nextZhuang);
-      return;
-    }
-
     const card = this.cards[cardIndex]
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
