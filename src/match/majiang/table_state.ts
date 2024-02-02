@@ -2042,7 +2042,7 @@ class TableState implements Serializable {
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
 
-      if (isGameOver) {
+      if (isGameOver || brokePlayers.length >= 3) {
         const _this = this;
         setTimeout(function () {
           _this.gameAllOver(states, niaos, nextZhuang);
