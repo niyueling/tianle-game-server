@@ -2222,6 +2222,7 @@ class TableState implements Serializable {
       // 去除摸牌
       if (p.cards[this.lastTakeCard] > 0) {
         p.cards[this.lastTakeCard]--;
+        p.sendMessage('game/remove-card', {ok: true, data: {card: this.lastTakeCard}})
       }
 
       this.turn++;
