@@ -1971,7 +1971,7 @@ class TableState implements Serializable {
         to.juScore += winBalance;
         console.warn(`player index %s balance %s score %s`, this.atIndex(to), to.balance, to.juScore);
         await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
-        await service.playerService.logGoldConsume(to._id, ConsumeLogType.gamePayGoldgameGiveGold, to.balance,
+        await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
           to.model.gold + to.balance, `对局获得`);
 
         // 生成金豆记录
