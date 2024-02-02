@@ -65,8 +65,11 @@ export class GoodsApi extends BaseApi {
     } else if (gold > 1000000000000) {
       temp = (gold / 1000000000000) + "兆";
     }
-    // 增加日志
+    // 增加钻石日志
     await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -gem2ExchangeNum, this.player.model.diamond, `成功兑换${gem2ExchangeNum}钻石成${temp}金豆`);
+    // 记录金豆日志
+    await service.playerService.logGoldConsume(model._id, ConsumeLogType.diamondToGold, gold,
+      this.player.model.gold, `钻石兑换金豆`);
 
     this.replySuccess({diamond: gem2ExchangeNum, gold, goldFormat: temp});
     this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond}})
@@ -208,6 +211,9 @@ export class GoodsApi extends BaseApi {
     user.gold += goodInfo.gold;
     user.save();
 
+    await service.playerService.logGoldConsume(user._id, ConsumeLogType.freeShopGold, goodInfo.gold,
+      user.gold, `每日领取免费金豆`);
+
     // 记录日志
     const record = await FreeGoldRecord.create({
       playerId: user._id.toString(),
@@ -344,6 +350,8 @@ export class GoodsApi extends BaseApi {
     this.player.model.gold = model.gold + exchangeConf.gold;
     // 增加日志
     await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `成功兑换${exchangeConf.diamond}钻石成${temp}金豆`);
+    await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveGold, exchangeConf.gold,
+      this.player.model.gold, `购买复活礼包`);
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
     this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond}})

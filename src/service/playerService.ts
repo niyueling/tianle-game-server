@@ -9,6 +9,8 @@ import PlayerAttr from "../database/models/playerAttr";
 import PlayerRoomRuby from "../database/models/playerRoomRuby";
 import BaseService from "./base";
 import {service} from "./importService";
+import GoldRecord from "../database/models/goldRecord";
+import {ConsumeLogType} from "@fm/common/constants";
 
 // 玩家信息
 export default class PlayerService extends BaseService {
@@ -71,6 +73,11 @@ export default class PlayerService extends BaseService {
     const randomPlayer = await this.getPlayerModel(result[0]._id);
     // 重新随机设置 ruby
     randomPlayer.gold = gold;
+
+    // 记录金豆日志
+    await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
+      randomPlayer.gold, `机器人开局设置金豆`);
+
     await randomPlayer.save();
     return randomPlayer;
   }
@@ -87,6 +94,18 @@ export default class PlayerService extends BaseService {
   // 记录房卡消耗
   async logGemConsume(playerId, type, amount, totalAmount, note) {
     await DiamondRecord.create({
+      player: playerId,
+      amount,
+      residue: totalAmount,
+      type,
+      note,
+      createAt: new Date(),
+    })
+  }
+
+  // 记录金豆消耗
+  async logGoldConsume(playerId, type, amount, totalAmount, note) {
+    await GoldRecord.create({
       player: playerId,
       amount,
       residue: totalAmount,

@@ -20,7 +20,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import {RedisKey} from "@fm/common/constants";
@@ -1944,6 +1944,8 @@ class TableState implements Serializable {
           console.warn(`dianpao index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(from), from.model.shortId, from.juScore, from.balance, from.juScore += from.balance)
           from.juScore += from.balance;
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
+          await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
+            model.gold + from.balance, `对局扣除`);
         } else {
           // 自摸胡
           for (const p of this.players) {
@@ -1956,6 +1958,8 @@ class TableState implements Serializable {
               console.warn(`zimo index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(p), p.model.shortId, p.juScore, p.balance, p.juScore += p.balance)
               p.juScore += p.balance;
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
+              await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
+                model.gold + p.balance, `对局扣除`);
               failList.push(p.model._id.toString());
             }
           }
@@ -1967,6 +1971,8 @@ class TableState implements Serializable {
         to.juScore += winBalance;
         console.warn(`player index %s balance %s score %s`, this.atIndex(to), to.balance, to.juScore);
         await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
+        await service.playerService.logGoldConsume(to._id, ConsumeLogType.gamePayGoldgameGiveGold, to.balance,
+          to.model.gold + to.balance, `对局获得`);
 
         // 生成金豆记录
         await RoomGoldRecord.create({
@@ -2035,8 +2041,6 @@ class TableState implements Serializable {
         this.state = stateWaitRecharge;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
-
-
 
       if (isGameOver) {
         const _this = this;

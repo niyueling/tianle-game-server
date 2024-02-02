@@ -1,4 +1,4 @@
-import {GameType, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, GameType, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from "amqplib";
 // @ts-ignore
 import {pick} from "lodash";
@@ -97,6 +97,8 @@ export class PublicRoom extends Room {
         const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
         const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
         model.gold = service.utils.randomIntBetweenNumber(conf.minAmount, max);
+        await service.playerService.logGoldConsume(model._id, ConsumeLogType.robotAutoAdd, model.gold,
+          model.gold, `机器人自动加金豆`);
         await model.save();
       }
       return;
@@ -209,6 +211,8 @@ export class PublicRoom extends Room {
     for (const p of this.players) {
       if (p) {
         p.model = await this.updatePlayer(p.model._id, -conf.roomRate);
+        await service.playerService.logGoldConsume(p._id, ConsumeLogType.payGameFee, -conf.roomRate,
+          p.model.gold, `扣除房费`);
         // 通知客户端更新金豆
         this.updateResource2Client(p)
       }
