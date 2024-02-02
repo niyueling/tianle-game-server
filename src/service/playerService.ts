@@ -70,6 +70,7 @@ export default class PlayerService extends BaseService {
       {$match: { robot: true }},
       {$sample: { size: 1}}
     ]);
+    console.warn("minAmount %s maxAmount %s rand %s max %s gold %s", rubyRequired.minAmount, rubyRequired.maxAmount, rand, max, gold);
     const randomPlayer = await this.getPlayerModel(result[0]._id);
     // 重新随机设置 ruby
     randomPlayer.gold = gold;
