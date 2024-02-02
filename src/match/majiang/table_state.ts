@@ -2297,8 +2297,21 @@ class TableState implements Serializable {
     this.room.removeListener('reconnect', this.onReconnect)
     this.room.removeListener('empty', this.onRoomEmpty)
 
+    const scores = [];
+    this.players.map((player, idx) => {
+      if (player) {
+        const state = player.genGameStatus(idx, 1);
+        scores.push({
+          score: state.score,
+          name: player.model.nickname,
+          headImgUrl: player.model.avatar,
+          shortId: player.model.shortId
+        })
+      }
+    })
+
     await this.room.recordGameRecord(this, states);
-    await this.room.recordRoomScore('normal')
+    await this.room.recordRoomScore('normal', scores)
 
     // 更新战绩
     for (let i = 0; i< states.length; i++) {

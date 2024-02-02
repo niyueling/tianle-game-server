@@ -430,22 +430,9 @@ class Room extends RoomBase {
     }
   }
 
-  async recordRoomScore(roomState = 'normal'): Promise<any> {
+  async recordRoomScore(roomState = 'normal', scores = []): Promise<any> {
     const players = [];
     this.players.map((v) => players.push(v._id.toString()));
-
-    const scores = [];
-    this.players.map((player, idx) => {
-      if (player) {
-        const state = player.playerState.genGameStatus(idx, 1);
-        scores.push({
-          score: state.score,
-          name: player.model.nickname,
-          headImgUrl: player.model.avatar,
-          shortId: player.model.shortId
-        })
-      }
-    })
 
     // if (!this.charged) {
     //   roomState = 'zero_ju'
@@ -474,13 +461,13 @@ class Room extends RoomBase {
     return roomRecord
   }
 
-  async recordDrawGameScore() {
+  async recordDrawGameScore(scores = []) {
     // logger.info('gameState:', this.gameState);
     if (this.gameState) {
       await this.gameState.drawGame()
     }
 
-    await this.recordRoomScore('dissolve')
+    await this.recordRoomScore('dissolve', scores)
     DissolveRecord.create({
         roomNum: this._id,
         juIndex: this.game.juIndex,
@@ -494,7 +481,7 @@ class Room extends RoomBase {
       }
     )
     // 更新大赢家
-    await this.updateBigWinner();
+    // await this.updateBigWinner();
   }
 
   async addScore(playerId: string, gains: number, cardTypes) {
