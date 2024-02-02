@@ -71,7 +71,7 @@ export class RobotManager extends NewRobotManager {
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
 
-      if (this.room.gameState.state !== 10) {
+      if (this.room.gameState.state !== 10 && !proxy.isBroke && model.gold > 0) {
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
           await proxy.gang(this.isPlayerGang(playerId))
         } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
@@ -100,7 +100,7 @@ export class RobotManager extends NewRobotManager {
           }
         }
       } else {
-        console.warn("await player invive game-state %s current-index %s", this.room.gameState.state, this.room.gameState.atIndex(proxy))
+        console.warn("await player invive game-state %s current-index %s isBroke %s gold %s", this.room.gameState.state, this.room.gameState.atIndex(proxy), proxy.isBroke, model.gold)
       }
     }
 
