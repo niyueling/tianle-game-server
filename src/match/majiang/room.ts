@@ -435,9 +435,9 @@ class Room extends RoomBase {
     this.players.map((v) => players.push(v._id.toString()));
 
     const scores = [];
-    this.gameState.players.map((player, idx) => {
+    this.players.map((player, idx) => {
       if (player) {
-        const state = player.genGameStatus(idx, 1);
+        const state = player.playerState.genGameStatus(idx, 1);
         scores.push({
           score: state.score,
           name: player.model.nickname,
