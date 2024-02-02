@@ -430,13 +430,7 @@ class Room extends RoomBase {
     }
   }
 
-  async recordRoomScore(roomState = 'normal', scores = []): Promise<any> {
-    const players = [];
-    this.players.map((v) => players.push(v._id.toString()));
-
-    // if (!this.charged) {
-    //   roomState = 'zero_ju'
-    // }
+  async recordRoomScore(roomState = 'normal', scores = [], players = []): Promise<any> {
     const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
 
     const roomRecord = {

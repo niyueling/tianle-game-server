@@ -2298,8 +2298,10 @@ class TableState implements Serializable {
     this.room.removeListener('empty', this.onRoomEmpty)
 
     const scores = [];
+    const players = [];
     this.players.map((player, idx) => {
       if (player) {
+        players.push(player._id.toString())
         const state = player.genGameStatus(idx, 1);
         scores.push({
           score: state.score,
@@ -2311,7 +2313,7 @@ class TableState implements Serializable {
     })
 
     await this.room.recordGameRecord(this, states);
-    await this.room.recordRoomScore('normal', scores)
+    await this.room.recordRoomScore('normal', scores, players)
 
     // 更新战绩
     for (let i = 0; i< states.length; i++) {
