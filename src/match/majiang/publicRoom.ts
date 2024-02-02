@@ -60,7 +60,6 @@ export class PublicRoom extends Room {
     // console.warn("publicRoom", this._id)
     if (!player) {
       // 玩家不存在
-      player.sendMessage("room/leaveReply", {ok: true, data: {}})
       return false;
     }
     if (this.indexOf(player) < 0) {
