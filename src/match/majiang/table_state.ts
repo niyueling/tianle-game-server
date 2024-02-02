@@ -2021,6 +2021,14 @@ class TableState implements Serializable {
         playersModifyGolds.push(params);
       }
 
+      // 判断是否游戏结束
+      let isGameOver = true;
+      for (let i = 0; i < playersModifyGolds.length; i++) {
+        if (playersModifyGolds[i].gold !== 0) {
+          isGameOver = false;
+        }
+      }
+
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
 
       if (waits.length > 0) {
@@ -2028,11 +2036,13 @@ class TableState implements Serializable {
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
 
-      if (brokePlayers.length >= 3) {
+
+
+      if (isGameOver) {
         const _this = this;
         setTimeout(function () {
           _this.gameAllOver(states, niaos, nextZhuang);
-        }, 1000);
+        }, 3000);
       }
     }
     this.logger.close()
