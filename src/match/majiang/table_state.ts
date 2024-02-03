@@ -1662,11 +1662,14 @@ class TableState implements Serializable {
         const result = {card};
         const i = (index + j) % this.players.length;
         const p = this.players[i];
-        const r = p.markJiePao(card, result);
-        if (r.hu) {
-          if (!check.hu) check.hu = [];
-          check.hu.push(p);
-          p.huInfo = r.check;
+        const model = await service.playerService.getPlayerModel(this.players[index]._id);
+        if (!p.isBroke && model.gold > 0) {
+          const r = p.markJiePao(card, result);
+          if (r.hu) {
+            if (!check.hu) check.hu = [];
+            check.hu.push(p);
+            p.huInfo = r.check;
+          }
         }
       }
 
@@ -1676,7 +1679,8 @@ class TableState implements Serializable {
       // 从 startIndex 开始查找未破产的玩家
       for (let i = startIndex; i < startIndex + this.players.length; i++) {
         let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-        if (!this.players[index].isBroke) {
+        const model = await service.playerService.getPlayerModel(this.players[index]._id);
+        if (!this.players[index].isBroke && model.gold > 0) {
           xiajia = this.players[index];
           break;
         }
@@ -1706,7 +1710,7 @@ class TableState implements Serializable {
             this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
             logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
           }
-        })
+        });
 
         this.isFaPai = false;
       } else {
@@ -1717,6 +1721,7 @@ class TableState implements Serializable {
             data: {players: this.players, isFaPai: this.isFaPai}
           }
         });
+
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
         await this.gameAllOver(states, [], nextZhuang);
@@ -1726,7 +1731,8 @@ class TableState implements Serializable {
       for (let j = 1; j < this.players.length; j++) {
         const i = (index + j) % this.players.length
         const p = this.players[i]
-        if (p.contacted(this.lastDa) < 2) {
+        const model = await service.playerService.getPlayerModel(p._id);
+        if (p.contacted(this.lastDa) < 2 && !p.isBroke && model.gold > 0) {
           check = p.checkPengGang(card, check)
         }
       }
