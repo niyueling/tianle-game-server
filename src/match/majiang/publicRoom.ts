@@ -225,7 +225,7 @@ export class PublicRoom extends Room {
       this.gameRule.categoryId);
     if (resp.isNeedRuby) {
       // 等待金豆补充，退出房间
-      this.leave(reconnectPlayer);
+      this.forceDissolve();
       return;
     }
     return super.reconnect(reconnectPlayer);
