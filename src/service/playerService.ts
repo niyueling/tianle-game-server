@@ -63,7 +63,7 @@ export default class PlayerService extends BaseService {
       throw new Error('房间错误')
     }
     // 最高为随机下限的 20% - 30%
-    const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
+    const rand = service.utils.randomIntBetweenNumber(1, 9) / 10;
     const max = rubyRequired.minAmount + Math.floor(rand * rubyRequired.minAmount);
     const gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
     const result = await Player.aggregate([
