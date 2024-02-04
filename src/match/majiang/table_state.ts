@@ -2044,8 +2044,8 @@ class TableState implements Serializable {
       let isGameOver = false;
       let brokeCount = 0;
       for (let i = 0; i < playersModifyGolds.length; i++) {
-        if (playersModifyGolds[i].currentGold === 0) {
-          if (playersModifyGolds[i].index === 0 && playersModifyGolds[i].isBroke) {
+        if (playersModifyGolds[i].gold === 0) {
+          if (playersModifyGolds[i].index === 0) {
             brokeCount++;
           } else {
             brokeCount++;
@@ -2053,7 +2053,7 @@ class TableState implements Serializable {
         }
       }
 
-      if (brokeCount === 3) {
+      if (brokeCount === 4) {
         isGameOver = true;
       }
 
