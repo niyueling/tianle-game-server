@@ -1999,10 +1999,6 @@ class TableState implements Serializable {
         })
       }
 
-      // 打点日志查看用户本局积分
-      // const states_1 = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      // console.warn(`states_1: ${JSON.stringify(states_1)}`);
-
       // 判断是否破产，破产提醒客户端充值钻石
       let brokePlayers = [];
       let playersModifyGolds = [];
@@ -2048,8 +2044,6 @@ class TableState implements Serializable {
       let isGameOver = false;
       let brokeCount = 0;
       for (let i = 0; i < playersModifyGolds.length; i++) {
-        // console.warn("index %s shortId %s gold %s currentGold %s isBroke %s playersModifyGolds[i].gold !== 0 %s !playersModifyGolds[i].isBroke %s playersModifyGolds[i].currentGold > 0 %s"
-        //   , playersModifyGolds[i].index, playersModifyGolds[i].shortId, playersModifyGolds[i].gold, playersModifyGolds[i].currentGold, playersModifyGolds[i].isBroke, playersModifyGolds[i].gold !== 0);
         if (playersModifyGolds[i].currentGold === 0) {
           if (playersModifyGolds[i].index === 0 && playersModifyGolds[i].isBroke) {
             brokeCount++;
