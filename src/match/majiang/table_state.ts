@@ -2035,17 +2035,21 @@ class TableState implements Serializable {
       }
 
       // 判断是否游戏结束
-      let isGameOver = true;
+      let isGameOver = false;
+      let brokeCount = 0;
       for (let i = 0; i < playersModifyGolds.length; i++) {
-        console.warn("index %s shortId %s gold %s currentGold %s isBroke %s playersModifyGolds[i].gold !== 0 %s !playersModifyGolds[i].isBroke %s playersModifyGolds[i].currentGold > 0 %s"
-          , playersModifyGolds[i].index, playersModifyGolds[i].shortId, playersModifyGolds[i].gold, playersModifyGolds[i].currentGold, playersModifyGolds[i].isBroke
-        , playersModifyGolds[i].gold !== 0);
-        if (playersModifyGolds[i].gold !== 0) {
-          isGameOver = false;
+        // console.warn("index %s shortId %s gold %s currentGold %s isBroke %s playersModifyGolds[i].gold !== 0 %s !playersModifyGolds[i].isBroke %s playersModifyGolds[i].currentGold > 0 %s"
+        //   , playersModifyGolds[i].index, playersModifyGolds[i].shortId, playersModifyGolds[i].gold, playersModifyGolds[i].currentGold, playersModifyGolds[i].isBroke, playersModifyGolds[i].gold !== 0);
+        if (playersModifyGolds[i].currentGold === 0) {
+          brokeCount++;
         }
       }
 
-      console.warn("isGameOver %s", isGameOver);
+      if (brokeCount === 3) {
+        isGameOver = true;
+      }
+
+      console.warn("isGameOver %s brokeCount %s", isGameOver, brokeCount);
 
       if (isGameOver || brokePlayers.length >= 3) {
         const _this = this;
