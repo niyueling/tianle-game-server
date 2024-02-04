@@ -378,6 +378,12 @@ class TableState implements Serializable {
   // 本局是否补助
   isHelp: boolean = false;
 
+  // 本局是否结束
+  isGameOver: boolean = false;
+
+  // 破产用户人数
+  brokeCount: number = 0;
+
   // 胡牌类型
   cardTypes: {
     cardId: any;
@@ -414,6 +420,8 @@ class TableState implements Serializable {
     this.setGameRecorder(new GameRecorder(this))
     this.stateData = {}
     this.cardTypes = new CardTypeModel()
+    this.isGameOver = false;
+    this.brokeCount = 0;
   }
 
   toJSON() {
@@ -2053,10 +2061,7 @@ class TableState implements Serializable {
 
       if (isGameOver || brokePlayers.length >= 3) {
         console.warn("isGameOver %s brokeCount %s", isGameOver, brokeCount);
-        const _this = this;
-        setTimeout(async function () {
-          await _this.gameAllOver(states, niaos, nextZhuang);
-        }, 3000);
+        await this.gameAllOver(states, niaos, nextZhuang);
       }
 
 
