@@ -2050,8 +2050,12 @@ class TableState implements Serializable {
       for (let i = 0; i < playersModifyGolds.length; i++) {
         // console.warn("index %s shortId %s gold %s currentGold %s isBroke %s playersModifyGolds[i].gold !== 0 %s !playersModifyGolds[i].isBroke %s playersModifyGolds[i].currentGold > 0 %s"
         //   , playersModifyGolds[i].index, playersModifyGolds[i].shortId, playersModifyGolds[i].gold, playersModifyGolds[i].currentGold, playersModifyGolds[i].isBroke, playersModifyGolds[i].gold !== 0);
-        if (playersModifyGolds[i].currentGold === 0 && playersModifyGolds[i].isBroke) {
-          brokeCount++;
+        if (playersModifyGolds[i].currentGold === 0) {
+          if (playersModifyGolds[i].index === 0 && playersModifyGolds[i].isBroke) {
+            brokeCount++;
+          } else {
+            brokeCount++;
+          }
         }
       }
 
