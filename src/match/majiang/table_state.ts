@@ -2071,7 +2071,7 @@ class TableState implements Serializable {
         const _this = this;
         setTimeout(function () {
           _this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
-        }, 2000);
+        }, 300);
       }
     }
     this.logger.close()
