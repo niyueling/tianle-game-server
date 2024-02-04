@@ -1903,33 +1903,6 @@ class TableState implements Serializable {
 
   async gameOver(from, to) {
     if (this.state !== stateGameOver) {
-      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-
-      const nextZhuang = this.nextZhuang()
-      const niaos = await this.generateNiao()
-      this.assignNiaos()
-      this.niaos = niaos
-
-      const huPlayers = this.players
-        .filter(p => p.huPai())
-
-      huPlayers
-        .forEach(huPlayer => {
-          const losers = this.players.filter(p => p.events[Enums.dianPao] || p.events[Enums.taJiaZiMo])
-          for (const loser of losers) {
-            const wins = huPlayer.winScore()
-            huPlayer.winFrom(loser, wins)
-          }
-        })
-
-      if (huPlayers.length > 0) {
-        this.calcGangScore();
-      }
-
-      if (this.remainCards <= 0) {
-        return await this.gameAllOver(states, niaos, nextZhuang);
-      }
-
       const recordCount = await CardTypeModel.count();
       if (recordCount > 0) {
         await CardTypeModel.where({_id: {$ne: null}}).remove();
@@ -2030,7 +2003,7 @@ class TableState implements Serializable {
 
               // 需要增加破产接口，用户将用户置于破产状态，并执行playerGameOver
               p.isGameOver = true;
-              await this.playerGameOver(p, niaos, p.genGameStatus(this.atIndex(p), 1));
+              await this.playerGameOver(p, [], p.genGameStatus(this.atIndex(p), 1));
             }
 
             brokePlayers.push(p);
@@ -2041,6 +2014,33 @@ class TableState implements Serializable {
       }
 
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+
+      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+
+      const nextZhuang = this.nextZhuang()
+      const niaos = await this.generateNiao()
+      this.assignNiaos()
+      this.niaos = niaos
+
+      const huPlayers = this.players
+        .filter(p => p.huPai())
+
+      huPlayers
+        .forEach(huPlayer => {
+          const losers = this.players.filter(p => p.events[Enums.dianPao] || p.events[Enums.taJiaZiMo])
+          for (const loser of losers) {
+            const wins = huPlayer.winScore()
+            huPlayer.winFrom(loser, wins)
+          }
+        })
+
+      if (huPlayers.length > 0) {
+        this.calcGangScore();
+      }
+
+      if (this.remainCards <= 0) {
+        return await this.gameAllOver(states, niaos, nextZhuang);
+      }
 
       // 判断是否游戏结束
       let isGameOver = false;
