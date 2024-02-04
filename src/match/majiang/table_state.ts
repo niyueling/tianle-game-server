@@ -2241,7 +2241,7 @@ class TableState implements Serializable {
 
     // 如果目前打牌的是破产用户，找到下一个正常用户
     if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
-      await this.onPlayerGuo(p, this.turn, this.lastTakeCard);
+      // await this.onPlayerGuo(p, this.turn, this.lastTakeCard);
 
       // 去除摸牌
       if (p.cards[this.lastTakeCard] > 0) {
