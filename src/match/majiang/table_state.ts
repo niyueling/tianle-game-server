@@ -2019,6 +2019,8 @@ class TableState implements Serializable {
           if (params.index === 0) {
             if (!p.isBroke) {
               waits.push(params);
+            } else {
+              brokePlayers.push(p);
             }
           } else {
             if (!p.isBroke) {
@@ -2045,11 +2047,7 @@ class TableState implements Serializable {
       let brokeCount = 0;
       for (let i = 0; i < playersModifyGolds.length; i++) {
         if (playersModifyGolds[i].gold === 0) {
-          if (playersModifyGolds[i].index === 0) {
-            brokeCount++;
-          } else {
-            brokeCount++;
-          }
+          brokeCount++;
         }
       }
 
