@@ -2005,6 +2005,7 @@ class TableState implements Serializable {
         let params = {
           index: this.atIndex(p),
           _id: p.model._id.toString(),
+          shortId: p.model.shortId,
           gold: p.balance,
           currentGold: model.gold,
           isBroke: false,
@@ -2036,7 +2037,10 @@ class TableState implements Serializable {
       // 判断是否游戏结束
       let isGameOver = true;
       for (let i = 0; i < playersModifyGolds.length; i++) {
-        if (playersModifyGolds[i].gold !== 0) {
+        console.warn("index %s shortId %s gold %s currentGold %s isBroke %s playersModifyGolds[i].gold !== 0 %s !playersModifyGolds[i].isBroke %s playersModifyGolds[i].currentGold > 0 %s"
+          , playersModifyGolds[i].index, playersModifyGolds[i].shortId, playersModifyGolds[i].gold, playersModifyGolds[i].currentGold, playersModifyGolds[i].isBroke
+        , playersModifyGolds[i].gold !== 0, !playersModifyGolds[i].isBroke, playersModifyGolds[i].currentGold > 0);
+        if (playersModifyGolds[i].gold !== 0 || !playersModifyGolds[i].isBroke || playersModifyGolds[i].currentGold > 0) {
           isGameOver = false;
         }
       }
