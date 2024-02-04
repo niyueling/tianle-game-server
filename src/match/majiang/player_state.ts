@@ -232,11 +232,6 @@ class PlayerState implements Serializable {
     this.emitter = new EventEmitter()
     this.cards = new SourceCardMap(53).fill(0)
     this.balance = 0
-    this.isGameOver = false
-    this.juScore = 0;
-    this.isCalcJu = false;
-    this.constellationCards = []
-    this.isGameHu = false;
     this.score = room.getScore(userSocket)
     this.disconnectCallBack = player => {
       if (player === this.msgDispatcher) {
