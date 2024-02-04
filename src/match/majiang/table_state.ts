@@ -2049,8 +2049,8 @@ class TableState implements Serializable {
 
       if (isGameOver || brokePlayers.length >= 3) {
         const _this = this;
-        setTimeout(function () {
-          _this.gameAllOver(states, niaos, nextZhuang);
+        setTimeout(async function () {
+          await _this.gameAllOver(states, niaos, nextZhuang);
         }, 3000);
       }
 
