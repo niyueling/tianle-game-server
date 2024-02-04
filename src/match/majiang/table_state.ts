@@ -2034,6 +2034,8 @@ class TableState implements Serializable {
         playersModifyGolds.push(params);
       }
 
+      this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+
       // 判断是否游戏结束
       let isGameOver = false;
       let brokeCount = 0;
@@ -2049,16 +2051,15 @@ class TableState implements Serializable {
         isGameOver = true;
       }
 
-      console.warn("isGameOver %s brokeCount %s", isGameOver, brokeCount);
-
       if (isGameOver || brokePlayers.length >= 3) {
+        console.warn("isGameOver %s brokeCount %s", isGameOver, brokeCount);
         const _this = this;
         setTimeout(async function () {
           await _this.gameAllOver(states, niaos, nextZhuang);
         }, 3000);
       }
 
-      this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+
 
       if (waits.length > 0) {
         this.state = stateWaitRecharge;
