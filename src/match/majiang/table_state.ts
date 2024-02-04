@@ -384,6 +384,9 @@ class TableState implements Serializable {
   // 破产用户人数
   brokeCount: number = 0;
 
+  // 破产用户人数
+  brokeList: any[] = [];
+
   // 胡牌类型
   cardTypes: {
     cardId: any;
@@ -422,6 +425,7 @@ class TableState implements Serializable {
     this.cardTypes = new CardTypeModel()
     this.isGameOver = false;
     this.brokeCount = 0;
+    this.brokeList = [];
   }
 
   toJSON() {
@@ -1623,9 +1627,6 @@ class TableState implements Serializable {
   }
 
   async onPlayerBroke(player) {
-    // 用户第一次破产
-    player.isBroke = true;
-    player.isGameOver = true;
     this.state = stateWaitDa;
     await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
@@ -1985,7 +1986,7 @@ class TableState implements Serializable {
           shortId: p.model.shortId,
           gold: p.balance,
           currentGold: model.gold,
-          isBroke: false,
+          isBroke: p.isBroke,
           huType: this.cardTypes
         };
         if (model.gold <= 0) {
@@ -1998,11 +1999,7 @@ class TableState implements Serializable {
           } else {
             if (!p.isBroke) {
               // 用户第一次破产
-              p.isBroke = true;
               params.isBroke = true;
-
-              // 需要增加破产接口，用户将用户置于破产状态，并执行playerGameOver
-              p.isGameOver = true;
               await this.playerGameOver(p, [], p.genGameStatus(this.atIndex(p), 1));
             }
 
@@ -2042,27 +2039,14 @@ class TableState implements Serializable {
         return await this.gameAllOver(states, niaos, nextZhuang);
       }
 
-      // 判断是否游戏结束
-      let isGameOver = false;
-      let brokeCount = 0;
-      for (let i = 0; i < playersModifyGolds.length; i++) {
-        if (playersModifyGolds[i].gold === 0) {
-          brokeCount++;
-        }
-      }
-
-      if (brokeCount === 4) {
-        isGameOver = true;
-      }
-
-      if (isGameOver || brokePlayers.length >= 3) {
-        console.warn("isGameOver %s brokeCount %s", isGameOver, brokeCount);
+      if (this.isGameOver || brokePlayers.length >= 3) {
+        console.warn("isGameOver %s brokeCount %s", this.isGameOver, this.brokeCount);
         await this.gameAllOver(states, niaos, nextZhuang);
       }
 
 
 
-      if (waits.length > 0 && !isGameOver) {
+      if (waits.length > 0 && !this.isGameOver) {
         this.state = stateWaitRecharge;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
@@ -2194,6 +2178,17 @@ class TableState implements Serializable {
 
   async playerGameOver(p, niaos, states) {
     p.gameOver();
+
+    if (!this.brokeList.includes(p._id.toString())) {
+      p.isBroke = true;
+      p.isGameOver = true;
+      this.brokeCount++;
+      this.brokeList.push(p._id.toString());
+
+      if (this.brokeCount >= 3) {
+        this.isGameOver = true;
+      }
+    }
 
     //获取用户当局对局流水
     const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
