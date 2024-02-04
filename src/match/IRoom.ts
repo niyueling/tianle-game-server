@@ -800,7 +800,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.players
       .filter(p => p)
       .forEach(player => {
-        player.sendMessage('room/dissolve', allOverMessage)
+        player.sendMessage('room/dissolve', {ok: true, data: allOverMessage})
         player.room = null
       })
     this.players.fill(null)
