@@ -5,7 +5,7 @@ import majiangLobby from '../../match/majiang/centerlobby'
 import {service} from "../../service/importService";
 import {AsyncRedisClient} from "../../utils/redis"
 import {ISocketPlayer} from "../ISocketPlayer"
-import {TianleErrorCode} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 
 export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
@@ -79,6 +79,17 @@ export function createHandler(redisClient: AsyncRedisClient) {
       player.model = await PlayerModel.findOne({_id: playerId}).lean();
       player.setGameName(gameType)
       await player.connectToBackend(gameType);
+
+      // 下发掉线子游戏
+      const room = await service.roomRegister.getDisconnectRoomByPlayerId(player.model._id.toString());
+      if (room) {
+        // 掉线的子游戏类型
+        player.model.disconnectedRoom = true;
+        player.model.continueGameType = GameType.mj;
+      } else {
+        // 没有掉线的房间号，不要重连
+        player.model.disconnectedRoom = false
+      }
 
       return player.sendMessage('room/loginReply', {ok: true, data: {model: player.model}})
     },
