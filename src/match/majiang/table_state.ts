@@ -531,7 +531,7 @@ class TableState implements Serializable {
 
     // 生肖图-大世界
     if (cardCount === 12) {
-      console.warn("生肖图-大世界")
+      // console.warn("生肖图-大世界")
       score *= 24;
     }
 
@@ -545,7 +545,7 @@ class TableState implements Serializable {
     }
 
     if (check) {
-      console.warn("生肖图-圆六角")
+      // console.warn("生肖图-圆六角")
       score *= 16;
     }
 
@@ -569,7 +569,7 @@ class TableState implements Serializable {
     }
 
     if (check1) {
-      console.warn("生肖图-小世界")
+      // console.warn("生肖图-小世界")
       score *= 4;
     }
 
@@ -591,7 +591,7 @@ class TableState implements Serializable {
     }
 
     if (check2) {
-      console.warn("生肖图-一线天")
+      // console.warn("生肖图-一线天")
       score *= 6;
     }
 
@@ -612,7 +612,7 @@ class TableState implements Serializable {
     }
 
     if (check3) {
-      console.warn("生肖图-一字禅")
+      // console.warn("生肖图-一字禅")
       score *= 8;
     }
 
@@ -636,7 +636,7 @@ class TableState implements Serializable {
     }
 
     if (check4) {
-      console.warn("生肖图-铁拐李")
+      // console.warn("生肖图-铁拐李")
       score *= 16;
     }
 
@@ -650,7 +650,7 @@ class TableState implements Serializable {
     }
 
     if (check5) {
-      console.warn("生肖图-四方阵")
+      // console.warn("生肖图-四方阵")
       score *= 10;
     }
 
@@ -1271,7 +1271,7 @@ class TableState implements Serializable {
 
         const isZiMo = this.state === stateWaitDa && recordCard === card;
 
-        console.warn(`state %s recordCard %s card %s isZiMo %s this.stateData[Enums.hu].contains(player) %s`, this.state, recordCard, card, isZiMo, this.stateData[Enums.hu] && this.stateData[Enums.hu].contains(player) )
+        // console.warn(`state %s recordCard %s card %s isZiMo %s this.stateData[Enums.hu].contains(player) %s`, this.state, recordCard, card, isZiMo, this.stateData[Enums.hu] && this.stateData[Enums.hu].contains(player) )
 
         const cardTypes = await this.getCardTypes();
         const random = Math.floor(Math.random() * cardTypes.length);
@@ -1347,7 +1347,7 @@ class TableState implements Serializable {
 
                   if (xiajia) {
                     const nextDo = async () => {
-                      console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+                      // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
                       if (!this.isFaPai) {
                         this.isFaPai = true;
@@ -1381,7 +1381,7 @@ class TableState implements Serializable {
                     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                     const nextZhuang = this.nextZhuang()
                     await this.gameAllOver(states, [], nextZhuang);
-                    console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
+                    // console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
                   }
                 }
               } else {
@@ -1439,7 +1439,7 @@ class TableState implements Serializable {
 
               if (xiajia) {
                 const nextDo = async () => {
-                  console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+                  // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
                   if (!this.isFaPai) {
                     this.isFaPai = true;
@@ -1472,14 +1472,14 @@ class TableState implements Serializable {
 
                 setTimeout(nextDo, 200);
               } else {
-                console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
+                // console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                 const nextZhuang = this.nextZhuang()
                 await this.gameAllOver(states, [], nextZhuang);
               }
             }
           } else {
-            console.warn("ok:", ok);
+            // console.warn("ok:", ok);
             player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid, data: {type: "ziMo"}});
           }
         } else if (this.state === stateQiangGang) {
@@ -1533,12 +1533,12 @@ class TableState implements Serializable {
               }
 
               if (xiajia) {
-                console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+                // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
               } else {
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                 const nextZhuang = this.nextZhuang()
                 await this.gameAllOver(states, [], nextZhuang);
-                console.warn('No unbroke player found as the next player');
+                // console.warn('No unbroke player found as the next player');
               }
 
               const env = {card, from, turn: this.turn}
@@ -1696,7 +1696,7 @@ class TableState implements Serializable {
       }
 
       if (xiajia && !this.isFaPai) {
-        console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+        // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
         this.isFaPai = true;
 
         const env = {card, from, turn: this.turn}
@@ -1734,7 +1734,7 @@ class TableState implements Serializable {
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
         await this.gameAllOver(states, [], nextZhuang);
-        return console.warn('No unbroke player found as the next player');
+        // return console.warn('No unbroke player found as the next player');
       }
 
       for (let j = 1; j < this.players.length; j++) {
@@ -1929,7 +1929,7 @@ class TableState implements Serializable {
           const balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
-          console.warn(`dianpao index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(from), from.model.shortId, from.juScore, from.balance, from.juScore += from.balance)
+          // console.warn(`dianpao index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(from), from.model.shortId, from.juScore, from.balance, from.juScore += from.balance)
           from.juScore += from.balance;
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
           await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
@@ -1943,7 +1943,7 @@ class TableState implements Serializable {
               const balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
-              console.warn(`zimo index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(p), p.model.shortId, p.juScore, p.balance, p.juScore += p.balance)
+              // console.warn(`zimo index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(p), p.model.shortId, p.juScore, p.balance, p.juScore += p.balance)
               p.juScore += p.balance;
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
               await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
@@ -1955,9 +1955,9 @@ class TableState implements Serializable {
 
         //增加胡牌用户金币
         to.balance = winBalance;
-        console.warn(`win index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(to), to.model.shortId, to.juScore, to.balance, to.juScore += to.balance)
+        // console.warn(`win index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(to), to.model.shortId, to.juScore, to.balance, to.juScore += to.balance)
         to.juScore += winBalance;
-        console.warn(`player index %s balance %s score %s`, this.atIndex(to), to.balance, to.juScore);
+        // console.warn(`player index %s balance %s score %s`, this.atIndex(to), to.balance, to.juScore);
         await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
         await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
           to.model.gold + to.balance, `对局获得`);
@@ -2036,7 +2036,7 @@ class TableState implements Serializable {
       }
 
       if (this.isGameOver || brokePlayers.length >= 3) {
-        console.warn("isGameOver %s brokeCount %s", this.isGameOver, this.brokeCount);
+        // console.warn("isGameOver %s brokeCount %s", this.isGameOver, this.brokeCount);
         await this.gameAllOver(states, [], nextZhuang);
       }
 
@@ -2254,7 +2254,7 @@ class TableState implements Serializable {
 
       if (xiajia) {
         const nextDo = async () => {
-          console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+          // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
           if (!this.isFaPai) {
             this.isFaPai = true;
@@ -2290,7 +2290,7 @@ class TableState implements Serializable {
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
         await this.gameAllOver(states, [], nextZhuang);
-        console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
+        // console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
       }
     }
   }
@@ -2869,7 +2869,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    console.warn(`${player.model.shortId}游戏操作:${todo}`);
+    // console.warn(`${player.model.shortId}游戏操作:${todo}`);
 
     switch (todo) {
       case Enums.peng:
