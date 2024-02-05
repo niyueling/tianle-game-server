@@ -2048,7 +2048,7 @@ class TableState implements Serializable {
           this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
         }
 
-        setTimeout(nextDo, 2000);
+        setTimeout(nextDo, 1000);
       }
     }
     this.logger.close()
