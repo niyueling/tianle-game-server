@@ -423,7 +423,7 @@ export class NewRobotManager {
       // 加入房间
       const isOk = await this.room.join(robotProxy);
       if (isOk) {
-        console.warn(`shortId ${model.shortId} room ${this.room._id} index ${i} deposit add robot status ${isOk}`);
+        console.warn(`shortId ${model.shortId} room ${this.room._id} index ${i} deposit add robot status ${isOk} player ${JSON.stringify(this.room.players)}`);
         // 公共房托管的机器人
         this.model.publicRoomRobot.push([model._id, i]);
         await this.addPublicRobot(model._id, robotProxy, i);
