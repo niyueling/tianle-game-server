@@ -429,7 +429,6 @@ export class NewRobotManager {
         await this.addPublicRobot(model._id, robotProxy, i);
         // 添加离线时间
         this.model.offlineTimes[model._id] = config.game.offlineDelayTime;
-        console.warn("publicRoomRobot %s offlineTimes %s", this.model.publicRoomRobot, this.model.offlineTimes[model._id]);
       }
     }
     // 保存房间信息
