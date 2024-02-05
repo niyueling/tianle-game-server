@@ -6,15 +6,10 @@ import {isNaN, pick, random} from 'lodash'
 import * as moment from 'moment'
 import * as logger from "winston";
 import * as winston from "winston";
-import PlayerModel from "../../database/models/player";
-import PlayerHelpDetail from "../../database/models/playerHelpModel";
-import TreasureBox from "../../database/models/treasureBox";
+import Player from "../../database/models/player";
 import {service} from "../../service/importService";
-import algorithm from "../../utils/algorithm";
 import alg from "../../utils/algorithm";
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, serializeHelp} from "../serializeDecorator"
-import {CardType} from "./card";
-import enums from "./enums";
 import Enums from "./enums";
 import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
@@ -23,8 +18,6 @@ import Rule from './Rule'
 import {ConsumeLogType, TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
-import {RedisKey} from "@fm/common/constants";
-import Player from "../../database/models/player";
 import CombatGain from "../../database/models/combatGain";
 import GameCategory from "../../database/models/gameCategory";
 
@@ -490,8 +483,7 @@ class TableState implements Serializable {
     if (this.remainCards < 0) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
-      const niaos = await this.generateNiao()
-      await this.gameAllOver(states, niaos, nextZhuang);
+      await this.gameAllOver(states, [], nextZhuang);
       return
     }
 
@@ -916,8 +908,7 @@ class TableState implements Serializable {
         denyFunc()
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
-        const niaos = await this.generateNiao()
-        await this.gameAllOver(states, niaos, nextZhuang);
+        await this.gameAllOver(states, [], nextZhuang);
         return
       }
       logger.info('willTakeCard player-%s remainCards %s', index, this.remainCards)
@@ -2014,10 +2005,6 @@ class TableState implements Serializable {
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
-      const niaos = await this.generateNiao()
-      this.assignNiaos()
-      this.niaos = niaos
-
 
       const huPlayers = this.players
         .filter(p => p.huPai())
@@ -2036,12 +2023,12 @@ class TableState implements Serializable {
       }
 
       if (this.remainCards <= 0) {
-        return await this.gameAllOver(states, niaos, nextZhuang);
+        return await this.gameAllOver(states, [], nextZhuang);
       }
 
       if (this.isGameOver || brokePlayers.length >= 3) {
         console.warn("isGameOver %s brokeCount %s", this.isGameOver, this.brokeCount);
-        await this.gameAllOver(states, niaos, nextZhuang);
+        await this.gameAllOver(states, [], nextZhuang);
       }
 
 
@@ -2413,9 +2400,7 @@ class TableState implements Serializable {
   async restoreMessageForPlayer(player: PlayerState) {
     const index = this.atIndex(player)
 
-    const pushMsg = await this.generateReconnectMsg(index);
-
-    return pushMsg
+    return await this.generateReconnectMsg(index)
   }
 
   async onRefresh(index) {
