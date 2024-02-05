@@ -2013,11 +2013,11 @@ class TableState implements Serializable {
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-
       const nextZhuang = this.nextZhuang()
       const niaos = await this.generateNiao()
       this.assignNiaos()
       this.niaos = niaos
+
 
       const huPlayers = this.players
         .filter(p => p.huPai())
@@ -2187,6 +2187,9 @@ class TableState implements Serializable {
 
       if (this.brokeCount >= 3) {
         this.isGameOver = true;
+        const states = this.players.map((player, idx) => player.genGameStatus(idx, 1));
+        const nextZhuang = this.nextZhuang()
+        await this.gameAllOver(states, [], nextZhuang);
       }
     }
 
