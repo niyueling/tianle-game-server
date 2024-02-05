@@ -423,12 +423,13 @@ export class NewRobotManager {
       // 加入房间
       const isOk = await this.room.join(robotProxy);
       if (isOk) {
-        console.warn(`room ${this.room._id} add robot status ${isOk}`);
+        console.warn(`shortId ${model.shortId} room ${this.room._id} index ${i} deposit add robot status ${isOk}`);
         // 公共房托管的机器人
         this.model.publicRoomRobot.push([model._id, i]);
         await this.addPublicRobot(model._id, robotProxy, i);
         // 添加离线时间
         this.model.offlineTimes[model._id] = config.game.offlineDelayTime;
+        console.warn("publicRoomRobot %s offlineTimes %s", this.model.publicRoomRobot, this.model.offlineTimes[model._id]);
       }
     }
     // 保存房间信息
@@ -441,6 +442,7 @@ export class NewRobotManager {
       this.model.depositPlayer[playerId] = this.depositCount;
       await this.save();
     }
+
     if (this.room.gameState) {
       // 游戏已经开始了
       const oldPlayerState = this.room.gameState.players[posIndex];
