@@ -2044,7 +2044,11 @@ class TableState implements Serializable {
 
       if (waits.length > 0 && !this.isGameOver) {
         this.state = stateWaitRecharge;
-        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+        const nextDo = async () => {
+          this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+        }
+
+        setTimeout(nextDo, 1000);
       }
     }
     this.logger.close()
