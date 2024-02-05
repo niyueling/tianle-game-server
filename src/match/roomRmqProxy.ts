@@ -245,6 +245,7 @@ export default class RoomProxy {
           }, this.channel, gameName)
           await newPlayer.sendMessage('room/reconnectReply', {ok: true, data: {_id: room._id, rule: room.rule}})
           await room.reconnect(newPlayer)
+
           await this.tryBestStore(rabbit.redisClient, room)
           return
         }

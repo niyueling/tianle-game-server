@@ -494,6 +494,7 @@ class Room extends RoomBase {
   }
 
   async reconnect(reconnectPlayer) {
+    console.warn("room reconnect")
     const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer.model._id.toString()))
     reconnectPlayer.room = this
     this.arrangePos(reconnectPlayer, true)

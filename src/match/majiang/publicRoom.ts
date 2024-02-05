@@ -219,6 +219,7 @@ export class PublicRoom extends Room {
     }
   }
   async reconnect(reconnectPlayer) {
+    console.warn("public reconnect")
     // 检查最少金豆是否够
     const resp = await service.gameConfig.rubyRequired(
       reconnectPlayer.model._id.toString(),
