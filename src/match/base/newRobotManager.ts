@@ -487,7 +487,7 @@ export class NewRobotManager {
         p.model._id.toString(),
         this.room.gameRule.categoryId);
       if (resp.isNeedRuby) {
-        console.warn(`${p.model.shortId}金豆数量：${p.model.gold},场次最低需要：${resp.minAmount}，waitTimes: ${this.noRubyInterval[p.model._id.toString()]}`)
+        // console.warn(`${p.model.shortId}金豆数量：${p.model.gold},场次最低需要：${resp.minAmount}，waitTimes: ${this.noRubyInterval[p.model._id.toString()]}`)
         if (!this.noRubyInterval[p.model._id.toString()]) {
           this.noRubyInterval[p.model._id.toString()] = 0;
         }
@@ -497,8 +497,8 @@ export class NewRobotManager {
           // 30s 过了，金豆还是不够，解散房间
           await this.room.forceDissolve();
           // 删除托管的机器人用户
-          // delete this.disconnectPlayers[p.model._id.toString()];
-          // delete this.noRubyInterval[p.model._id.toString()];
+          delete this.disconnectPlayers[p.model._id.toString()];
+          delete this.noRubyInterval[p.model._id.toString()];
         } else {
           waitRuby = true;
         }
