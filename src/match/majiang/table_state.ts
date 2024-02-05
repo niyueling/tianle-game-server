@@ -1331,8 +1331,6 @@ class TableState implements Serializable {
                 await this.gameOver(this.players[from], player);
                 logger.info('hu player %s gameover', index);
 
-                setTimeout(function() {}, 1000);
-
                 if (this.state !== stateGameOver) {
                   this.turn++;
                   let xiajia = null;
@@ -1424,8 +1422,6 @@ class TableState implements Serializable {
             this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, from, index, huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}}}, player.msgDispatcher);
             await this.gameOver(null, player);
             this.logger.info('hu  player %s zimo gameover', index)
-
-            setTimeout(function() {}, 1000);
 
             if (this.state !== stateGameOver) {
               this.turn++;
@@ -2052,7 +2048,7 @@ class TableState implements Serializable {
           this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
         }
 
-        setTimeout(nextDo, 1000);
+        setTimeout(nextDo, 500);
       }
     }
     this.logger.close()
