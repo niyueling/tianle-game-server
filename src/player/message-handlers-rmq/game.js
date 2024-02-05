@@ -41,6 +41,9 @@ const exportObj = {
   'game/broke': (player, msg) => {
     player.emit('game/broke', msg);
   },
+  'game/startDeposit': (player, msg) => {
+    player.emit('game/startDeposit', msg);
+  },
 
   'game/cancelDeposit': (player) => {
     player.emit('game/cancelDeposit');

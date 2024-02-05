@@ -936,6 +936,15 @@ class TableState implements Serializable {
       await this.onPlayerBroke(player);
     })
 
+    player.on(Enums.startDeposit, async () => {
+      if (!player.onDeposit) {
+        player.onDeposit = true
+        await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+      } else {
+        await player.sendMessage('game/startDepositReply', {ok: false, data: {}})
+      }
+    })
+
     player.on(Enums.peng, (turn, card) => {
       // if (this.turn !== turn) {
       //   logger.info('peng player-%s this.turn:%s turn:%s', index, this.turn, turn)
