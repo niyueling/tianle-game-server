@@ -11,6 +11,7 @@ import moment = require("moment");
 import FreeGoldRecord from "../../database/models/freeGoldRecord";
 import UserRechargeOrder from "../../database/models/userRechargeOrder";
 import crypto = require('crypto');
+import Player from "../../database/models/player";
 
 // 商品
 export class GoodsApi extends BaseApi {
@@ -235,7 +236,7 @@ export class GoodsApi extends BaseApi {
       return this.replyFail(TianleErrorCode.orderNotExistOrPay);
     }
 
-    const player = PlayerModel.findOne({_id: order.to});
+    const player = await PlayerModel.findOne({_id: order.playerId});
     if (!player || !player.openid || !player.sessionKey) {
       return this.replyFail(TianleErrorCode.userNotFound);
     }
@@ -289,12 +290,34 @@ export class GoodsApi extends BaseApi {
       return this.replyFail(TianleErrorCode.payFail);
     }
 
-    const result = this.service.playerService.playerRecharge(order._id, pay_response.data.bill_no);
+    const result = await this.service.playerService.playerRecharge(order._id, pay_response.data.bill_no);
     if(!result) {
       return this.replyFail(TianleErrorCode.payFail);
     }
 
-    return this.replySuccess(pay_response.data);
+    this.replySuccess(order);
+
+    // 如果是对局兑换礼包充值，则直接兑换礼包金豆
+    if (message.isGameExchange) {
+      const exchangeConf = await GoodsReviveRuby.findOne({_id: message.giftId});
+      const user = await Player.findOne({_id: this.player._id});
+      if (user.diamond < exchangeConf.diamond) {
+        return this.replyFail(TianleErrorCode.diamondInsufficient);
+      }
+
+      await PlayerModel.update({_id: this.player._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
+      this.player.model.diamond = user.diamond - exchangeConf.diamond;
+      this.player.model.gold = user.gold + exchangeConf.gold;
+
+      // 增加日志
+      await service.playerService.logGemConsume(user._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买超值礼包`);
+      // 记录金豆日志
+      await service.playerService.logGoldConsume(user._id, ConsumeLogType.diamondToGold, exchangeConf.gold, this.player.model.gold, `钻石兑换金豆`);
+
+      this.player.sendMessage("goods/nextExchangeGoldReply", {ok: true, data: {diamond: exchangeConf.diamond, gold: exchangeConf.gold}});
+    }
+
+    await this.player.updateResource2Client();
   }
 
   // 复活礼包列表
@@ -355,5 +378,41 @@ export class GoodsApi extends BaseApi {
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
     this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond}})
+  }
+
+  // 下一局金豆礼包
+  @addApi()
+  async getNextGift(message) {
+    const rubyList = await GoodsReviveRuby.find({category: message.categoryId}).sort({gold: 1});
+
+    this.replySuccess({ rubyInfo: rubyList[1] });
+  }
+
+  // 下一局兑换金豆
+  @addApi()
+  async nextExchangeGold(message) {
+    const exchangeConf = await GoodsReviveRuby.findOne({_id: message._id});
+    if (!exchangeConf) {
+      return this.replyFail(TianleErrorCode.configNotFound);
+    }
+
+    const model = await service.playerService.getPlayerModel(this.player.model._id);
+    if (model.diamond < exchangeConf.diamond) {
+      const goodsList = await GoodsModel.find({isOnline: true}).lean();
+      const index = goodsList.findIndex((good) => good.amount >= exchangeConf.diamond);
+      return this.replyFail(TianleErrorCode.diamondInsufficient, {good: goodsList[index]});
+    }
+
+    await PlayerModel.update({_id: model._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
+    this.player.model.diamond = model.diamond - exchangeConf.diamond;
+    this.player.model.gold = model.gold + exchangeConf.gold;
+
+    // 增加日志
+    await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买超值礼包`);
+    // 记录金豆日志
+    await service.playerService.logGoldConsume(model._id, ConsumeLogType.diamondToGold, exchangeConf.gold, this.player.model.gold, `钻石兑换金豆`);
+
+    this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
+    await this.player.updateResource2Client();
   }
 }
