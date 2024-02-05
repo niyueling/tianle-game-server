@@ -497,8 +497,8 @@ export class NewRobotManager {
           // 30s 过了，金豆还是不够，解散房间
           await this.room.forceDissolve();
           // 删除托管的机器人用户
-          delete this.disconnectPlayers[p.model._id.toString()];
-          delete this.noRubyInterval[p.model._id.toString()];
+          // delete this.disconnectPlayers[p.model._id.toString()];
+          // delete this.noRubyInterval[p.model._id.toString()];
         } else {
           waitRuby = true;
         }
