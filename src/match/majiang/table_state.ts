@@ -769,8 +769,12 @@ class TableState implements Serializable {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
       const cards13 = model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p);
-      model.dominateCount--;
-      await model.save();
+
+      if (model.dominateCount > 0) {
+        model.dominateCount--;
+        await model.save();
+      }
+
       console.warn(model.dominateCount, cards13);
 
       const constellationCards = [];
