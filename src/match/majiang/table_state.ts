@@ -488,7 +488,7 @@ class TableState implements Serializable {
     }
 
     const pengIndex = await this.getPlayerPengCards(player);
-    if (pengIndex && Math.random() < 0.35) {
+    if (pengIndex && Math.random() < 0.2) {
       cardIndex = pengIndex;
       const moIndex = this.cards.findIndex(card => card === pengIndex);
       card = this.cards[moIndex];
