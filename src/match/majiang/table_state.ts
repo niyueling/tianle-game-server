@@ -516,8 +516,10 @@ class TableState implements Serializable {
   }
 
   async getPlayerPengCards(p) {
-    for (let i = 0; i < p.cards.length; i++) {
-      if (p.card[i] === 3) {
+    const cards = p.cards.slice();
+    console.log(cards)
+    for (let i = 0; i < cards.length; i++) {
+      if (cards[i] === 3) {
         return i;
       }
     }
