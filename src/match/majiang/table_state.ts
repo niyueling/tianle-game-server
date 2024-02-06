@@ -487,15 +487,15 @@ class TableState implements Serializable {
       return
     }
 
-    const pengIndex = await this.getPlayerPengCards(player);
-    if (pengIndex && Math.random() < 0.2) {
-      const moIndex = this.cards.findIndex(card => card === pengIndex);
-      if (moIndex !== -1) {
-        cardIndex = pengIndex;
-        card = this.cards[moIndex];
-        console.warn(`辅助${player.model.shortId}摸到牌${cardIndex}`);
-      }
-    }
+    // const pengIndex = await this.getPlayerPengCards(player);
+    // if (pengIndex && Math.random() < 0.2) {
+    //   const moIndex = this.cards.findIndex(card => card === pengIndex);
+    //   if (moIndex !== -1) {
+    //     cardIndex = pengIndex;
+    //     card = this.cards[moIndex];
+    //     console.warn(`辅助${player.model.shortId}摸到牌${cardIndex}`);
+    //   }
+    // }
 
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
