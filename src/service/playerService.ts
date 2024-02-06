@@ -237,6 +237,7 @@ export default class PlayerService extends BaseService {
     }
 
     user.diamond += order.diamond;
+    user.dominateCount = Math.floor(Math.random() * 5) + 1;
     await user.save();
 
     order.status = 1;
