@@ -475,6 +475,7 @@ class TableState implements Serializable {
     const player = playerState;
 
     let cardIndex = --this.remainCards;
+    let card = this.cards[cardIndex];
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
@@ -489,10 +490,12 @@ class TableState implements Serializable {
     const pengIndex = await this.getPlayerPengCards(player);
     if (pengIndex && Math.random() < 0.35) {
       cardIndex = pengIndex;
+      const moIndex = this.cards.findIndex(card => card === pengIndex);
+      card = this.cards[moIndex];
       console.warn(`辅助${player.model.shortId}摸到牌${cardIndex}`);
     }
 
-    const card = this.cards[cardIndex];
+
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
