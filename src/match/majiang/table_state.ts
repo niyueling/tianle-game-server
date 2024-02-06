@@ -474,8 +474,7 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
 
-
-    const cardIndex = --this.remainCards;
+    let cardIndex = --this.remainCards;
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
@@ -487,7 +486,13 @@ class TableState implements Serializable {
       return
     }
 
-    const card = this.cards[cardIndex]
+    const pengIndex = await this.getPlayerPengCards(player);
+    if (pengIndex && Math.random() < 0.35) {
+      cardIndex = pengIndex;
+      console.warn(`辅助${player.model.shortId}摸到牌${cardIndex}`);
+    }
+
+    const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
@@ -508,6 +513,16 @@ class TableState implements Serializable {
     }
 
     return card;
+  }
+
+  async getPlayerPengCards(p) {
+    for (let i = 0; i < p.cards.length; i++) {
+      if (p.card[i] === 3) {
+        return i;
+      }
+    }
+
+    return false;
   }
 
   async calcConstellationCardScore(player) {
@@ -1965,7 +1980,7 @@ class TableState implements Serializable {
           failList.push(from.model._id.toString());
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
-          const balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+          const balance = -conf.maxMultiple * this.cardTypes.multiple;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           // console.warn(`dianpao index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(from), from.model.shortId, from.juScore, from.balance, from.juScore += from.balance)
@@ -1979,7 +1994,7 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = -conf.Ante * conf.maxMultiple * this.cardTypes.multiple;
+              const balance = -conf.maxMultiple * this.cardTypes.multiple;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               // console.warn(`zimo index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(p), p.model.shortId, p.juScore, p.balance, p.juScore += p.balance)
