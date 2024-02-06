@@ -11,6 +11,7 @@ import BaseService from "./base";
 import {service} from "./importService";
 import GoldRecord from "../database/models/goldRecord";
 import {ConsumeLogType} from "@fm/common/constants";
+import UserRechargeOrder from "../database/models/userRechargeOrder";
 
 // 玩家信息
 export default class PlayerService extends BaseService {
@@ -217,5 +218,29 @@ export default class PlayerService extends BaseService {
       return true
     }
     return false
+  }
+
+  async playerRecharge(orderId, thirdOrderNo) {
+    const order = await UserRechargeOrder.findOne({_id: orderId});
+    if (!order) {
+      return false;
+    }
+
+    const user = await Player.findOne({_id: order.playerId});
+    if (!user) {
+      return false;
+    }
+
+    user.diamond += order.diamond;
+    await user.save();
+
+    order.status = 1;
+    order.transactionId = thirdOrderNo;
+    await order.save();
+
+    // 增加日志
+    await this.logGemConsume(user._id, ConsumeLogType.chargeByWechat, order.diamond, user.diamond, "微信充值");
+
+    return true;
   }
 }
