@@ -63,8 +63,13 @@ export default class PlayerService extends BaseService {
     if (!rubyRequired) {
       throw new Error('房间错误')
     }
+
+    // 如果场次最高无限制，则最高携带金豆为门槛*10
+    if (rubyRequired.maxAmount === -1) {
+      rubyRequired.maxAmount = rubyRequired.minAmount * 10;
+    }
     // 最高为随机下限的 20% - 30%
-    const rand = service.utils.randomIntBetweenNumber(1, 9) / 100;
+    const rand = service.utils.randomIntBetweenNumber(1, 90) / 100;
     const max = rubyRequired.minAmount + Math.floor(rand * (rubyRequired.maxAmount - rubyRequired.minAmount));
     const gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
     const result = await Player.aggregate([
