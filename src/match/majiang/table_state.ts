@@ -723,6 +723,35 @@ class TableState implements Serializable {
     return cards;
   }
 
+  async takeDominateCards() {
+    {
+      let cards = []
+
+      for (let i = 0; i < 3; i++) {
+        const consumeCards = await this.consumeGangOrKeCard();
+        cards = [...cards, ...consumeCards];
+      }
+
+      const residueCards = 13 - cards.length;
+      if (residueCards >= 3) {
+        const consumeCards = await this.consumeGangOrKeCard(3);
+        cards = [...cards, ...consumeCards];
+      }
+
+      const cardCount = 13 - cards.length;
+
+      for (let i = 0; i < cardCount; i++) {
+        this.remainCards--;
+        const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
+        this.cards.splice(index, 1);
+        cards.push(this.cards[index]);
+        this.lastTakeCard = this.cards[index];
+      }
+
+      return cards;
+    }
+  }
+
   async start() {
     await this.fapai();
   }
@@ -738,7 +767,8 @@ class TableState implements Serializable {
     const constellationCardLists = [];
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
-      const cards13 = await this.take13Cards(p);
+      const model = await service.playerService.getPlayerModel(p._id);
+      const cards13 = model.dominateCount ? await this.takeDominateCards(p) : await this.take13Cards(p);
 
       const constellationCards = [];
       for (let i = 0; i < cards13.length; i++) {
@@ -2184,7 +2214,7 @@ class TableState implements Serializable {
       if (this.brokeCount >= 3) {
         this.isGameOver = true;
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1));
-        const nextZhuang = this.nextZhuang()
+        const nextZhuang = this.nextZhuang();
         await this.gameAllOver(states, [], nextZhuang);
       }
     }
