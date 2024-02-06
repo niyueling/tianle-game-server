@@ -744,9 +744,9 @@ class TableState implements Serializable {
         this.remainCards--;
         const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
         console.log(index, this.cards[index]);
-        this.cards.splice(index, 1);
         cards.push(this.cards[index]);
         this.lastTakeCard = this.cards[index];
+        this.cards.splice(index, 1);
       }
 
       return cards;
