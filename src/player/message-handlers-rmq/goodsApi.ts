@@ -300,7 +300,10 @@ export class GoodsApi extends BaseApi {
     // 如果是对局兑换礼包充值，则直接兑换礼包金豆
     if (message.isGameExchange) {
       const exchangeConf = await GoodsReviveRuby.findOne({_id: message.giftId});
-      const user = await Player.findOne({_id: this.player._id});
+      if (!exchangeConf) {
+        return this.replyFail(TianleErrorCode.configNotFound);
+      }
+      const user = await Player.findOne({_id: this.player.model._id});
       if (user.diamond < exchangeConf.diamond) {
         return this.replyFail(TianleErrorCode.diamondInsufficient);
       }
