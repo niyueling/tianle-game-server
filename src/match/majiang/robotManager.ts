@@ -70,20 +70,20 @@ export class RobotManager extends NewRobotManager {
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
+      const simpleCount = this.checkPlayerSimpleCrdCount(proxy.playerState);
 
       if (this.room.gameState.state !== 10) {
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
           await proxy.gang(this.isPlayerGang(playerId))
-        } else if (this.isPlayerChoice(playerId) && this.room.gameState.state === 2) {
-          await proxy.choice(this.isPlayerChoice(playerId))
+        } else if (this.isPlayerChoice(playerId, simpleCount) && this.room.gameState.state === 2) {
+          await proxy.choice(this.isPlayerChoice(playerId, simpleCount))
         } else if (this.isPlayerDa(playerId)) {
-          const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + playerId, 3);
-          if (this.waitInterval[key] >= this.getWaitSecond() && lock) {
+          if (this.waitInterval[key] >= this.getWaitSecond()) {
             this.waitInterval[key] = 0;
 
-            if (isHu.hu) {
+            if (isHu.hu && simpleCount > 2) {
               await proxy.choice(Enums.hu)
-            } else if (AnGangIndex) {
+            } else if (AnGangIndex && simpleCount < 2) {
               await proxy.gang(Enums.anGang, AnGangIndex)
             } else if (buGangIndex) {
               await proxy.gang(Enums.buGang, buGangIndex)
@@ -105,6 +105,23 @@ export class RobotManager extends NewRobotManager {
     }
 
     this.isPlayed = true;
+  }
+
+  checkPlayerSimpleCrdCount(player) {
+    const cards = player.cards.slice();
+    let count = 0;
+
+    for (let i = 0; i < cards.length; i++) {
+      if ([Enums.athena, Enums.poseidon, Enums.zeus].includes(i)) {
+        continue;
+      }
+
+      if (cards[i] === 1) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   // 打
@@ -157,7 +174,7 @@ export class RobotManager extends NewRobotManager {
   }
 
   // 是否碰胡
-  isPlayerChoice(playerId) {
+  isPlayerChoice(playerId, simpleCount) {
     const actionList = [Enums.hu, Enums.peng];
     for (const action of actionList) {
       if ([Enums.peng].includes(action)
@@ -165,7 +182,7 @@ export class RobotManager extends NewRobotManager {
         return action;
       }
       if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
-        this.room.gameState.stateData[action].length > 0) {
+        this.room.gameState.stateData[action].length > 0 && simpleCount > 2) {
         if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
           this.room.gameState.stateData[action][0]._id.toString()
           : this.room.gameState.stateData[action]._id.toString())) return action;
