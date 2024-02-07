@@ -406,7 +406,7 @@ export class NewRobotManager {
   }
 
   async addRobotForPublicRoom() {
-    if (this.waitPublicRobot < config.game.waitRubyPlayer) {
+    if (this.waitPublicRobot < config.game.waitRubyPlayer || this.room.gameState) {
       // 时间未到，或者已经有机器人
       return;
     }
