@@ -322,6 +322,17 @@ export default {
     }
     playerManager.removeLoggingInPlayer(message._id);
   },
+
+  //更新用户头像，昵称
+  'account/updateUserInfo': async (p, message) =>  {
+    const model = await service.playerService.getPlayerModel(p._id)
+    model.avatar = msg.avatar;
+    model.nickname = msg.nickname;
+    model.isBindWechat = true;
+    await model.save();
+    p.sendMessage('account/updateUserInfoReply', {ok: true, data: model});
+  },
+
   'account/weChatCode': async (p, message) => {
     const appid = '';
     const appSecret = '';
