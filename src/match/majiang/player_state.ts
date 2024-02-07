@@ -1142,7 +1142,7 @@ class PlayerState implements Serializable {
 
     return {
       index,
-      score: this.juScore / 2,
+      score: this.juScore,
       cards,
       niaoCount: this.niaoCount,
       niaoCards: this.niaoCards,
