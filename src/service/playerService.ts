@@ -57,7 +57,7 @@ export default class PlayerService extends BaseService {
   }
 
   // 获取机器人
-  async getRobot(categoryId) {
+  async getRobot(categoryId, roomId) {
     // 金豆
     const rubyRequired = await service.gameConfig.getPublicRoomCategoryByCategory(categoryId);
     if (!rubyRequired) {
@@ -83,7 +83,7 @@ export default class PlayerService extends BaseService {
 
     // 记录金豆日志
     await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
-      randomPlayer.gold, `机器人开局设置金豆`);
+      randomPlayer.gold, `机器人开局设置金豆:${roomId}`);
 
     await randomPlayer.save();
     return randomPlayer;
