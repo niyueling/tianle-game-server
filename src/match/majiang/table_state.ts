@@ -487,15 +487,15 @@ class TableState implements Serializable {
       return
     }
 
-    // const pengIndex = await this.getPlayerPengCards(player);
-    // if (pengIndex && Math.random() < 0.2) {
-    //   const moIndex = this.cards.findIndex(card => card === pengIndex);
-    //   if (moIndex !== -1) {
-    //     cardIndex = pengIndex;
-    //     card = this.cards[moIndex];
-    //     console.warn(`辅助${player.model.shortId}摸到牌${cardIndex}`);
-    //   }
-    // }
+    const pengIndex = await this.getPlayerPengCards(player);
+    if (pengIndex && Math.random() < 0.2) {
+      const moIndex = this.cards.findIndex(card => card === pengIndex);
+      if (moIndex !== -1) {
+        cardIndex = moIndex;
+        card = this.cards[moIndex];
+        console.warn(`辅助${player.model.shortId}摸到牌${cardIndex}`);
+      }
+    }
 
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
@@ -758,15 +758,15 @@ class TableState implements Serializable {
         cards = [...cards, ...consumeCards];
       }
 
-      const cardCount = 13 - cards.length;
-
-      for (let i = 0; i < cardCount; i++) {
+      for (let i = 0; i < 13 - cards.length; i++) {
         this.remainCards--;
         const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
         console.log(index, this.cards[index]);
-        cards.push(this.cards[index]);
-        this.lastTakeCard = this.cards[index];
-        this.cards.splice(index, 1);
+        if (index !== -1) {
+          cards.push(this.cards[index]);
+          this.lastTakeCard = this.cards[index];
+          this.cards.splice(index, 1);
+        }
       }
 
       return cards;
