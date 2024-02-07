@@ -758,7 +758,7 @@ class TableState implements Serializable {
         cards = [...cards, ...consumeCards];
       }
 
-      for (let i = 0; i < 13 - cards.length; i++) {
+      while (13 - cards.length > 0) {
         this.remainCards--;
         const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
         console.log(index, this.cards[index]);
