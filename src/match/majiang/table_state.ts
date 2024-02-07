@@ -2957,7 +2957,7 @@ class TableState implements Serializable {
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
-      if (player.cards[lastTakeCard] > 0) return lastTakeCard;
+      if (player.cards[lastTakeCard] > 0 && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(lastTakeCard)) return lastTakeCard;
     }
 
     // 如果用户已经胡牌，则直接打摸牌
