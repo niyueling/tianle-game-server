@@ -48,9 +48,6 @@ function getUseLessCard(cards) {
 }
 
 function onCanDoSomething(actions, cards, card) {
-  if (actions.hu) {
-    return Enums.hu;
-  }
   if (actions.gang) {
     return Enums.gang;
   }
@@ -73,6 +70,10 @@ function onCanDoSomething(actions, cards, card) {
         return Enums.peng;
       }
     }
+  }
+
+  if (actions.hu) {
+    return Enums.hu;
   }
 
   console.log("guo")
