@@ -26,6 +26,7 @@ import {eqlModelId} from "./modelId"
 import {RobotManager} from "./robotManager";
 import TableState from "./table_state"
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
+import roomScoreRecord from "../../database/models/roomScoreRecord";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -445,14 +446,32 @@ class Room extends RoomBase {
     }
 
 
-    RoomRecord
-      .update({room: this.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})
+    await RoomRecord.update({room: this.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})
       .catch(e => {
         console.error('recordRoomScore error', e)
       })
 
     return roomRecord
   }
+
+    async RoomScoreRecord(scores = [], players = []): Promise<any> {
+
+        const roomRecord = {
+            players, scores,
+            roomNum: this._id,
+            room: this.uid,
+            category: 'majiang',
+            creatorId: this.creator.model.shortId,
+            createAt: Date.now(),
+            rule: this.rule.getOriginData(),
+            roomState: "dissolve"
+        }
+
+
+        await roomScoreRecord.create(roomRecord);
+
+        return roomRecord
+    }
 
   async recordDrawGameScore(scores = []) {
     // logger.info('gameState:', this.gameState);
