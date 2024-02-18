@@ -431,7 +431,6 @@ class Room extends RoomBase {
   }
 
   async recordRoomScore(roomState = 'normal', scores = [], players = []): Promise<any> {
-    const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
 
     const roomRecord = {
       players, scores,
@@ -440,7 +439,7 @@ class Room extends RoomBase {
       club: null,
       creatorId: this.creator.model.shortId || 0,
       createAt: Date.now(),
-      roomState: stateInfo,
+      roomState: roomState,
       juIndex: this.game.juIndex,
       rule: this.rule.getOriginData()
     }
@@ -449,7 +448,7 @@ class Room extends RoomBase {
     RoomRecord
       .update({room: this.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})
       .catch(e => {
-        logger.error('recordRoomScore error', e)
+        console.error('recordRoomScore error', e)
       })
 
     return roomRecord
