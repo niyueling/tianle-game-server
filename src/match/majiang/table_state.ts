@@ -797,8 +797,6 @@ class TableState implements Serializable {
         await model.save();
       }
 
-
-
       const constellationCards = [];
       for (let i = 0; i < cards13.length; i++) {
         if (cards13[i] > Enums.athena && !constellationCards.includes(cards13[i])) {

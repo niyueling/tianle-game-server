@@ -324,11 +324,13 @@ export class NewRobotManager {
   }
 
   async save() {
-    // 告知 mongoose 保存
-    this.model.markModified('depositPlayer');
-    this.model.markModified('offlineTimes');
-    this.model.markModified('publicRoomRobot');
-    await this.model.save();
+    if (this.model) {
+      // 告知 mongoose 保存
+      this.model.markModified('depositPlayer');
+      this.model.markModified('offlineTimes');
+      this.model.markModified('publicRoomRobot');
+      await this.model.save();
+    }
   }
 
   async isHumanPlayerReady() {
