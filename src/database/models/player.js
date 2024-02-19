@@ -22,6 +22,7 @@ const schema = new Schema({
   helpCount: {type: Number, required: true, default: 0},
   dominateCount: {type: Number, required: true, default: 5},// 充值后给予1-5次好牌补助
   juWinCount: {type: Number, required: true, default: 0},
+  gangCount: {type: Number, default: 0}, // 杠牌次数
   ip: {type: String},
   province: {type: String},
   city: {type: String},

@@ -1132,6 +1132,9 @@ class TableState implements Serializable {
               const from = this.atIndex(this.lastDa)
               const me = this.atIndex(player)
               player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
+
+              await Player.update({_id: player._id}, {$inc: {gangCount: 1}});
+
               for (let i = 1; i < 4; i++) {
                 const playerIndex = (from + i) % this.players.length
                 if (playerIndex === me) {
@@ -1220,6 +1223,9 @@ class TableState implements Serializable {
           ok: true,
           data: {card, from, gangIndex, type: isAnGang ? "anGang" : "buGang"}
         });
+
+        await Player.update({_id: player._id}, {$inc: {gangCount: 1}});
+
         this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher);
 
         if (!this.isFaPai) {
