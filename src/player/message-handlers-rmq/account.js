@@ -27,6 +27,8 @@ import {service} from "../../service/importService";
 import {getNewShortPlayerId} from "../../database/init";
 import {GameType, TianleErrorCode} from "@fm/common/constants";
 import WatchAdverRecord from "../../database/models/watchAdverRecord";
+import PlayerBenefitRecord from "../../database/models/PlayerBenefitRecord";
+import {pick} from "lodash";
 
 const QcloudSms = require("qcloudsms_js");
 
@@ -342,14 +344,30 @@ export default {
         if (!user) {
             return this.replyFail(TianleErrorCode.userNotFound);
         }
+
         if (user.helpCount > 0) {
             user.helpCount--;
             user.gold += 100000;
             await user.save();
+
+            const start = moment(new Date()).startOf('day').toDate();
+            const end = moment(new Date()).endOf('day').toDate();
+            const helpCount = await PlayerBenefitRecord.count({playerId: this.player.model._id, createAt: {$gte: start, $lt: end}});
+
+            const data = {
+                playerId: this.player._id.toString(),
+                shortId: this.player.model.shortId,
+                helpCount: helpCount + 1,
+                gold: 100000,
+                createAt: new Date()
+            }
+
+            await PlayerBenefitRecord.create(data);
+
             this.player.sendMessage('resource/update', {ok: true, data: pick(user, ['gold', 'diamond', 'voucher'])})
             return p.sendMessage('account/benefitReply', {
                 ok: true,
-                data: {gold: 100000, helpCount: user.helpCount, totalCount: config.game.helpCount}
+                data: {gold: 100000, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount + 1}
             });
         }
 

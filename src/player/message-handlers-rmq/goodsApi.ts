@@ -73,7 +73,7 @@ export class GoodsApi extends BaseApi {
       this.player.model.gold, `钻石兑换金豆`);
 
     this.replySuccess({diamond: gem2ExchangeNum, gold, goldFormat: temp});
-    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond}})
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond, voucher: this.player.model.voucher}})
   }
 
   // 安卓虚拟支付
@@ -223,7 +223,7 @@ export class GoodsApi extends BaseApi {
       config: goodInfo
     });
 
-    this.player.sendMessage('resource/update', {ok: true, data: {gold: user.gold, diamond: user.diamond}})
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: user.gold, diamond: user.diamond, voucher: user.voucher}})
 
     return this.replySuccess(record);
   }
@@ -380,7 +380,7 @@ export class GoodsApi extends BaseApi {
       this.player.model.gold, `购买复活礼包`);
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
-    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond}})
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond, voucher: this.player.model.voucher}})
   }
 
   // 下一局金豆礼包
