@@ -197,15 +197,15 @@ export class BackendProcess {
         this.gameName
       )
       const category = await GameCategory.findOne({_id: room.rule.ro.categoryId}).lean();
-      let medalId = -1;
+      let cardTableId = -1;
 
       // 获取用户称号
       const playerMedal = await PlayerMedal.findOne({playerId: playerModel._id, isUse: true});
       if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
-        medalId = playerMedal.propId;
+        cardTableId = playerMedal.propId;
       }
 
-      await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, category, medalId}})
+      await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}})
       // if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
       //   await roomProxy.joinAsCreator(playerRmqProxy)
       // } else {
