@@ -27,6 +27,8 @@ import {RobotManager} from "./robotManager";
 import TableState from "./table_state"
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import roomScoreRecord from "../../database/models/roomScoreRecord";
+import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
+import PlayerMedal from "../../database/models/PlayerMedal";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -543,6 +545,18 @@ class Room extends RoomBase {
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
+    // 获取用户称号
+    const playerMedal = await PlayerMedal.findOne({playerId: newJoinPlayer._id, isUse: true});
+    if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
+      newJoinPlayer.model.medalId = playerMedal.propId;
+    }
+
+    // 获取用户头像框
+    const playerHeadBorder = await PlayerHeadBorder.findOne({playerId: newJoinPlayer._id, isUse: true});
+    if (playerHeadBorder && (playerHeadBorder.times === -1 || playerHeadBorder.times > new Date().getTime())) {
+      newJoinPlayer.model.headerBorderId = playerHeadBorder.propId;
+    }
+
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
