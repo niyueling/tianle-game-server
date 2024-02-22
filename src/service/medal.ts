@@ -1,5 +1,5 @@
 import {GameType, MedalType} from '@fm/common/constants';
-import PlayerMedal from "../database/models/playerMedal";
+import PlayerMedal from "../database/models/PlayerMedal";
 import PlayerMedalRecord from "../database/models/playerMedalRecord";
 import BaseService from "./base";
 
