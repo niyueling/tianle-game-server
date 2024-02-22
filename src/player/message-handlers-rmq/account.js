@@ -338,6 +338,27 @@ export default {
         p.sendMessage('account/updateUserInfoReply', {ok: true, data: model});
     },
 
+    // 救济金数据
+    'account/benefitData': async (p, message) => {
+        const user = await PlayerModel.findOne({shortId: this.player.model.shortId});
+        if (!user) {
+            return this.replyFail(TianleErrorCode.userNotFound);
+        }
+
+        if (user.helpCount > 0) {
+            const start = moment(new Date()).startOf('day').toDate();
+            const end = moment(new Date()).endOf('day').toDate();
+            const helpCount = await PlayerBenefitRecord.count({
+                playerId: this.player.model._id,
+                createAt: {$gte: start, $lt: end}
+            });
+
+            return this.replySuccess({gold: 100000, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount});
+        }
+
+        return this.replyFail(TianleErrorCode.receiveFail);
+    },
+
     // 发放救济金
     'account/benefit': async (p, message) => {
         const user = await PlayerModel.findOne({shortId: this.player.model.shortId});
@@ -352,7 +373,10 @@ export default {
 
             const start = moment(new Date()).startOf('day').toDate();
             const end = moment(new Date()).endOf('day').toDate();
-            const helpCount = await PlayerBenefitRecord.count({playerId: this.player.model._id, createAt: {$gte: start, $lt: end}});
+            const helpCount = await PlayerBenefitRecord.count({
+                playerId: this.player.model._id,
+                createAt: {$gte: start, $lt: end}
+            });
 
             const data = {
                 playerId: this.player._id.toString(),
