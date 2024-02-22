@@ -29,6 +29,7 @@ import {GameType, TianleErrorCode} from "@fm/common/constants";
 import WatchAdverRecord from "../../database/models/watchAdverRecord";
 import PlayerBenefitRecord from "../../database/models/PlayerBenefitRecord";
 import {pick} from "lodash";
+import moment from "moment";
 
 const QcloudSms = require("qcloudsms_js");
 
