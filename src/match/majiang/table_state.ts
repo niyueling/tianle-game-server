@@ -1484,7 +1484,7 @@ class TableState implements Serializable {
                       }
                     }
 
-                    setTimeout(nextDo, 2000);
+                    setTimeout(nextDo, 200);
                   } else {
                     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                     const nextZhuang = this.nextZhuang()
@@ -1605,7 +1605,7 @@ class TableState implements Serializable {
                   }
                 }
 
-                setTimeout(nextDo, 2000);
+                setTimeout(nextDo, 200);
               } else {
                 // console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
