@@ -1496,7 +1496,7 @@ class TableState implements Serializable {
                   playerIs: player._id,
                   cards: player.cards,
                   calcCard: card,
-                  room: this.room.uid,
+                  room: this.room._id,
                   game: "majiang",
                   type: 2,
                 })
@@ -1617,7 +1617,7 @@ class TableState implements Serializable {
               playerIs: player._id,
               cards: player.cards,
               calcCard: card,
-              room: this.room.uid,
+              room: this.room._id,
               game: "majiang",
               type: 1,
             })
