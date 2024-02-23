@@ -545,22 +545,23 @@ class Room extends RoomBase {
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
+    const newModel = JSON.parse(JSON.stringify(newJoinPlayer.model));
     // 获取用户称号
     const playerMedal = await PlayerMedal.findOne({playerId: newJoinPlayer._id, isUse: true});
     if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
-      newJoinPlayer.model.medalId = playerMedal.propId;
+      newModel.medalId = playerMedal.propId;
     }
 
     // 获取用户头像框
     const playerHeadBorder = await PlayerHeadBorder.findOne({playerId: newJoinPlayer._id, isUse: true});
     if (playerHeadBorder && (playerHeadBorder.times === -1 || playerHeadBorder.times > new Date().getTime())) {
-      newJoinPlayer.model.headerBorderId = playerHeadBorder.propId;
+      newModel.headerBorderId = playerHeadBorder.propId;
     }
 
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
-      model: newJoinPlayer.model,
+      model: newModel,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
       owner: this.ownerId,
