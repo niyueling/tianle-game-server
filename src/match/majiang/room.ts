@@ -954,7 +954,7 @@ class Room extends RoomBase {
   }
 
   isRoomAllOver(): boolean {
-    return this.game.juShu === -1;
+    return this.game.juShu < -1;
   }
 
   someoneOverLostLimit() {
