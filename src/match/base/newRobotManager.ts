@@ -298,9 +298,9 @@ export class NewRobotManager {
       await service.roomRegister.decrPublicRoomCount(this.room.gameRule.gameType, this.room.gameRule.categoryId);
     }
     // 删除 mongo
-    if (this.model) {
-      await this.model.remove();
-    }
+    // if (this.model) {
+    //   await this.model.remove();
+    // }
   }
 
   // 玩家是否到齐
