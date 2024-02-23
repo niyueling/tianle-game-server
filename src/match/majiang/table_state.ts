@@ -2078,7 +2078,7 @@ class TableState implements Serializable {
           failList.push(from.model._id.toString());
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
-          const balance = -conf.maxMultiple * this.cardTypes.multiple;
+          const balance = -conf.minAmount * this.cardTypes.multiple < -conf.maxMultiple ? -conf.maxMultiple : -conf.minAmount * this.cardTypes.multiple;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           // console.warn(`dianpao index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(from), from.model.shortId, from.juScore, from.balance, from.juScore += from.balance)
@@ -2092,7 +2092,7 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = -conf.maxMultiple * this.cardTypes.multiple;
+              const balance = -conf.minAmount * this.cardTypes.multiple < -conf.maxMultiple ? -conf.maxMultiple : -conf.minAmount * this.cardTypes.multiple;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               // console.warn(`zimo index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(p), p.model.shortId, p.juScore, p.balance, p.juScore += p.balance)
