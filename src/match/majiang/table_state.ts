@@ -20,6 +20,7 @@ import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import CombatGain from "../../database/models/combatGain";
 import GameCategory from "../../database/models/gameCategory";
+import GameCardRecord from "../../database/models/gameCardRecord";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1491,6 +1492,14 @@ class TableState implements Serializable {
                   }
                 }
               } else {
+                await GameCardRecord.create({
+                  playerIs: player._id,
+                  cards: player.cards,
+                  calcCard: card,
+                  room: this.room.uid,
+                  game: "majiang",
+                  type: 2,
+                })
                 player.sendMessage('game/huReply', {
                   ok: false,
                   info: TianleErrorCode.huInvaid,
@@ -1604,7 +1613,14 @@ class TableState implements Serializable {
               }
             }
           } else {
-            // console.warn("ok:", ok);
+            await GameCardRecord.create({
+              playerIs: player._id,
+              cards: player.cards,
+              calcCard: card,
+              room: this.room.uid,
+              game: "majiang",
+              type: 1,
+            })
             player.sendMessage('game/huReply', {
               ok: false,
               info: TianleErrorCode.huInvaid,
