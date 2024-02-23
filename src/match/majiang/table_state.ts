@@ -1365,6 +1365,7 @@ class TableState implements Serializable {
         const cardTypes = await this.getCardTypes();
         const random = Math.floor(Math.random() * cardTypes.length);
         this.cardTypes = cardTypes[random];
+        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         if (isJiePao) {
           this.actionResolver.requestAction(player, 'hu', async () => {
@@ -1380,7 +1381,7 @@ class TableState implements Serializable {
                     card,
                     from,
                     type: "jiepao",
-                    huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                    huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}
                   }
                 });
 
@@ -1527,7 +1528,7 @@ class TableState implements Serializable {
                 card,
                 from: this.atIndex(player),
                 type: "zimo",
-                huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}
               }
             });
 
@@ -2081,7 +2082,7 @@ class TableState implements Serializable {
           const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
-          console.warn(`dianpao index %s shortId %s  balance %s`, this.atIndex(from), from.model.shortId, from.balance)
+          console.warn(`dianpao index %s shortId %s  balance %s juBalance %s`, this.atIndex(from), from.model.shortId, from.balance, balance)
           from.juScore += from.balance;
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
           await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
@@ -2095,7 +2096,7 @@ class TableState implements Serializable {
               const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
-              console.warn(`zimo index %s shortId %s balance %s`, this.atIndex(p), p.model.shortId, p.balance)
+              console.warn(`zimo index %s shortId %s balance %s juBalance %s`, this.atIndex(p), p.model.shortId, p.balance, balance)
               p.juScore += p.balance;
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
               await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
