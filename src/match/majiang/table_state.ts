@@ -2571,6 +2571,7 @@ class TableState implements Serializable {
     if (gameOverMsg.states.length > 0) {
       this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       await this.room.gameOver(nextZhuang._id.toString(), states)
+      // await this.room.forceDissolve();
       this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
     }
   }

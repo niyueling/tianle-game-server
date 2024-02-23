@@ -954,7 +954,7 @@ class Room extends RoomBase {
   }
 
   isRoomAllOver(): boolean {
-    return this.game.juShu < -1;
+    return this.game.juShu === -1;
   }
 
   someoneOverLostLimit() {
@@ -964,25 +964,10 @@ class Room extends RoomBase {
   async gameOver(nextZhuangId, states) {
     // 清除洗牌
     this.shuffleData = []
-    const nextZhuang = this.players.find(x => x != null && x._id === nextZhuangId)
-    if (nextZhuang === this.players[0]) {
-
-      const zhuangState = states.filter(state => state.model._id === nextZhuangId)[0]
-
-      if (zhuangState.events.hu && zhuangState.events.hu.length > 0) {
-        this.zhuangCounter += 1
-        this.currentBase += 1
-      }
-    } else {
-      this.currentBase = this.initBase
-      this.zhuangCounter = 1
-      this.changeZhuang()
-    }
-    this.sortPlayer(nextZhuang)
     this.clearReady()
     await this.delPlayerBless();
     // 下一局
-    await this.robotManager.nextRound();
+    // await this.robotManager.nextRound();
 
     this.gameState.dissolve()
     this.gameState = null
