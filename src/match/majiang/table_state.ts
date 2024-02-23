@@ -2163,7 +2163,12 @@ class TableState implements Serializable {
         playersModifyGolds.push(params);
       }
 
-      this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+      const nextDo = async () => {
+        this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+      }
+
+      setTimeout(nextDo, 500);
+
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
