@@ -1381,7 +1381,7 @@ class TableState implements Serializable {
                     card,
                     from,
                     type: "jiepao",
-                    huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}
+                    huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante}
                   }
                 });
 
@@ -1528,7 +1528,7 @@ class TableState implements Serializable {
                 card,
                 from: this.atIndex(player),
                 type: "zimo",
-                huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}
+                huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante}
               }
             });
 
