@@ -54,11 +54,9 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    if (!this.room.gameState || !this.isPlayed) {
+    if (!this.room.gameState && !this.isPlayed) {
       return;
     }
-
-    this.isPlayed = false;
 
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
@@ -103,8 +101,6 @@ export class RobotManager extends NewRobotManager {
         console.warn("await player invive game-state %s current-index %s isBroke %s gold %s", this.room.gameState.state, this.room.gameState.atIndex(proxy), proxy.isBroke, model.gold)
       }
     }
-
-    this.isPlayed = true;
   }
 
   checkPlayerSimpleCrdCount(player) {

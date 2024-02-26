@@ -549,8 +549,10 @@ export class NewRobotManager {
       await this.robotPlayerReady();
     }
     if (this.model.step === RobotStep.running && this.isPlayed) {
+      this.isPlayed = false;
       // 游戏未结束
       await this.playCard();
+      this.isPlayed = true;
     }
   }
 
