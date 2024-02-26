@@ -2599,7 +2599,7 @@ class TableState implements Serializable {
       const nextDo = async () => {
         this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       }
-      setTimeout(nextDo, 1000)
+      setTimeout(nextDo, 2000)
     }
   }
 
