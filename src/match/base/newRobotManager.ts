@@ -552,7 +552,12 @@ export class NewRobotManager {
       this.isPlayed = false;
       // 游戏未结束
       await this.playCard();
-      this.isPlayed = true;
+
+      //延迟1秒恢复打牌
+      const nextDo = async () => {
+        this.isPlayed = true;
+      }
+      setTimeout(nextDo, 1000)
     }
   }
 
