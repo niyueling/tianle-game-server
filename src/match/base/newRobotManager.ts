@@ -453,7 +453,7 @@ export class NewRobotManager {
       const oldPlayerState = this.room.gameState.players[posIndex];
       await oldPlayerState.reconnect(robotProxy);
     }
-    console.warn(this.disconnectPlayers[playerId])
+
     this.disconnectPlayers[playerId] = robotProxy;
   }
 
