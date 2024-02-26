@@ -1848,9 +1848,9 @@ class TableState implements Serializable {
       }
 
       if (xiajia) {
-        console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)} cradLength: ${xiajia.cards.length}`);
+        console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)} cradLength: ${this.checkPlayerCount(xiajia)}`);
 
-        if ([1, 4, 7, 10, 13].includes(xiajia.cards.length)) {
+        if ([1, 4, 7, 10, 13].includes(this.checkPlayerCount(xiajia.cards.length))) {
           const newCard = await this.consumeCard(xiajia);
           if (newCard) {
             const msg = xiajia.takeCard(this.turn, newCard);
@@ -1937,6 +1937,19 @@ class TableState implements Serializable {
     }
 
     setTimeout(nextDo, 1000);
+  }
+
+  checkPlayerCount(player) {
+    const cards = player.cards.slice();
+    let count = 0;
+
+    for (let i = 0; i < cards.length; i++) {
+      if (cards[i] > 0) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   multiTimesSettleWithSpecial(states, specialId, times) {

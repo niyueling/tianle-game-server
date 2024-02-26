@@ -12,12 +12,25 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   // 出牌
   async playCard() {
     const lock = await service.utils.grantLockOnce(RedisKey.inviteWithdraw + this.playerState._id, 3);
-    if (this.playerState && lock && [2, 5, 8, 11, 14].includes(this.playerState.cards.length)) {
+    if (this.playerState && lock && [2, 5, 8, 11, 14].includes(this.checkPlayerCount(this.playerState))) {
       // 从牌堆中取出合适的牌
       const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
       console.log(`moCard: ${index}, cards: ${JSON.stringify(this.playerState.cards)}`)
       await this.room.gameState.onPlayerDa(this.playerState, this.room.gameState.turn, index);
     }
+  }
+
+  checkPlayerCount(player) {
+    const cards = player.cards.slice();
+    let count = 0;
+
+    for (let i = 0; i < cards.length; i++) {
+      if (cards[i] > 0) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   async guo() {
