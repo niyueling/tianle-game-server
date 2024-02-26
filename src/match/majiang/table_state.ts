@@ -1848,7 +1848,7 @@ class TableState implements Serializable {
       }
 
       if (xiajia) {
-        console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+        console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)} cradLength: ${xiajia.cards.length}`);
 
         if ([1, 4, 7, 10, 13].includes(xiajia.cards.length)) {
           const newCard = await this.consumeCard(xiajia);
