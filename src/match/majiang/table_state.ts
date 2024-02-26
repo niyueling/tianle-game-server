@@ -1847,8 +1847,8 @@ class TableState implements Serializable {
         }
       }
 
-      if (xiajia && !this.isFaPai) {
-        // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+      if (xiajia && !this.isFaPai && [1, 4, 7, 10, 13].includes(xiajia.cards.length)) {
+        console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
         this.isFaPai = true;
 
         const env = {card, from, turn: this.turn}
