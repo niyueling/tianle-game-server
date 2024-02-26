@@ -15,6 +15,7 @@ import { TianleErrorCode } from "@fm/common/constants";
 import GameCategory from "./database/models/gameCategory";
 import PlayerMedal from "./database/models/PlayerMedal";
 import playerMedal from "./database/models/PlayerMedal";
+import PlayerCardTable from "./database/models/PlayerCardTable";
 
 const alwaysOk = () => true
 
@@ -200,9 +201,9 @@ export class BackendProcess {
       let cardTableId = -1;
 
       // 获取用户称号
-      const playerMedal = await PlayerMedal.findOne({playerId: playerModel._id, isUse: true});
-      if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
-        cardTableId = playerMedal.propId;
+      const playerCardTable = await PlayerCardTable.findOne({playerId: playerModel._id, isUse: true});
+      if (playerCardTable && (playerCardTable.times === -1 || playerCardTable.times > new Date().getTime())) {
+        cardTableId = playerCardTable.propId;
       }
 
       await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}})
