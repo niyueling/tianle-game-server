@@ -1929,7 +1929,7 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     }
 
-    setTimeout(nextDo, 0);
+    setTimeout(nextDo, 1000);
   }
 
   multiTimesSettleWithSpecial(states, specialId, times) {
