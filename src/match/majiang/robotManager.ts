@@ -68,7 +68,7 @@ export class RobotManager extends NewRobotManager {
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const ziMoHu = proxy.playerState.checkZiMo();
-      const jiePaoHu = proxy.playerState.checkHuState(this.room.stateData.card);
+      const jiePaoHu = proxy.playerState.checkHuState(this.room.gameState.stateData.card);
       const simpleCount = this.checkPlayerSimpleCrdCount(proxy.playerState);
 
       if (this.room.gameState.state !== 10) {
