@@ -88,7 +88,7 @@ export class NewRobotManager {
       }
       await this.onMonit();
       this.isWatching = false;
-    }, 2000);
+    }, 3000);
   }
 
   async onMonit() {
@@ -164,7 +164,7 @@ export class NewRobotManager {
   // 默认出牌间隔 5s
   getWaitSecond() {
     if (this.room.gameRule.isPublic) {
-      return Math.floor(Math.random() * 2 + 1);
+      return Math.floor(Math.random() * 3 + 2);
     }
     return config.game.waitDelayTime;
   }
@@ -554,11 +554,7 @@ export class NewRobotManager {
       // 游戏未结束
       await this.playCard();
 
-      //延迟1秒恢复打牌
-      const nextDo = async () => {
-        this.isPlayed = true;
-      }
-      setTimeout(nextDo, 1000)
+      this.isPlayed = true;
     }
   }
 
