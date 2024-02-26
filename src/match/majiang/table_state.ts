@@ -1847,26 +1847,34 @@ class TableState implements Serializable {
         }
       }
 
-      if (xiajia) {
-        const newCard = await this.consumeCard(xiajia);
-        if (newCard) {
-          const msg = xiajia.takeCard(this.turn, newCard);
+      if (xiajia && !this.isFaPai) {
+        // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+        this.isFaPai = true;
 
-          if (!msg) {
-            console.error("consume card error msg ", msg);
-            this.room.broadcast('game/game-error', {
-              ok: false,
-              data: {name: "game/takeCard", msg: "consume card error msg"}
-            }, xiajia.msgDispatcher);
-            return;
+        const env = {card, from, turn: this.turn}
+        this.actionResolver = new ActionResolver(env, async () => {
+          const newCard = await this.consumeCard(xiajia);
+          if (newCard) {
+            const msg = xiajia.takeCard(this.turn, newCard);
+
+            if (!msg) {
+              console.error("consume card error msg ", msg);
+              this.room.broadcast('game/game-error', {
+                ok: false,
+                data: {name: "game/takeCard", msg: "consume card error msg"}
+              }, xiajia.msgDispatcher);
+              return;
+            }
+
+            this.state = stateWaitDa;
+            this.stateData = {da: xiajia, card: newCard, msg};
+            const sendMsg = {index: this.players.indexOf(xiajia)};
+            this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
+            logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
           }
+        });
 
-          this.state = stateWaitDa;
-          this.stateData = {da: xiajia, card: newCard, msg};
-          const sendMsg = {index: this.players.indexOf(xiajia)}
-          this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
-          logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
-        }
+        this.isFaPai = false;
       } else {
         this.room.broadcast('game/game-error', {
           ok: false,
@@ -1880,6 +1888,7 @@ class TableState implements Serializable {
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
         await this.gameAllOver(states, [], nextZhuang);
+        // return console.warn('No unbroke player found as the next player');
       }
 
       for (let j = 1; j < this.players.length; j++) {
@@ -1929,7 +1938,7 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     }
 
-    setTimeout(nextDo, 1000);
+    setTimeout(nextDo, 0);
   }
 
   multiTimesSettleWithSpecial(states, specialId, times) {
