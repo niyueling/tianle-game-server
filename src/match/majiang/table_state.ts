@@ -1847,27 +1847,29 @@ class TableState implements Serializable {
         }
       }
 
-      if (xiajia && [1, 4, 7, 10, 13].includes(xiajia.cards.length)) {
+      if (xiajia) {
         console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
-        const newCard = await this.consumeCard(xiajia);
-        if (newCard) {
-          const msg = xiajia.takeCard(this.turn, newCard);
+        if ([1, 4, 7, 10, 13].includes(xiajia.cards.length)) {
+          const newCard = await this.consumeCard(xiajia);
+          if (newCard) {
+            const msg = xiajia.takeCard(this.turn, newCard);
 
-          if (!msg) {
-            console.error("consume card error msg ", msg);
-            this.room.broadcast('game/game-error', {
-              ok: false,
-              data: {name: "game/takeCard", msg: "consume card error msg"}
-            }, xiajia.msgDispatcher);
-            return;
+            if (!msg) {
+              console.error("consume card error msg ", msg);
+              this.room.broadcast('game/game-error', {
+                ok: false,
+                data: {name: "game/takeCard", msg: "consume card error msg"}
+              }, xiajia.msgDispatcher);
+              return;
+            }
+
+            this.state = stateWaitDa;
+            this.stateData = {da: xiajia, card: newCard, msg};
+            const sendMsg = {index: this.players.indexOf(xiajia)};
+            this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
+            logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
           }
-
-          this.state = stateWaitDa;
-          this.stateData = {da: xiajia, card: newCard, msg};
-          const sendMsg = {index: this.players.indexOf(xiajia)};
-          this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
-          logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
         }
       } else {
         this.room.broadcast('game/game-error', {
