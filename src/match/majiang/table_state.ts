@@ -1506,6 +1506,10 @@ class TableState implements Serializable {
                   info: TianleErrorCode.huInvaid,
                   data: {type: "jiePao"}
                 });
+
+                const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+                const nextZhuang = this.nextZhuang()
+                await this.gameAllOver(states, [], nextZhuang);
               }
             },
             () => {
@@ -1627,6 +1631,10 @@ class TableState implements Serializable {
               info: TianleErrorCode.huInvaid,
               data: {type: "ziMo"}
             });
+
+            const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+            const nextZhuang = this.nextZhuang()
+            await this.gameAllOver(states, [], nextZhuang);
           }
         } else if (this.state === stateQiangGang) {
           if (this.stateData.who === player && turn === this.stateData.turn) {
