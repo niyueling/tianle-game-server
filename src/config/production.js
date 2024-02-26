@@ -3,7 +3,7 @@ module.exports = {
     url: "mongodb://localhost:27017/mahjong"
   },
   websocket: {
-    "port": 9527
+    "port": 9597
   },
   logger: {
     "filename": "mahjong.log"
@@ -12,8 +12,9 @@ module.exports = {
     url: "amqp://user:password@localhost:5672"
   },
   redis: {
-    port: 6379,
+    port: 8389,
     host: "localhost",
+    "password": "8fkaetmR@@@@"
   },
   debug: {
     "message": false
