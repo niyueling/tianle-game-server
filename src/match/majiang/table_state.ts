@@ -1879,6 +1879,9 @@ class TableState implements Serializable {
               this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
               logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
             }
+          } else {
+            this.state = stateWaitDa;
+            this.stateData = {da: xiajia, card: this.lastTakeCard, msg: {}};
           }
         } else {
           this.room.broadcast('game/game-error', {
