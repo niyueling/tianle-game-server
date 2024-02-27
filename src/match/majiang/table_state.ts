@@ -1859,7 +1859,7 @@ class TableState implements Serializable {
       this.actionResolver = new ActionResolver(env, async () => {
         if (xiajia) {
           console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)} cardLength: ${this.checkPlayerCount(xiajia)}`);
-          if ([1, 4, 7, 10, 13].includes(this.checkPlayerCount(xiajia))) {
+          // if ([1, 4, 7, 10, 13].includes(this.checkPlayerCount(xiajia))) {
             const newCard = await this.consumeCard(xiajia);
             if (newCard) {
               const msg = xiajia.takeCard(this.turn, newCard);
@@ -1879,7 +1879,7 @@ class TableState implements Serializable {
               this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
               logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
             }
-          }
+          // }
         } else {
           this.room.broadcast('game/game-error', {
             ok: false,
