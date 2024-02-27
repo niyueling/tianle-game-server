@@ -1360,8 +1360,6 @@ class TableState implements Serializable {
 
         const isZiMo = this.state === stateWaitDa && recordCard === card;
 
-        // console.warn(`state %s recordCard %s card %s isZiMo %s this.stateData[Enums.hu].contains(player) %s`, this.state, recordCard, card, isZiMo, this.stateData[Enums.hu] && this.stateData[Enums.hu].contains(player) )
-
         const cardTypes = await this.getCardTypes();
         const random = Math.floor(Math.random() * cardTypes.length);
         this.cardTypes = cardTypes[random];
@@ -1859,7 +1857,7 @@ class TableState implements Serializable {
       this.actionResolver = new ActionResolver(env, async () => {
         if (xiajia) {
           console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)} cardLength: ${this.checkPlayerCount(xiajia)}`);
-          if ([1, 4, 7, 10, 13].includes(this.checkPlayerCount(xiajia))) {
+          // if ([1, 4, 7, 10, 13].includes(this.checkPlayerCount(xiajia))) {
             const newCard = await this.consumeCard(xiajia);
             if (newCard) {
               const msg = xiajia.takeCard(this.turn, newCard);
@@ -1879,10 +1877,7 @@ class TableState implements Serializable {
               this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
               logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
             }
-          } else {
-            this.state = stateWaitDa;
-            this.stateData = {da: xiajia, card: this.lastTakeCard, msg: {}};
-          }
+          // }
         } else {
           this.room.broadcast('game/game-error', {
             ok: false,
