@@ -1951,7 +1951,7 @@ class TableState implements Serializable {
 
     for (let i = 0; i < cards.length; i++) {
       if (cards[i] > 0) {
-        count++;
+        count += cards[i];
       }
     }
 

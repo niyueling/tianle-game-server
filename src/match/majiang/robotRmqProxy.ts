@@ -12,7 +12,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   // 出牌
   async playCard() {
     const lock = await service.utils.grantLockOnce(RedisKey.inviteWithdraw + this.playerState._id, 1);
-    console.warn(`playerId: ${this.playerState.shortId}, name: ${this.playerState.nickname}, length: ${this.checkPlayerCount(this.playerState)}`)
+    console.warn(`playerId: ${this.playerState.model.shortId}, name: ${this.playerState.model.nickname}, length: ${this.checkPlayerCount(this.playerState)}`)
     if (this.playerState && lock && [2, 5, 8, 11, 14].includes(this.checkPlayerCount(this.playerState))) {
       // 从牌堆中取出合适的牌
       const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
@@ -27,7 +27,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
 
     for (let i = 0; i < cards.length; i++) {
       if (cards[i] > 0) {
-        count++;
+        count += cards[i];
       }
     }
 
