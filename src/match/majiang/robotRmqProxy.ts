@@ -11,13 +11,16 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
 
   // 出牌
   async playCard() {
-    const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + this.playerState._id, 1);
-    console.warn(`playerId: ${this.playerState.model.shortId}, name: ${this.playerState.model.nickname}, length: ${this.checkPlayerCount(this.playerState)}, redisKey: ${RedisKey.daPaiLock + this.playerState._id}, lock: ${lock ? JSON.stringify(lock) : null}`)
-    if (this.playerState && lock && [2, 5, 8, 11, 14].includes(this.checkPlayerCount(this.playerState))) {
-      // 从牌堆中取出合适的牌
-      const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
-      console.log(`moCard: ${index}, cards: ${JSON.stringify(this.playerState.cards)}`)
-      await this.room.gameState.onPlayerDa(this.playerState, this.room.gameState.turn, index);
+    // const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + this.playerState._id, 1);
+    // console.warn(`playerId: ${this.playerState.model.shortId}, name: ${this.playerState.model.nickname}, length: ${this.checkPlayerCount(this.playerState)}, redisKey: ${RedisKey.daPaiLock + this.playerState._id}, lock: ${lock}`)
+    // if (this.playerState && lock && [2, 5, 8, 11, 14].includes(this.checkPlayerCount(this.playerState))) {
+    //   // 从牌堆中取出合适的牌
+    //   const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
+    //   console.log(`moCard: ${index}, cards: ${JSON.stringify(this.playerState.cards)}`)
+    //   await this.room.gameState.onPlayerDa(this.playerState, this.room.gameState.turn, index);
+    // }
+    if (!this.playerState.onDeposit) {
+      this.playerState.onDeposit = true;
     }
   }
 
