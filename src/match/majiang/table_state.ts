@@ -1861,6 +1861,7 @@ class TableState implements Serializable {
             const newCard = await this.consumeCard(xiajia);
             if (newCard) {
               const msg = xiajia.takeCard(this.turn, newCard);
+              console.error("consume card msg ", JSON.stringify(msg));
 
               if (!msg) {
                 console.error("consume card error msg ", msg);
