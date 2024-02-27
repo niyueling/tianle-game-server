@@ -178,7 +178,7 @@ export class RobotManager extends NewRobotManager {
         && this.room.gameState.stateData[action] && playerId === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }
-      console.warn(jiePaoHu);
+
       if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
         this.room.gameState.stateData[action].length > 0 && jiePaoHu.hu) {
         if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
