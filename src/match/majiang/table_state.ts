@@ -1362,7 +1362,9 @@ class TableState implements Serializable {
 
         const cardTypes = await this.getCardTypes();
         const random = Math.floor(Math.random() * cardTypes.length);
-        this.cardTypes = cardTypes[random];
+        if (!this.cardTypes) {
+          this.cardTypes = cardTypes[random];
+        }
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         if (isJiePao) {
@@ -1920,6 +1922,13 @@ class TableState implements Serializable {
         }
       }
 
+      const cardTypes = await this.getCardTypes();
+      const random = Math.floor(Math.random() * cardTypes.length);
+      if ((Math.random() < 0.2 && this.cardTypes) || !this.cardTypes) {
+        this.cardTypes = cardTypes[random];
+      }
+      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+
       for (let i = 1; i < this.players.length; i++) {
         const j = (from + i) % this.players.length;
         const p = this.players[j];
@@ -1927,6 +1936,7 @@ class TableState implements Serializable {
         const msg = this.actionResolver.allOptions(p)
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
+          msg["huType"] = {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante}
           p.record('choice', card, msg)
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
