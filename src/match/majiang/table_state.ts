@@ -899,11 +899,6 @@ class TableState implements Serializable {
     })
 
     player.on('waitForDa', msg => {
-
-      if (player.isPublicRobot) {
-        // 金豆房机器人， 不打
-        return;
-      }
       player.deposit(() => {
         // console.log("table_state.js 183 ", "执行自动打")
         logger.info('takeCard player-%s  执行自动打', index)
