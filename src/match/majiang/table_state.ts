@@ -1362,7 +1362,7 @@ class TableState implements Serializable {
 
         const cardTypes = await this.getCardTypes();
         const random = Math.floor(Math.random() * cardTypes.length);
-        if (!this.cardTypes) {
+        if (!this.cardTypes.cardId) {
           this.cardTypes = cardTypes[random];
         }
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
@@ -1924,7 +1924,7 @@ class TableState implements Serializable {
 
       const cardTypes = await this.getCardTypes();
       const random = Math.floor(Math.random() * cardTypes.length);
-      if ((Math.random() < 0.2 && this.cardTypes) || !this.cardTypes) {
+      if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
         this.cardTypes = cardTypes[random];
       }
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
