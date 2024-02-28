@@ -64,7 +64,6 @@ export class RobotManager extends NewRobotManager {
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
       if (proxy.playerState.onDeposit) {
-        console.log(`${proxy.playerState.model.shortId}已托管`)
         continue;
       }
 

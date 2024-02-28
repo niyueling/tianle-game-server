@@ -16,6 +16,11 @@ const RoomGoldRecordSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // 中奖位置
+  winnerFrom: {
+    type: Number,
+    required: true,
+  },
   // 中奖人
   failList: {
     type: Array,

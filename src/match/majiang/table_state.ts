@@ -2099,7 +2099,7 @@ class TableState implements Serializable {
 
         // 点炮胡
         if (from) {
-          failList.push(from.model._id.toString());
+          failList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
           const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple;
@@ -2124,7 +2124,7 @@ class TableState implements Serializable {
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
               await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
                 model.gold + p.balance, `对局扣除`);
-              failList.push(p.model._id.toString());
+              failList.push(this.atIndex(p));
             }
           }
         }
@@ -2142,6 +2142,7 @@ class TableState implements Serializable {
         await RoomGoldRecord.create({
           winnerGoldReward: winBalance,
           winnerId: to.model._id.toString(),
+          winnerFrom: this.atIndex(to),
           roomId: this.room._id,
           failList,
           juIndex: this.room.game.juIndex,
