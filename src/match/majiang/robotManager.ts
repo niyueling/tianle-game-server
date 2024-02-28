@@ -68,6 +68,8 @@ export class RobotManager extends NewRobotManager {
         continue;
       }
 
+      proxy.playerState.onDeposit = true;
+
       playerId = proxy.model._id.toString();
       const model = await service.playerService.getPlayerModel(playerId);
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
