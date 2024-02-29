@@ -454,6 +454,7 @@ export class NewRobotManager {
       await oldPlayerState.reconnect(robotProxy);
     }
 
+    console.warn(this.disconnectPlayers)
     this.disconnectPlayers[playerId] = robotProxy;
   }
 
