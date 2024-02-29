@@ -601,7 +601,12 @@ class PlayerState implements Serializable {
 
   checkZiMo() {
     this.cards.lastTakeCard = this.lastCardToken
-    this.turn = this.cards.turn = this.room.gameState.turn
+    if (this.room && this.room.gameState && this.room.gameState.turn) {
+      this.turn = this.cards.turn = this.room.gameState.turn
+    } else {
+      this.turn = this.cards.turn = 1;
+    }
+
     this.cards.takeSelfCard = true
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2

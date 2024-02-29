@@ -13,6 +13,25 @@ const schema = new Schema({
   voucher: {type: Number, default: 0}, // 代金券
   juCount: {type: Number, default: 0}, // 累计局数
   juWinCount: {type: Number, default: 0}, // 胜利局数
+  juContinueWinCount: {type: Number, default: 0}, // 连续胜利局数
+  looseMoneyBoyAmount: {type: Number, default: 0}, // 当局最高输豆数量
+  reapingMachineAmount: {type: Number, default: 0}, // 当局最高赢豆数量
+  atTheTopCount: {type: Number, default: 0}, // 封顶次数（21万倍以上）
+  quackStrikeCount: {type: Number, default: 0}, // 首次胡牌就清空三个对手
+  chosenOneCount: {type: Number, default: 0}, // 累计天胡次数
+  pandanCount: {type: Number, default: 0}, // 累计胡四节高次数
+  payVipCount: {type: Number, default: 0}, // 累计购买周卡/月卡次数
+  loftyHeroicCount: {type: Number, default: 0}, // 累计对局中购买/兑换礼包次数
+  shopFreeGiftCount: {type: Number, default: 0}, // 领取商城免费金豆次数
+  boxToBoxCount: {type: Number, default: 0}, // 累计被天胡破产次数
+  triumphantCount: {type: Number, default: 0}, // 单局摸到6星座牌次数
+  lifeIsDreamCount: {type: Number, default: 0}, // 对局中因海底捞月或者妙手回春由输转赢次数
+  luckyStarCount: {type: Number, default: 0}, // 累计杠上开花次数
+  noStrokeCount: {type: Number, default: 0}, // 流局次数
+  theMarksmanCount: {type: Number, default: 0}, // 累计对局中最先胡牌
+  madButcherCount: {type: Number, default: 0}, // 累计使认输人数
+  goVillageCount: {type: Number, default: 0}, // 累计对局结束破产次数
+  decisiveVictoryCount: {type: Number, default: 0}, // 累计胜利对局次数
   juRank: {type: Number, default: 1}, // 胜率
   redPocket: {type: Number, default: 0}, // 红包
   gangCount: {type: Number, default: 0}, // 杠牌次数
@@ -20,10 +39,12 @@ const schema = new Schema({
   turntableTimes: {type: Number, default: 10}, // 转盘次数
   consecutiveLoginDays: {type: Number, default: 1}, // 连续登陆天数
   signLoginDays: {type: Number, default: 0}, // 签到天数
+  totalSignLoginDays: {type: Number, default: 0}, // 累计签到天数
   sessionKey: {type: String},
   guideSteps: {type: Number, default: 1001},
+  vip: {type: Number, default: 0},
   source: {type: Number, required: true, default: 1},
-  helpCount: {type: Number, required: true, default: 0},
+  helpCount: {type: Number, required: true, default: 5},
   dominateCount: {type: Number, required: true, default: 5},// 充值后给予1-5次好牌补助
   ip: {type: String},
   province: {type: String},
