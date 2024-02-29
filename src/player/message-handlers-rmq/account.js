@@ -11,7 +11,6 @@ import {
     RedPocketWithDrawState
 } from "../../database/models/redPocketRecord";
 import PlayerManager from '../player-manager';
-import Tasks from '../../database/models/tasks';
 import * as config from '../../config';
 import GameRecord from '../../database/models/gameRecord'
 import Notice from '../../database/models/notice'
@@ -30,6 +29,7 @@ import WatchAdverRecord from "../../database/models/watchAdverRecord";
 import PlayerBenefitRecord from "../../database/models/PlayerBenefitRecord";
 import {pick} from "lodash";
 import moment from "moment";
+import Task from "../../database/models/task";
 
 const QcloudSms = require("qcloudsms_js");
 
@@ -653,7 +653,7 @@ export default {
 
     },
     'account/TaskMsg': async (player) => {
-        const taskList = await Tasks.find().select().exec();
+        const taskList = await Task.find().select().exec();
         var taskMsg = {}
         if (!player.model.invite_curTask.length && !player.model.invite_endTask.length) {
             taskList.forEach((e) => {
