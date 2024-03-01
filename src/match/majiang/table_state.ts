@@ -1801,7 +1801,7 @@ class TableState implements Serializable {
 
   async onPlayerDa(player, turn, card) {
     const index = this.players.indexOf(player);
-    this.logger.info('da player-%s card:%s lastDa %s', index, card, this.lastDa._id)
+    this.logger.info('da player-%s card:%s lastDa %s', index, card, this.lastDa ? this.lastDa._id : null)
     let from
 
     if (this.state !== stateWaitDa) {
