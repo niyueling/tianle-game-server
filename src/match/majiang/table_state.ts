@@ -504,6 +504,13 @@ class TableState implements Serializable {
     if (card > Enums.athena && !playerState.constellationCards.includes(card) && !playerState.isGameHu) {
       playerState.constellationCards.push(card);
 
+      if (playerState.constellationCards.length >= 6) {
+        const model = await service.playerService.getPlayerModel(playerState._id);
+
+        model.triumphantCount++;
+        await model.save();
+      }
+
       let constellationCardLists = [];
 
       for (let i = 0; i < this.players.length; i++) {
@@ -810,6 +817,12 @@ class TableState implements Serializable {
         }
       }
       p.constellationCards = constellationCards;
+
+      if (p.constellationCards.length >= 6) {
+        model.triumphantCount++;
+        await model.save();
+      }
+
       constellationCardLists.push({
         index: i,
         _id: p._id,
