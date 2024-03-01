@@ -11,6 +11,7 @@ import {DummyRecorder, IGameRecorder} from './GameRecorder'
 import HuPaiDetect from './HuPaiDetect'
 import Room from './room'
 import Rule from './Rule'
+import CardTypeModel from "../../database/models/CardType";
 
 export class SourceCardMap extends Array<number> {
   first: boolean
