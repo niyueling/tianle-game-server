@@ -2418,6 +2418,7 @@ class TableState implements Serializable {
       model.juWinCount++;
     }
     model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+    model.goVillageCount++;
     model.save();
     p.isCalcJu = true;
 
@@ -2523,7 +2524,7 @@ class TableState implements Serializable {
 
     const scores = [];
     const players = [];
-    this.players.map((player, idx) => {
+    this.players.map(async (player, idx) => {
       if (player) {
         players.push(player._id.toString())
         const state = player.genGameStatus(idx, 1);
@@ -2533,7 +2534,31 @@ class TableState implements Serializable {
           headImgUrl: player.model.avatar,
           shortId: player.model.shortId
         })
+
+        const model = await service.playerService.getPlayerModel(player._id);
+
+        if (state.score > 0) {
+          model.juContinueWinCount++;
+
+          if (state.score > model.reapingMachineAmount) {
+            model.reapingMachineAmount = state.score;
+          }
+        }
+
+        if (state.score === 0) {
+          model.noStrokeCount++;
+        }
+
+        if (state.score < 0) {
+          model.juContinueWinCount = 0;
+
+          if (Math.abs(state.score) > model.looseMoneyBoyAmount) {
+            model.looseMoneyBoyAmount = Math.abs(state.score);
+          }
+        }
       }
+
+
     })
 
     if (states.length > 0) {
