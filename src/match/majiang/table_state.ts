@@ -2419,6 +2419,27 @@ class TableState implements Serializable {
     }
     model.juRank = (model.juWinCount / model.juCount).toFixed(2);
     model.goVillageCount++;
+
+    if (p.juScore > 0) {
+      model.juContinueWinCount++;
+
+      if (p.juScore > model.reapingMachineAmount) {
+        model.reapingMachineAmount = p.juScore;
+      }
+    }
+
+    if (p.juScore === 0) {
+      model.noStrokeCount++;
+    }
+
+    if (p.juScore < 0) {
+      model.juContinueWinCount = 0;
+
+      if (Math.abs(p.juScore) > model.looseMoneyBoyAmount) {
+        model.looseMoneyBoyAmount = Math.abs(p.juScore);
+      }
+    }
+
     model.save();
     p.isCalcJu = true;
 
@@ -2534,28 +2555,6 @@ class TableState implements Serializable {
           headImgUrl: player.model.avatar,
           shortId: player.model.shortId
         })
-
-        const model = await service.playerService.getPlayerModel(player._id);
-
-        if (state.score > 0) {
-          model.juContinueWinCount++;
-
-          if (state.score > model.reapingMachineAmount) {
-            model.reapingMachineAmount = state.score;
-          }
-        }
-
-        if (state.score === 0) {
-          model.noStrokeCount++;
-        }
-
-        if (state.score < 0) {
-          model.juContinueWinCount = 0;
-
-          if (Math.abs(state.score) > model.looseMoneyBoyAmount) {
-            model.looseMoneyBoyAmount = Math.abs(state.score);
-          }
-        }
       }
 
 
@@ -2618,6 +2617,26 @@ class TableState implements Serializable {
           model.juWinCount++;
         }
         model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+
+        if (this.players[i].juScore > 0) {
+          model.juContinueWinCount++;
+
+          if (this.players[i].juScore > model.reapingMachineAmount) {
+            model.reapingMachineAmount = this.players[i].juScore;
+          }
+        }
+
+        if (this.players[i].juScore === 0) {
+          model.noStrokeCount++;
+        }
+
+        if (this.players[i].juScore < 0) {
+          model.juContinueWinCount = 0;
+
+          if (Math.abs(this.players[i].juScore) > model.looseMoneyBoyAmount) {
+            model.looseMoneyBoyAmount = Math.abs(this.players[i].juScore);
+          }
+        }
 
         model.save();
       }
