@@ -406,9 +406,12 @@ export class GoodsApi extends BaseApi {
       return this.replyFail(TianleErrorCode.diamondInsufficient, {good: goodsList[index]});
     }
 
-    await PlayerModel.update({_id: model._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
-    this.player.model.diamond = model.diamond - exchangeConf.diamond;
-    this.player.model.gold = model.gold + exchangeConf.gold;
+    model.diamond -= exchangeConf.diamond;
+    model.gold += exchangeConf.gold;
+    model.loftyHeroicCount++;
+    await model.save();
+    this.player.model.diamond = model.diamond;
+    this.player.model.gold = model.gold;
 
     // 增加日志
     await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买超值礼包`);
