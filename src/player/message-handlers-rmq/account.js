@@ -25,7 +25,7 @@ import {TianleErrorCode} from "@fm/common/constants";
 import WatchAdverRecord from "../../database/models/watchAdverRecord";
 import PlayerBenefitRecord from "../../database/models/PlayerBenefitRecord";
 import {pick} from "lodash";
-import moment from "moment";
+import * as moment from "moment";
 import Task from "../../database/models/task";
 
 const QcloudSms = require("qcloudsms_js");
