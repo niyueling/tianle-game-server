@@ -6,10 +6,7 @@ import PlayerModel from '../../database/models/player';
 import GM from '../../database/models/gm';
 import ClubMember from '../../database/models/clubMember';
 import Club from '../../database/models/club';
-import {
-    RedPocketWithdrawRecordModel,
-    RedPocketWithDrawState
-} from "../../database/models/redPocketRecord";
+import {RedPocketWithdrawRecordModel, RedPocketWithDrawState} from "../../database/models/redPocketRecord";
 import PlayerManager from '../player-manager';
 import * as config from '../../config';
 import GameRecord from '../../database/models/gameRecord'
@@ -24,7 +21,7 @@ import * as path from 'path'
 import createClient from "../../utils/redis";
 import {service} from "../../service/importService";
 import {getNewShortPlayerId} from "../../database/init";
-import {GameType, TianleErrorCode} from "@fm/common/constants";
+import {TianleErrorCode} from "@fm/common/constants";
 import WatchAdverRecord from "../../database/models/watchAdverRecord";
 import PlayerBenefitRecord from "../../database/models/PlayerBenefitRecord";
 import {pick} from "lodash";
@@ -298,8 +295,7 @@ export default {
                 doc.disconnectedRoom = true;
             }
 
-            const myContestData = await getContestId(doc._id)
-            doc.myContestData = myContestData
+            doc.myContestData = await getContestId(doc._id)
 
             const hasOtherGameNotOver = await otherGameIsRunning(doc._id, gameName)
             if (hasOtherGameNotOver) {
@@ -354,15 +350,15 @@ export default {
                 createAt: {$gte: start, $lt: end}
             });
 
-            return this.replySuccess({gold: 100000, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount});
+            return p.sendMessage("account/benefitDataReply", {ok: true, data: {gold: 100000, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount}});
         }
 
-        return this.replyFail(TianleErrorCode.receiveFail);
+        return p.sendMessage("account/benefitDataReply", {ok: false, info: TianleErrorCode.receiveFail});
     },
 
     // 发放救济金
     'account/benefit': async (p, message) => {
-        const user = await PlayerModel.findOne({shortId: this.player.model.shortId});
+        const user = await PlayerModel.findOne({shortId: p.shortId});
         if (!user) {
             return this.replyFail(TianleErrorCode.userNotFound);
         }
@@ -375,13 +371,13 @@ export default {
             const start = moment(new Date()).startOf('day').toDate();
             const end = moment(new Date()).endOf('day').toDate();
             const helpCount = await PlayerBenefitRecord.count({
-                playerId: this.player.model._id,
+                playerId: p._id,
                 createAt: {$gte: start, $lt: end}
             });
 
             const data = {
-                playerId: this.player._id.toString(),
-                shortId: this.player.model.shortId,
+                playerId: p._id.toString(),
+                shortId: user.shortId,
                 helpCount: helpCount + 1,
                 gold: 100000,
                 createAt: new Date()
@@ -389,14 +385,14 @@ export default {
 
             await PlayerBenefitRecord.create(data);
 
-            this.player.sendMessage('resource/update', {ok: true, data: pick(user, ['gold', 'diamond', 'voucher'])})
+            p.sendMessage('resource/update', {ok: true, data: pick(user, ['gold', 'diamond', 'voucher'])})
             return p.sendMessage('account/benefitReply', {
                 ok: true,
                 data: {gold: 100000, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount + 1}
             });
         }
 
-        return this.replyFail(TianleErrorCode.receiveFail);
+        return p.sendMessage('account/benefitReply', {ok: false, info: TianleErrorCode.receiveFail})
     },
 
     'account/weChatCode': async (p, message) => {
