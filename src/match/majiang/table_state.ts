@@ -21,6 +21,8 @@ import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import CombatGain from "../../database/models/combatGain";
 import GameCategory from "../../database/models/gameCategory";
 import GameCardRecord from "../../database/models/gameCardRecord";
+import PlayerMedal from "../../database/models/PlayerMedal";
+import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -2713,7 +2715,7 @@ class TableState implements Serializable {
   }
 
   async generateReconnectMsg(index) {
-    const player = this.players[index]
+    const player = this.players[index];
     let roomRubyReward = 0;
     const lastRecord = await service.rubyReward.getLastRubyRecord(this.room.uid);
     if (lastRecord) {
@@ -2744,6 +2746,20 @@ class TableState implements Serializable {
 
     let msg;
     for (let i = 0; i < this.players.length; i++) {
+      let medalId = null;
+      let headerBorderId = null;
+      // 获取用户称号
+      const playerMedal = await PlayerMedal.findOne({playerId: this.players[i]._id, isUse: true});
+      if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
+        medalId = playerMedal.propId;
+      }
+
+      // 获取用户头像框
+      const playerHeadBorder = await PlayerHeadBorder.findOne({playerId: this.players[i]._id, isUse: true});
+      if (playerHeadBorder && (playerHeadBorder.times === -1 || playerHeadBorder.times > new Date().getTime())) {
+        headerBorderId = playerHeadBorder.propId;
+      }
+
       if (i === index) {
         msg = this.players[i].genSelfStates(i);
         msg.roomRubyReward = roomRubyReward;
@@ -2757,6 +2773,9 @@ class TableState implements Serializable {
         msg.constellationCardLevel = await this.calcConstellationCardScore(this.players[i]);
         pushMsg.status.push(msg)
       }
+
+      msg.model.medalId = medalId;
+      msg.model.headerBorderId = headerBorderId;
     }
 
     switch (this.state) {
