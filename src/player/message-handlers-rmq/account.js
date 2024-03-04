@@ -341,7 +341,7 @@ export default {
 
     // 救济金数据
     'account/benefitData': async (p, message) => {
-        const user = await PlayerModel.findOne({shortId: this.player.model.shortId});
+        const user = await PlayerModel.findOne({_id: p._id});
         if (!user) {
             return this.replyFail(TianleErrorCode.userNotFound);
         }
@@ -350,7 +350,7 @@ export default {
             const start = moment(new Date()).startOf('day').toDate();
             const end = moment(new Date()).endOf('day').toDate();
             const helpCount = await PlayerBenefitRecord.count({
-                playerId: this.player.model._id,
+                playerId: p._id,
                 createAt: {$gte: start, $lt: end}
             });
 
