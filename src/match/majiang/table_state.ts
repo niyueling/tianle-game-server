@@ -1423,6 +1423,7 @@ class TableState implements Serializable {
                     card,
                     from,
                     index,
+                    constellationCards: player.constellationCards,
                     huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
                   }
                 }, player.msgDispatcher);
@@ -1444,6 +1445,7 @@ class TableState implements Serializable {
                         card,
                         from,
                         index: playerIndex,
+                        constellationCards: player.constellationCards,
                         huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
                       }
                     }, nextPlayer.msgDispatcher)
@@ -1570,6 +1572,7 @@ class TableState implements Serializable {
                 card,
                 from,
                 index,
+                constellationCards: player.constellationCards,
                 huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
               }
             }, player.msgDispatcher);
@@ -1670,7 +1673,7 @@ class TableState implements Serializable {
               // this.stateData.whom.recordGameEvent(Enums.chengBao, {})
               this.room.broadcast('game/oppoHu', {
                 ok: true,
-                data: {turn, card, from, index}
+                data: {turn, card, from, index, constellationCards: player.constellationCards,}
               }, player.msgDispatcher);
               const huPlayerIndex = this.atIndex(player)
               for (let i = 1; i < this.players.length; i++) {
@@ -1686,7 +1689,7 @@ class TableState implements Serializable {
                   nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
                   this.room.broadcast('game/oppoHu', {
                     ok: true,
-                    data: {turn, card, index: playerIndex}
+                    data: {turn, card, index: playerIndex, constellationCards: player.constellationCards,}
                   }, nextPlayer.msgDispatcher)
                 }
               }
