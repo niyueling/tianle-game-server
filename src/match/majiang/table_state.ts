@@ -15,7 +15,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {ConsumeLogType, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, RedisKey, TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import CombatGain from "../../database/models/combatGain";
@@ -911,7 +911,12 @@ class TableState implements Serializable {
       await this.onRefresh(idx)
     })
 
-    player.on('waitForDa', msg => {
+    player.on('waitForDa', async msg => {
+      const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
+      console.warn("waitForDa lock %s", lock);
+      if (!lock) {
+        return;
+      }
       player.deposit(() => {
         // console.log("table_state.js 183 ", "执行自动打")
         logger.info('takeCard player-%s  执行自动打', index)
@@ -953,7 +958,12 @@ class TableState implements Serializable {
         setTimeout(nextDo, 500);
       })
     })
-    player.on('waitForDoSomeThing', msg => {
+    player.on('waitForDoSomeThing', async msg => {
+      const lock = await service.utils.grantLockOnce(RedisKey.huPaiLock + player._id, 1);
+      console.warn("waitForDoSomeThing lock %s", lock);
+      if (!lock) {
+        return;
+      }
       logger.info('waitForDoSomeThing %s card %s', JSON.stringify(msg.data), msg.data.card)
       player.deposit(() => {
         const card = msg.data.card
