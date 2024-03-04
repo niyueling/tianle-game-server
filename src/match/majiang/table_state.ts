@@ -959,11 +959,6 @@ class TableState implements Serializable {
     })
     player.on('waitForDoSomeThing', msg => {
       player.deposit(async () => {
-        const lock = await service.utils.grantLockOnce(RedisKey.huPaiLock + player._id, 1);
-        if (!lock) {
-          console.warn("waitForDoSomeThing lock", lock);
-          return;
-        }
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
 
@@ -1365,6 +1360,12 @@ class TableState implements Serializable {
       // if (this.turn !== turn) {
       //   return player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huParamTurnInvaid});
       // }
+
+      const lock = await service.utils.grantLockOnce(RedisKey.huPaiLock + player._id, 1);
+      if (!lock) {
+        console.warn("waitForDoSomeThing lock", lock);
+        return;
+      }
 
       const recordCard = this.stateData.card;
 
