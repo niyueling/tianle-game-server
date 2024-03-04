@@ -339,7 +339,7 @@ export default {
     'account/benefitData': async (p, message) => {
         const user = await PlayerModel.findOne({_id: p._id});
         if (!user) {
-            return this.replyFail(TianleErrorCode.userNotFound);
+            return p.sendMessage("account/benefitDataReply", {ok: false, info: TianleErrorCode.userNotFound});
         }
 
         if (user.helpCount > 0) {
@@ -358,9 +358,9 @@ export default {
 
     // 发放救济金
     'account/benefit': async (p, message) => {
-        const user = await PlayerModel.findOne({shortId: p.shortId});
+        const user = await PlayerModel.findOne({_id: p._id});
         if (!user) {
-            return this.replyFail(TianleErrorCode.userNotFound);
+            return p.sendMessage("account/benefitDataReply", {ok: false, info: TianleErrorCode.userNotFound});
         }
 
         if (user.helpCount > 0) {
