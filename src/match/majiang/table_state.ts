@@ -913,7 +913,7 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
-      console.warn("waitForDa lock %s", lock);
+      console.warn("waitForDa lock", lock);
       if (!lock) {
         return;
       }
@@ -960,7 +960,7 @@ class TableState implements Serializable {
     })
     player.on('waitForDoSomeThing', async msg => {
       const lock = await service.utils.grantLockOnce(RedisKey.huPaiLock + player._id, 1);
-      console.warn("waitForDoSomeThing lock %s", lock);
+      console.warn("waitForDoSomeThing lock", lock);
       if (!lock) {
         return;
       }
