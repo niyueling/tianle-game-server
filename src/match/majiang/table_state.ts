@@ -914,20 +914,17 @@ class TableState implements Serializable {
     })
 
     player.on('waitForDa', async msg => {
-      const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
-      console.warn("waitForDa lock", lock);
-      if (!lock) {
-        return;
-      }
-      player.deposit(() => {
-        // console.log("table_state.js 183 ", "执行自动打")
-        logger.info('takeCard player-%s  执行自动打', index)
+      player.deposit(async () => {
+        const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
+        if (!lock) {
+          console.warn("waitForDa lock", lock);
+          return;
+        }
 
         const nextDo = async () => {
           if (msg) {
             const takenCard = msg.card
             const todo = player.ai.onWaitForDa(msg, player.cards)
-            logger.info('waitForDa %s todo %s', JSON.stringify(msg), todo)
             switch (todo) {
               case Enums.gang:
                 const gangCard = msg.gang[0][0]
@@ -960,17 +957,15 @@ class TableState implements Serializable {
         setTimeout(nextDo, 500);
       })
     })
-    player.on('waitForDoSomeThing', async msg => {
-      const lock = await service.utils.grantLockOnce(RedisKey.huPaiLock + player._id, 1);
-      console.warn("waitForDoSomeThing lock", lock);
-      if (!lock) {
-        return;
-      }
-      logger.info('waitForDoSomeThing %s card %s', JSON.stringify(msg.data), msg.data.card)
-      player.deposit(() => {
+    player.on('waitForDoSomeThing', msg => {
+      player.deposit(async () => {
+        const lock = await service.utils.grantLockOnce(RedisKey.huPaiLock + player._id, 1);
+        if (!lock) {
+          console.warn("waitForDoSomeThing lock", lock);
+          return;
+        }
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
-        logger.info('waitForDoSomeThing TODO %s', todo)
 
         const nextDo = async () => {
           switch (todo) {
