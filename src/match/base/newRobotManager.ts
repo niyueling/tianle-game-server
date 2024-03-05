@@ -290,10 +290,10 @@ export class NewRobotManager {
 
   // 游戏结束
   async gameOver() {
-    console.log('destroy robot', this.room._id);
     clearInterval(this.watchTimer);
     if (this.disconnectPlayers) {
       //下发解散消息
+      console.log('destroy robot', this.room._id, JSON.stringify(this.disconnectPlayers));
       for (const key of Object.keys(this.disconnectPlayers)) {
         const proxy = this.disconnectPlayers[key];
 
