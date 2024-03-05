@@ -420,7 +420,7 @@ export class NewRobotManager {
         continue
       }
       if (i === 0) {
-        console.warn(this.room.players[i]._id);
+        console.warn("room is dissolve")
         await this.room.forceDissolve();
       }
 
