@@ -1945,7 +1945,6 @@ class TableState implements Serializable {
           if (newCard) {
             const msg = xiajia.takeCard(this.turn, newCard, false, false,
               {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount});
-            console.error("consume card msg ", JSON.stringify(msg));
 
             if (!msg) {
               console.error("consume card error msg ", msg);
