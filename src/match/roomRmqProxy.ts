@@ -340,7 +340,7 @@ export default class RoomProxy {
         })
 
         this.room.once('empty', async () => {
-          logger.info('room ', room._id, 'spinner clean')
+          logger.info('room ', room._id, 'spinner clean ', JSON.stringify(room.playersOrder))
           if (room.robotManager) {
             // 通知机器人解散
             room.robotManager.gameOver();
