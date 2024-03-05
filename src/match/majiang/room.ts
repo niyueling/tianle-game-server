@@ -692,7 +692,6 @@ class Room extends RoomBase {
     this.players
       .filter(p => p)
       .forEach(player => {
-        console.log(player._id)
         player.sendMessage('room/dissolve', {ok: true, data: allOverMessage})
         player.room = null
       })
