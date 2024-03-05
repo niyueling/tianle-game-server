@@ -8,6 +8,7 @@ const schema = new Schema({
   shortId: {type: Number, required: true},
   avatar: {type: String, required: true},
   nickname: {type: String, required: true},
+  sex: {type: Number, default: 0}, // 性别
   diamond: {type: Number, default: 0}, // 钻石
   gold: {type: Number, default: 0}, // 金豆
   voucher: {type: Number, default: 0}, // 代金券
