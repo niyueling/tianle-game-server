@@ -347,13 +347,6 @@ export default class RoomProxy {
             room.robotManager = null;
           }
 
-          this.room.players
-            .filter(p => p)
-            .forEach(player => {
-              player.sendMessage('room/dissolveRoom', {ok: true, data: {_id: this.room._id}})
-              player.room = null
-            })
-
           logger.info('room', room.playersOrder.filter(p => p).forEach(({_id}) => {
             service.roomRegister.removePlayerFromGameRoom(_id, gameType)
           }))

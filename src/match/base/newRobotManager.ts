@@ -293,6 +293,13 @@ export class NewRobotManager {
     console.log('destroy robot', this.room._id);
     clearInterval(this.watchTimer);
     if (this.disconnectPlayers) {
+      //下发解散消息
+      for (const key of Object.keys(this.disconnectPlayers)) {
+        const proxy = this.disconnectPlayers[key];
+
+        proxy.sendMessage("room/dissolveRoomReply", {ok: true, data: {roomId: this.room._id}})
+      }
+
       // 扣除房间数
       this.disconnectPlayers = null;
       await service.roomRegister.decrPublicRoomCount(this.room.gameRule.gameType, this.room.gameRule.categoryId);
