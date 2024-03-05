@@ -294,10 +294,9 @@ export class NewRobotManager {
     if (this.disconnectPlayers) {
       //下发解散消息
       console.log('destroy robot', this.room._id, JSON.stringify(this.disconnectPlayers));
-      for (const key of Object.keys(this.disconnectPlayers)) {
-        const proxy = this.disconnectPlayers[key];
+      for (let i = 0; i < this.room.players.length; i++) {
 
-        proxy.sendMessage("room/dissolveRoomReply", {ok: true, data: {roomId: this.room._id}})
+        this.room.players[i].sendMessage("room/dissolveRoomReply", {ok: true, data: {roomId: this.room._id}})
       }
 
       // 扣除房间数
