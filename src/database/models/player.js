@@ -9,7 +9,7 @@ const schema = new Schema({
   avatar: {type: String, required: true},
   nickname: {type: String, required: true},
   sex: {type: Number, default: 0}, // 性别
-  diamond: {type: Number, default: 0}, // 钻石
+  diamond: {type: Number, default: 1}, // 钻石
   gold: {type: Number, default: 0}, // 金豆
   voucher: {type: Number, default: 0}, // 代金券
   juCount: {type: Number, default: 0}, // 累计局数
