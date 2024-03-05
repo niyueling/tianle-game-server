@@ -324,14 +324,14 @@ class PlayerState implements Serializable {
   }
 
   // 杠完取牌
-  gangTakeCard(turn, card) {
-    return this.takeCard(turn, card, true)
+  gangTakeCard(turn, card, huType) {
+    return this.takeCard(turn, card, true, false, huType)
   }
 
   stashPopTakeCard() {
     if (this.takeCardStash) {
       const {turn, card, gangGuo} = this.takeCardStash
-      this.takeCard(turn, card, gangGuo, true)
+      this.takeCard(turn, card, gangGuo, true, {})
       this.takeCardStash = null
     }
   }
@@ -344,7 +344,7 @@ class PlayerState implements Serializable {
   }
 
   @recordChoiceAfterTakeCard
-  takeCard(turn: number, card: number, gangGuo: boolean = false, afterQiaoXiang = false) {
+  takeCard(turn: number, card: number, gangGuo: boolean = false, afterQiaoXiang = false, huType) {
     // this.gang = gangGuo  // fanmeng 计算杠上开花
     let canTake = true
     this.emitter.emit('willTakeCard', () => {
@@ -364,7 +364,7 @@ class PlayerState implements Serializable {
 
     this.lastCardToken = card
     this.cards[card]++
-    const msg = {card, turn, gang: null, hu: false, huInfo: null}
+    const msg = {card, turn, gang: null, hu: false, huInfo: null, huType: {}}
     this.recorder.recordUserEvent(this, 'moPai', card)
 
     if (!this.hadQiaoXiang) {
@@ -397,11 +397,11 @@ class PlayerState implements Serializable {
           }
         })
       }
-
     }
 
     let huResult = this.checkZiMo()
     if (huResult.hu) {
+      msg.huType = huType;
       if (this.hadQiaoXiang) {
         // 不用选择 直接胡
         this.sendMessage('game/TakeCard', {ok: true, data: msg})
@@ -430,10 +430,6 @@ class PlayerState implements Serializable {
     this.alreadyTakenCard = true
 
     return ret
-  }
-
-  buCard(turn, card) {
-    this.takeCard(turn, card)
   }
 
   checkTingPai(gangCard) {
