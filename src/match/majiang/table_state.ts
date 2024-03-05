@@ -1934,12 +1934,12 @@ class TableState implements Serializable {
       }
 
       if (check[Enums.pengGang]) {
-        if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
+        if (check[Enums.peng] && !check[Enums.peng].isGameHu) this.actionResolver.appendAction(check[Enums.peng], 'peng');
         if (check[Enums.gang]) {
-          const p = check[Enums.gang]
-          const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())]
-          p.gangForbid.push(card)
-          this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
+          const p = check[Enums.gang];
+          const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())];
+          p.gangForbid.push(card);
+          this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo);
         }
       }
 
