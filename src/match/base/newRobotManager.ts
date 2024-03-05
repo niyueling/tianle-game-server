@@ -292,12 +292,7 @@ export class NewRobotManager {
   async gameOver() {
     clearInterval(this.watchTimer);
     if (this.disconnectPlayers) {
-      //下发解散消息
-      console.log('destroy robot', this.room._id, JSON.stringify(this.disconnectPlayers));
-      for (let i = 0; i < this.room.players.length; i++) {
-
-        this.room.players[i].sendMessage("room/dissolveRoomReply", {ok: true, data: {roomId: this.room._id}})
-      }
+      console.log('destroy robot', this.room._id);
 
       // 扣除房间数
       this.disconnectPlayers = null;
