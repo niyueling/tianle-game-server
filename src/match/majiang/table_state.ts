@@ -2811,6 +2811,13 @@ class TableState implements Serializable {
       }
     }
 
+    const cardTypes = await this.getCardTypes();
+    const random = Math.floor(Math.random() * cardTypes.length);
+    if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
+      this.cardTypes = cardTypes[random];
+    }
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+
     let msg;
     for (let i = 0; i < this.players.length; i++) {
       let medalId = null;
@@ -2860,8 +2867,12 @@ class TableState implements Serializable {
         break
       }
       case stateWaitAction: {
-        const actions = this.actionResolver.allOptions && this.actionResolver.allOptions(player)
+        const actions = this.actionResolver.allOptions && this.actionResolver.allOptions(player);
         if (actions) {
+          actions["huType"] = {};
+          if (actions["hu"]) {
+            actions["huType"] = {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount};
+          }
           pushMsg.current = {
             index, state: 'waitAction',
             msg: actions
