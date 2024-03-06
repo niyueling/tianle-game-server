@@ -805,7 +805,7 @@ class TableState implements Serializable {
       const cards13 = model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p);
 
       if (model.dominateCount > 0) {
-        console.warn(model.dominateCount, cards13);
+        // console.warn(model.dominateCount, cards13);
         model.dominateCount--;
         await model.save();
       }
@@ -922,7 +922,7 @@ class TableState implements Serializable {
       player.deposit(async () => {
         const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
         if (!lock) {
-          console.warn("waitForDa lock", lock);
+          // console.warn("waitForDa lock", lock);
           return;
         }
 
@@ -940,6 +940,8 @@ class TableState implements Serializable {
                 })
                 break
               case Enums.hu:
+                const simpleCount = this.checkPlayerSimpleCrdCount(player);
+                console.warn("自摸胡 shortId %s 剩余单张 %s", player.model.shortId, simpleCount)
                 player.emitter.emit(Enums.hu, this.turn, takenCard)
                 player.sendMessage('game/depositZiMo', {
                   ok: true,
@@ -980,6 +982,8 @@ class TableState implements Serializable {
               player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
               break;
             case Enums.hu:
+              const simpleCount = this.checkPlayerSimpleCrdCount(player);
+              console.warn("接炮胡 shortId %s 剩余单张 %s", player.model.shortId, simpleCount)
               player.emitter.emit(Enums.hu, this.turn, card)
               player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
               break;
@@ -1392,7 +1396,7 @@ class TableState implements Serializable {
 
       const lock = await service.utils.grantLockOnce(RedisKey.huPaiLock + player._id, 1);
       if (!lock) {
-        console.warn("waitForDoSomeThing lock", lock);
+        // console.warn("waitForDoSomeThing lock", lock);
         return;
       }
 
@@ -2191,7 +2195,7 @@ class TableState implements Serializable {
           const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
-          console.warn(`dianpao index %s shortId %s  balance %s juBalance %s`, this.atIndex(from), from.model.shortId, from.balance, balance)
+          // console.warn(`dianpao index %s shortId %s  balance %s juBalance %s`, this.atIndex(from), from.model.shortId, from.balance, balance)
           from.juScore += from.balance;
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
           await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
@@ -2205,7 +2209,7 @@ class TableState implements Serializable {
               const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
-              console.warn(`zimo index %s shortId %s balance %s juBalance %s`, this.atIndex(p), p.model.shortId, p.balance, balance)
+              // console.warn(`zimo index %s shortId %s balance %s juBalance %s`, this.atIndex(p), p.model.shortId, p.balance, balance)
               p.juScore += p.balance;
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
               await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
@@ -2309,7 +2313,6 @@ class TableState implements Serializable {
         // console.warn("isGameOver %s brokeCount %s", this.isGameOver, this.brokeCount);
         await this.gameAllOver(states, [], nextZhuang);
       }
-
 
       if (waits.length > 0 && !this.isGameOver) {
         this.state = stateWaitRecharge;
@@ -2465,6 +2468,23 @@ class TableState implements Serializable {
       {cardName: "星蝎交辉", multiple: 488, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 50},
     ];
     await CardTypeModel.insertMany(cardTypes);
+  }
+
+  checkPlayerSimpleCrdCount(player) {
+    const cards = player.cards.slice();
+    let count = 0;
+
+    for (let i = 0; i < cards.length; i++) {
+      if ([Enums.athena, Enums.poseidon, Enums.zeus].includes(i)) {
+        continue;
+      }
+
+      if (cards[i] === 1) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   async playerGameOver(p, niaos, states) {
