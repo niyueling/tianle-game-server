@@ -6,24 +6,33 @@ const RoomGoldRecordSchema = new mongoose.Schema({
     type:  Number,
     required: true
   },
-  // 赢家金豆做奖励
+  // 赢家金豆
   winnerGoldReward: {
     type: Number,
     required: true
   },
-  // 中奖人
+  // 赢家
   winnerId: {
     type: String,
     required: true,
   },
-  // 中奖位置
+  // 赢家位置
   winnerFrom: {
     type: Number,
     required: true,
   },
-  // 中奖人
+  // 输家
   failList: {
     type: Array,
+    required: true,
+  },
+  // 输家位置
+  failFromList: {
+    type: Array,
+    required: true,
+  },
+  multiple: {
+    type: Number,
     required: true,
   },
   // 该房间玩到第几局

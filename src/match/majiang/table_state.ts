@@ -2178,12 +2178,14 @@ class TableState implements Serializable {
           p.balance = 0;
         })
         let failList = [];
+        let failFromList = [];
         let winBalance = 0;
         let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
         // 点炮胡
         if (from) {
-          failList.push(this.atIndex(from));
+          failList.push(from._id);
+          failFromList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
           const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple;
@@ -2208,7 +2210,8 @@ class TableState implements Serializable {
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
               await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
                 model.gold + p.balance, `对局扣除`);
-              failList.push(this.atIndex(p));
+              failList.push(p._id);
+              failFromList.push(this.atIndex(p));
             }
           }
         }
@@ -2229,6 +2232,8 @@ class TableState implements Serializable {
           winnerFrom: this.atIndex(to),
           roomId: this.room._id,
           failList,
+          failFromList,
+          multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple,
           juIndex: this.room.game.juIndex,
           cardTypes: this.cardTypes
         })
@@ -2276,7 +2281,6 @@ class TableState implements Serializable {
       }
 
       setTimeout(nextDo, 1500);
-
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
@@ -2647,8 +2651,6 @@ class TableState implements Serializable {
           shortId: player.model.shortId
         })
       }
-
-
     })
 
     if (states.length > 0) {
@@ -2684,6 +2686,17 @@ class TableState implements Serializable {
 
     //获取用户当局对局流水
     const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
+    const scoreRecords = [];
+
+    for (let i = 0; i < records.length; i++) {
+      if (states[0].score >= 0 && states[0].model._id === records[i].winnerId) {
+        scoreRecords.push(records[i]);
+      }
+
+      if (states[0].score < 0 && records[i].failList.includes(states[0].model._id)) {
+        scoreRecords.push(records[i]);
+      }
+    }
 
     const gameOverMsg = {
       niaos,
@@ -2691,7 +2704,7 @@ class TableState implements Serializable {
       juShu: this.restJushu,
       juIndex: this.room.game.juIndex,
       states,
-      records,
+      records: scoreRecords,
       ruleType: this.rule.ruleType,
       isPublic: this.room.isPublic,
       caiShen: this.caishen,
