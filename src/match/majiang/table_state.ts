@@ -967,6 +967,8 @@ class TableState implements Serializable {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
 
+        logger.info('waitForDoSomeThing player %s card %s todo %s', index, card, todo)
+
         const nextDo = async () => {
           switch (todo) {
             case Enums.peng:
@@ -989,8 +991,6 @@ class TableState implements Serializable {
 
         setTimeout(nextDo, 500);
       })
-
-      logger.info('waitForDoSomeThing player %s', index)
     })
     player.on('willTakeCard', async denyFunc => {
       if (this.remainCards < 0) {
