@@ -928,8 +928,9 @@ class TableState implements Serializable {
 
         const nextDo = async () => {
           if (msg) {
-            const takenCard = msg.card
-            const todo = player.ai.onWaitForDa(msg, player.cards)
+            const takenCard = msg.card;
+            const todo = player.ai.onWaitForDa(msg, player.cards);
+            const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
             switch (todo) {
               case Enums.gang:
                 const gangCard = msg.gang[0][0]
@@ -941,8 +942,8 @@ class TableState implements Serializable {
                 break
               case Enums.hu:
                 const simpleCount = this.checkPlayerSimpleCrdCount(player);
-                console.warn("自摸胡 shortId %s 剩余单张 %s card %s", player.model.shortId, simpleCount, takenCard)
-                if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(takenCard) || simpleCount > 1) && !player.isGameHu) {
+                console.warn("自摸胡 shortId %s 剩余单张 %s card %s specialCardCount %s", player.model.shortId, simpleCount, takenCard, specialCardCount)
+                if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(takenCard) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
                   const card = this.promptWithPattern(player, this.lastTakeCard);
                   player.emitter.emit(Enums.da, this.turn, card)
                   player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
@@ -975,6 +976,7 @@ class TableState implements Serializable {
       player.deposit(async () => {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
+        const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
         logger.info('waitForDoSomeThing player %s card %s todo %s', index, card, todo)
 
@@ -990,9 +992,9 @@ class TableState implements Serializable {
               break;
             case Enums.hu:
               const simpleCount = this.checkPlayerSimpleCrdCount(player);
-              console.warn("接炮胡 shortId %s 剩余单张 %s card %s", player.model.shortId, simpleCount, card)
+              console.warn("接炮胡 shortId %s 剩余单张 %s card %s specialCardCount %s", player.model.shortId, simpleCount, card, specialCardCount)
 
-              if (simpleCount > 1 && !player.isGameHu) {
+              if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
                 player.emitter.emit(Enums.guo, this.turn, card);
               } else {
                 player.emitter.emit(Enums.hu, this.turn, card)
