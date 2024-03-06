@@ -1928,9 +1928,11 @@ class TableState implements Serializable {
         if (!p.isBroke && model.gold > 0) {
           const r = p.markJiePao(card, result);
           if (r.hu) {
-            if (!check.hu) check.hu = [];
-            check.hu.push(p);
-            p.huInfo = r.check;
+            if (!check.hu) {
+              check.hu = [];
+              check.hu.push(p);
+              p.huInfo = r.check;
+            }
           }
         }
       }
