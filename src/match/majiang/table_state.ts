@@ -774,7 +774,6 @@ class TableState implements Serializable {
       while (13 - cards.length > 0) {
         this.remainCards--;
         const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
-        console.log(index, this.cards[index]);
         if (index !== -1) {
           cards.push(this.cards[index]);
           this.lastTakeCard = this.cards[index];
@@ -805,7 +804,6 @@ class TableState implements Serializable {
       const cards13 = model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p);
 
       if (model.dominateCount > 0) {
-        console.warn(model.dominateCount, cards13);
         model.dominateCount--;
         await model.save();
       }
@@ -844,13 +842,13 @@ class TableState implements Serializable {
     const nextDo = async () => {
       const cardTypes = await this.getCardTypes();
       const random = Math.floor(Math.random() * cardTypes.length);
-      if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-        this.cardTypes = cardTypes[random];
+      if ((Math.random() < 0.2 && this.zhuang.cardTypes.cardId) || !this.zhuang.cardTypes.cardId) {
+        this.zhuang.cardTypes = cardTypes[random];
       }
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
       const nextCard = await this.consumeCard(this.zhuang)
       const msg = this.zhuang.takeCard(this.turn, nextCard, false, false,
-        {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount})
+        {id: this.zhuang.cardTypes.cardId, multiple: this.zhuang.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.zhuang.cardTypes.multiple * conf.minAmount})
       this.logger.info('takeCard player-%s  take %s', this.zhuang._id, nextCard)
 
       const index = 0
@@ -1035,26 +1033,12 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.peng, (turn, card) => {
-      // if (this.turn !== turn) {
-      //   logger.info('peng player-%s this.turn:%s turn:%s', index, this.turn, turn)
-      //   player.emitter.emit(Enums.guo, turn, card)
-      //   player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamTurnInvaid});
-      //   return
-      // }
       if (this.state !== stateWaitAction) {
         logger.info('peng player-%s this.state:%s stateWaitAction:%s', index, this.state, stateWaitAction)
         player.emitter.emit(Enums.guo, turn, card)
         player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamStateInvaid});
         return
       }
-      // if (this.hasPlayerHu()) {
-      //   logger.info('peng player-%s card:%s but has player hu', index, card)
-      //   player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengButPlayerHu});
-      //   player.lockMessage()
-      //   player.emitter.emit(Enums.guo, turn, card)
-      //   player.unlockMessage()
-      //   return
-      // }
 
       if (this.stateData.pengGang !== player || this.stateData.card !== card) {
         logger.info('peng player-%s card:%s has player pengGang or curCard not is this card', index, card)
@@ -1122,11 +1106,6 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     })
     player.on(Enums.gangByOtherDa, (turn, card) => {
-      // if (this.turn !== turn) {
-      //   logger.info('gangByOtherDa player-%s card:%s turn not eq', index, card)
-      //   player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamTurnInvaid});
-      //   return;
-      // }
       if (this.state !== stateWaitAction) {
         logger.info('gangByOtherDa player-%s card:%s state not is wait ', index, card)
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamStateInvaid});
@@ -1145,7 +1124,7 @@ class TableState implements Serializable {
             const ok = player.gangByPlayerDa(card, this.lastDa);
             if (ok) {
               this.turn++;
-              const from = this.atIndex(this.lastDa)
+              const from = this.atIndex(this.lastDa);
               const me = this.atIndex(player)
               player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
 
@@ -1179,14 +1158,14 @@ class TableState implements Serializable {
 
               const cardTypes = await this.getCardTypes();
               const random = Math.floor(Math.random() * cardTypes.length);
-              if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-                this.cardTypes = cardTypes[random];
+              if ((Math.random() < 0.2 && player.cardTypes.cardId) || !player.cardTypes.cardId) {
+                player.cardTypes = cardTypes[random];
               }
               const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
               const nextCard = await this.consumeCard(player);
               const msg = player.gangTakeCard(this.turn, nextCard,
-                {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount});
+                {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : player.cardTypes.multiple * conf.minAmount});
               if (msg) {
                 this.room.broadcast('game/oppoTakeCard', {
                   ok: true,
@@ -1257,14 +1236,14 @@ class TableState implements Serializable {
 
           const cardTypes = await this.getCardTypes();
           const random = Math.floor(Math.random() * cardTypes.length);
-          if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-            this.cardTypes = cardTypes[random];
+          if ((Math.random() < 0.2 && player.cardTypes.cardId) || !player.cardTypes.cardId) {
+            player.cardTypes = cardTypes[random];
           }
           const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
           const nextCard = await this.consumeCard(player);
           const msg = player.gangTakeCard(this.turn, nextCard,
-            {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount});
+            {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : player.cardTypes.multiple * conf.minAmount});
           if (msg) {
             this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
             this.state = stateWaitDa;
@@ -1277,71 +1256,6 @@ class TableState implements Serializable {
 
           this.isFaPai = false;
         }
-
-        const check: IActionCheck = {card};
-
-        if (!isAnGang) {
-          const qiangGangCheck: HuCheck = {card}
-          let qiang = null
-
-          gangIndex = this.atIndex(player)
-
-          for (let i = 1; i < this.players.length; i++) {
-            const playerIndex = (gangIndex + i) % this.players.length
-            const otherPlayer = this.players[playerIndex]
-
-            if (otherPlayer != player) {
-              const r = otherPlayer.markJiePao(card, qiangGangCheck, true)
-              if (r.hu) {
-                if (!check.hu) check.hu = []
-                check.hu.push(otherPlayer)
-                otherPlayer.huInfo = r.check
-                qiang = otherPlayer
-                break
-              }
-            }
-          }
-
-          // if (qiang && !this.stateData.cancelQiang) {
-          //   logger.info(qiang, this.stateData.cancelQiang);
-          //   this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
-          //   qiang.sendMessage('game/canDoSomething', {
-          //     ok: true, data: {
-          //       card, turn: this.turn, hu: true,
-          //       chi: false, chiCombol: [],
-          //       peng: false, gang: false, bu: false,
-          //     }
-          //   })
-          //
-          //   this.state = stateQiangGang
-          //   this.stateData = {
-          //     whom: player,
-          //     who: qiang,
-          //     event: Enums.gangBySelf,
-          //     card, turn: this.turn
-          //   }
-          //   return
-          // }
-        }
-
-        // for (let i = 1; i < this.players.length; i++) {
-        //   const j = (from + i) % this.players.length;
-        //   const p = this.players[j]
-        //   const msg = this.actionResolver.allOptions(p)
-        //   if (msg) {
-        //     p.sendMessage('game/canDoSomething', {ok: true, data: msg})
-        //     this.state = stateWaitAction
-        //     this.stateData = {
-        //       whom: player,
-        //       event: Enums.gangBySelf,
-        //       card, turn,
-        //       hu: check.hu,
-        //       huInfo: p.huInfo,
-        //     }
-        //     this.lastDa = player
-        //   }
-        // }
-        // this.actionResolver.tryResolve()
       } else {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
       }
@@ -1362,14 +1276,14 @@ class TableState implements Serializable {
           this.turn++;
           const cardTypes = await this.getCardTypes();
           const random = Math.floor(Math.random() * cardTypes.length);
-          if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-            this.cardTypes = cardTypes[random];
+          if ((Math.random() < 0.2 && player.cardTypes.cardId) || !player.cardTypes.cardId) {
+            player.cardTypes = cardTypes[random];
           }
           const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
           const nextCard = await this.consumeCard(player);
           const msg = player.takeCard(this.turn, nextCard, false, false,
-            {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount});
+            {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : player.cardTypes.multiple * conf.minAmount});
           if (!msg) {
             return;
           }
@@ -1405,13 +1319,6 @@ class TableState implements Serializable {
 
         const isZiMo = this.state === stateWaitDa && recordCard === card;
 
-        const cardTypes = await this.getCardTypes();
-        const random = Math.floor(Math.random() * cardTypes.length);
-        if (!this.cardTypes.cardId) {
-          this.cardTypes = cardTypes[random];
-        }
-        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-
         if (isJiePao) {
           this.actionResolver.requestAction(player, 'hu', async () => {
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
@@ -1420,6 +1327,12 @@ class TableState implements Serializable {
               from = this.atIndex(this.lastDa);
               if (ok && player.daHuPai(card, this.players[from])) {
                 this.lastDa = player;
+                const cardTypes = await this.getCardTypes();
+                const random = Math.floor(Math.random() * cardTypes.length);
+                if ((Math.random() < 0.2 && player.cardTypes.cardId) || !player.cardTypes.cardId) {
+                  player.cardTypes = cardTypes[random];
+                }
+                const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
                 await player.sendMessage('game/huReply', {
                   ok: true,
                   data: {
@@ -1427,7 +1340,7 @@ class TableState implements Serializable {
                     from,
                     type: "jiepao",
                     constellationCards: player.constellationCards,
-                    huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante}
+                    huType: {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : player.cardTypes.multiple * conf.minAmount / conf.Ante}
                   }
                 });
 
@@ -1454,7 +1367,7 @@ class TableState implements Serializable {
                     from,
                     index,
                     constellationCards: player.constellationCards,
-                    huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                    huType: {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple}
                   }
                 }, player.msgDispatcher);
                 const huPlayerIndex = this.atIndex(player);
@@ -1476,7 +1389,7 @@ class TableState implements Serializable {
                         from,
                         index: playerIndex,
                         constellationCards: player.constellationCards,
-                        huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                        huType: {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple}
                       }
                     }, nextPlayer.msgDispatcher)
                   }
@@ -1500,23 +1413,21 @@ class TableState implements Serializable {
 
                   if (xiajia) {
                     const nextDo = async () => {
-                      // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
-
                       if (!this.isFaPai) {
                         this.isFaPai = true;
 
                         try {
                           const cardTypes = await this.getCardTypes();
                           const random = Math.floor(Math.random() * cardTypes.length);
-                          if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-                            this.cardTypes = cardTypes[random];
+                          if ((Math.random() < 0.2 && xiajia.cardTypes.cardId) || !xiajia.cardTypes.cardId) {
+                            xiajia.cardTypes = cardTypes[random];
                           }
                           const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
                           const newCard = await this.consumeCard(xiajia)
                           if (newCard) {
                             const msg = xiajia.takeCard(this.turn, newCard, false, false,
-                              {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount})
+                              {id: xiajia.cardTypes.cardId, multiple: xiajia.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : xiajia.cardTypes.multiple * conf.minAmount})
 
                             if (!msg) {
                               this.isFaPai = false;
@@ -1582,6 +1493,12 @@ class TableState implements Serializable {
           if (ok && player.daHuPai(card, null)) {
             this.lastDa = player;
             from = this.atIndex(this.lastDa);
+            const cardTypes = await this.getCardTypes();
+            const random = Math.floor(Math.random() * cardTypes.length);
+            if ((Math.random() < 0.2 && player.cardTypes.cardId) || !player.cardTypes.cardId) {
+              player.cardTypes = cardTypes[random];
+            }
+            const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
             await player.sendMessage('game/huReply', {
               ok: true,
               data: {
@@ -1589,7 +1506,7 @@ class TableState implements Serializable {
                 from: this.atIndex(player),
                 type: "zimo",
                 constellationCards: player.constellationCards,
-                huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante}
+                huType: {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : player.cardTypes.multiple * conf.minAmount / conf.Ante}
               }
             });
 
@@ -1611,7 +1528,7 @@ class TableState implements Serializable {
                 from,
                 index,
                 constellationCards: player.constellationCards,
-                huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                huType: {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple}
               }
             }, player.msgDispatcher);
             await this.gameOver(null, player);
@@ -1641,15 +1558,15 @@ class TableState implements Serializable {
                     try {
                       const cardTypes = await this.getCardTypes();
                       const random = Math.floor(Math.random() * cardTypes.length);
-                      if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-                        this.cardTypes = cardTypes[random];
+                      if ((Math.random() < 0.2 && xiajia.cardTypes.cardId) || !xiajia.cardTypes.cardId) {
+                        xiajia.cardTypes = cardTypes[random];
                       }
                       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
                       const newCard = await this.consumeCard(xiajia)
                       if (newCard) {
                         const msg = xiajia.takeCard(this.turn, newCard, false, false,
-                          {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount});
+                          {id: xiajia.cardTypes.cardId, multiple: xiajia.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : xiajia.cardTypes.multiple * conf.minAmount});
 
                         if (!msg) {
                           this.isFaPai = false;
@@ -1756,7 +1673,7 @@ class TableState implements Serializable {
               }
 
               if (xiajia) {
-                // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+                console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}: qiangganghu`);
               } else {
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                 const nextZhuang = this.nextZhuang()
@@ -1768,14 +1685,14 @@ class TableState implements Serializable {
               this.actionResolver = new ActionResolver(env, async () => {
                 const cardTypes = await this.getCardTypes();
                 const random = Math.floor(Math.random() * cardTypes.length);
-                if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-                  this.cardTypes = cardTypes[random];
+                if ((Math.random() < 0.2 && xiajia.cardTypes.cardId) || !xiajia.cardTypes.cardId) {
+                  xiajia.cardTypes = cardTypes[random];
                 }
                 const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
                 const newCard = await this.consumeCard(xiajia)
                 const msg = xiajia.takeCard(this.turn, newCard, false, false,
-                  {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount})
+                  {id: xiajia.cardTypes.cardId, multiple: xiajia.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : xiajia.cardTypes.multiple * conf.minAmount})
 
                 if (!msg) {
                   console.error("consume card error msg ", msg)
@@ -1934,15 +1851,15 @@ class TableState implements Serializable {
         if (xiajia) {
           const cardTypes = await this.getCardTypes();
           const random = Math.floor(Math.random() * cardTypes.length);
-          if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-            this.cardTypes = cardTypes[random];
+          if ((Math.random() < 0.2 && xiajia.cardTypes.cardId) || !xiajia.cardTypes.cardId) {
+            xiajia.cardTypes = cardTypes[random];
           }
           const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
           const newCard = await this.consumeCard(xiajia);
           if (newCard) {
             const msg = xiajia.takeCard(this.turn, newCard, false, false,
-              {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount});
+              {id: xiajia.cardTypes.cardId, multiple: xiajia.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : xiajia.cardTypes.multiple * conf.minAmount});
 
             if (!msg) {
               console.error("consume card error msg ", msg);
@@ -2000,21 +1917,20 @@ class TableState implements Serializable {
         }
       }
 
-      const cardTypes = await this.getCardTypes();
-      const random = Math.floor(Math.random() * cardTypes.length);
-      if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-        this.cardTypes = cardTypes[random];
-      }
-      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-
       for (let i = 1; i < this.players.length; i++) {
         const j = (from + i) % this.players.length;
         const p = this.players[j];
+        const cardTypes = await this.getCardTypes();
+        const random = Math.floor(Math.random() * cardTypes.length);
+        if ((Math.random() < 0.2 && p.cardTypes.cardId) || !p.cardTypes.cardId) {
+          p.cardTypes = cardTypes[random];
+        }
+        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         const msg = this.actionResolver.allOptions(p)
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
-          msg["huType"] = {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}
+          msg["huType"] = {id: p.cardTypes.cardId, multiple: p.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : p.cardTypes.multiple * conf.minAmount}
           p.record('choice', card, msg)
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
@@ -2186,7 +2102,7 @@ class TableState implements Serializable {
           failList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
-          const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple;
+          const balance = conf.minAmount * to.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * to.cardTypes.multiple;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           console.warn(`dianpao index %s shortId %s  balance %s juBalance %s`, this.atIndex(from), from.model.shortId, from.balance, balance)
@@ -2200,7 +2116,7 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple;
+              const balance = conf.minAmount * to.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * to.cardTypes.multiple;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               console.warn(`zimo index %s shortId %s balance %s juBalance %s`, this.atIndex(p), p.model.shortId, p.balance, balance)
@@ -2230,7 +2146,7 @@ class TableState implements Serializable {
           roomId: this.room._id,
           failList,
           juIndex: this.room.game.juIndex,
-          cardTypes: this.cardTypes
+          cardTypes: to.cardTypes
         })
       }
 
@@ -2567,29 +2483,28 @@ class TableState implements Serializable {
 
       if (xiajia) {
         const nextDo = async () => {
-          // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
-
           if (!this.isFaPai) {
             this.isFaPai = true;
 
             try {
               const cardTypes = await this.getCardTypes();
               const random = Math.floor(Math.random() * cardTypes.length);
-              if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-                this.cardTypes = cardTypes[random];
+              if ((Math.random() < 0.2 && xiajia.cardTypes.cardId) || !xiajia.cardTypes.cardId) {
+                xiajia.cardTypes = cardTypes[random];
               }
               const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
               const newCard = await this.consumeCard(xiajia)
               if (newCard) {
-                const msg = xiajia.takeCard(this.turn, newCard, false, false, {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount})
+                const msg = xiajia.takeCard(this.turn, newCard, false, false,
+                  {id: xiajia.cardTypes.cardId, multiple: xiajia.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : xiajia.cardTypes.multiple * conf.minAmount})
 
                 if (!msg) {
                   this.isFaPai = false;
                   const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-                  const nextZhuang = this.nextZhuang()
+                  const nextZhuang = this.nextZhuang();
                   await this.gameAllOver(states, [], nextZhuang);
-                  console.error("consume card error msg ", msg)
+                  console.error("consume card error msg ", msg);
                   return;
                 }
                 this.state = stateWaitDa;
@@ -2810,8 +2725,8 @@ class TableState implements Serializable {
 
     const cardTypes = await this.getCardTypes();
     const random = Math.floor(Math.random() * cardTypes.length);
-    if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-      this.cardTypes = cardTypes[random];
+    if ((Math.random() < 0.2 && player.cardTypes.cardId) || !player.cardTypes.cardId) {
+      player.cardTypes = cardTypes[random];
     }
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
@@ -2868,7 +2783,7 @@ class TableState implements Serializable {
         if (actions) {
           actions["huType"] = {};
           if (actions["hu"]) {
-            actions["huType"] = {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount};
+            actions["huType"] = {id: player.cardTypes.cardId, multiple: player.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : player.cardTypes.multiple * conf.minAmount};
           }
           pushMsg.current = {
             index, state: 'waitAction',
