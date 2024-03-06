@@ -941,12 +941,19 @@ class TableState implements Serializable {
                 break
               case Enums.hu:
                 const simpleCount = this.checkPlayerSimpleCrdCount(player);
-                console.warn("自摸胡 shortId %s 剩余单张 %s", player.model.shortId, simpleCount)
-                player.emitter.emit(Enums.hu, this.turn, takenCard)
-                player.sendMessage('game/depositZiMo', {
-                  ok: true,
-                  data: {card: takenCard, turn: this.turn}
-                })
+                console.warn("自摸胡 shortId %s 剩余单张 %s card %s", player.model.shortId, simpleCount, takenCard)
+                if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(takenCard) || simpleCount > 1) && !player.isGameHu) {
+                  const card = this.promptWithPattern(player, this.lastTakeCard);
+                  player.emitter.emit(Enums.da, this.turn, card)
+                  player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
+                } else {
+                  player.emitter.emit(Enums.hu, this.turn, takenCard)
+                  player.sendMessage('game/depositZiMo', {
+                    ok: true,
+                    data: {card: takenCard, turn: this.turn}
+                  })
+                }
+
                 break
               default:
                 const card = this.promptWithPattern(player, this.lastTakeCard);
@@ -983,9 +990,15 @@ class TableState implements Serializable {
               break;
             case Enums.hu:
               const simpleCount = this.checkPlayerSimpleCrdCount(player);
-              console.warn("接炮胡 shortId %s 剩余单张 %s", player.model.shortId, simpleCount)
-              player.emitter.emit(Enums.hu, this.turn, card)
-              player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
+              console.warn("接炮胡 shortId %s 剩余单张 %s card %s", player.model.shortId, simpleCount, card)
+
+              if (simpleCount > 1 && !player.isGameHu) {
+                player.emitter.emit(Enums.guo, this.turn, card);
+              } else {
+                player.emitter.emit(Enums.hu, this.turn, card)
+                player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
+              }
+
               break;
             default:
               player.emitter.emit(Enums.guo, this.turn, card)
