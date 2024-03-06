@@ -2689,11 +2689,11 @@ class TableState implements Serializable {
     const scoreRecords = [];
 
     for (let i = 0; i < records.length; i++) {
-      if (states[0].score >= 0 && states[0].model._id === records[i].winnerId) {
+      if (states.length > 0 && states[0].score >= 0 && states[0].model._id === records[i].winnerId) {
         scoreRecords.push(records[i]);
       }
 
-      if (states[0].score < 0 && records[i].failList.includes(states[0].model._id)) {
+      if (states.length > 0 && states[0].score < 0 && records[i].failList.includes(states[0].model._id)) {
         scoreRecords.push(records[i]);
       }
     }
