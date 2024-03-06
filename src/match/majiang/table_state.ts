@@ -2018,7 +2018,7 @@ class TableState implements Serializable {
           p.record('choice', card, msg)
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
-          break;
+          if (msg["hu"]) break;
         }
       }
 
