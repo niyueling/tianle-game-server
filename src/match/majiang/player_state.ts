@@ -224,6 +224,13 @@ class PlayerState implements Serializable {
 
   constellationCards: any[] = []
 
+  // 胡牌类型
+  cardTypes: {
+    cardId: any;
+    cardName: any;
+    multiple: number;
+  }
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -261,6 +268,7 @@ class PlayerState implements Serializable {
     this.lastOptions = {}
     this.recorder = new DummyRecorder()
     this.alreadyTakenCard = false
+    this.cardTypes = new CardTypeModel()
   }
 
   setGameRecorder(r) {

@@ -496,7 +496,6 @@ class TableState implements Serializable {
       if (moIndex !== -1) {
         cardIndex = moIndex;
         card = this.cards[moIndex];
-        console.warn(`辅助${player.model.shortId}摸到牌${cardIndex}`);
       }
     }
 
@@ -566,8 +565,7 @@ class TableState implements Serializable {
 
     // 生肖图-大世界
     if (cardCount === 12) {
-      // console.warn("生肖图-大世界")
-      score *= 24;
+      score += 24;
     }
 
     // 生肖图-圆六角
@@ -581,7 +579,7 @@ class TableState implements Serializable {
 
     if (check) {
       // console.warn("生肖图-圆六角")
-      score *= 16;
+      score += 16;
     }
 
     // 生肖图-小世界
@@ -605,7 +603,7 @@ class TableState implements Serializable {
 
     if (check1) {
       // console.warn("生肖图-小世界")
-      score *= 4;
+      score += 4;
     }
 
     // 生肖图-一线天
@@ -627,7 +625,7 @@ class TableState implements Serializable {
 
     if (check2) {
       // console.warn("生肖图-一线天")
-      score *= 6;
+      score += 6;
     }
 
     // 生肖图-一字禅
@@ -648,7 +646,7 @@ class TableState implements Serializable {
 
     if (check3) {
       // console.warn("生肖图-一字禅")
-      score *= 8;
+      score += 8;
     }
 
     // 生肖图-铁拐李
@@ -672,7 +670,7 @@ class TableState implements Serializable {
 
     if (check4) {
       // console.warn("生肖图-铁拐李")
-      score *= 16;
+      score += 16;
     }
 
     // 生肖图-四方阵
@@ -686,7 +684,7 @@ class TableState implements Serializable {
 
     if (check5) {
       // console.warn("生肖图-四方阵")
-      score *= 10;
+      score += 10;
     }
 
     return score;
