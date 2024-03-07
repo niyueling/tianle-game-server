@@ -519,6 +519,7 @@ class TableState implements Serializable {
         constellationCardLists.push({
           index: i,
           _id: p._id,
+          roomId: this.room._id,
           constellationCards: p.constellationCards,
           multiple: await this.calcConstellationCardScore(p)
         })
