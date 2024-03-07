@@ -350,7 +350,13 @@ export default {
                 createAt: {$gte: start, $lt: end}
             });
 
-            return p.sendMessage("account/benefitDataReply", {ok: true, data: {gold: 100000, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount}});
+            let gold = 100000;
+
+            if (user.giftExpireTime && user.giftExpireTime > new Date().getTime()) {
+                gold += gold * 0.5;
+            }
+
+            return p.sendMessage("account/benefitDataReply", {ok: true, data: {gold: gold, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount}});
         }
 
         return p.sendMessage("account/benefitDataReply", {ok: false, info: TianleErrorCode.receiveFail});
@@ -363,9 +369,15 @@ export default {
             return p.sendMessage("account/benefitDataReply", {ok: false, info: TianleErrorCode.userNotFound});
         }
 
+        let gold = 100000;
+
+        if (user.giftExpireTime && user.giftExpireTime > new Date().getTime()) {
+            gold += gold * 0.5;
+        }
+
         if (user.helpCount > 0) {
             user.helpCount--;
-            user.gold += 100000;
+            user.gold += gold;
             await user.save();
 
             const start = moment(new Date()).startOf('day').toDate();
@@ -379,7 +391,7 @@ export default {
                 playerId: p._id.toString(),
                 shortId: user.shortId,
                 helpCount: helpCount + 1,
-                gold: 100000,
+                gold: gold,
                 createAt: new Date()
             }
 
@@ -388,7 +400,7 @@ export default {
             p.sendMessage('resource/update', {ok: true, data: pick(user, ['gold', 'diamond', 'voucher'])})
             return p.sendMessage('account/benefitReply', {
                 ok: true,
-                data: {gold: 100000, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount + 1}
+                data: {gold: gold, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount + 1}
             });
         }
 
