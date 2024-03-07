@@ -224,6 +224,8 @@ class PlayerState implements Serializable {
 
   constellationCards: any[] = []
 
+  isMingCard = false
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -261,6 +263,7 @@ class PlayerState implements Serializable {
     this.lastOptions = {}
     this.recorder = new DummyRecorder()
     this.alreadyTakenCard = false
+    this.isMingCard = false;
   }
 
   setGameRecorder(r) {
@@ -977,6 +980,10 @@ class PlayerState implements Serializable {
     playerSocket.on('game/broke', msg => {
       this.cancelTimeout()
       this.emitter.emit(Enums.broke)
+    })
+    playerSocket.on('game/openCard', msg => {
+      this.cancelTimeout()
+      this.emitter.emit(Enums.openCard)
     })
     playerSocket.on('game/startDeposit', msg => {
       this.cancelTimeout()

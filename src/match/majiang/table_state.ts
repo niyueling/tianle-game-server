@@ -1044,6 +1044,15 @@ class TableState implements Serializable {
       await this.onPlayerBroke(player);
     })
 
+    player.on(Enums.openCard, async () => {
+      if (!player.onDeposit) {
+        player.isMingCard = true;
+        await player.sendMessage('game/openCardReply', {ok: true, data: {roomId: this.room._id, index: this.atIndex(player)}});
+      } else {
+        await player.sendMessage('game/openCardReply', {ok: false, data: {}});
+      }
+    })
+
     player.on(Enums.startDeposit, async () => {
       if (!player.onDeposit) {
         player.onDeposit = true
