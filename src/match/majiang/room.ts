@@ -559,10 +559,13 @@ class Room extends RoomBase {
       headerBorderId = playerHeadBorder.propId;
     }
 
+    const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
+
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
       model: {...newJoinPlayer.model, medalId, headerBorderId},
+      newModel,
       medalId,
       headerBorderId,
       ip: newJoinPlayer.getIpAddress(),
