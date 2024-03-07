@@ -941,7 +941,7 @@ class TableState implements Serializable {
                 break
               case Enums.hu:
                 const simpleCount = this.checkPlayerSimpleCrdCount(player);
-                console.warn("自摸胡 shortId %s 剩余单张 %s card %s specialCardCount %s", player.model.shortId, simpleCount, takenCard, specialCardCount)
+                // console.warn("自摸胡 shortId %s 剩余单张 %s card %s specialCardCount %s", player.model.shortId, simpleCount, takenCard, specialCardCount)
                 if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(takenCard) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
                   const card = this.promptWithPattern(player, this.lastTakeCard);
                   player.emitter.emit(Enums.da, this.turn, card)
@@ -977,7 +977,7 @@ class TableState implements Serializable {
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
-        logger.info('waitForDoSomeThing player %s card %s todo %s', index, card, todo)
+        // logger.info('waitForDoSomeThing player %s card %s todo %s', index, card, todo)
 
         const nextDo = async () => {
           switch (todo) {
@@ -991,7 +991,7 @@ class TableState implements Serializable {
               break;
             case Enums.hu:
               const simpleCount = this.checkPlayerSimpleCrdCount(player);
-              console.warn("接炮胡 shortId %s 剩余单张 %s card %s specialCardCount %s", player.model.shortId, simpleCount, card, specialCardCount)
+              // console.warn("接炮胡 shortId %s 剩余单张 %s card %s specialCardCount %s", player.model.shortId, simpleCount, card, specialCardCount)
 
               if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
                 player.emitter.emit(Enums.guo, this.turn, card);
@@ -1409,7 +1409,7 @@ class TableState implements Serializable {
       }
     })
     player.on(Enums.hu, async (turn, card) => {
-      logger.info('hu player %s state %s card %s cards %s', index, this.state, card, JSON.stringify(player.cards));
+      // logger.info('hu player %s state %s card %s cards %s', index, this.state, card, JSON.stringify(player.cards));
       let from
       const chengbaoStarted = this.remainCards <= 3;
 
@@ -2093,53 +2093,6 @@ class TableState implements Serializable {
         specialState.score *= times
       }
     }
-  }
-
-  async generateNiao() {
-    const playerNiaos = []
-    const playerIndex = 0
-    if (this.rule.quanFei > 0) {
-      for (const p of this.players) {
-        p.niaoCards = []
-        playerNiaos[playerIndex] = {}
-        playerNiaos[playerIndex][p._id] = []
-        for (let i = 0; i < this.rule.quanFei; i++) {
-          const niaoPai = await this.consumeCard(null)
-          if (niaoPai) {
-            playerNiaos[playerIndex][p._id].push(niaoPai)
-            p.niaoCards.push(niaoPai)
-          }
-        }
-      }
-    } else {
-      this.players[0].niaoCards = []
-      for (let i = 0; i < this.rule.feiNiao; i++) {
-        const niaoPai = await this.consumeCard(null)
-        if (niaoPai) {
-          if (!playerNiaos[0]) {
-            playerNiaos[0] = {}
-            playerNiaos[0][this.players[0]._id] = []
-          }
-          playerNiaos[0][this.players[0]._id].push(niaoPai)
-          this.players[0].niaoCards.push(niaoPai)
-        }
-      }
-    }
-
-    return playerNiaos
-  }
-
-  assignNiaos() {
-    this.players.forEach(p => {
-      const playerNiaos = p.niaoCards
-      const nPlayers = this.players.length
-      for (const niao of playerNiaos) {
-        const tail = niao % 10
-        const index = (tail + nPlayers - 1) % nPlayers
-        this.players[index].niaoCount += 1
-        this.players[index].buyer.push(p)
-      }
-    })
   }
 
   nextZhuang(): PlayerState {
