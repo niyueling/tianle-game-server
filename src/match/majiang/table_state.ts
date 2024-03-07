@@ -2015,7 +2015,6 @@ class TableState implements Serializable {
 
       if (check[Enums.hu]) {
         for (const p of check[Enums.hu]) {
-          console.warn("shortId %s huInfo %s", p.model.shortId, JSON.stringify(p.huInfo))
           this.actionResolver.appendAction(p, 'hu', p.huInfo);
         }
       }
@@ -2042,6 +2041,7 @@ class TableState implements Serializable {
         const p = this.players[j];
 
         const msg = this.actionResolver.allOptions(p)
+        console.warn("shortId %s huInfo %s", p.model.shortId, JSON.stringify(msg))
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
           msg["huType"] = {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}
