@@ -2014,8 +2014,10 @@ class TableState implements Serializable {
       }
 
       if (check[Enums.hu]) {
-        const p = check[Enums.hu][0];
-        this.actionResolver.appendAction(p, 'hu', p.huInfo);
+        for (const p of check[Enums.hu]) {
+          console.warn("shortId %s huInfo %s", p.model._id, JSON.stringify(p.huInfo))
+          this.actionResolver.appendAction(p, 'hu', p.huInfo);
+        }
       }
 
       if (check[Enums.pengGang]) {
@@ -2046,7 +2048,7 @@ class TableState implements Serializable {
           p.record('choice', card, msg)
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
-          // if (msg["hu"]) break;
+          if (msg["hu"]) break;
         }
       }
 
