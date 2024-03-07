@@ -2015,7 +2015,7 @@ class TableState implements Serializable {
 
       if (check[Enums.hu]) {
         for (const p of check[Enums.hu]) {
-          console.warn("shortId %s huInfo %s", p.model._id, JSON.stringify(p.huInfo))
+          console.warn("shortId %s huInfo %s", p.model.shortId, JSON.stringify(p.huInfo))
           this.actionResolver.appendAction(p, 'hu', p.huInfo);
         }
       }
