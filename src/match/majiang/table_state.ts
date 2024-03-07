@@ -922,7 +922,6 @@ class TableState implements Serializable {
       player.deposit(async () => {
         const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
         if (!lock) {
-          // console.warn("waitForDa lock", lock);
           return;
         }
 
@@ -2015,9 +2014,8 @@ class TableState implements Serializable {
       }
 
       if (check[Enums.hu]) {
-        for (const p of check[Enums.hu]) {
-          this.actionResolver.appendAction(p, 'hu', p.huInfo);
-        }
+        const p = check[Enums.hu][0];
+        this.actionResolver.appendAction(p, 'hu', p.huInfo);
       }
 
       if (check[Enums.pengGang]) {
@@ -2048,6 +2046,7 @@ class TableState implements Serializable {
           p.record('choice', card, msg)
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
+          // if (msg["hu"]) break;
         }
       }
 
