@@ -383,6 +383,9 @@ class TableState implements Serializable {
   // 破产用户人数
   brokeList: any[] = [];
 
+  // 是否进入巅峰对决
+  isAllHu: boolean = false;
+
   // 胡牌类型
   cardTypes: {
     cardId: any;
@@ -422,6 +425,7 @@ class TableState implements Serializable {
     this.isGameOver = false;
     this.brokeCount = 0;
     this.brokeList = [];
+    this.isAllHu = false;
   }
 
   toJSON() {
@@ -1467,6 +1471,24 @@ class TableState implements Serializable {
 
                 if (!player.isGameHu) {
                   player.isGameHu = true;
+                  let isAllHu = true;
+
+                  for (let i = 0; i < this.players.length; i++) {
+                    if (!player.isBroke && !player.isGameHu) {
+                      isAllHu = false;
+                    }
+                  }
+
+                  if (!this.isAllHu) {
+                    this.isAllHu = isAllHu;
+
+                    this.room.broadcast('game/gameCompetite', {
+                      ok: true,
+                      data: {
+                        roomId: this.room._id
+                      }
+                    });
+                  }
                 }
 
                 this.stateData[Enums.hu].remove(player);
@@ -1629,6 +1651,25 @@ class TableState implements Serializable {
 
             if (!player.isGameHu) {
               player.isGameHu = true;
+
+              let isAllHu = true;
+
+              for (let i = 0; i < this.players.length; i++) {
+                if (!player.isBroke && !player.isGameHu) {
+                  isAllHu = false;
+                }
+              }
+
+              if (!this.isAllHu) {
+                this.isAllHu = isAllHu;
+
+                this.room.broadcast('game/gameCompetite', {
+                  ok: true,
+                  data: {
+                    roomId: this.room._id
+                  }
+                });
+              }
             }
 
             this.room.broadcast('game/oppoZiMo', {
