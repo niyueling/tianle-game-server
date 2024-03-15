@@ -1251,10 +1251,15 @@ class PlayerState implements Serializable {
   deposit(callback) {
     let minutes = 15 * 1000
 
+    if (this.room.gameState.isAllHu) {
+      return ;
+    }
+
     if (!this.msgDispatcher) {
-      return
+      return ;
     }
     this.cancelTimeout()
+
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
         this.onDeposit = true
