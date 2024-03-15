@@ -1474,7 +1474,7 @@ class TableState implements Serializable {
                   let isAllHu = true;
 
                   for (let i = 0; i < this.players.length; i++) {
-                    if (!player.isBroke && !player.isGameHu) {
+                    if (!this.players[i].isBroke && !this.players[i].isGameHu) {
                       isAllHu = false;
                     }
                   }
@@ -1655,7 +1655,7 @@ class TableState implements Serializable {
               let isAllHu = true;
 
               for (let i = 0; i < this.players.length; i++) {
-                if (!player.isBroke && !player.isGameHu) {
+                if (!this.players[i].isBroke && !this.players[i].isGameHu) {
                   isAllHu = false;
                 }
               }
