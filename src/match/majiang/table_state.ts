@@ -1553,41 +1553,60 @@ class TableState implements Serializable {
                     const nextDo = async () => {
                       // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
-                      if (!this.isFaPai) {
-                        this.isFaPai = true;
+                      const cardTypes = await this.getCardTypes();
+                      const random = Math.floor(Math.random() * cardTypes.length);
+                      if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
+                        this.cardTypes = cardTypes[random];
+                      }
+                      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+                      const cardCount = this.isAllHu ? 3 : 1;
+                      const takeCards = [];
 
-                        try {
-                          const cardTypes = await this.getCardTypes();
-                          const random = Math.floor(Math.random() * cardTypes.length);
-                          if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-                            this.cardTypes = cardTypes[random];
+                      if (!this.isAllHu) {
+                        const newCard = await this.consumeCard(xiajia)
+                        if (newCard) {
+                          const msg = xiajia.takeCard(this.turn, newCard, false, false,
+                            {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount})
+
+                          if (!msg) {
+                            console.error("consume card error msg ", msg)
+                            return;
                           }
-                          const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-
+                          this.state = stateWaitDa;
+                          this.stateData = {da: xiajia, card: newCard, msg};
+                          const sendMsg = {index: this.players.indexOf(xiajia)}
+                          this.room.broadcast('game/oppoTakeCard', {
+                            ok: true,
+                            data: sendMsg
+                          }, xiajia.msgDispatcher)
+                          logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                        }
+                      } else {
+                        for (let i = 0; i < cardCount; i++) {
                           const newCard = await this.consumeCard(xiajia)
                           if (newCard) {
                             const msg = xiajia.takeCard(this.turn, newCard, false, false,
-                              {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount})
+                              {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}, false);
 
                             if (!msg) {
-                              this.isFaPai = false;
                               console.error("consume card error msg ", msg)
-                              return;
+                              continue;
                             }
+
+                            takeCards.push(msg);
+
                             this.state = stateWaitDa;
                             this.stateData = {da: xiajia, card: newCard, msg};
-                            const sendMsg = {index: this.players.indexOf(xiajia)}
-                            this.room.broadcast('game/oppoTakeCard', {
-                              ok: true,
-                              data: sendMsg
-                            }, xiajia.msgDispatcher)
-                            logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                            this.isFaPai = false;
                           }
-                        } catch (e) {
-                          this.isFaPai = false;
-                          console.warn(e);
                         }
+
+                        xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: takeCards})
+
+                        const sendMsg = {index: this.players.indexOf(xiajia)}
+                        this.room.broadcast('game/oppoTakeThreeCard', {
+                          ok: true,
+                          data: sendMsg
+                        }, xiajia.msgDispatcher)
                       }
                     }
 
@@ -1705,43 +1724,60 @@ class TableState implements Serializable {
                 const nextDo = async () => {
                   // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
 
-                  if (!this.isFaPai) {
-                    this.isFaPai = true;
+                  const cardTypes = await this.getCardTypes();
+                  const random = Math.floor(Math.random() * cardTypes.length);
+                  if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
+                    this.cardTypes = cardTypes[random];
+                  }
+                  const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+                  const cardCount = this.isAllHu ? 3 : 1;
+                  const takeCards = [];
 
-                    try {
-                      const cardTypes = await this.getCardTypes();
-                      const random = Math.floor(Math.random() * cardTypes.length);
-                      if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-                        this.cardTypes = cardTypes[random];
+                  if (!this.isAllHu) {
+                    const newCard = await this.consumeCard(xiajia)
+                    if (newCard) {
+                      const msg = xiajia.takeCard(this.turn, newCard, false, false,
+                        {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount})
+
+                      if (!msg) {
+                        console.error("consume card error msg ", msg)
+                        return;
                       }
-                      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-
+                      this.state = stateWaitDa;
+                      this.stateData = {da: xiajia, card: newCard, msg};
+                      const sendMsg = {index: this.players.indexOf(xiajia)}
+                      this.room.broadcast('game/oppoTakeCard', {
+                        ok: true,
+                        data: sendMsg
+                      }, xiajia.msgDispatcher)
+                      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                    }
+                  } else {
+                    for (let i = 0; i < cardCount; i++) {
                       const newCard = await this.consumeCard(xiajia)
                       if (newCard) {
                         const msg = xiajia.takeCard(this.turn, newCard, false, false,
-                          {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount});
+                          {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}, false);
 
                         if (!msg) {
-                          this.isFaPai = false;
                           console.error("consume card error msg ", msg)
-                          return;
+                          continue;
                         }
 
-                        this.stateData = {da: xiajia, card: newCard, msg};
-                        this.state = stateWaitDa;
+                        takeCards.push(msg);
 
-                        const sendMsg = {index: this.players.indexOf(xiajia)}
-                        this.room.broadcast('game/oppoTakeCard', {
-                          ok: true,
-                          data: sendMsg
-                        }, xiajia.msgDispatcher)
-                        logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
-                        this.isFaPai = false;
+                        this.state = stateWaitDa;
+                        this.stateData = {da: xiajia, card: newCard, msg};
                       }
-                    } catch (e) {
-                      this.isFaPai = false;
-                      console.warn(e);
                     }
+
+                    xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: takeCards})
+
+                    const sendMsg = {index: this.players.indexOf(xiajia)}
+                    this.room.broadcast('game/oppoTakeThreeCard', {
+                      ok: true,
+                      data: sendMsg
+                    }, xiajia.msgDispatcher)
                   }
                 }
 

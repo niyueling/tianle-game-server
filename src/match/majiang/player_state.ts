@@ -347,7 +347,7 @@ class PlayerState implements Serializable {
   }
 
   @recordChoiceAfterTakeCard
-  takeCard(turn: number, card: number, gangGuo: boolean = false, afterQiaoXiang = false, huType) {
+  takeCard(turn: number, card: number, gangGuo: boolean = false, afterQiaoXiang = false, huType, send = true) {
     // this.gang = gangGuo  // fanmeng 计算杠上开花
     let canTake = true
     this.emitter.emit('willTakeCard', () => {
@@ -407,7 +407,9 @@ class PlayerState implements Serializable {
       msg.huType = huType;
       if (this.hadQiaoXiang) {
         // 不用选择 直接胡
-        this.sendMessage('game/TakeCard', {ok: true, data: msg})
+        if (send) {
+          this.sendMessage('game/TakeCard', {ok: true, data: msg})
+        }
         this.emitter.emit('waitForDa', msg)
         this.room.gameState.stateData.card = card
         return this.emitter.emit(Enums.hu, this.turn, card)
@@ -426,7 +428,11 @@ class PlayerState implements Serializable {
       this.freeCard = card
     }
 
-    const ret = this.sendMessage('game/TakeCard', {ok: true, data: msg})
+    let ret = {};
+
+    if (send) {
+      ret = this.sendMessage('game/TakeCard', {ok: true, data: msg})
+    }
     // 禁止触发旧麻将机器人
     this.emitter.emit('waitForDa', msg)
 
