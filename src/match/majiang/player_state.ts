@@ -428,7 +428,7 @@ class PlayerState implements Serializable {
       this.freeCard = card
     }
 
-    let ret = {};
+    let ret = msg;
 
     if (send) {
       ret = this.sendMessage('game/TakeCard', {ok: true, data: msg})
