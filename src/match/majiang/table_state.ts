@@ -1467,12 +1467,6 @@ class TableState implements Serializable {
                   }
                 });
 
-                //第一次胡牌自动托管
-                if (!player.onDeposit) {
-                  player.onDeposit = true
-                  await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-                }
-
                 if (!player.isGameHu) {
                   player.isGameHu = true;
                 }
@@ -1494,6 +1488,12 @@ class TableState implements Serializable {
                       roomId: this.room._id
                     }
                   });
+                }
+
+                //第一次胡牌自动托管
+                if (!player.onDeposit && !this.isAllHu) {
+                  player.onDeposit = true
+                  await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                 }
 
                 this.stateData[Enums.hu].remove(player);
@@ -1667,12 +1667,6 @@ class TableState implements Serializable {
               }
             });
 
-            //第一次胡牌自动托管
-            if (!player.onDeposit) {
-              player.onDeposit = true
-              await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-            }
-
             if (!player.isGameHu) {
               player.isGameHu = true;
             }
@@ -1694,6 +1688,12 @@ class TableState implements Serializable {
                   roomId: this.room._id
                 }
               });
+            }
+
+            //第一次胡牌自动托管
+            if (!player.onDeposit && !this.isAllHu) {
+              player.onDeposit = true
+              await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
             }
 
             this.room.broadcast('game/oppoZiMo', {
