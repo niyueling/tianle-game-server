@@ -1471,24 +1471,25 @@ class TableState implements Serializable {
 
                 if (!player.isGameHu) {
                   player.isGameHu = true;
-                  let isAllHu = true;
+                }
 
-                  for (let i = 0; i < this.players.length; i++) {
-                    if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                      isAllHu = false;
+                let isAllHu = true;
+
+                for (let i = 0; i < this.players.length; i++) {
+                  if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+                    isAllHu = false;
+                  }
+                }
+
+                if (!this.isAllHu && isAllHu) {
+                  this.isAllHu = isAllHu;
+
+                  this.room.broadcast('game/gameCompetite', {
+                    ok: true,
+                    data: {
+                      roomId: this.room._id
                     }
-                  }
-
-                  if (!this.isAllHu && isAllHu) {
-                    this.isAllHu = isAllHu;
-
-                    this.room.broadcast('game/gameCompetite', {
-                      ok: true,
-                      data: {
-                        roomId: this.room._id
-                      }
-                    });
-                  }
+                  });
                 }
 
                 this.stateData[Enums.hu].remove(player);
@@ -1651,25 +1652,25 @@ class TableState implements Serializable {
 
             if (!player.isGameHu) {
               player.isGameHu = true;
+            }
 
-              let isAllHu = true;
+            let isAllHu = true;
 
-              for (let i = 0; i < this.players.length; i++) {
-                if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                  isAllHu = false;
+            for (let i = 0; i < this.players.length; i++) {
+              if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+                isAllHu = false;
+              }
+            }
+
+            if (!this.isAllHu && isAllHu) {
+              this.isAllHu = isAllHu;
+
+              this.room.broadcast('game/gameCompetite', {
+                ok: true,
+                data: {
+                  roomId: this.room._id
                 }
-              }
-
-              if (!this.isAllHu && isAllHu) {
-                this.isAllHu = isAllHu;
-
-                this.room.broadcast('game/gameCompetite', {
-                  ok: true,
-                  data: {
-                    roomId: this.room._id
-                  }
-                });
-              }
+              });
             }
 
             this.room.broadcast('game/oppoZiMo', {
