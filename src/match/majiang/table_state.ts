@@ -1044,6 +1044,10 @@ class TableState implements Serializable {
       await this.onPlayerDa(player, turn, card);
     })
 
+    player.on(Enums.competiteHu, async (turn, cards) => {
+      await this.onCompetiteHu(player, turn, cards);
+    })
+
     player.on(Enums.broke, async () => {
       await this.onPlayerBroke(player);
     })
@@ -1971,6 +1975,10 @@ class TableState implements Serializable {
     await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
 
+  async onCompetiteHu(player, turn, cards) {
+
+  }
+
   async onPlayerDa(player, turn, card) {
     const index = this.players.indexOf(player);
     this.logger.info('da player-%s card:%s lastDa %s', index, card, this.lastDa ? this.lastDa._id : null)
@@ -2127,7 +2135,7 @@ class TableState implements Serializable {
           p.record('choice', card, msg)
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
-          // if (msg["hu"]) break;
+          if (msg["hu"]) break;
         }
       }
 
