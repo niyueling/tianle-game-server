@@ -1425,17 +1425,11 @@ class TableState implements Serializable {
       }
     })
     player.on(Enums.hu, async (turn, card) => {
-      // logger.info('hu player %s state %s card %s cards %s', index, this.state, card, JSON.stringify(player.cards));
       let from
       const chengbaoStarted = this.remainCards <= 3;
 
-      // if (this.turn !== turn) {
-      //   return player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huParamTurnInvaid});
-      // }
-
       const lock = await service.utils.grantLockOnce(RedisKey.huPaiLock + player._id, 1);
       if (!lock) {
-        // console.warn("waitForDoSomeThing lock", lock);
         return;
       }
 
@@ -1833,7 +1827,6 @@ class TableState implements Serializable {
 
               player.sendMessage('game/huReply', {ok: true, data: {card, from}})
               this.stateData.whom.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-              // this.stateData.whom.recordGameEvent(Enums.chengBao, {})
               this.room.broadcast('game/oppoHu', {
                 ok: true,
                 data: {turn, card, from, index, constellationCards: player.constellationCards,}
@@ -1873,12 +1866,11 @@ class TableState implements Serializable {
               }
 
               if (xiajia) {
-                // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
+
               } else {
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                 const nextZhuang = this.nextZhuang()
                 await this.gameAllOver(states, [], nextZhuang);
-                // console.warn('No unbroke player found as the next player');
               }
 
               const env = {card, from, turn: this.turn}
