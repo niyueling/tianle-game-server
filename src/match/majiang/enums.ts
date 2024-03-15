@@ -92,6 +92,9 @@ const enums = {
   openCard: 'openCard',
   startDeposit: 'startDeposit',
   competiteHu: 'competiteHu',
+  topHu: 'topHu',
+  topDa: 'topDa',
+  topGang: 'topGang',
 
   guo: 'guo',
   gangByOtherDa: 'gangByOtherDa',

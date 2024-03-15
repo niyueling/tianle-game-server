@@ -962,7 +962,11 @@ class TableState implements Serializable {
                 break
               default:
                 const card = this.promptWithPattern(player, this.lastTakeCard);
-                player.emitter.emit(Enums.da, this.turn, card)
+                if (this.isAllHu) {
+                  player.emitter.emit(Enums.topDa, this.turn, card)
+                } else {
+                  player.emitter.emit(Enums.da, this.turn, card)
+                }
                 player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
                 break
             }
@@ -1042,6 +1046,9 @@ class TableState implements Serializable {
 
     player.on(Enums.da, async (turn, card) => {
       await this.onPlayerDa(player, turn, card);
+    })
+    player.on(Enums.topDa, async (turn, card) => {
+      await this.onPlayerCompetiteDa(player, turn, card);
     })
 
     player.on(Enums.competiteHu, async (turn, cards) => {
@@ -1918,6 +1925,55 @@ class TableState implements Serializable {
       }
     });
 
+    player.on(Enums.topHu, async (turn, card) => {
+      let from;
+
+      const cardTypes = await this.getCardTypes();
+      const random = Math.floor(Math.random() * cardTypes.length);
+      if (!this.cardTypes.cardId) {
+        this.cardTypes = cardTypes[random];
+      }
+      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+
+      const ok = player.zimo(card, turn === 1, this.remainCards === 0);
+      if (ok && player.daHuPai(card, null)) {
+        this.lastDa = player;
+        from = this.atIndex(this.lastDa);
+        await player.sendMessage('game/huReply', {
+          ok: true,
+          data: {
+            card, from: this.atIndex(player), type: "zimo", constellationCards: player.constellationCards,
+            huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante}
+          }
+        });
+
+        this.room.broadcast('game/oppoZiMo', {
+          ok: true,
+          data: {
+            turn, card, from, index, constellationCards: player.constellationCards, huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+          }
+        }, player.msgDispatcher);
+        await this.gameOver(null, player);
+      } else {
+        await GameCardRecord.create({
+          playerIs: player._id,
+          cards: player.cards,
+          calcCard: card,
+          room: this.room._id,
+          game: "majiang",
+          type: 1,
+        })
+        player.sendMessage('game/huReply', {
+          ok: false,
+          info: TianleErrorCode.huInvaid,
+          data: {type: "ziMo"}
+        });
+
+        const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+        await this.gameAllOver(states, [], []);
+      }
+    });
+
 
     player.on(Enums.guo, async (turn, card) => {
       await this.onPlayerGuo(player, turn, card)
@@ -1999,12 +2055,39 @@ class TableState implements Serializable {
 
     // 处理打牌
     for (let i = 0; i < daArrs.length; i++) {
-      player.emitter.emit(Enums.da, this.turn, daArrs[i].card);
+      player.emitter.emit(Enums.topDa, this.turn, daArrs[i].card);
     }
 
     // 处理胡牌
     for (let i = 0; i < huArrs.length; i++) {
-      player.emitter.emit(Enums.hu, this.turn, huArrs[i].card);
+      player.emitter.emit(Enums.topHu, this.turn, huArrs[i].card);
+    }
+  }
+
+  async onPlayerCompetiteDa(player, turn, card) {
+    const index = this.players.indexOf(player);
+    let from;
+
+    if (this.state !== stateWaitDa) {
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError});
+      return;
+    } else if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound});
+      return;
+    }
+
+    const ok = player.daPai(card);
+    if (!ok) {
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard});
+      return;
+    }
+
+    this.lastDa = player;
+    player.cancelTimeout();
+
+    if (ok) {
+      await player.sendMessage('game/daReply', {ok: true, data: card});
+      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
     }
   }
 
