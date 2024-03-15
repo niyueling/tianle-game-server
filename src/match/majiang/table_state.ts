@@ -1976,7 +1976,36 @@ class TableState implements Serializable {
   }
 
   async onCompetiteHu(player, turn, cards) {
+    let gangArrs = [];
+    let daArrs = [];
+    let huArrs = [];
 
+    for (let i = 0; i < cards.length; i++) {
+      // if (cards[i].gang) {
+      //   gangArrs.push(cards);
+      // }
+      if (cards[i].hu) {
+        huArrs.push(cards);
+      }
+      if (!cards[i].hu) {
+        daArrs.push(cards);
+      }
+    }
+
+    // 先处理杠牌
+    for (let i = 0; i < gangArrs.length; i++) {
+      player.emitter.emit(Enums.gangBySelf, this.turn, gangArrs[i].card);
+    }
+
+    // 处理打牌
+    for (let i = 0; i < daArrs.length; i++) {
+      player.emitter.emit(Enums.da, this.turn, daArrs[i].card);
+    }
+
+    // 处理胡牌
+    for (let i = 0; i < huArrs.length; i++) {
+      player.emitter.emit(Enums.hu, this.turn, huArrs[i].card);
+    }
   }
 
   async onPlayerDa(player, turn, card) {
@@ -2128,13 +2157,16 @@ class TableState implements Serializable {
         const p = this.players[j];
 
         const msg = this.actionResolver.allOptions(p)
-        console.warn("shortId %s huInfo %s", p.model.shortId, JSON.stringify(msg))
+        if (msg) {
+          console.warn("index %s huInfo %s", this.atIndex(p), JSON.stringify(msg))
+        }
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
           msg["huType"] = {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}
           p.record('choice', card, msg)
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
+
           if (msg["hu"]) break;
         }
       }
