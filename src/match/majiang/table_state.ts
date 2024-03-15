@@ -1472,24 +1472,24 @@ class TableState implements Serializable {
                   player.isGameHu = true;
                 }
 
-                let isAllHu = true;
+                // let isAllHu = false;
 
-                for (let i = 0; i < this.players.length; i++) {
-                  if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                    isAllHu = false;
-                  }
-                }
+                // for (let i = 0; i < this.players.length; i++) {
+                //   if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+                //     isAllHu = false;
+                //   }
+                // }
 
-                if (!this.isAllHu && isAllHu) {
-                  this.isAllHu = isAllHu;
-
-                  this.room.broadcast('game/gameCompetite', {
-                    ok: true,
-                    data: {
-                      roomId: this.room._id
-                    }
-                  });
-                }
+                // if (!this.isAllHu && isAllHu) {
+                //   this.isAllHu = isAllHu;
+                //
+                //   this.room.broadcast('game/gameCompetite', {
+                //     ok: true,
+                //     data: {
+                //       roomId: this.room._id
+                //     }
+                //   });
+                // }
 
                 //第一次胡牌自动托管
                 if (!player.onDeposit && !this.isAllHu) {
@@ -1672,24 +1672,24 @@ class TableState implements Serializable {
               player.isGameHu = true;
             }
 
-            let isAllHu = true;
-
-            for (let i = 0; i < this.players.length; i++) {
-              if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                isAllHu = false;
-              }
-            }
-
-            if (!this.isAllHu && isAllHu) {
-              this.isAllHu = isAllHu;
-
-              this.room.broadcast('game/gameCompetite', {
-                ok: true,
-                data: {
-                  roomId: this.room._id
-                }
-              });
-            }
+            // let isAllHu = true;
+            //
+            // for (let i = 0; i < this.players.length; i++) {
+            //   if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+            //     isAllHu = false;
+            //   }
+            // }
+            //
+            // if (!this.isAllHu && isAllHu) {
+            //   this.isAllHu = isAllHu;
+            //
+            //   this.room.broadcast('game/gameCompetite', {
+            //     ok: true,
+            //     data: {
+            //       roomId: this.room._id
+            //     }
+            //   });
+            // }
 
             //第一次胡牌自动托管
             if (!player.onDeposit && !this.isAllHu) {
