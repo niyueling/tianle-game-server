@@ -1479,7 +1479,7 @@ class TableState implements Serializable {
                     }
                   }
 
-                  if (!this.isAllHu) {
+                  if (!this.isAllHu && isAllHu) {
                     this.isAllHu = isAllHu;
 
                     this.room.broadcast('game/gameCompetite', {
@@ -1660,7 +1660,7 @@ class TableState implements Serializable {
                 }
               }
 
-              if (!this.isAllHu) {
+              if (!this.isAllHu && isAllHu) {
                 this.isAllHu = isAllHu;
 
                 this.room.broadcast('game/gameCompetite', {
