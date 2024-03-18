@@ -872,7 +872,7 @@ class TableState implements Serializable {
   }
 
   async getCardTypes() {
-    return CardTypeModel.where({level: 1, cardId: {$gte: 45, $lte: 50}}).find();
+    return CardTypeModel.where({level: 1}).find();
   }
 
   atIndex(player: PlayerState) {
@@ -1447,9 +1447,6 @@ class TableState implements Serializable {
         if (!this.cardTypes.cardId) {
           this.cardTypes = cardTypes[random];
         }
-
-        // 测试大特效
-        this.cardTypes = cardTypes[random];
 
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
