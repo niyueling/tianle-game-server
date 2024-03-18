@@ -9,7 +9,7 @@ module.exports = {
     "filename": "mahjong.log"
   },
   rabbitmq: {
-    url: "amqp://user:password@localhost:5672"
+    url: "amqp://user:password@localhost:5692"
   },
   redis: {
     port: 8389,
