@@ -56,5 +56,5 @@ const schema = new mongoose.Schema({
   }
 });
 
-const Task = mongoose.model('Task', schema);
+const Task = mongoose.model('DailyTask', schema);
 export default Task;
