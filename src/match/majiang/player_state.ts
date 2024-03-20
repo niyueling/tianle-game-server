@@ -839,6 +839,35 @@ class PlayerState implements Serializable {
     return false
   }
 
+  competiteZimo(card, first, haiDi, cards) {
+    if (cards[card] > 0) {
+      cards.first = first
+      cards.haiDi = haiDi
+      cards.takeSelfCard = true
+      cards.gang = this.gang
+      cards.qiaoXiang = this.hadQiaoXiang
+      cards.alreadyTakenCard = this.alreadyTakenCard
+
+      const checkResult = HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
+      if (checkResult.hu) {
+        checkResult.zhuang = this.zhuang
+
+        this.recordGameEvent(Enums.huCards, card)
+        this.recordGameEvent(Enums.hu, checkResult)
+        this.recordGameEvent(Enums.zimo, card)
+        this.emitter.emit('recordZiMo', checkResult)
+        this.room.recordPlayerEvent('ziMo', this.model._id)
+        this.room.recordPlayerEvent(`fan${checkResult.fan}`, this.model._id)
+
+        this.record('ziMo', card)
+        return true
+      }
+    }
+
+    console.warn(`zimo error card %s this.cards[card] %s`, card, this.cards[card])
+    return false
+  }
+
   daPai(card) {
     const forbidCards = this.forbidCards || []
     if (this.getCardsArray().length > 2) {
@@ -981,7 +1010,7 @@ class PlayerState implements Serializable {
     })
     playerSocket.on('game/competiteHu', msg => {
       this.cancelTimeout()
-      this.emitter.emit(Enums.competiteHu, msg.turn, msg.cards)
+      this.emitter.emit(Enums.competiteHu, msg)
     })
     playerSocket.on('game/chi', msg => {
       this.cancelTimeout()
