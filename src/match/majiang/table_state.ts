@@ -1481,17 +1481,6 @@ class TableState implements Serializable {
                   }
                 }
 
-                if (!this.isAllHu && isAllHu) {
-                  this.isAllHu = isAllHu;
-
-                  this.room.broadcast('game/gameCompetite', {
-                    ok: true,
-                    data: {
-                      roomId: this.room._id
-                    }
-                  });
-                }
-
                 //第一次胡牌自动托管
                 if (!player.onDeposit && !this.isAllHu) {
                   player.onDeposit = true
@@ -1540,6 +1529,17 @@ class TableState implements Serializable {
                 }
                 await this.gameOver(this.players[from], player);
                 logger.info('hu player %s gameover', index);
+
+                if (!this.isAllHu && isAllHu) {
+                  this.isAllHu = isAllHu;
+
+                  this.room.broadcast('game/gameCompetite', {
+                    ok: true,
+                    data: {
+                      roomId: this.room._id
+                    }
+                  });
+                }
 
                 if (this.state !== stateGameOver) {
                   this.turn++;
@@ -1689,17 +1689,6 @@ class TableState implements Serializable {
               }
             }
 
-            if (!this.isAllHu && isAllHu) {
-              this.isAllHu = isAllHu;
-
-              this.room.broadcast('game/gameCompetite', {
-                ok: true,
-                data: {
-                  roomId: this.room._id
-                }
-              });
-            }
-
             //第一次胡牌自动托管
             if (!player.onDeposit && !this.isAllHu) {
               player.onDeposit = true
@@ -1719,6 +1708,17 @@ class TableState implements Serializable {
             }, player.msgDispatcher);
             await this.gameOver(null, player);
             this.logger.info('hu  player %s zimo gameover', index)
+
+            if (!this.isAllHu && isAllHu) {
+              this.isAllHu = isAllHu;
+
+              this.room.broadcast('game/gameCompetite', {
+                ok: true,
+                data: {
+                  roomId: this.room._id
+                }
+              });
+            }
 
             if (this.state !== stateGameOver) {
               this.turn++;
