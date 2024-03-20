@@ -1567,6 +1567,8 @@ class TableState implements Serializable {
                       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
                       const cardCount = this.isAllHu ? 3 : 1;
                       const takeCards = [];
+                      let gangCards = [];
+                      const huCards = [];
 
                       if (!this.isAllHu) {
                         const newCard = await this.consumeCard(xiajia)
@@ -1599,14 +1601,20 @@ class TableState implements Serializable {
                               continue;
                             }
 
-                            takeCards.push(msg);
+                            takeCards.push(msg.card);
+                            if (msg.gang) {
+                              gangCards = [...gangCards, ...msg.gang];
+                            }
+                            if (msg.hu) {
+                              huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
+                            }
 
                             this.state = stateWaitDa;
                             this.stateData = {da: xiajia, card: newCard, msg};
                           }
                         }
 
-                        xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: takeCards})
+                        xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
 
                         const sendMsg = {index: this.players.indexOf(xiajia)}
                         this.room.broadcast('game/oppoTakeThreeCard', {
@@ -1738,6 +1746,8 @@ class TableState implements Serializable {
                   const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
                   const cardCount = this.isAllHu ? 3 : 1;
                   const takeCards = [];
+                  let gangCards = [];
+                  const huCards = [];
 
                   if (!this.isAllHu) {
                     const newCard = await this.consumeCard(xiajia)
@@ -1770,14 +1780,20 @@ class TableState implements Serializable {
                           continue;
                         }
 
-                        takeCards.push(msg);
+                        takeCards.push(msg.card);
+                        if (msg.gang) {
+                          gangCards = [...gangCards, ...msg.gang];
+                        }
+                        if (msg.hu) {
+                          huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
+                        }
 
                         this.state = stateWaitDa;
                         this.stateData = {da: xiajia, card: newCard, msg};
                       }
                     }
 
-                    xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: takeCards})
+                    xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
 
                     const sendMsg = {index: this.players.indexOf(xiajia)}
                     this.room.broadcast('game/oppoTakeThreeCard', {
