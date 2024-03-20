@@ -1570,6 +1570,8 @@ class TableState implements Serializable {
                       let gangCards = [];
                       const huCards = [];
 
+                      const cards = xiajia.cards.slice();
+
                       if (!this.isAllHu) {
                         const newCard = await this.consumeCard(xiajia)
                         if (newCard) {
@@ -1593,8 +1595,8 @@ class TableState implements Serializable {
                         for (let i = 0; i < cardCount; i++) {
                           const newCard = await this.consumeCard(xiajia)
                           if (newCard) {
-                            const msg = xiajia.takeCard(this.turn, newCard, false, false,
-                              {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}, false);
+                            const msg = xiajia.takeCompetiteCard(this.turn, newCard,
+                              {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}, cards);
 
                             if (!msg) {
                               console.error("consume card error msg ", msg)
@@ -1748,6 +1750,7 @@ class TableState implements Serializable {
                   const takeCards = [];
                   let gangCards = [];
                   const huCards = [];
+                  const cards = xiajia.cards.slice();
 
                   if (!this.isAllHu) {
                     const newCard = await this.consumeCard(xiajia)
@@ -1772,8 +1775,8 @@ class TableState implements Serializable {
                     for (let i = 0; i < cardCount; i++) {
                       const newCard = await this.consumeCard(xiajia)
                       if (newCard) {
-                        const msg = xiajia.takeCard(this.turn, newCard, false, false,
-                          {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}, false);
+                        const msg = xiajia.takeCompetiteCard(this.turn, newCard, {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount
+                          > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount}, cards);
 
                         if (!msg) {
                           console.error("consume card error msg ", msg)

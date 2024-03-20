@@ -358,12 +358,6 @@ class PlayerState implements Serializable {
     }
 
     this.huForbiddenCards = []
-    // 敲响check
-    // if (!afterQiaoXiang && !this.hadQiaoXiang && this.checkQiaoXiang()) {
-    //   this.takeCardStash = {turn, card, gangGuo}
-    //   this.mayQiaoXiang()
-    //   return {};
-    // }
 
     this.lastCardToken = card
     this.cards[card]++
@@ -433,6 +427,84 @@ class PlayerState implements Serializable {
     if (send) {
       ret = this.sendMessage('game/TakeCard', {ok: true, data: msg})
     }
+    // 禁止触发旧麻将机器人
+    this.emitter.emit('waitForDa', msg)
+
+    this.alreadyTakenCard = true
+
+    return ret
+  }
+
+  @recordChoiceAfterTakeCard
+  takeCompetiteCard(turn: number, card: number, huType, cards) {
+    let canTake = true
+    this.emitter.emit('willTakeCard', () => {
+      canTake = false
+    })
+    if (!canTake) {
+      return null
+    }
+
+    this.huForbiddenCards = []
+
+    this.lastCardToken = card
+    cards[card]++
+    const msg = {card, turn, gang: null, hu: false, huInfo: null, huType: {}}
+    this.recorder.recordUserEvent(this, 'moPai', card)
+
+    if (!this.hadQiaoXiang) {
+      for (let i = 1; i < 53; i++) {
+        if (this.gangForbid.indexOf(i) >= 0) continue
+
+        if (this.caiShen.includes(i)) continue
+
+        if (cards[i] === 4) {
+          if (!msg.gang) {
+            msg.gang = [[i, 'anGang']]
+          } else {
+            msg.gang.push([i, 'anGang'])
+          }
+        }
+        if (cards[i] === 1 && this.events.peng && this.events.peng.contains(i) && !this.isForbidForGang(i)) {
+          this.gangForbid.push(card)
+          if (!msg.gang) {
+            msg.gang = [[i, 'buGang']]
+          } else {
+            msg.gang.push([i, 'buGang'])
+          }
+        }
+      }
+
+      if (msg.gang) {
+        msg.gang.forEach(gangOpt => {
+          if (gangOpt[1] === 'mingGang') {
+            this.gangForbid.push(gangOpt[0])
+          }
+        })
+      }
+    }
+
+    let huResult = this.checkZiMo()
+    if (huResult.hu) {
+      msg.huType = huType;
+      if (this.hadQiaoXiang) {
+        this.emitter.emit('waitForDa', msg)
+        this.room.gameState.stateData.card = card
+        return this.emitter.emit(Enums.hu, this.turn, card)
+      }
+
+      if (this.rule.useCaiShen && (this.rule.keJiePao || !this.rule.keJiePao && this.rule.hzlz_option === 'qidui')) {
+        huResult = {
+          qiDui: huResult.qiDui || huResult.haoQi
+        }
+      }
+      msg.huInfo = huResult
+      msg.hu = true
+      this.huForbiddenCards = []
+    }
+
+    let ret = msg;
+
     // 禁止触发旧麻将机器人
     this.emitter.emit('waitForDa', msg)
 
