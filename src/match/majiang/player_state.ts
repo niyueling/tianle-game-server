@@ -921,6 +921,21 @@ class PlayerState implements Serializable {
     return false
   }
 
+  getCardList(cards) {
+    const cardArray = []
+    const pushN = (c, n) => {
+      for (let i = 0; i < n; i++) {
+        cardArray.push(c)
+      }
+    }
+
+    cards.forEach((v, c) => {
+      pushN(c, v)
+    })
+
+    return cardArray
+  }
+
   competiteZimo(card, first, haiDi, cards) {
     if (cards[card] > 0) {
       cards.first = first
@@ -931,7 +946,7 @@ class PlayerState implements Serializable {
       cards.alreadyTakenCard = this.alreadyTakenCard
 
       const checkResult = HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
-      console.warn("checkResult-%s", JSON.stringify(checkResult))
+      console.warn("checkResult-%s cards-%s", JSON.stringify(checkResult), JSON.stringify(this.getCardList(cards)))
       if (checkResult.hu) {
         checkResult.zhuang = this.zhuang
 
