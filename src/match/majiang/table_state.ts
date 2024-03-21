@@ -1557,8 +1557,6 @@ class TableState implements Serializable {
 
                   if (xiajia) {
                     const nextDo = async () => {
-                      // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
-
                       const cardTypes = await this.getCardTypes();
                       const random = Math.floor(Math.random() * cardTypes.length);
                       if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
@@ -1569,7 +1567,8 @@ class TableState implements Serializable {
                       const takeCards = [];
                       let gangCards = [];
                       const huCards = [];
-
+                      xiajia.oldCards = xiajia.cards.slice();
+                      xiajia.competiteCards = [];
                       const cards = xiajia.cards.slice();
 
                       if (!this.isAllHu) {
@@ -1579,7 +1578,7 @@ class TableState implements Serializable {
                             {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount})
 
                           if (!msg) {
-                            console.error("consume card error msg ", msg)
+                            console.error("consume card error msg ", msg);
                             return;
                           }
                           this.state = stateWaitDa;
@@ -1589,7 +1588,7 @@ class TableState implements Serializable {
                             ok: true,
                             data: sendMsg
                           }, xiajia.msgDispatcher)
-                          logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                          logger.info('da broadcast game/oppoTakeCard msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
                         }
                       } else {
                         for (let i = 0; i < cardCount; i++) {
@@ -1604,6 +1603,7 @@ class TableState implements Serializable {
                             }
 
                             takeCards.push(msg.card);
+                            xiajia.competiteCards.push(msg)
                             if (msg.gang) {
                               gangCards = [...gangCards, ...msg.gang];
                             }
@@ -1738,8 +1738,6 @@ class TableState implements Serializable {
 
               if (xiajia) {
                 const nextDo = async () => {
-                  // console.warn(`xiajia: ${xiajia.model.shortId}, index: ${this.players.indexOf(xiajia)}`);
-
                   const cardTypes = await this.getCardTypes();
                   const random = Math.floor(Math.random() * cardTypes.length);
                   if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
@@ -1751,6 +1749,8 @@ class TableState implements Serializable {
                   let gangCards = [];
                   const huCards = [];
                   const cards = xiajia.cards.slice();
+                  xiajia.competiteCards = [];
+                  xiajia.oldCards = xiajia.cards.slice();
 
                   if (!this.isAllHu) {
                     const newCard = await this.consumeCard(xiajia)
@@ -1769,7 +1769,7 @@ class TableState implements Serializable {
                         ok: true,
                         data: sendMsg
                       }, xiajia.msgDispatcher)
-                      logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
+                      logger.info('da broadcast game/oppoTakeCard msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards)
                     }
                   } else {
                     for (let i = 0; i < cardCount; i++) {
@@ -1784,6 +1784,7 @@ class TableState implements Serializable {
                         }
 
                         takeCards.push(msg.card);
+                        xiajia.competiteCards.push(msg);
                         if (msg.gang) {
                           gangCards = [...gangCards, ...msg.gang];
                         }
@@ -1808,7 +1809,6 @@ class TableState implements Serializable {
 
                 setTimeout(nextDo, 2500);
               } else {
-                // console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                 const nextZhuang = this.nextZhuang()
                 await this.gameAllOver(states, [], nextZhuang);
@@ -2095,6 +2095,8 @@ class TableState implements Serializable {
       const takeCards = [];
       let gangCards = [];
       const huCards = [];
+      xiajia.oldCards = xiajia.cards.slice();
+      xiajia.competiteCards = [];
 
       for (let i = 0; i < 3; i++) {
         const newCard = await this.consumeCard(xiajia);

@@ -226,6 +226,12 @@ class PlayerState implements Serializable {
 
   isMingCard = false
 
+  // 巅峰对决摸到的牌
+  competiteCards: any[] = []
+
+  // 巅峰对决前的手牌
+  oldCards: any[] = []
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -264,6 +270,9 @@ class PlayerState implements Serializable {
     this.recorder = new DummyRecorder()
     this.alreadyTakenCard = false
     this.isMingCard = false;
+    this.competiteCards = [];
+    this.oldCards = [];
+
   }
 
   setGameRecorder(r) {
