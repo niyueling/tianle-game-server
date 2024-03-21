@@ -980,7 +980,7 @@ class TableState implements Serializable {
                 }
               } else {
                 const msg = {
-                  cards: player.competiteCards,
+                  cards: [],
                   daCards: [],
                   huCards: []
                 };
@@ -991,6 +991,8 @@ class TableState implements Serializable {
                   } else {
                     msg.daCards.push(player.competiteCards[i].card);
                   }
+
+                  msg.cards.push(player.competiteCards[i].card);
                 }
 
                 console.warn("robot competite msg %s", JSON.stringify(msg));
@@ -1000,7 +1002,7 @@ class TableState implements Serializable {
               const card = this.promptWithPattern(player, this.lastTakeCard);
               if (this.isAllHu) {
                 const msg = {
-                  cards: player.competiteCards,
+                  cards: [],
                   daCards: [],
                   huCards: []
                 };
@@ -1011,6 +1013,8 @@ class TableState implements Serializable {
                   } else {
                     msg.daCards.push(player.competiteCards[i].card);
                   }
+
+                  msg.cards.push(player.competiteCards[i].card);
                 }
 
                 console.warn("robot competite msg %s", JSON.stringify(msg));
