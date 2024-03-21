@@ -2166,13 +2166,13 @@ class TableState implements Serializable {
 
     // 处理打牌
     for (let i = 0; i < msg.daCards.length; i++) {
-      const daMsg = await this.onPlayerCompetiteDa(player, cards, msg.daCards[i]);
+      const daMsg = await this.onPlayerCompetiteDa(player, cards.slice(), msg.daCards[i]);
       msgs.push({type: "da", card: daMsg.card, index: daMsg.index});
     }
 
     // 处理胡牌
     for (let i = 0; i < msg.huCards.length; i++) {
-      const huMsg = await this.onPlayerCompetiteHu(player, cards, msg.huCards[i]);
+      const huMsg = await this.onPlayerCompetiteHu(player, cards.slice(), msg.huCards[i]);
       console.warn("huMsg-%s", JSON.stringify(huMsg))
 
       if (huMsg) {
