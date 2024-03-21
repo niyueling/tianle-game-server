@@ -2086,7 +2086,7 @@ class TableState implements Serializable {
 
     // 处理胡牌
     for (let i = 0; i < msg.huCards.length; i++) {
-      const huMsg = await this.onPlayerCompetiteHu(player, cards, msg.daCards[i]);
+      const huMsg = await this.onPlayerCompetiteHu(player, cards, msg.huCards[i]);
       msgs.push({type: "hu", card: huMsg.card, index: huMsg.from, constellationCards: huMsg.constellationCards, huType: huMsg.huType});
     }
 
