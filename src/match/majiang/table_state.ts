@@ -2191,7 +2191,6 @@ class TableState implements Serializable {
     // 给下家摸牌
     let xiajia = null;
     let startIndex = (this.atIndex(player) + 1) % this.players.length;
-    console.warn(this.atIndex(player), startIndex);
 
     // 从 startIndex 开始查找未破产的玩家
     for (let i = startIndex; i < startIndex + this.players.length; i++) {
@@ -2249,7 +2248,7 @@ class TableState implements Serializable {
 
         xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
 
-        const sendMsg = {index: this.players.indexOf(xiajia)}
+        const sendMsg = {index: this.players.indexOf(xiajia), cards: takeCards, gangCards, huCards}
         this.room.broadcast('game/oppoTakeThreeCard', {
           ok: true,
           data: sendMsg
