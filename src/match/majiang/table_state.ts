@@ -779,7 +779,6 @@ class TableState implements Serializable {
       while (13 - cards.length > 0) {
         this.remainCards--;
         const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
-        console.log(index, this.cards[index]);
         if (index !== -1) {
           cards.push(this.cards[index]);
           this.lastTakeCard = this.cards[index];
@@ -807,10 +806,9 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
-      const cards13 = model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p);
+      const cards13 = model.dominateCount > 0 || Math.random() < 0.6 ? await this.takeDominateCards() : await this.take13Cards(p);
 
       if (model.dominateCount > 0) {
-        // console.warn(model.dominateCount, cards13);
         model.dominateCount--;
         await model.save();
       }
