@@ -945,7 +945,7 @@ class PlayerState implements Serializable {
       }
     }
 
-    console.warn(`zimo error card %s this.cards[card] %s`, card, this.cards[card])
+    console.warn(`zimo error card %s cards[card] %s`, card, cards[card])
     return false
   }
 
