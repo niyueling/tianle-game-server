@@ -704,6 +704,20 @@ class TableState implements Serializable {
     return card;
   }
 
+  async consumeSpecialCard(p: PlayerState) {
+    this.remainCards--;
+    const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
+    if (index !== -1) {
+      const card = this.cards[index]
+      this.lastTakeCard = card;
+      this.cards.splice(index, 1);
+
+      return card;
+    }
+
+    return null;
+  }
+
   async consumeGangOrKeCard(cardNum?) {
     const isGang = Math.random() < 0.3;
 
@@ -755,7 +769,13 @@ class TableState implements Serializable {
     const cardCount = 13 - cards.length;
 
     for (let i = 0; i < cardCount; i++) {
-      cards.push(await this.consumeSimpleCard(player));
+      const rank = Math.random();
+
+      if (rank < 0.5) {
+        cards.push(await this.consumeSpecialCard(player));
+      } else {
+        cards.push(await this.consumeSimpleCard(player));
+      }
     }
 
     return cards;
@@ -806,7 +826,7 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
-      const cards13 = model.dominateCount > 0 || Math.random() < 0.6 ? await this.takeDominateCards() : await this.take13Cards(p);
+      const cards13 = model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p);
 
       if (model.dominateCount > 0) {
         model.dominateCount--;
