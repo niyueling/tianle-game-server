@@ -2270,7 +2270,7 @@ class TableState implements Serializable {
     cards[card]++;
     console.warn("cards-%s", JSON.stringify(this.getCardArray(cards)));
 
-    const ok = player.competiteZimo(card, false, this.remainCards === 0, cards);
+    const ok = player.competiteZimo(card.slice(), false, this.remainCards === 0, cards);
     console.warn("cards-%s card-%s ok-%s", JSON.stringify(this.getCardArray(cards)), card, ok);
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
