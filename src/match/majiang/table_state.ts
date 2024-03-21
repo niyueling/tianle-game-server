@@ -935,18 +935,17 @@ class TableState implements Serializable {
             const takenCard = msg.card;
             const todo = player.ai.onWaitForDa(msg, player.cards);
             const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
-            switch (todo) {
-              case Enums.gang:
-                const gangCard = msg.gang[0][0]
-                player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
-                player.sendMessage('game/depositGangBySelf', {
-                  ok: true,
-                  data: {card: gangCard, turn: this.turn}
-                })
-                break
-              case Enums.hu:
+
+            if (todo === Enums.gang && !this.isAllHu) {
+              const gangCard = msg.gang[0][0]
+              player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
+              player.sendMessage('game/depositGangBySelf', {
+                ok: true,
+                data: {card: gangCard, turn: this.turn}
+              })
+            } else if (todo === Enums.hu) {
+              if (!this.isAllHu) {
                 const simpleCount = this.checkPlayerSimpleCrdCount(player);
-                // console.warn("自摸胡 shortId %s 剩余单张 %s card %s specialCardCount %s", player.model.shortId, simpleCount, takenCard, specialCardCount)
                 if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(takenCard) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
                   const card = this.promptWithPattern(player, this.lastTakeCard);
                   player.emitter.emit(Enums.da, this.turn, card)
@@ -958,22 +957,48 @@ class TableState implements Serializable {
                     data: {card: takenCard, turn: this.turn}
                   })
                 }
+              } else {
+                const msg = {
+                  cards: player.competiteCards,
+                  daCards: [],
+                  huCards: []
+                };
 
-                break
-              default:
-                const card = this.promptWithPattern(player, this.lastTakeCard);
-                if (this.isAllHu) {
-                  player.emitter.emit(Enums.topDa, this.turn, card)
-                } else {
-                  player.emitter.emit(Enums.da, this.turn, card)
+                for (let i = 0; i < player.competiteCards.length; i++) {
+                  if (player.competiteCards[i].hu) {
+                    msg.huCards.push(player.competiteCards[i].card);
+                  } else {
+                    msg.daCards.push(player.competiteCards[i].card);
+                  }
                 }
-                player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
-                break
+
+                console.warn("robot competite msg %s", JSON.stringify(msg));
+                player.emitter.emit(Enums.competiteHu, msg)
+              }
+            } else {
+              const card = this.promptWithPattern(player, this.lastTakeCard);
+              if (this.isAllHu) {
+                const msg = {
+                  cards: player.competiteCards,
+                  daCards: [],
+                  huCards: []
+                };
+
+                for (let i = 0; i < player.competiteCards.length; i++) {
+                  if (player.competiteCards[i].hu) {
+                    msg.huCards.push(player.competiteCards[i].card);
+                  } else {
+                    msg.daCards.push(player.competiteCards[i].card);
+                  }
+                }
+
+                console.warn("robot competite msg %s", JSON.stringify(msg));
+                player.emitter.emit(Enums.competiteHu, msg);
+              } else {
+                player.emitter.emit(Enums.da, this.turn, card);
+              }
+              player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
             }
-          } else {
-            const card = this.promptWithPattern(player, this.lastTakeCard);
-            player.emitter.emit(Enums.da, this.turn, card)
-            player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
           }
         }
 
@@ -985,8 +1010,6 @@ class TableState implements Serializable {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
-
-        // logger.info('waitForDoSomeThing player %s card %s todo %s', index, card, todo)
 
         const nextDo = async () => {
           switch (todo) {
@@ -1000,7 +1023,6 @@ class TableState implements Serializable {
               break;
             case Enums.hu:
               const simpleCount = this.checkPlayerSimpleCrdCount(player);
-              // console.warn("接炮胡 shortId %s 剩余单张 %s card %s specialCardCount %s", player.model.shortId, simpleCount, card, specialCardCount)
 
               if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
                 player.emitter.emit(Enums.guo, this.turn, card);
