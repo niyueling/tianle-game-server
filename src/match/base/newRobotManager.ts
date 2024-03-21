@@ -543,6 +543,8 @@ export class NewRobotManager {
   async readyAndPlay() {
     let isOk;
     if (this.model.step === RobotStep.start) {
+      // 离线用户准备
+      await this.robotPlayerReady();
       isOk = await this.isHumanPlayerReady();
       if (!isOk) {
         console.log(`human player not ready`, this.room._id);
@@ -550,8 +552,6 @@ export class NewRobotManager {
       }
       this.model.step = RobotStep.running;
       await this.save();
-      // 离线用户准备
-      await this.robotPlayerReady();
     }
     if (this.model.step === RobotStep.running && this.isPlayed) {
       this.isPlayed = false;
