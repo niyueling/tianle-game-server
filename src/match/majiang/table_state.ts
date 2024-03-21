@@ -2234,7 +2234,7 @@ class TableState implements Serializable {
             }
 
             takeCards.push(msg.card);
-            xiajia.competiteCards.push(msg.card);
+            xiajia.competiteCards.push(msg);
             if (msg.gang) {
               gangCards = [...gangCards, ...msg.gang];
             }
