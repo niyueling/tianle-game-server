@@ -2068,7 +2068,6 @@ class TableState implements Serializable {
   async onCompetiteHu(player, msg) {
     const cards = player.cards.slice();
     const msgs = [];
-    console.warn("cards-%s msg-%s", JSON.stringify(cards), JSON.stringify(msg));
 
     // 把摸牌3张移除
     for (let i = 0; i < msg.cards.length; i++) {
@@ -2076,6 +2075,8 @@ class TableState implements Serializable {
         cards[msg.cards[i]]--;
       }
     }
+
+    console.warn("cards-%s msg-%s", JSON.stringify(cards), JSON.stringify(msg));
 
     // 处理打牌
     for (let i = 0; i < msg.daCards.length; i++) {
