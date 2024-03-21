@@ -1366,7 +1366,7 @@ class PlayerState implements Serializable {
     }
     this.cancelTimeout()
 
-    if (!this.onDeposit) {
+    if (!this.onDeposit && !this.room.gameState.isAllHu) {
       this.timeoutTask = setTimeout(() => {
         this.onDeposit = true
         this.sendMessage('game/startDepositReply', {ok: true, data: {}})
