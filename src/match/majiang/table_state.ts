@@ -2268,6 +2268,7 @@ class TableState implements Serializable {
 
     // 将本次要操作的牌加入到牌堆中
     cards[card]++;
+    console.warn("cards-%s", this.getCardArray(cards));
 
     const ok = player.competiteZimo(card, false, this.remainCards === 0, cards);
     console.warn("cards-%s card-%s ok-%s", JSON.stringify(this.getCardArray(cards)), card, ok);
