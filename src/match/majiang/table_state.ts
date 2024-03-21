@@ -1552,7 +1552,7 @@ class TableState implements Serializable {
                 await this.gameOver(this.players[from], player);
                 logger.info('hu player %s gameover', index);
 
-                if (!this.isAllHu && isAllHu && index !== 0) {
+                if (!this.isAllHu && isAllHu) {
                   this.isAllHu = isAllHu;
 
                   this.room.broadcast('game/gameCompetite', {
@@ -1733,7 +1733,7 @@ class TableState implements Serializable {
             await this.gameOver(null, player);
             this.logger.info('hu  player %s zimo gameover', index)
 
-            if (!this.isAllHu && isAllHu && index !== 0) {
+            if (!this.isAllHu && isAllHu) {
               this.isAllHu = isAllHu;
 
               this.room.broadcast('game/gameCompetite', {
