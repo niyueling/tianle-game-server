@@ -771,8 +771,9 @@ class TableState implements Serializable {
     for (let i = 0; i < cardCount; i++) {
       const rank = Math.random();
 
-      if (rank < 0.5) {
+      if (rank < 0.6) {
         const card = await this.consumeSpecialCard(player);
+        console.warn("rank-%s card-%s", rank, card);
         if (card) {
           cards.push(card);
         }
