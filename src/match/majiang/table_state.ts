@@ -2199,7 +2199,9 @@ class TableState implements Serializable {
         });
 
         for (let j = 0; j < huMsg.playersModifyGolds.length; j++) {
-          changeGolds[j].changeGold.push(huMsg.playersModifyGolds[j].gold);
+          if (huMsg.playersModifyGolds[j].gold > 0) {
+            changeGolds[j].changeGold.push(huMsg.playersModifyGolds[j].gold);
+          }
         }
       }
     }
