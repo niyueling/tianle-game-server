@@ -1678,7 +1678,11 @@ class TableState implements Serializable {
                             takeCards.push(msg.card);
                             xiajia.competiteCards.push(msg)
                             if (msg.gang) {
-                              gangCards = [...gangCards, ...msg.gang];
+                              msg.gang.map(gang => {
+                                if (!gangCards.includes(gang)) {
+                                  gangCards.push(gang);
+                                }
+                              })
                             }
                             if (msg.hu) {
                               huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
@@ -1866,7 +1870,11 @@ class TableState implements Serializable {
                         takeCards.push(msg.card);
                         xiajia.competiteCards.push(msg);
                         if (msg.gang) {
-                          gangCards = [...gangCards, ...msg.gang];
+                          msg.gang.map(gang => {
+                            if (!gangCards.includes(gang)) {
+                              gangCards.push(gang);
+                            }
+                          })
                         }
                         if (msg.hu) {
                           huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
@@ -2253,7 +2261,11 @@ class TableState implements Serializable {
             takeCards.push(msg.card);
             xiajia.competiteCards.push(msg);
             if (msg.gang) {
-              gangCards = [...gangCards, ...msg.gang];
+              msg.gang.map(gang => {
+                if (!gangCards.includes(gang)) {
+                  gangCards.push(gang);
+                }
+              })
             }
             if (msg.hu) {
               huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
