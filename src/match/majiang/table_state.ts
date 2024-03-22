@@ -2204,7 +2204,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 0; this.players.length; i++) {
+    for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
       changeGolds[i].currentGold = model.gold;
       changeGolds[i].isBroke = this.players[i].isBroke;
