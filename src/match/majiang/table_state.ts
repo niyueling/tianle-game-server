@@ -1618,6 +1618,7 @@ class TableState implements Serializable {
 
                         if (!this.players[0].isBroke) {
                           this.players[0].onDeposit = false;
+                          player.sendMessage("game/cancelDepositReply", {ok: true, data: {index: this.atIndex(player)}});
                         }
 
                         this.room.broadcast('game/gameCompetite', {
@@ -1814,6 +1815,7 @@ class TableState implements Serializable {
 
                     if (!this.players[0].isBroke) {
                       this.players[0].onDeposit = false;
+                      player.sendMessage("game/cancelDepositReply", {ok: true, data: {index: this.atIndex(player)}});
                     }
 
                     this.room.broadcast('game/gameCompetite', {
