@@ -1691,7 +1691,7 @@ class TableState implements Serializable {
 
                         xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
 
-                        const sendMsg = {index: this.players.indexOf(xiajia)}
+                        const sendMsg = {index: this.players.indexOf(xiajia), cards: takeCards, gangCards, huCards}
                         this.room.broadcast('game/oppoTakeThreeCard', {
                           ok: true,
                           data: sendMsg
@@ -1704,7 +1704,6 @@ class TableState implements Serializable {
                     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                     const nextZhuang = this.nextZhuang()
                     await this.gameAllOver(states, [], nextZhuang);
-                    // console.warn('No unbroke player found as the next player but last da %s', this.atIndex(this.lastDa));
                   }
                 }
               } else {
@@ -1880,7 +1879,7 @@ class TableState implements Serializable {
 
                     xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
 
-                    const sendMsg = {index: this.players.indexOf(xiajia)}
+                    const sendMsg = {index: this.players.indexOf(xiajia), cards: takeCards, gangCards, huCards}
                     this.room.broadcast('game/oppoTakeThreeCard', {
                       ok: true,
                       data: sendMsg
