@@ -1616,6 +1616,10 @@ class TableState implements Serializable {
                       if (!this.isAllHu && isAllHu) {
                         this.isAllHu = isAllHu;
 
+                        if (!this.players[0].isBroke) {
+                          this.players[0].onDeposit = false;
+                        }
+
                         this.room.broadcast('game/gameCompetite', {
                           ok: true,
                           data: {
@@ -1789,17 +1793,6 @@ class TableState implements Serializable {
             await this.gameOver(null, player);
             this.logger.info('hu  player %s zimo gameover', index)
 
-            if (!this.isAllHu && isAllHu) {
-              this.isAllHu = isAllHu;
-
-              this.room.broadcast('game/gameCompetite', {
-                ok: true,
-                data: {
-                  roomId: this.room._id
-                }
-              });
-            }
-
             if (this.state !== stateGameOver) {
               this.turn++;
               let xiajia = null;
@@ -1816,6 +1809,21 @@ class TableState implements Serializable {
 
               if (xiajia) {
                 const nextDo = async () => {
+                  if (!this.isAllHu && isAllHu) {
+                    this.isAllHu = isAllHu;
+
+                    if (!this.players[0].isBroke) {
+                      this.players[0].onDeposit = false;
+                    }
+
+                    this.room.broadcast('game/gameCompetite', {
+                      ok: true,
+                      data: {
+                        roomId: this.room._id
+                      }
+                    });
+                  }
+
                   const cardTypes = await this.getCardTypes();
                   const random = Math.floor(Math.random() * cardTypes.length);
                   if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
