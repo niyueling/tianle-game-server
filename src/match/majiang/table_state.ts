@@ -2186,7 +2186,7 @@ class TableState implements Serializable {
       }
     }
 
-    player.sendMessage("game/competiteHuReply", {ok: true, data: {index: this.atIndex(player), msg: msgs}});
+    this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: this.atIndex(player), msg: msgs}});
 
     // 给下家摸牌
     let xiajia = null;
