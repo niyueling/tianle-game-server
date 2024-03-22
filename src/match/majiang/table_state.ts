@@ -2354,7 +2354,7 @@ class TableState implements Serializable {
       // 扣除三家金币
       if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
         const model = await service.playerService.getPlayerModel(p._id.toString());
-        const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple;
+        const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
         p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
         winBalance += Math.abs(p.balance);
         p.juScore += p.balance;
@@ -2758,10 +2758,9 @@ class TableState implements Serializable {
           failFromList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
-          const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple;
+          const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
-          // console.warn(`dianpao index %s shortId %s  balance %s juBalance %s`, this.atIndex(from), from.model.shortId, from.balance, balance)
           from.juScore += from.balance;
           await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
           await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
@@ -2772,10 +2771,9 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple;
+              const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
-              // console.warn(`zimo index %s shortId %s balance %s juBalance %s`, this.atIndex(p), p.model.shortId, p.balance, balance)
               p.juScore += p.balance;
               await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
               await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
@@ -2788,9 +2786,7 @@ class TableState implements Serializable {
 
         //增加胡牌用户金币
         to.balance = winBalance;
-        // console.warn(`win index %s shortId %s juScore %s balance %s finalJuScore %s`, this.atIndex(to), to.model.shortId, to.juScore, to.balance, to.juScore += to.balance)
         to.juScore += winBalance;
-        // console.warn(`player index %s balance %s score %s`, this.atIndex(to), to.balance, to.juScore);
         await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
         await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
           to.model.gold + to.balance, `对局获得`);
