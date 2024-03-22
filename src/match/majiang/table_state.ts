@@ -951,9 +951,8 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
-        const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + player._id, 1);
-        if (!lock) {
-          return;
+        if (this.isAllHu) {
+          return ;
         }
 
         const nextDo = async () => {
