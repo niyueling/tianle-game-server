@@ -1636,6 +1636,7 @@ class TableState implements Serializable {
                       const cardCount = this.isAllHu ? 3 : 1;
                       const takeCards = [];
                       let gangCards = [];
+                      let gangCardIndexs = [];
                       const huCards = [];
                       xiajia.oldCards = xiajia.cards.slice();
                       xiajia.competiteCards = [];
@@ -1682,8 +1683,9 @@ class TableState implements Serializable {
                             xiajia.competiteCards.push(msg)
                             if (msg.gang) {
                               msg.gang.map(gang => {
-                                if (!gangCards.includes(gang)) {
+                                if (!gangCardIndexs.includes(gang[0])) {
                                   gangCards.push(gang);
+                                  gangCardIndexs.push(gang[0]);
                                 }
                               })
                             }
@@ -1834,6 +1836,7 @@ class TableState implements Serializable {
                   const cardCount = this.isAllHu ? 3 : 1;
                   const takeCards = [];
                   let gangCards = [];
+                  let gangCardIndexs = [];
                   const huCards = [];
                   const cards = xiajia.cards.slice();
                   xiajia.competiteCards = [];
@@ -1879,8 +1882,9 @@ class TableState implements Serializable {
                         xiajia.competiteCards.push(msg);
                         if (msg.gang) {
                           msg.gang.map(gang => {
-                            if (!gangCards.includes(gang)) {
+                            if (!gangCardIndexs.includes(gang[0])) {
                               gangCards.push(gang);
+                              gangCardIndexs.push(gang[0]);
                             }
                           })
                         }
@@ -2251,6 +2255,7 @@ class TableState implements Serializable {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const takeCards = [];
         let gangCards = [];
+        let gangCardIndexs = [];
         const huCards = [];
         xiajia.oldCards = xiajia.cards.slice();
         xiajia.competiteCards = [];
@@ -2273,9 +2278,9 @@ class TableState implements Serializable {
             xiajia.competiteCards.push(msg);
             if (msg.gang) {
               msg.gang.map(gang => {
-                console.warn(gang);
-                if (!gangCards.includes(gang)) {
+                if (!gangCardIndexs.includes(gang[0])) {
                   gangCards.push(gang);
+                  gangCardIndexs.push(gang[0]);
                 }
               })
             }
