@@ -2182,7 +2182,7 @@ class TableState implements Serializable {
     // 处理胡牌
     for (let i = 0; i < msg.huCards.length; i++) {
       const huMsg = await this.onPlayerCompetiteHu(player, cards.slice(), msg.huCards[i]);
-      console.warn("huMsg-%s", JSON.stringify(huMsg))
+      console.warn("playersModifyGolds-%s", JSON.stringify(huMsg.playersModifyGolds))
 
       if (huMsg) {
         if (!huMsg.playersModifyGolds) {
@@ -2193,6 +2193,7 @@ class TableState implements Serializable {
           type: "hu",
           card: huMsg.card,
           index: huMsg.from,
+          playersModifyGolds: huMsg.playersModifyGolds,
           constellationCards: huMsg.constellationCards,
           huType: huMsg.huType
         });
@@ -2307,7 +2308,7 @@ class TableState implements Serializable {
       return {
         card,
         from: index,
-        constellationCards: player.constellationCards || [],
+        constellationCards: player.constellationCards,
         playersModifyGolds,
         huType: {
           id: this.cardTypes.cardId,
