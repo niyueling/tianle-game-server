@@ -951,7 +951,7 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
-        if (this.isAllHu) {
+        if (this.isAllHu && this.atIndex(player)) {
           return ;
         }
 
