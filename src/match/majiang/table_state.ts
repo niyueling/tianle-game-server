@@ -2179,6 +2179,7 @@ class TableState implements Serializable {
           type: "hu",
           card: huMsg.card,
           index: huMsg.from,
+          playersModifyGolds: huMsg.playersModifyGolds,
           constellationCards: huMsg.constellationCards,
           huType: huMsg.huType
         });

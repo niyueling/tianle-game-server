@@ -1375,7 +1375,7 @@ class PlayerState implements Serializable {
   }
 
   deposit(callback) {
-    let minutes = 15 * 1000
+    let minutes = 15 * 1000;
 
     if (!this.msgDispatcher) {
       return ;
