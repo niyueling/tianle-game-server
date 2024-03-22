@@ -1392,12 +1392,10 @@ class PlayerState implements Serializable {
     } else {
       const isRobot = this.msgDispatcher.isRobot()
 
-      if (!this.room.gameState.isAllHu) {
-        this.timeoutTask = setTimeout(() => {
-          callback()
-          this.timeoutTask = null
-        }, isRobot ? random(500, 1500) : 1000)
-      }
+      this.timeoutTask = setTimeout(() => {
+        callback()
+        this.timeoutTask = null
+      }, isRobot ? random(500, 1500) : 1000)
     }
   }
 
