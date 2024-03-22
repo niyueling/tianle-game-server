@@ -2277,11 +2277,12 @@ class TableState implements Serializable {
     console.warn("cards-%s card-%s ok-%s", JSON.stringify(this.getCardArray(cards)), card, ok);
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
-      await this.gameOver(null, player);
+      const playersModifyGolds = await this.competiteGameOver(player);
       return {
         card,
         from: index,
         constellationCards: player.constellationCards,
+        playersModifyGolds,
         huType: {
           id: this.cardTypes.cardId,
           multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante
@@ -2299,6 +2300,113 @@ class TableState implements Serializable {
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
     }
+  }
+
+  async competiteGameOver(to) {
+    if (this.cardTypes.multiple) {
+      // 将分数 * 倍率
+      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+
+      this.players.map((p) => {
+        p.balance = 0;
+      })
+      let failList = [];
+      let failFromList = [];
+      let winBalance = 0;
+      let winModel = await service.playerService.getPlayerModel(to._id.toString());
+
+      // 自摸胡
+      for (const p of this.players) {
+        // 扣除三家金币
+        if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
+          const model = await service.playerService.getPlayerModel(p._id.toString());
+          const balance = conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple;
+          p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+          winBalance += Math.abs(p.balance);
+          p.juScore += p.balance;
+          await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
+          await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
+            model.gold + p.balance, `对局扣除`);
+          failList.push(p._id);
+          failFromList.push(this.atIndex(p));
+        }
+      }
+
+      //增加胡牌用户金币
+      to.balance = winBalance;
+      to.juScore += winBalance;
+      await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
+      await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
+        to.model.gold + to.balance, `对局获得`);
+
+      // 生成金豆记录
+      await RoomGoldRecord.create({
+        winnerGoldReward: winBalance,
+        winnerId: to.model._id.toString(),
+        winnerFrom: this.atIndex(to),
+        roomId: this.room._id,
+        failList,
+        failFromList,
+        multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple,
+        juIndex: this.room.game.juIndex,
+        cardTypes: this.cardTypes
+      })
+    }
+
+    // 判断是否破产，破产提醒客户端充值钻石
+    let brokePlayers = [];
+    let playersModifyGolds = [];
+    let waits = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const model = await service.playerService.getPlayerModel(p.model._id.toString());
+      let params = {
+        index: this.atIndex(p),
+        _id: p.model._id.toString(),
+        shortId: p.model.shortId,
+        gold: p.balance,
+        currentGold: model.gold,
+        isBroke: p.isBroke,
+        huType: this.cardTypes
+      };
+      if (model.gold <= 0) {
+        if (params.index === 0) {
+          if (!p.isBroke) {
+            waits.push(params);
+          } else {
+            brokePlayers.push(p);
+          }
+        } else {
+          if (!p.isBroke) {
+            // 用户第一次破产
+            params.isBroke = true;
+            await this.playerGameOver(p, [], p.genGameStatus(this.atIndex(p), 1));
+          }
+
+          brokePlayers.push(p);
+        }
+      }
+
+      playersModifyGolds.push(params);
+    }
+
+    const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+    const nextZhuang = this.nextZhuang()
+
+    if (this.remainCards <= 0) {
+      return await this.gameAllOver(states, [], nextZhuang);
+    }
+
+    if (this.isGameOver || brokePlayers.length >= 3) {
+      await this.gameAllOver(states, [], nextZhuang);
+    }
+
+    if (waits.length > 0 && !this.isGameOver) {
+      this.state = stateWaitRecharge;
+      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+    }
+
+    return playersModifyGolds;
   }
 
   async onPlayerCompetiteDa(player, cards, card) {
