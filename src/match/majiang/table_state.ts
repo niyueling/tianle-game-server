@@ -2208,7 +2208,7 @@ class TableState implements Serializable {
         });
 
         for (let j = 0; j < huMsg.playersModifyGolds.length; j++) {
-          if (huMsg.playersModifyGolds[j].gold > 0) {
+          if (huMsg.playersModifyGolds[j].gold !== 0) {
             changeGolds[j].changeGold.push(huMsg.playersModifyGolds[j].gold);
           }
         }
@@ -2273,6 +2273,7 @@ class TableState implements Serializable {
             xiajia.competiteCards.push(msg);
             if (msg.gang) {
               msg.gang.map(gang => {
+                console.warn(gang);
                 if (!gangCards.includes(gang)) {
                   gangCards.push(gang);
                 }
