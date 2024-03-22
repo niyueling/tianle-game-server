@@ -2152,7 +2152,12 @@ class TableState implements Serializable {
   async onCompetiteHu(player, msg) {
     const cards = player.cards.slice();
     const msgs = [];
-    console.warn("start cards-%s msg-%s", JSON.stringify(this.getCardArray(cards)), JSON.stringify(msg));
+    const changeGolds = [
+      {index: 0, changeGold: [], isBroke: false, currentGold: 0},
+      {index: 1, changeGold: [], isBroke: false, currentGold: 0},
+      {index: 2, changeGold: [], isBroke: false, currentGold: 0},
+      {index: 3, changeGold: [], isBroke: false, currentGold: 0}
+    ];
 
     // 把摸牌3张移除
     for (let i = 0; i < msg.cards.length; i++) {
@@ -2160,8 +2165,6 @@ class TableState implements Serializable {
         cards[msg.cards[i]]--;
       }
     }
-
-    console.warn("end cards-%s msg-%s", JSON.stringify(this.getCardArray(cards)), JSON.stringify(msg));
 
     // 处理打牌
     for (let i = 0; i < msg.daCards.length; i++) {
@@ -2175,18 +2178,32 @@ class TableState implements Serializable {
       console.warn("huMsg-%s", JSON.stringify(huMsg))
 
       if (huMsg) {
+        if (!huMsg.playersModifyGolds) {
+          huMsg.playersModifyGolds = [];
+        }
+
         msgs.push({
           type: "hu",
           card: huMsg.card,
           index: huMsg.from,
-          playersModifyGolds: huMsg.playersModifyGolds,
           constellationCards: huMsg.constellationCards,
           huType: huMsg.huType
         });
+
+        for (let j = 0; j < huMsg.playersModifyGolds.length; j++) {
+          changeGolds[j].changeGold.push(huMsg.playersModifyGolds[j].gold);
+        }
       }
     }
 
+    for (let i = 0; this.players.length; i++) {
+      const model = await service.playerService.getPlayerModel(this.players[i]._id);
+      changeGolds[i].currentGold = model.gold;
+      changeGolds[i].isBroke = this.players[i].isBroke;
+    }
+
     this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: this.atIndex(player), msg: msgs}});
+    this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
 
     // 给下家摸牌
     let xiajia = null;
@@ -2271,17 +2288,15 @@ class TableState implements Serializable {
 
     // 将本次要操作的牌加入到牌堆中
     cards[card]++;
-    console.warn("cards-%s", JSON.stringify(this.getCardArray(cards)));
 
     const ok = player.competiteZimo(card, false, this.remainCards === 0, cards.slice());
-    console.warn("cards-%s card-%s ok-%s", JSON.stringify(this.getCardArray(cards)), card, ok);
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
       const playersModifyGolds = await this.competiteGameOver(player);
       return {
         card,
         from: index,
-        constellationCards: player.constellationCards,
+        constellationCards: player.constellationCards || [],
         playersModifyGolds,
         huType: {
           id: this.cardTypes.cardId,
@@ -2299,6 +2314,8 @@ class TableState implements Serializable {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
+
+      return {};
     }
   }
 
