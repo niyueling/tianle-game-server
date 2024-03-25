@@ -1963,13 +1963,6 @@ class TableState implements Serializable {
 
               const env = {card, from, turn: this.turn}
               this.actionResolver = new ActionResolver(env, async () => {
-                const cardTypes = await this.getCardTypes();
-                const random = Math.floor(Math.random() * cardTypes.length);
-                if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-                  this.cardTypes = cardTypes[random];
-                }
-                const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-
                 const newCard = await this.consumeCard(xiajia)
                 const msg = xiajia.takeCard(this.turn, newCard, false, false,
                   {
