@@ -396,18 +396,22 @@ class TableState implements Serializable {
   // 解决偶发性重复发牌问题
   isFaPai: boolean = false;
 
+  // 是否等待复活
+  waitRecharge: boolean = false;
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
-    const players = room.players.map(playerSocket => new PlayerState(playerSocket, room, rule))
-    players[0].zhuang = true
+    const players = room.players.map(playerSocket => new PlayerState(playerSocket, room, rule));
+    const randomNumber = Math.floor(Math.random() * players.length);
+    players[randomNumber].zhuang = true
 
     this.cards = generateCards()
     this.room = room
     this.listenRoom(room)
     this.remainCards = this.cards.length
     this.players = players
-    this.zhuang = players[0]
+    this.zhuang = players[randomNumber]
     for (let i = 0; i < players.length; i++) {
       const p = players[i]
       this.listenPlayer(p)
@@ -426,6 +430,7 @@ class TableState implements Serializable {
     this.brokeCount = 0;
     this.brokeList = [];
     this.isAllHu = false;
+    this.waitRecharge = false;
   }
 
   toJSON() {
@@ -3089,8 +3094,9 @@ class TableState implements Serializable {
         } else {
           for (let i = 0; i < p.competiteCards.length; i++) {
             p.cards[p.competiteCards[i]]--;
-            p.sendMessage('game/remove-card', {ok: true, data: {card: p.competiteCards[i]}})
           }
+
+          p.sendMessage('game/remove-card-competite', {ok: true, data: {card: p.competiteCards}})
         }
       }
 
