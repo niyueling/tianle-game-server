@@ -368,7 +368,7 @@ export class NewRobotManager {
       if (index === -1) {
         await this.room.nextGame(proxy);
         this.room.ready(proxy);
-        break;
+        // break;
       }
     }
     return true;
