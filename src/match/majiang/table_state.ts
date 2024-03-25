@@ -2222,7 +2222,7 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
       changeGolds[i].currentGold = model.gold;
-      changeGolds[i].isBroke = this.players[i].isBroke;
+      changeGolds[i].isBroke = changeGolds[i].currentGold === 0;
     }
 
     this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: this.players.indexOf(player), msg: msgs}});
