@@ -2225,7 +2225,7 @@ class TableState implements Serializable {
       changeGolds[i].isBroke = changeGolds[i].currentGold === 0;
     }
 
-    this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: this.players.indexOf(player), msg: msgs}});
+    this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs[0].index, msg: msgs}});
     this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
 
     // 给下家摸牌
