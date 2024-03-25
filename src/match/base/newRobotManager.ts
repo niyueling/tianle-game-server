@@ -368,6 +368,7 @@ export class NewRobotManager {
       if (index === -1) {
         await this.room.nextGame(proxy);
         this.room.ready(proxy);
+        break;
       }
     }
     return true;
@@ -420,7 +421,6 @@ export class NewRobotManager {
         continue
       }
       if (i === 0) {
-        console.warn("room is dissolve")
         await this.room.forceDissolve();
       }
 
@@ -431,7 +431,6 @@ export class NewRobotManager {
       // 加入房间
       const isOk = await this.room.join(robotProxy);
       if (isOk) {
-        // console.warn(`shortId ${model.shortId} room ${this.room._id} index ${i} deposit add robot status ${isOk} player ${JSON.stringify(this.room.players)}`);
         // 公共房托管的机器人
         this.model.publicRoomRobot.push([model._id, i]);
         await this.addPublicRobot(model._id, robotProxy, i);
