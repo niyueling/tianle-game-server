@@ -3096,7 +3096,7 @@ class TableState implements Serializable {
             p.cards[p.competiteCards[i]]--;
           }
 
-          p.sendMessage('game/remove-card-competite', {ok: true, data: {card: p.competiteCards}})
+          p.sendMessage('game/remove-card-competite', {ok: true, data: {cards: p.competiteCards}})
         }
       }
 
