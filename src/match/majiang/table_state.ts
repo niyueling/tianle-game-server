@@ -3083,8 +3083,15 @@ class TableState implements Serializable {
 
       // 去除摸牌
       if (p.cards[this.lastTakeCard] > 0) {
-        p.cards[this.lastTakeCard]--;
-        p.sendMessage('game/remove-card', {ok: true, data: {card: this.lastTakeCard}})
+        if (!this.isAllHu) {
+          p.cards[this.lastTakeCard]--;
+          p.sendMessage('game/remove-card', {ok: true, data: {card: this.lastTakeCard}})
+        } else {
+          for (let i = 0; i < p.competiteCards.length; i++) {
+            p.cards[p.competiteCards[i]]--;
+            p.sendMessage('game/remove-card', {ok: true, data: {card: p.competiteCards[i]}})
+          }
+        }
       }
 
       this.turn++;
