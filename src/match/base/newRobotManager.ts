@@ -363,15 +363,17 @@ export class NewRobotManager {
       return true;
     }
     let index;
+    let flag = true;
     for (const proxy of Object.values(this.disconnectPlayers)) {
       index = this.room.readyPlayers.indexOf(proxy.model._id.toString());
       if (index === -1) {
         await this.room.nextGame(proxy);
         this.room.ready(proxy);
-        // break;
+        flag = false;
+        break;
       }
     }
-    return true;
+    return flag;
   }
 
   // 添加离线机器人
@@ -543,13 +545,15 @@ export class NewRobotManager {
     let isOk;
     if (this.model.step === RobotStep.start) {
       // 离线用户准备
-      await this.robotPlayerReady();
+      const flag = await this.robotPlayerReady();
       isOk = await this.isHumanPlayerReady();
       if (!isOk) {
         console.log(`human player not ready`, this.room._id);
         return;
       }
-      this.model.step = RobotStep.running;
+      if (flag) {
+        this.model.step = RobotStep.running;
+      }
       await this.save();
     }
     if (this.model.step === RobotStep.running && this.isPlayed) {
