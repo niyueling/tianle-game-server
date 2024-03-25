@@ -367,7 +367,7 @@ export class NewRobotManager {
     for (const proxy of Object.values(this.disconnectPlayers)) {
       index = this.room.readyPlayers.indexOf(proxy.model._id.toString());
       if (index === -1) {
-        await this.room.nextGame(proxy);
+        // await this.room.nextGame(proxy);
         this.room.ready(proxy);
         flag = false;
         break;
