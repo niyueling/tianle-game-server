@@ -2337,20 +2337,24 @@ class TableState implements Serializable {
         p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
         winBalance += Math.abs(p.balance);
         p.juScore += p.balance;
-        await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
-        await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
-          model.gold + p.balance, `对局扣除`);
-        failList.push(p._id);
-        failFromList.push(this.atIndex(p));
+        if (p.balance !== 0) {
+          await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
+          await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
+            model.gold + p.balance, `对局扣除`);
+          failList.push(p._id);
+          failFromList.push(this.atIndex(p));
+        }
       }
     }
 
     //增加胡牌用户金币
     to.balance = winBalance;
     to.juScore += winBalance;
-    await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
-    await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
-      to.model.gold + to.balance, `对局获得`);
+    if (winBalance !== 0) {
+      await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
+      await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
+        to.model.gold + to.balance, `对局获得`);
+    }
 
     // 生成金豆记录
     await RoomGoldRecord.create({
@@ -2716,9 +2720,11 @@ class TableState implements Serializable {
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           from.juScore += from.balance;
-          await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
-          await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
-            model.gold + from.balance, `对局扣除`);
+          if (from.balance !== 0) {
+            await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
+            await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
+              model.gold + from.balance, `对局扣除`);
+          }
         } else {
           // 自摸胡
           for (const p of this.players) {
@@ -2729,11 +2735,13 @@ class TableState implements Serializable {
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               p.juScore += p.balance;
-              await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
-              await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
-                model.gold + p.balance, `对局扣除`);
-              failList.push(p._id);
-              failFromList.push(this.atIndex(p));
+              if (p.balance !== 0) {
+                await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
+                await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
+                  model.gold + p.balance, `对局扣除`);
+                failList.push(p._id);
+                failFromList.push(this.atIndex(p));
+              }
             }
           }
         }
@@ -2741,9 +2749,11 @@ class TableState implements Serializable {
         //增加胡牌用户金币
         to.balance = winBalance;
         to.juScore += winBalance;
-        await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
-        await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
-          to.model.gold + to.balance, `对局获得`);
+        if (winBalance !== 0) {
+          await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
+          await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
+            to.model.gold + to.balance, `对局获得`);
+        }
 
         // 生成金豆记录
         await RoomGoldRecord.create({
