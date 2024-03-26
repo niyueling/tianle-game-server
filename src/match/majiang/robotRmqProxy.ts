@@ -11,7 +11,6 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
 
   // 出牌
   async playCard() {
-    const lock = await service.utils.grantLockOnce(RedisKey.daPaiLock + this.playerState._id, 1);
     console.warn(`playerId: ${this.playerState.model.shortId}, name: ${this.playerState.model.nickname}, onDeposit: ${this.playerState.onDeposit}`)
     if (this.playerState && !this.playerState.onDeposit) {
       // 从牌堆中取出合适的牌

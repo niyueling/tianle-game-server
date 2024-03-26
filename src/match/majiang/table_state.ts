@@ -1580,6 +1580,21 @@ class TableState implements Serializable {
                 }
                 await this.gameOver(this.players[from], player);
 
+                const gameCompetite = async () => {
+                  if (!this.isAllHu && isAllHu) {
+                    this.isAllHu = isAllHu;
+
+                    this.room.broadcast('game/gameCompetite', {
+                      ok: true,
+                      data: {
+                        roomId: this.room._id
+                      }
+                    });
+                  }
+                }
+
+                setTimeout(gameCompetite, 2000);
+
                 if (this.state !== stateGameOver) {
                   this.turn++;
                   let xiajia = null;
@@ -1596,16 +1611,6 @@ class TableState implements Serializable {
 
                   if (xiajia) {
                     const nextDo = async () => {
-                      if (!this.isAllHu && isAllHu) {
-                        this.isAllHu = isAllHu;
-
-                        this.room.broadcast('game/gameCompetite', {
-                          ok: true,
-                          data: {
-                            roomId: this.room._id
-                          }
-                        });
-                      }
                       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
                       const cardCount = this.isAllHu ? 3 : 1;
                       const takeCards = [];
@@ -1782,19 +1787,23 @@ class TableState implements Serializable {
                 }
               }
 
+              const gameCompetite = async () => {
+                if (!this.isAllHu && isAllHu) {
+                  this.isAllHu = isAllHu;
+
+                  this.room.broadcast('game/gameCompetite', {
+                    ok: true,
+                    data: {
+                      roomId: this.room._id
+                    }
+                  });
+                }
+              }
+
+              setTimeout(gameCompetite, 2000);
+
               if (xiajia) {
                 const nextDo = async () => {
-                  if (!this.isAllHu && isAllHu) {
-                    this.isAllHu = isAllHu;
-
-                    this.room.broadcast('game/gameCompetite', {
-                      ok: true,
-                      data: {
-                        roomId: this.room._id
-                      }
-                    });
-                  }
-
                   const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
                   const cardCount = this.isAllHu ? 3 : 1;
                   const takeCards = [];
