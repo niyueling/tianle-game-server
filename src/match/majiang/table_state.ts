@@ -1627,6 +1627,8 @@ class TableState implements Serializable {
                             return;
                           }
 
+                          console.warn("msg.gang-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg.gang), xiajia.isGameHu, xiajia.onDeposit);
+
                           // 如果用户可以杠，并且胡牌已托管，则取消托管
                           if (msg.gang && xiajia.isGameHu && xiajia.onDeposit) {
                             xiajia.onDeposit = false;
@@ -1827,6 +1829,7 @@ class TableState implements Serializable {
                         return;
                       }
 
+                      console.warn("msg.gang-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg.gang), xiajia.isGameHu, xiajia.onDeposit);
                       // 如果用户可以杠，并且胡牌已托管，则取消托管
                       if (msg.gang && xiajia.isGameHu && xiajia.onDeposit) {
                         xiajia.onDeposit = false;
