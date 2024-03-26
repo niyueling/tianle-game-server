@@ -2271,11 +2271,6 @@ class TableState implements Serializable {
 
   async onPlayerCompetiteHu(player, cards, card) {
     let index = this.players.indexOf(player);
-    const cardTypes = await this.getCardTypes();
-    const random = Math.floor(Math.random() * cardTypes.length);
-    if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-      this.cardTypes = cardTypes[random];
-    }
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
     // 将本次要操作的牌加入到牌堆中
@@ -2295,7 +2290,6 @@ class TableState implements Serializable {
           multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante
         }
       };
-
     } else {
       player.sendMessage('game/huReply', {
         ok: false,
@@ -2312,11 +2306,6 @@ class TableState implements Serializable {
   }
 
   async competiteGameOver(to) {
-    const cardTypes = await this.getCardTypes();
-    const random = Math.floor(Math.random() * cardTypes.length);
-    if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
-      this.cardTypes = cardTypes[random];
-    }
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
     this.players.map((p) => {
