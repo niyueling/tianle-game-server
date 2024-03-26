@@ -1599,11 +1599,6 @@ class TableState implements Serializable {
                       if (!this.isAllHu && isAllHu) {
                         this.isAllHu = isAllHu;
 
-                        if (!this.players[0].isBroke) {
-                          this.players[0].onDeposit = false;
-                          player.sendMessage("game/cancelDepositReply", {ok: true, data: {index: this.atIndex(player)}});
-                        }
-
                         this.room.broadcast('game/gameCompetite', {
                           ok: true,
                           data: {
@@ -1686,7 +1681,7 @@ class TableState implements Serializable {
                       }
                     }
 
-                    setTimeout(nextDo, 2500);
+                    setTimeout(nextDo, this.isAllHu ? 4500 : 2500);
                   } else {
                     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                     const nextZhuang = this.nextZhuang()
@@ -1792,11 +1787,6 @@ class TableState implements Serializable {
                   if (!this.isAllHu && isAllHu) {
                     this.isAllHu = isAllHu;
 
-                    if (!this.players[0].isBroke) {
-                      this.players[0].onDeposit = false;
-                      player.sendMessage("game/cancelDepositReply", {ok: true, data: {index: this.atIndex(player)}});
-                    }
-
                     this.room.broadcast('game/gameCompetite', {
                       ok: true,
                       data: {
@@ -1880,7 +1870,7 @@ class TableState implements Serializable {
                   }
                 }
 
-                setTimeout(nextDo, 2500);
+                setTimeout(nextDo, this.isAllHu ? 4500 : 2500);
               } else {
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                 const nextZhuang = this.nextZhuang()
