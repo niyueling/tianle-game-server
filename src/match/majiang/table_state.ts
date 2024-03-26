@@ -1593,7 +1593,7 @@ class TableState implements Serializable {
                   }
                 }
 
-                setTimeout(gameCompetite, 2000);
+                setTimeout(gameCompetite, 3000);
 
                 if (this.state !== stateGameOver) {
                   this.turn++;
