@@ -403,15 +403,14 @@ class TableState implements Serializable {
     this.restJushu = restJushu
     this.rule = rule
     const players = room.players.map(playerSocket => new PlayerState(playerSocket, room, rule));
-    const randomNumber = Math.floor(Math.random() * players.length);
-    players[randomNumber].zhuang = true
+    players[0].zhuang = true
 
     this.cards = generateCards()
     this.room = room
     this.listenRoom(room)
     this.remainCards = this.cards.length
     this.players = players
-    this.zhuang = players[randomNumber]
+    this.zhuang = players[0]
     for (let i = 0; i < players.length; i++) {
       const p = players[i]
       this.listenPlayer(p)
@@ -770,7 +769,7 @@ class TableState implements Serializable {
     for (let i = 0; i < cardCount; i++) {
       const rank = Math.random();
 
-      if (rank < 0.9) {
+      if (rank < 0.6) {
         const card = await this.consumeSpecialCard(player);
         if (card) {
           cards.push(card);

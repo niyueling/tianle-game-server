@@ -12,7 +12,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   // 出牌
   async playCard() {
     console.warn(`playerId: ${this.playerState.model.shortId}, name: ${this.playerState.model.nickname}, onDeposit: ${this.playerState.onDeposit}`)
-    if (this.playerState) {
+    if (this.playerState && !this.playerState.onDeposit) {
       // 从牌堆中取出合适的牌
       const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
       await this.room.gameState.onPlayerDa(this.playerState, this.room.gameState.turn, index);

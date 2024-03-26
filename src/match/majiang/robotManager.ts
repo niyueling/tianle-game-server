@@ -84,7 +84,6 @@ export class RobotManager extends NewRobotManager {
         } else if (this.isPlayerDa(playerId)) {
           if (this.waitInterval[key] >= this.getWaitSecond()) {
             this.waitInterval[key] = 0;
-            console.warn("111");
 
 
             if (ziMoHu.hu) {
@@ -94,7 +93,6 @@ export class RobotManager extends NewRobotManager {
             } else if (buGangIndex) {
               await proxy.gang(Enums.buGang, buGangIndex)
             } else {
-              proxy.playerState.onDeposit = true;
               await proxy.playCard();
             }
           }
