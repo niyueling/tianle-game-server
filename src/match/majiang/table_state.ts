@@ -957,7 +957,7 @@ class TableState implements Serializable {
             const todo = player.ai.onWaitForDa(msg, player.cards);
             const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
-            if (todo === Enums.gang && !this.isAllHu) {
+            if (todo === Enums.gang && !this.isAllHu && !player.isGameHu) {
               const gangCard = msg.gang[0][0]
               player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
               player.sendMessage('game/depositGangBySelf', {
@@ -1035,29 +1035,23 @@ class TableState implements Serializable {
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
         const nextDo = async () => {
-          switch (todo) {
-            case Enums.peng:
-              player.emitter.emit(Enums.peng, this.turn, card)
-              player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
-              break;
-            case Enums.gang:
-              player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
-              player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
-              break;
-            case Enums.hu:
-              const simpleCount = this.checkPlayerSimpleCrdCount(player);
+          if (todo === Enums.peng && !player.isGameHu) {
+            player.emitter.emit(Enums.peng, this.turn, card)
+            player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
+          } else if (todo === Enums.gang && !player.isGameHu) {
+            player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
+            player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
+          } else if (todo === Enums.hu) {
+            const simpleCount = this.checkPlayerSimpleCrdCount(player);
 
-              if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
-                player.emitter.emit(Enums.guo, this.turn, card);
-              } else {
-                player.emitter.emit(Enums.hu, this.turn, card)
-                player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
-              }
-
-              break;
-            default:
-              player.emitter.emit(Enums.guo, this.turn, card)
-              break;
+            if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
+              player.emitter.emit(Enums.guo, this.turn, card);
+            } else {
+              player.emitter.emit(Enums.hu, this.turn, card)
+              player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
+            }
+          } else {
+            player.emitter.emit(Enums.guo, this.turn, card)
           }
         }
 
