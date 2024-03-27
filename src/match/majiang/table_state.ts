@@ -1774,6 +1774,21 @@ class TableState implements Serializable {
             await this.gameOver(null, player);
             this.logger.info('hu  player %s zimo gameover', index)
 
+            const gameCompetite = async () => {
+              if (!this.isAllHu && isAllHu) {
+                this.isAllHu = isAllHu;
+
+                this.room.broadcast('game/gameCompetite', {
+                  ok: true,
+                  data: {
+                    roomId: this.room._id
+                  }
+                });
+              }
+            }
+
+            setTimeout(gameCompetite, 2000);
+
             if (this.state !== stateGameOver) {
               this.turn++;
               let xiajia = null;
@@ -1787,21 +1802,6 @@ class TableState implements Serializable {
                   break;
                 }
               }
-
-              const gameCompetite = async () => {
-                if (!this.isAllHu && isAllHu) {
-                  this.isAllHu = isAllHu;
-
-                  this.room.broadcast('game/gameCompetite', {
-                    ok: true,
-                    data: {
-                      roomId: this.room._id
-                    }
-                  });
-                }
-              }
-
-              setTimeout(gameCompetite, 2000);
 
               if (xiajia) {
                 const nextDo = async () => {
