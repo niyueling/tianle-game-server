@@ -371,9 +371,6 @@ class TableState implements Serializable {
   @autoSerialize
   lastTakeCard: number
 
-  // 本局是否补助
-  isHelp: boolean = false;
-
   // 本局是否结束
   isGameOver: boolean = false;
 
