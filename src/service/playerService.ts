@@ -69,7 +69,7 @@ export default class PlayerService extends BaseService {
       rubyRequired.maxAmount = rubyRequired.minAmount * 10;
     }
     // 最高为随机下限的 20% - 30%
-    const rand = service.utils.randomIntBetweenNumber(1, 20) / 100;
+    const rand = service.utils.randomIntBetweenNumber(50, 90) / 100;
     const max = rubyRequired.minAmount + Math.floor(rand * (rubyRequired.maxAmount - rubyRequired.minAmount));
     const gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
     const result = await Player.aggregate([
