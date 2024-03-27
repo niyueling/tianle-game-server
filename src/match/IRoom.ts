@@ -380,7 +380,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       return this.reconnect(newJoinPlayer)
     }
 
-    // console.warn("IRoom", this.canJoin(newJoinPlayer))
     if (!this.canJoin(newJoinPlayer)) {
       return false
     }

@@ -561,8 +561,6 @@ class Room extends RoomBase {
 
     const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
 
-    console.warn(1111)
-
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),

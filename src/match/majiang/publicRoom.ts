@@ -148,7 +148,7 @@ export class PublicRoom extends Room {
     // 更新 model
     message.model = await service.playerService.getPlayerPlainModel(newJoinPlayer.model._id);
 
-    console.warn(2222)
+    console.warn(message)
 
     return message;
   }
