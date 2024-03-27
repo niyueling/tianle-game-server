@@ -144,7 +144,6 @@ export class PublicRoom extends Room {
     const message = await super.joinMessageFor(newJoinPlayer);
     message.roomRubyReward = 0;
     message.mvpTimes = 0;
-    message.zhuang = newJoinPlayer.zhuang;
     // 更新 model
     message.model = await service.playerService.getPlayerPlainModel(newJoinPlayer.model._id);
     return message;
