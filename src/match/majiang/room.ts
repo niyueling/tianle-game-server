@@ -570,6 +570,7 @@ class Room extends RoomBase {
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
       owner: this.ownerId,
+      zhuang: newJoinPlayer.zhuang,
       score: this.getScore(newJoinPlayer),
       base: this.currentBase,
       zhuangCounter: this.zhuangCounter,
