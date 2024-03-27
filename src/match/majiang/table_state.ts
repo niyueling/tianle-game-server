@@ -1482,12 +1482,6 @@ class TableState implements Serializable {
 
         const isZiMo = this.state === stateWaitDa && recordCard === card;
 
-        const cardTypes = await this.getCardTypes();
-        const random = Math.floor(Math.random() * cardTypes.length);
-        if (!this.cardTypes.cardId) {
-          this.cardTypes = cardTypes[random];
-        }
-
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         if (isJiePao) {
@@ -2724,7 +2718,7 @@ class TableState implements Serializable {
           failFromList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
-          const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
+          const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           from.juScore += from.balance;
@@ -2739,7 +2733,7 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
+              const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               p.juScore += p.balance;
@@ -2771,7 +2765,7 @@ class TableState implements Serializable {
           roomId: this.room._id,
           failList,
           failFromList,
-          multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple,
+          multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple,
           juIndex: this.room.game.juIndex,
           cardTypes: this.cardTypes
         })
