@@ -561,6 +561,8 @@ class Room extends RoomBase {
 
     const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
 
+    console.warn(1111)
+
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
@@ -586,13 +588,6 @@ class Room extends RoomBase {
 
   async announcePlayerJoin(newJoinPlayer) {
     this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
-    // for (const alreadyInRoomPlayer of this.players
-    //   .map((p, index) => {
-    //     return p || this.playersOrder[index]
-    //   })
-    //   .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString())) {
-    //   newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
-    // }
   }
 
   indexOf(player) {
@@ -605,7 +600,6 @@ class Room extends RoomBase {
       return this.reconnect(newJoinPlayer)
     }
 
-    // console.warn("room", this.canJoin(newJoinPlayer))
     if (!this.canJoin(newJoinPlayer)) {
       return false
     }
