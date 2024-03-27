@@ -560,7 +560,6 @@ class Room extends RoomBase {
     }
 
     const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
-    console.log({index: this.indexOf(newJoinPlayer), isZhuang: 1})
 
     return {
       _id: this._id,
