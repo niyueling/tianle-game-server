@@ -1501,7 +1501,7 @@ class TableState implements Serializable {
                     constellationCards: player.constellationCards,
                     huType: {
                       id: this.cardTypes.cardId,
-                      multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante
+                      multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
                     }
                   }
                 });
@@ -1731,7 +1731,7 @@ class TableState implements Serializable {
                 constellationCards: player.constellationCards,
                 huType: {
                   id: this.cardTypes.cardId,
-                  multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante
+                  multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
                 }
               }
             });
@@ -2718,7 +2718,7 @@ class TableState implements Serializable {
           failFromList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
           // 扣除点炮用户金币
-          const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
+          const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple * conf.Ante);
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           from.juScore += from.balance;
@@ -2733,7 +2733,7 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
+              const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple * conf.Ante);
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               p.juScore += p.balance;
