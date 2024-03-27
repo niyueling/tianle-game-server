@@ -434,7 +434,7 @@ class PlayerState implements Serializable {
     let ret = msg;
 
     if (send) {
-      ret = this.sendMessage('game/TakeCard', {ok: true, data: msg})
+      this.sendMessage('game/TakeCard', {ok: true, data: msg})
     }
     // 禁止触发旧麻将机器人
     this.emitter.emit('waitForDa', msg)
