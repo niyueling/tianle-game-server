@@ -348,7 +348,9 @@ export class NewRobotManager {
         if (index === -1) {
           // 有在线用户没点下一局
           console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`);
-          // await this.room.ready(proxy);
+          if (this.room.gameState) {
+            await this.room.ready(proxy);
+          }
           return false;
         }
       }
