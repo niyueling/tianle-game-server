@@ -1,10 +1,8 @@
-import {ConsumeLogType, GlobalConfigKeys, playerAttributes} from "@fm/common/constants";
+import {ConsumeLogType, GlobalConfigKeys} from "@fm/common/constants";
 import {addApi} from "../../common/api";
 import * as config from "../../config";
-import LuckyBless from "../../database/models/luckyBless";
 import {service} from "../../service/importService";
 import {BaseApi} from "./baseApi";
-import GameRecord from "../../database/models/gameRecord";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 
 // 游戏

@@ -15,7 +15,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {ConsumeLogType, RedisKey, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import CombatGain from "../../database/models/combatGain";
@@ -396,6 +396,9 @@ class TableState implements Serializable {
   // 是否等待复活
   waitRecharge: boolean = false;
 
+  // 判断是否打牌
+  isGameDa: boolean = false;
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -427,6 +430,7 @@ class TableState implements Serializable {
     this.brokeList = [];
     this.isAllHu = false;
     this.waitRecharge = false;
+    this.isGameDa = false;
   }
 
   toJSON() {
@@ -870,7 +874,7 @@ class TableState implements Serializable {
     }
 
     const nextDo = async () => {
-      const cardTypes = await this.getCardTypes();
+      const cardTypes = await this.getCardTypes(this.zhuang);
       const random = Math.floor(Math.random() * cardTypes.length);
       if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
         this.cardTypes = cardTypes[random];
@@ -896,8 +900,46 @@ class TableState implements Serializable {
     }
   }
 
-  async getCardTypes() {
+  async getCardTypes(player) {
+    await this.getCardTypesByHu(player);
     return CardTypeModel.where({level: 1}).find();
+  }
+
+  async getCardTypesByHu(player) {
+    const cardTypes = await CardTypeModel.find();
+    let cardType = cardTypes[0];
+
+    for (let i = 0; i < cardTypes.length; i++) {
+      // 起手叫
+      if (cardTypes[i].cardId === 1) {
+        const status = await this.checkQiShouJiao(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+        cardType = cardTypes[i];
+      }
+
+      // 双星辰，含有两种星座牌组成的刻(杠的和牌)
+      if (cardTypes[i].cardId === 2) {
+        const status = await this.checkShuangXingChen(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+    }
+
+
+  }
+
+  async checkShuangXingChen(player) {
+    // 双星辰
+    console.warn("events-%s", JSON.stringify(player.events));
+    const anGang = player.events["anGang"];
+    const buGang = player.events["buGang"];
+    const jieGang = player.events["jieGang"];
+    return !player.isGameDa && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+  }
+
+  async checkQiShouJiao(player) {
+    // 起手叫
+    return !player.isGameDa && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
   }
 
   atIndex(player: PlayerState) {
@@ -1269,7 +1311,7 @@ class TableState implements Serializable {
               }
               logger.info('gangByOtherDa player-%s card:%s gang ok, take card', index, card)
 
-              const cardTypes = await this.getCardTypes();
+              const cardTypes = await this.getCardTypes(player);
               const random = Math.floor(Math.random() * cardTypes.length);
               if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
                 this.cardTypes = cardTypes[random];
@@ -1346,7 +1388,7 @@ class TableState implements Serializable {
         if (!this.isFaPai) {
           this.isFaPai = true;
 
-          const cardTypes = await this.getCardTypes();
+          const cardTypes = await this.getCardTypes(player);
           const random = Math.floor(Math.random() * cardTypes.length);
           if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
             this.cardTypes = cardTypes[random];
@@ -1454,7 +1496,7 @@ class TableState implements Serializable {
           player.sendMessage('game/buReply', {ok: true, data: {card}})
           this.room.broadcast('game/oppoBuBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
           this.turn++;
-          const cardTypes = await this.getCardTypes();
+          const cardTypes = await this.getCardTypes(player);
           const random = Math.floor(Math.random() * cardTypes.length);
           if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
             this.cardTypes = cardTypes[random];
@@ -2011,7 +2053,7 @@ class TableState implements Serializable {
     player.on(Enums.topHu, async (turn, card) => {
       let from;
 
-      const cardTypes = await this.getCardTypes();
+      const cardTypes = await this.getCardTypes(player);
       const random = Math.floor(Math.random() * cardTypes.length);
       if (!this.cardTypes.cardId) {
         this.cardTypes = cardTypes[random];
@@ -2214,7 +2256,7 @@ class TableState implements Serializable {
       await this.gameAllOver(states, [], nextZhuang);
     } else {
       const nextDo = async () => {
-        const cardTypes = await this.getCardTypes();
+        const cardTypes = await this.getCardTypes(xiajia);
         const random = Math.floor(Math.random() * cardTypes.length);
         if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
           this.cardTypes = cardTypes[random];
@@ -2478,6 +2520,13 @@ class TableState implements Serializable {
     player.cancelTimeout();
 
     if (ok) {
+      if (!this.isGameDa) {
+        this.isGameDa = true;
+      }
+      if (!player.isGameDa) {
+        player.isGameDa = true;
+      }
+
       await player.sendMessage('game/daReply', {ok: true, data: card});
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
     }
@@ -2521,7 +2570,7 @@ class TableState implements Serializable {
       const env = {card, from, turn: this.turn}
       this.actionResolver = new ActionResolver(env, async () => {
         if (xiajia) {
-          const cardTypes = await this.getCardTypes();
+          const cardTypes = await this.getCardTypes(xiajia);
           const random = Math.floor(Math.random() * cardTypes.length);
           if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
             this.cardTypes = cardTypes[random];
@@ -2585,7 +2634,7 @@ class TableState implements Serializable {
         if (check[Enums.peng] && !check[Enums.peng].isGameHu && !check[Enums.gang]) this.actionResolver.appendAction(check[Enums.peng], 'peng');
       }
 
-      const cardTypes = await this.getCardTypes();
+      const cardTypes = await this.getCardTypes(player);
       const random = Math.floor(Math.random() * cardTypes.length);
       if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
         this.cardTypes = cardTypes[random];
@@ -3127,7 +3176,7 @@ class TableState implements Serializable {
 
       if (xiajia) {
         const nextDo = async () => {
-          const cardTypes = await this.getCardTypes();
+          const cardTypes = await this.getCardTypes(xiajia);
           const random = Math.floor(Math.random() * cardTypes.length);
           if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
             this.cardTypes = cardTypes[random];
@@ -3375,7 +3424,7 @@ class TableState implements Serializable {
       }
     }
 
-    const cardTypes = await this.getCardTypes();
+    const cardTypes = await this.getCardTypes(player);
     const random = Math.floor(Math.random() * cardTypes.length);
     if ((Math.random() < 0.2 && this.cardTypes.cardId) || !this.cardTypes.cardId) {
       this.cardTypes = cardTypes[random];

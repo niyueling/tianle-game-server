@@ -232,6 +232,9 @@ class PlayerState implements Serializable {
   // 巅峰对决前的手牌
   oldCards: any[] = []
 
+  // 开局是否打牌
+  isGameDa: boolean = false;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -272,7 +275,7 @@ class PlayerState implements Serializable {
     this.isMingCard = false;
     this.competiteCards = [];
     this.oldCards = [];
-
+    this.isGameDa = false;
   }
 
   setGameRecorder(r) {
@@ -907,7 +910,6 @@ class PlayerState implements Serializable {
       this.cards.alreadyTakenCard = this.alreadyTakenCard
 
       const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
-      console.warn("normal zimo cards-%s checkResult-%s", JSON.stringify(this.getCardList(this.cards)), JSON.stringify(checkResult));
       if (checkResult.hu) {
         checkResult.zhuang = this.zhuang
 
@@ -923,7 +925,6 @@ class PlayerState implements Serializable {
       }
     }
 
-    console.warn(`zimo error card %s this.cards[card] %s`, card, this.cards[card])
     return false
   }
 
