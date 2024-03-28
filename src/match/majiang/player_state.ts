@@ -206,10 +206,6 @@ class PlayerState implements Serializable {
   isBroke: boolean = false
   // 金豆奖励
   rubyReward: number = 0
-  // 用户是否有补助资格
-  isHelp: boolean = false
-  // 补助的棋牌
-  helpCards: any[] = []
 
   // 本局积分
   juScore = 0
@@ -219,8 +215,6 @@ class PlayerState implements Serializable {
 
   // 是否计算对局
   isCalcJu = false
-
-  isGameOver: boolean = false
 
   constellationCards: any[] = []
 
@@ -234,6 +228,9 @@ class PlayerState implements Serializable {
 
   // 开局是否打牌
   isGameDa: boolean = false;
+
+  // 用户最后一次操作类型，1打牌，2碰牌，3杠牌，4胡牌
+  lastOperateType: number = null;
 
   constructor(userSocket, room, rule) {
     this.room = room
