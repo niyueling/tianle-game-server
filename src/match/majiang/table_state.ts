@@ -949,9 +949,9 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
-        // if (this.isAllHu && this.atIndex(player) === 0) {
-        //   return ;
-        // }
+        if (this.isAllHu && this.atIndex(player) === 0) {
+          setTimeout(function () {}, 2000);
+        }
 
         const nextDo = async () => {
           if (msg) {
@@ -1641,12 +1641,6 @@ class TableState implements Serializable {
                           }, xiajia.msgDispatcher)
                         }
                       } else {
-                        // 真实用户进入巅峰对决，取消托管
-                        if (this.atIndex(xiajia) === 0) {
-                          xiajia.onDeposit = false;
-                          xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {}})
-                        }
-
                         for (let i = 0; i < cardCount; i++) {
                           const newCard = await this.consumeCard(xiajia)
                           if (newCard) {
@@ -1848,12 +1842,6 @@ class TableState implements Serializable {
                       }, xiajia.msgDispatcher)
                     }
                   } else {
-                    // 真实用户进入巅峰对决，取消托管
-                    if (this.atIndex(xiajia) === 0) {
-                      xiajia.onDeposit = false;
-                      xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {}})
-                    }
-
                     for (let i = 0; i < cardCount; i++) {
                       const newCard = await this.consumeCard(xiajia)
                       if (newCard) {
@@ -2231,12 +2219,6 @@ class TableState implements Serializable {
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
     } else {
-      // 真实用户进入巅峰对决，取消托管
-      if (this.atIndex(xiajia) === 0) {
-        xiajia.onDeposit = false;
-        xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {}})
-      }
-
       const nextDo = async () => {
         const cardTypes = await this.getCardTypes();
         const random = Math.floor(Math.random() * cardTypes.length);
