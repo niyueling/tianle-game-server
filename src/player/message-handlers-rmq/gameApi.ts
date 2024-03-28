@@ -35,9 +35,11 @@ export class GameApi extends BaseApi {
   async getRecordList(message) {
     const records = await RoomGoldRecord.where({roomId: message.roomId}).find();
     const scoreRecords = [];
+    let totalGold = 0;
 
     for (let i = 0; i < records.length; i++) {
       if (this.player._id === records[i].winnerId) {
+        totalGold += records[i].winnerGoldReward;
         scoreRecords.push({
           playerId: this.player._id,
           gold: records[i].winnerGoldReward,
@@ -47,6 +49,7 @@ export class GameApi extends BaseApi {
 
       if (records[i].failList.includes(this.player._id)) {
         const index = records[i].failList.findIndex(p => p === this.player._id);
+        totalGold -= records[i].failGoldList[index];
         scoreRecords.push({
           playerId: this.player._id,
           gold: -records[i].failGoldList[index],
