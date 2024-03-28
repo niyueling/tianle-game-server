@@ -260,7 +260,7 @@ export default class RoomProxy {
               category,
               cardTableId
           }})
-          await room.reconnect(newPlayer)
+          await room.reconnect(newPlayer);
 
           await this.tryBestStore(rabbit.redisClient, room)
           return

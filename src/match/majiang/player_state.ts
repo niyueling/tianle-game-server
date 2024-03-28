@@ -232,6 +232,9 @@ class PlayerState implements Serializable {
   // 用户最后一次操作类型，1打牌，2碰牌，3杠牌，4胡牌
   lastOperateType: number = null;
 
+  // 用户是否杠后打牌
+  isGangHouDa: boolean = false
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -273,6 +276,7 @@ class PlayerState implements Serializable {
     this.competiteCards = [];
     this.oldCards = [];
     this.isGameDa = false;
+    this.isGangHouDa = false;
   }
 
   setGameRecorder(r) {

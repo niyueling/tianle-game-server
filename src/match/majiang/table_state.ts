@@ -905,7 +905,7 @@ class TableState implements Serializable {
     return await this.getCardTypesByHu(player, type);
   }
 
-  async getCardTypesByHu(player, type = 1) {
+  async getCardTypesByHu(player, type = 1, dianPaoPlayer = null) {
     const cardTypes = await CardTypeModel.find();
     let cardType = cardTypes[0];
 
@@ -918,7 +918,7 @@ class TableState implements Serializable {
       }
 
       // 双星辰，含有两种星座牌组成的刻(杠的和牌)
-      if (cardTypes[i].cardId === 2 && type === 1) {
+      if (cardTypes[i].cardId === 2) {
         const status = await this.checkShuangXingChen(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
@@ -937,13 +937,53 @@ class TableState implements Serializable {
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
       }
+
+      // 妙手回春
+      if (cardTypes[i].cardId === 5 && type === 1) {
+        const status = await this.checkMiaoShouHuiChun(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 海底捞月
+      if (cardTypes[i].cardId === 6 && type === 2) {
+        const status = await this.checkHaiDiLaoYue(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 杠上炮
+      if (cardTypes[i].cardId === 7 && type === 2) {
+        const status = await this.checkGangShangPao(player, dianPaoPlayer);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
     }
 
     return cardType;
   }
 
+  async checkJueZhang(player) {
+    let count= 0;
+    for (let i = 0; i < this.cards.length; i++) {
+
+    }
+  }
+
+  async checkGangShangPao(player, dianPaoPlayer) {
+    return dianPaoPlayer.isGangHouDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+  }
+
+  async checkHaiDiLaoYue(player) {
+    return this.remainCards === 0 && this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+  }
+
   async checkGangShangHua(player) {
     return player.lastOperateType === 3 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+  }
+
+  async checkMiaoShouHuiChun(player) {
+    return this.remainCards === 0 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
   }
 
   async checkMenQing(player) {
@@ -955,7 +995,7 @@ class TableState implements Serializable {
       return false;
     }
 
-    return player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    return this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
   }
 
   async checkShuangXingChen(player) {
@@ -989,7 +1029,7 @@ class TableState implements Serializable {
 
     console.warn("anGang-%s, buGang-%s, jieGang-%s, gangCount-%s", JSON.stringify(anGang), JSON.stringify(buGang), JSON.stringify(jieGang), gangCount);
 
-    return gangCount >= 2 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    return gangCount >= 2 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkQiShouJiao(player) {
@@ -1552,7 +1592,7 @@ class TableState implements Serializable {
           this.actionResolver.requestAction(player, 'hu', async () => {
             this.lastHuCard = card;
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
-              logger.info('hu  player %s jiepao %s', index, ok)
+              logger.info('hu player %s jiepao %s', index, ok)
 
               from = this.atIndex(this.lastDa);
               if (ok && player.daHuPai(card, this.players[from])) {
@@ -2477,6 +2517,7 @@ class TableState implements Serializable {
         player.isGameDa = true;
       }
 
+      player.lastOperateType === 3 ? player.isGangHouDa = true : player.isGangHouDa = false;
       player.lastOperateType = 1;
 
       await player.sendMessage('game/daReply', {ok: true, data: card});
