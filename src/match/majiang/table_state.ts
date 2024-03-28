@@ -918,7 +918,7 @@ class TableState implements Serializable {
       }
 
       // 双星辰，含有两种星座牌组成的刻(杠的和牌)
-      if (cardTypes[i].cardId === 2) {
+      if (cardTypes[i].cardId === 2 && type === 1) {
         const status = await this.checkShuangXingChen(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
