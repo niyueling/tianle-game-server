@@ -26,6 +26,11 @@ const RoomGoldRecordSchema = new mongoose.Schema({
     type: Array,
     required: true,
   },
+  //输家输豆数量
+  failGoldList: {
+    type: Array,
+    required: true,
+  },
   // 输家位置
   failFromList: {
     type: Array,

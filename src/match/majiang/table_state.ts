@@ -2711,6 +2711,7 @@ class TableState implements Serializable {
           p.balance = 0;
         })
         let failList = [];
+        let failGoldList = [];
         let failFromList = [];
         let winBalance = 0;
         let winModel = await service.playerService.getPlayerModel(to._id.toString());
@@ -2720,11 +2721,11 @@ class TableState implements Serializable {
           failList.push(from._id);
           failFromList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
-          // 扣除点炮用户金币
           const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple * conf.Ante);
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           from.juScore += from.balance;
+          failGoldList.push(from.balance);
           if (from.balance !== 0) {
             await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
             await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
@@ -2745,6 +2746,7 @@ class TableState implements Serializable {
                 await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
                   model.gold + p.balance, `对局扣除`);
                 failList.push(p._id);
+                failGoldList.push(p.balance);
                 failFromList.push(this.atIndex(p));
               }
             }
@@ -2768,6 +2770,7 @@ class TableState implements Serializable {
           roomId: this.room._id,
           failList,
           failFromList,
+          failGoldList,
           multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple,
           juIndex: this.room.game.juIndex,
           cardTypes: this.cardTypes

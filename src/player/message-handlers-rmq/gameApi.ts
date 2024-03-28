@@ -4,6 +4,8 @@ import * as config from "../../config";
 import LuckyBless from "../../database/models/luckyBless";
 import {service} from "../../service/importService";
 import {BaseApi} from "./baseApi";
+import GameRecord from "../../database/models/gameRecord";
+import RoomGoldRecord from "../../database/models/roomGoldRecord";
 
 // 游戏
 export class GameApi extends BaseApi {
@@ -28,39 +30,32 @@ export class GameApi extends BaseApi {
     this.replySuccess(resp);
   }
 
-  // 祈福列表
+  // 战绩
   @addApi()
-  async getBlessList() {
-    const list = await LuckyBless.find().sort({orderIndex: 1});
-    const result = [];
-    let rows;
-    let isFree;
-    let item;
-    for (let j = 0; j < list.length; j++) {
-      item = list[j];
-      rows = [];
-      for (let i = 0; i < item.times.length; i++) {
-        rows.push({
-          // 倍数
-          times: item.times[i],
-          // 钻石消耗
-          gem: item.gem[i],
-          // 运势
-          bless: item.bless[i],
-        })
+  async getRecordList(message) {
+    const records = await RoomGoldRecord.where({roomId: message.roomId}).find();
+    const scoreRecords = [];
+
+    for (let i = 0; i < records.length; i++) {
+      if (this.player._id === records[i].winnerId) {
+        scoreRecords.push({
+          playerId: this.player._id,
+          gold: records[i].winnerGoldReward,
+          cardTypes: records[i].cardTypes
+        });
       }
-      isFree = await service.playerService.getPlayerAttrValueByShortId(this.player.model.shortId,
-        playerAttributes.blessEndAt, item._id);
-      result.push({
-        _id: item._id,
-        name: item.name,
-        // 是否免费
-        isFree: !isFree,
-        rows,
-        index: j,
-      })
+
+      if (records[i].failList.includes(this.player._id)) {
+        const index = records[i].failList.findIndex(p => p === this.player._id);
+        scoreRecords.push({
+          playerId: this.player._id,
+          gold: -records[i].failGoldList[index],
+          cardTypes: records[i].cardTypes
+        });
+      }
     }
-    this.replySuccess(result);
+
+    return this.replySuccess(scoreRecords);
   }
 
   // 求签
