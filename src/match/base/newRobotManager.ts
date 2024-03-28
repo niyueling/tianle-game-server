@@ -344,7 +344,7 @@ export class NewRobotManager {
       isOffline = this.isHumanPlayerOffline(proxy);
       if (!isOffline) {
         // 在线用户且非机器人
-        index = this.room.readyPlayers.findIndex(proxy.model._id.toString());
+        index = this.room.readyPlayers.findIndex(proxy.model._id);
         console.warn(index);
         if (index === -1) {
           // 有在线用户没点下一局
