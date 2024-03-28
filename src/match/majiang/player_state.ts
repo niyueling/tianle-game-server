@@ -434,6 +434,11 @@ class PlayerState implements Serializable {
     let ret = msg;
 
     if (send) {
+      // 如果用户可以杠，并且胡牌已托管，则取消托管
+      if (msg.gang && this.isGameHu && this.onDeposit) {
+        this.onDeposit = false;
+        this.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}})
+      }
       this.sendMessage('game/TakeCard', {ok: true, data: msg})
     }
     // 禁止触发旧麻将机器人

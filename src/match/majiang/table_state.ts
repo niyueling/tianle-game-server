@@ -1631,11 +1631,6 @@ class TableState implements Serializable {
 
                           console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
 
-                          // 如果用户可以杠，并且胡牌已托管，则取消托管
-                          if (msg.gang && xiajia.isGameHu && xiajia.onDeposit) {
-                            xiajia.onDeposit = false;
-                            xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {card: newCard}})
-                          }
 
                           this.state = stateWaitDa;
                           this.stateData = {da: xiajia, card: newCard, msg};
@@ -1832,12 +1827,6 @@ class TableState implements Serializable {
                       }
 
                       console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
-                      // 如果用户可以杠，并且胡牌已托管，则取消托管
-                      if (msg.gang && xiajia.isGameHu && xiajia.onDeposit) {
-                        xiajia.onDeposit = false;
-                        xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {card: newCard}})
-                      }
-
                       this.state = stateWaitDa;
                       this.stateData = {da: xiajia, card: newCard, msg};
                       const sendMsg = {index: this.players.indexOf(xiajia)};
