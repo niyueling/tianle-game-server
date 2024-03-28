@@ -345,12 +345,10 @@ export class NewRobotManager {
       if (!isOffline) {
         // 在线用户且非机器人
         index = this.room.readyPlayers.findIndex(proxy.model._id.toString());
+        console.warn(index);
         if (index === -1) {
           // 有在线用户没点下一局
           console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id} readyPlayers ${JSON.stringify(this.room.readyPlayers)} playerId ${proxy.model._id} index ${index}`);
-          if (this.room.gameState) {
-            await this.room.ready(proxy);
-          }
           return false;
         }
       }
