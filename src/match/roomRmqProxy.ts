@@ -12,6 +12,7 @@ import {PlayerRmqProxy} from "./PlayerRmqProxy"
 import Timer = NodeJS.Timer
 import {TianleErrorCode} from "@fm/common/constants";
 import PlayerCardTable from "../database/models/PlayerCardTable";
+import GameCategory from "../database/models/gameCategory";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -246,15 +247,17 @@ export default class RoomProxy {
             cardTableId = playerCardTable.propId;
           }
 
+          const category = await GameCategory.findOne({_id: room.gameRule.categoryId}).lean();
+
           const newPlayer = new PlayerRmqProxy({
             ...playerModel,
             _id: messageBody.from,
             ip: messageBody.ip
           }, this.channel, gameName)
           await newPlayer.sendMessage('room/reconnectReply', {ok: true, data: {
-            _id: room._id,
+              _id: room._id,
               rule: room.rule,
-              categoryId: room.gameRule.categoryId,
+              category,
               cardTableId
           }})
           await room.reconnect(newPlayer)
