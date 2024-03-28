@@ -23,6 +23,7 @@ import GameCategory from "../../database/models/gameCategory";
 import GameCardRecord from "../../database/models/gameCardRecord";
 import PlayerMedal from "../../database/models/PlayerMedal";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
+import PlayerCardTable from "../../database/models/PlayerCardTable";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -3346,9 +3347,15 @@ class TableState implements Serializable {
       base: this.room.currentBase,
       juIndex: this.room.game.juIndex,
       juShu: this.restJushu,
-      current: {}
+      current: {},
+      cardTableId: null
     }
 
+    // 获取牌桌
+    const playerCardTable = await PlayerCardTable.findOne({playerId: player._id, isUse: true});
+    if (playerCardTable && (playerCardTable.times === -1 || playerCardTable.times > new Date().getTime())) {
+      pushMsg.cardTableId = playerCardTable.propId;
+    }
 
     for (let i = 0; i < this.players.length; i++) {
       let p = this.players[i];
