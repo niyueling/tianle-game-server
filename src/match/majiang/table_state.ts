@@ -971,7 +971,7 @@ class TableState implements Serializable {
   }
 
   async checkGangShangPao(player, dianPaoPlayer) {
-    return dianPaoPlayer.isGangHouDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    return dianPaoPlayer && this.lastDa && dianPaoPlayer.isGangHouDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
   }
 
   async checkHaiDiLaoYue(player) {
