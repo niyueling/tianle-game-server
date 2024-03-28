@@ -756,7 +756,8 @@ class TableState implements Serializable {
     }
 
     const residueCards = 13 - cards.length;
-    if (residueCards > 3 && Math.random() < 0.2) {
+    const flag = Math.random();
+    if (residueCards > 3 && flag < 0.2) {
       const consumeCards = await this.consumeGangOrKeCard(3);
       cards = [...cards, ...consumeCards];
     }
