@@ -38,13 +38,16 @@ export class GameApi extends BaseApi {
     let totalGold = 0;
 
     for (let i = 0; i < records.length; i++) {
+      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(records[i].categoryId);
+
       if (this.player._id === records[i].winnerId) {
         totalGold += records[i].winnerGoldReward;
         scoreRecords.push({
           playerId: this.player._id,
           gold: records[i].winnerGoldReward,
           cardTypes: records[i].cardTypes,
-          winnerIndex: records[i].winnerFrom
+          winnerIndex: records[i].winnerFrom,
+          conf
         });
       }
 
@@ -55,7 +58,8 @@ export class GameApi extends BaseApi {
           playerId: this.player._id,
           gold: -records[i].failGoldList[index],
           cardTypes: records[i].cardTypes,
-          winnerIndex: records[i].winnerFrom
+          winnerIndex: records[i].winnerFrom,
+          conf
         });
       }
     }

@@ -2767,7 +2767,8 @@ class TableState implements Serializable {
           failGoldList,
           multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple,
           juIndex: this.room.game.juIndex,
-          cardTypes: this.cardTypes
+          cardTypes: this.cardTypes,
+          categoryId: this.room.gameRule.categoryId
         })
       }
 
