@@ -43,7 +43,8 @@ export class GameApi extends BaseApi {
         scoreRecords.push({
           playerId: this.player._id,
           gold: records[i].winnerGoldReward,
-          cardTypes: records[i].cardTypes
+          cardTypes: records[i].cardTypes,
+          playerList: records[i].failFromList
         });
       }
 
@@ -53,7 +54,8 @@ export class GameApi extends BaseApi {
         scoreRecords.push({
           playerId: this.player._id,
           gold: -records[i].failGoldList[index],
-          cardTypes: records[i].cardTypes
+          cardTypes: records[i].cardTypes,
+          playerList: [records[i].winnerFrom]
         });
       }
     }
