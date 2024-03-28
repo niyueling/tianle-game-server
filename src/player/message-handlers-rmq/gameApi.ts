@@ -60,7 +60,7 @@ export class GameApi extends BaseApi {
       }
     }
 
-    return this.replySuccess(scoreRecords);
+    return this.replySuccess({totalGold, scoreRecords});
   }
 
   // 求签
