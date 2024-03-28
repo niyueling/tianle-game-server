@@ -11,6 +11,7 @@ import {IRoom} from "./interfaces"
 import {PlayerRmqProxy} from "./PlayerRmqProxy"
 import Timer = NodeJS.Timer
 import {TianleErrorCode} from "@fm/common/constants";
+import PlayerCardTable from "../database/models/PlayerCardTable";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -238,12 +239,24 @@ export default class RoomProxy {
             return
           }
 
+          // 获取牌桌
+          let cardTableId = null;
+          const playerCardTable = await PlayerCardTable.findOne({playerId: playerModel._id, isUse: true});
+          if (playerCardTable && (playerCardTable.times === -1 || playerCardTable.times > new Date().getTime())) {
+            cardTableId = playerCardTable.propId;
+          }
+
           const newPlayer = new PlayerRmqProxy({
             ...playerModel,
             _id: messageBody.from,
             ip: messageBody.ip
           }, this.channel, gameName)
-          await newPlayer.sendMessage('room/reconnectReply', {ok: true, data: {_id: room._id, rule: room.rule}})
+          await newPlayer.sendMessage('room/reconnectReply', {ok: true, data: {
+            _id: room._id,
+              rule: room.rule,
+              categoryId: room.gameRule.categoryId,
+              cardTableId
+          }})
           await room.reconnect(newPlayer)
 
           await this.tryBestStore(rabbit.redisClient, room)
