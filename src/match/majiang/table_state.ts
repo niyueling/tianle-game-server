@@ -953,6 +953,10 @@ class TableState implements Serializable {
           setTimeout(function () {}, 5000);
         }
 
+        if (!this.isAllHu && !player.onDeposit) {
+          return ;
+        }
+
         const nextDo = async () => {
           if (msg) {
             const takenCard = msg.card;
