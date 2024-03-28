@@ -930,11 +930,10 @@ class TableState implements Serializable {
 
   async checkShuangXingChen(player) {
     // 双星辰
-    const anGang = player.events["anGang"];
-    const buGang = player.events["buGang"];
-    const jieGang = player.events["mingGang"];
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
     let gangCount = 0;
-    console.warn("anGang-%s, buGang-%s, jieGang-%s, gangCount-%s", JSON.stringify(anGang), JSON.stringify(buGang), JSON.stringify(jieGang), gangCount);
 
     for (let i = 0; i < anGang.length; i++) {
       if (anGang[i] >= 41 && anGang[i] <= 52) {
@@ -958,7 +957,7 @@ class TableState implements Serializable {
       }
     }
 
-
+    console.warn("anGang-%s, buGang-%s, jieGang-%s, gangCount-%s", JSON.stringify(anGang), JSON.stringify(buGang), JSON.stringify(jieGang), gangCount);
 
     return gangCount >= 2;
   }
