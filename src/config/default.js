@@ -129,7 +129,7 @@ module.exports = {
     // 洗牌需要支付的房卡
     payForReshuffle: 10,
     // 金豆房等待充值
-    waitForRuby: 150,
+    waitForRuby: 15,
     // 金豆救助次数
     rubyHelpTimes: 5,
     // 10w金豆
