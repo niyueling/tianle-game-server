@@ -1377,14 +1377,13 @@ class PlayerState implements Serializable {
   deposit(callback) {
     let minutes = 15 * 1000;
 
-    console.warn("msgDispatcher-%s", JSON.stringify(this.msgDispatcher));
 
     if (!this.msgDispatcher) {
       return ;
     }
     this.cancelTimeout()
 
-    console.warn("onDeposit-%s", this.onDeposit);
+    console.warn("shortId-%s onDeposit-%s", this.model.shortId, this.onDeposit);
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
