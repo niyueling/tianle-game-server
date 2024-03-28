@@ -2397,7 +2397,8 @@ class TableState implements Serializable {
       failFromList,
       multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple,
       juIndex: this.room.game.juIndex,
-      cardTypes: this.cardTypes
+      cardTypes: this.cardTypes,
+      categoryId: this.room.gameRule.categoryId
     })
 
     // 判断是否破产，破产提醒客户端充值钻石
