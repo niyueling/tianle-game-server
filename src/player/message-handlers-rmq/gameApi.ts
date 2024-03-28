@@ -44,7 +44,7 @@ export class GameApi extends BaseApi {
           playerId: this.player._id,
           gold: records[i].winnerGoldReward,
           cardTypes: records[i].cardTypes,
-          playerList: records[i].failFromList
+          winnerIndex: records[i].winnerFrom
         });
       }
 
@@ -55,7 +55,7 @@ export class GameApi extends BaseApi {
           playerId: this.player._id,
           gold: -records[i].failGoldList[index],
           cardTypes: records[i].cardTypes,
-          playerList: [records[i].winnerFrom]
+          winnerIndex: records[i].winnerFrom
         });
       }
     }
