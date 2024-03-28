@@ -3341,7 +3341,7 @@ class TableState implements Serializable {
     }
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
     const pushMsg = {
-      index, status: [],
+      index, status: [], _id: this.room._id, rule: this.rule,
       category,
       remainCards: this.remainCards,
       base: this.room.currentBase,
