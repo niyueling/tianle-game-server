@@ -950,7 +950,7 @@ class TableState implements Serializable {
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
         if (this.isAllHu && this.atIndex(player) === 0) {
-          setTimeout(function () {}, 2000);
+          setTimeout(function () {}, 5000);
         }
 
         const nextDo = async () => {
