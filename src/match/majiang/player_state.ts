@@ -507,7 +507,7 @@ class PlayerState implements Serializable {
       }
     }
 
-    let huResult = this.checkCompetiteZiMo(cards);
+    let huResult = this.checkZiMo();
     console.warn("shortId-%s, checkCompetiteZiMo-%s, cards-%s", this.model.shortId, JSON.stringify(huResult), JSON.stringify(this.getCardList(cards)));
     if (huResult.hu) {
       msg.huType = huType;
