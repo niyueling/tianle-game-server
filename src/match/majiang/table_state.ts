@@ -3086,6 +3086,7 @@ class TableState implements Serializable {
                       let gangCards = [];
                       let gangCardIndexs = [];
                       const huCards = [];
+                      const moCards = [];
                       xiajia.oldCards = await this.deepCopyMixedArray(xiajia.cards);
                       xiajia.competiteCards = [];
                       console.warn(xiajia.oldCards);
@@ -3131,6 +3132,7 @@ class TableState implements Serializable {
                             }
 
                             takeCards.push(msg.card);
+                            moCards.push(msg.card);
                             xiajia.competiteCards.push(msg)
                             if (msg.gang) {
                               msg.gang.map(gang => {
@@ -3147,6 +3149,10 @@ class TableState implements Serializable {
                             this.state = stateWaitDa;
                             this.stateData = {da: xiajia, card: newCard, msg};
                           }
+                        }
+
+                        for (let i = 0; i < moCards.length; i++) {
+                          player.cards[moCards[i]]++;
                         }
 
                         xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
@@ -3286,6 +3292,7 @@ class TableState implements Serializable {
                   let gangCards = [];
                   let gangCardIndexs = [];
                   const huCards = [];
+                  const moCards = [];
                   xiajia.competiteCards = [];
                   xiajia.oldCards = await this.deepCopyMixedArray(xiajia.cards);
                   console.warn(xiajia.oldCards);
@@ -3327,6 +3334,7 @@ class TableState implements Serializable {
                         }
 
                         takeCards.push(msg.card);
+                        moCards.push(msg.card);
                         xiajia.competiteCards.push(msg);
                         if (msg.gang) {
                           msg.gang.map(gang => {
@@ -3343,6 +3351,10 @@ class TableState implements Serializable {
                         this.state = stateWaitDa;
                         this.stateData = {da: xiajia, card: newCard, msg};
                       }
+                    }
+
+                    for (let i = 0; i < moCards.length; i++) {
+                      player.cards[moCards[i]]++;
                     }
 
                     xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
@@ -3638,6 +3650,7 @@ class TableState implements Serializable {
         let gangCards = [];
         let gangCardIndexs = [];
         const huCards = [];
+        const moCards = [];
         xiajia.oldCards = await this.deepCopyMixedArray(xiajia.cards);
         xiajia.competiteCards = [];
         console.warn(xiajia.oldCards);
@@ -3661,6 +3674,7 @@ class TableState implements Serializable {
             }
 
             takeCards.push(msg.card);
+            moCards.push(msg.card);
             xiajia.competiteCards.push(msg);
             if (msg.gang) {
               msg.gang.map(gang => {
@@ -3677,6 +3691,10 @@ class TableState implements Serializable {
             this.state = stateWaitDa;
             this.stateData = {da: xiajia, card: newCard, msg};
           }
+        }
+
+        for (let i = 0; i < moCards.length; i++) {
+          player.cards[moCards[i]]++;
         }
 
         xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
