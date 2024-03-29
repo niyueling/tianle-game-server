@@ -507,7 +507,8 @@ class PlayerState implements Serializable {
       }
     }
 
-    let huResult = this.checkZiMo()
+    let huResult = this.checkCompetiteZiMo(cards);
+    console.warn("checkCompetiteZiMo-%s", JSON.stringify(huResult));
     if (huResult.hu) {
       msg.huType = huType;
       if (this.hadQiaoXiang) {
@@ -712,6 +713,20 @@ class PlayerState implements Serializable {
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
     return HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
+  }
+
+  checkCompetiteZiMo(cards) {
+    cards.lastTakeCard = this.lastCardToken
+    if (this.room && this.room.gameState && this.room.gameState.turn) {
+      this.turn = cards.turn = this.room.gameState.turn
+    } else {
+      this.turn = cards.turn = 1;
+    }
+
+    cards.takeSelfCard = true
+    cards.qiaoXiang = this.hadQiaoXiang
+    cards.first = this.turn === 2
+    return HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
   }
 
   onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle: boolean, constellationCards, zhuangIndex: number) {
@@ -958,7 +973,7 @@ class PlayerState implements Serializable {
       cards.alreadyTakenCard = this.alreadyTakenCard
 
       const checkResult = HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
-      console.warn("checkResult-%s cards-%s", JSON.stringify(checkResult), JSON.stringify(this.getCardList(cards)))
+      // console.warn("checkResult-%s cards-%s", JSON.stringify(checkResult), JSON.stringify(this.getCardList(cards)))
       checkResult.zhuang = this.zhuang
 
       this.recordGameEvent(Enums.huCards, card)
@@ -1394,7 +1409,7 @@ class PlayerState implements Serializable {
     }
     this.cancelTimeout()
 
-    console.warn("shortId-%s onDeposit-%s", this.model.shortId, this.onDeposit);
+    // console.warn("shortId-%s onDeposit-%s", this.model.shortId, this.onDeposit);
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {

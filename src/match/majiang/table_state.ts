@@ -1283,8 +1283,8 @@ class TableState implements Serializable {
       tianXieCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return player.numberCount >= 100 && tianXieCount > 0 && flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1316,8 +1316,8 @@ class TableState implements Serializable {
       moJieCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1356,8 +1356,8 @@ class TableState implements Serializable {
       shuiPingCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && shiZiCount > 0 && shuiPingCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1391,8 +1391,8 @@ class TableState implements Serializable {
       shuiPingCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && shuiPingCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1426,8 +1426,8 @@ class TableState implements Serializable {
       baiYangCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && baiYangCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1468,8 +1468,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && blackCount > 0 && redCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1509,8 +1509,8 @@ class TableState implements Serializable {
       juXieCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && jinNiuCount > 0 && juXieCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1550,8 +1550,8 @@ class TableState implements Serializable {
       moJieCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && baiYangCount > 0 && moJieCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1591,8 +1591,8 @@ class TableState implements Serializable {
       shiZiCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && shuangZiCount > 0 && shiZiCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1632,8 +1632,8 @@ class TableState implements Serializable {
       sheShouCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && jinNiuCount > 0 && sheShouCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1673,8 +1673,8 @@ class TableState implements Serializable {
       shuiPingCount++;
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && tianXieCount > 0 && shuiPingCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
       (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
@@ -1699,8 +1699,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangCount >= 4 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1724,8 +1724,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangCount >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1749,8 +1749,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1783,8 +1783,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangCount >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1799,8 +1799,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return anGangCount >= 4 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1840,8 +1840,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("duiCount-%s, gangCount-%s, zimo-%s, jiePao-%s", duiCount, gangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("duiCount-%s, gangCount-%s, zimo-%s, jiePao-%s", duiCount, gangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangCount === 4 && duiCount === 1 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1881,8 +1881,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("duiCount-%s, gangCount-%s, zimo-%s, jiePao-%s", duiCount, gangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("duiCount-%s, gangCount-%s, zimo-%s, jiePao-%s", duiCount, gangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangCount === 4 && duiCount === 1 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1902,8 +1902,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1917,8 +1917,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("duiCount-%s, zimo-%s, jiePao-%s", duiCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("duiCount-%s, zimo-%s, jiePao-%s", duiCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return duiCount === 7 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1949,8 +1949,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("colorCount-%s, zimo-%s, jiePao-%s", colorCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("colorCount-%s, zimo-%s, jiePao-%s", colorCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return colorCount >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1965,8 +1965,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return anGangCount >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1979,8 +1979,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2004,8 +2004,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2056,8 +2056,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2088,8 +2088,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("colorCount-%s, zimo-%s, jiePao-%s", colorCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("colorCount-%s, zimo-%s, jiePao-%s", colorCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return colorCount >= 2 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2108,8 +2108,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2124,8 +2124,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return anGangCount >= 2 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2149,8 +2149,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2174,8 +2174,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2188,7 +2188,7 @@ class TableState implements Serializable {
       return false;
     }
 
-    console.warn("zimo-%s", player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0));
+    // console.warn("zimo-%s", player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0));
 
     return player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
   }
@@ -2212,8 +2212,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2224,8 +2224,8 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
 
-    console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangList.length,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangList.length,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangList.length >= 4 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2236,8 +2236,8 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
 
-    console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangList.length,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangList.length,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangList.length >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2264,8 +2264,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2278,8 +2278,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2301,8 +2301,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("duiCount-%s, gangCount-%s, zimo-%s, jiePao-%s", duiCount, gangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("duiCount-%s, gangCount-%s, zimo-%s, jiePao-%s", duiCount, gangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangCount === 4 && duiCount === 1 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -2320,7 +2320,7 @@ class TableState implements Serializable {
   }
 
   async checkGangShangPao(player, dianPaoPlayer) {
-    console.warn("isGangHouDa-%s, jiePao-%s", dianPaoPlayer && dianPaoPlayer.isGangHouDa, this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("isGangHouDa-%s, jiePao-%s", dianPaoPlayer && dianPaoPlayer.isGangHouDa, this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
     return dianPaoPlayer && this.lastDa && dianPaoPlayer.isGangHouDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
   }
 
@@ -2329,7 +2329,7 @@ class TableState implements Serializable {
   }
 
   async checkGangShangHua(player) {
-    console.warn("lastOperateType-%s, zimo-%s", player.lastOperateType, player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0));
+    // console.warn("lastOperateType-%s, zimo-%s", player.lastOperateType, player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0));
     return player.lastOperateType === 3 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
   }
 
@@ -2345,7 +2345,7 @@ class TableState implements Serializable {
       return false;
     }
 
-    console.warn("jiePao-%s", this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("jiePao-%s", this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
   }
@@ -2379,8 +2379,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("anGang-%s, buGang-%s, jieGang-%s, gangCount-%s, zimo-%s, jiePao-%s", JSON.stringify(anGang), JSON.stringify(buGang), JSON.stringify(jieGang), gangCount,
-      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    // console.warn("anGang-%s, buGang-%s, jieGang-%s, gangCount-%s, zimo-%s, jiePao-%s", JSON.stringify(anGang), JSON.stringify(buGang), JSON.stringify(jieGang), gangCount,
+    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangCount >= 2 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -3081,7 +3081,7 @@ class TableState implements Serializable {
                             return;
                           }
 
-                          console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
+                          // console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
 
 
                           this.state = stateWaitDa;
@@ -3280,7 +3280,7 @@ class TableState implements Serializable {
                         return;
                       }
 
-                      console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
+                      // console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
                       this.state = stateWaitDa;
                       this.stateData = {da: xiajia, card: newCard, msg};
                       const sendMsg = {index: this.players.indexOf(xiajia)};
