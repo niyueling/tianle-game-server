@@ -458,7 +458,7 @@ class PlayerState implements Serializable {
   }
 
   @recordChoiceAfterTakeCard
-  takeCompetiteCard(turn: number, card: number, huType, cards) {
+  async takeCompetiteCard(turn: number, card: number, huType, cards) {
     let canTake = true;
     this.emitter.emit('willTakeCard', () => {
       canTake = false;

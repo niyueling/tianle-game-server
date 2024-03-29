@@ -3119,7 +3119,7 @@ class TableState implements Serializable {
                         for (let i = 0; i < cardCount; i++) {
                           const newCard = await this.consumeCard(xiajia)
                           if (newCard) {
-                            const msg = xiajia.takeCompetiteCard(this.turn, newCard,
+                            const msg = await xiajia.takeCompetiteCard(this.turn, newCard,
                               {
                                 id: this.cardTypes.cardId,
                                 multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
@@ -3317,7 +3317,7 @@ class TableState implements Serializable {
                     for (let i = 0; i < cardCount; i++) {
                       const newCard = await this.consumeCard(xiajia)
                       if (newCard) {
-                        const msg = xiajia.takeCompetiteCard(this.turn, newCard, {
+                        const msg = await xiajia.takeCompetiteCard(this.turn, newCard, {
                           id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                         }, xiajia.oldCards);
 
@@ -3645,7 +3645,7 @@ class TableState implements Serializable {
         for (let i = 0; i < 3; i++) {
           const newCard = await this.consumeCard(xiajia);
           if (newCard) {
-            const msg = xiajia.takeCompetiteCard(this.turn, newCard, {
+            const msg = await xiajia.takeCompetiteCard(this.turn, newCard, {
               id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
             }, xiajia.oldCards);
 
