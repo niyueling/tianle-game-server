@@ -3151,7 +3151,7 @@ class TableState implements Serializable {
                         }
 
                         for (let i = 0; i < moCards.length; i++) {
-                          player.cards[moCards[i]]++;
+                          xiajia.cards[moCards[i]]++;
                         }
 
                         xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
@@ -3352,7 +3352,7 @@ class TableState implements Serializable {
                     }
 
                     for (let i = 0; i < moCards.length; i++) {
-                      player.cards[moCards[i]]++;
+                      xiajia.cards[moCards[i]]++;
                     }
 
                     xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
@@ -3691,7 +3691,7 @@ class TableState implements Serializable {
         }
 
         for (let i = 0; i < moCards.length; i++) {
-          player.cards[moCards[i]]++;
+          xiajia.cards[moCards[i]]++;
         }
 
         xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
