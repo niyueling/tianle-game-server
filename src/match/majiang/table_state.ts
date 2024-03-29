@@ -908,6 +908,7 @@ class TableState implements Serializable {
   async getCardTypesByHu(player, type = 1, dianPaoPlayer = null) {
     const cardTypes = await CardTypeModel.find();
     let cardType = cardTypes[0];
+    cardType.multiple = 0;
 
     for (let i = 0; i < cardTypes.length; i++) {
       // 起手叫
@@ -980,7 +981,7 @@ class TableState implements Serializable {
   }
 
   async checkGangShangHua(player) {
-    console.warn("lastOperateType-%s, jiePao-%s", player.lastOperateType, player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0));
+    console.warn("lastOperateType-%s, zimo-%s", player.lastOperateType, player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0));
     return player.lastOperateType === 3 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
   }
 
