@@ -508,6 +508,7 @@ class PlayerState implements Serializable {
     }
 
     let huResult = this.checkCompetiteZiMo(cards);
+    console.warn(this.cards);
     console.warn("shortId-%s, checkCompetiteZiMo-%s, cards-%s", this.model.shortId, JSON.stringify(huResult), JSON.stringify(this.getCardList(cards)));
     if (huResult.hu) {
       msg.huType = huType;
@@ -716,16 +717,6 @@ class PlayerState implements Serializable {
   }
 
   checkCompetiteZiMo(cards) {
-    cards.lastTakeCard = this.lastCardToken
-    if (this.room && this.room.gameState && this.room.gameState.turn) {
-      this.turn = cards.turn = this.room.gameState.turn
-    } else {
-      this.turn = cards.turn = 1;
-    }
-
-    cards.takeSelfCard = true
-    cards.qiaoXiang = this.hadQiaoXiang
-    cards.first = this.turn === 2
     return HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
   }
 
