@@ -1260,10 +1260,14 @@ class TableState implements Serializable {
     const anGang = player.events["anGang"] || [];
     const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
+    let tianXieCount = 0;
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation8) {
+        tianXieCount++;
+      }
       if (gangList[i] > 40 && ![48].includes(gangList[i])) {
         flag = false;
       }
@@ -1275,10 +1279,14 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation8] > 0) {
+      tianXieCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return player.numberCount >= 100 && flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return player.numberCount >= 100 && tianXieCount > 0 && flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkMoJieZhiWen(player) {
@@ -1287,8 +1295,12 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let moJieCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation10) {
+        moJieCount++;
+      }
       if ((gangList[i] < 38 && ![6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![50].includes(gangList[i]))) {
         flag = false;
       }
@@ -1298,6 +1310,10 @@ class TableState implements Serializable {
       if (player.cards[i] > 0 && ((i < 38 && ![6, 7, 8, 9].includes(i % 10)) || (i > 40 && ![50].includes(i)))) {
         flag = false;
       }
+    }
+
+    if (player.cards[Enums.constellation10] > 0) {
+      moJieCount++;
     }
 
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
@@ -1312,8 +1328,16 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let shuiPingCount = 0;
+    let shiZiCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation5) {
+        shiZiCount++;
+      }
+      if (gangList[i] === Enums.constellation11) {
+        shuiPingCount++;
+      }
       if ((gangList[i] < 38 && gangList[i] % 2 === 0) || (gangList[i] > 40 && ![45, 51].includes(gangList[i]))) {
         flag = false;
       }
@@ -1325,10 +1349,18 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation5] > 0) {
+      shiZiCount++;
+    }
+    if (player.cards[Enums.constellation11] > 0) {
+      shuiPingCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && shiZiCount > 0 && shuiPingCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkYueLuoXingChen(player) {
@@ -1337,8 +1369,13 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let shuiPingCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation11) {
+        shuiPingCount++;
+      }
+
       if ((gangList[i] < 38 && gangList[i] < 10) || (gangList[i] > 40 && gangList[i] !== 51)) {
         flag = false;
       }
@@ -1350,10 +1387,15 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation11] > 0) {
+      shuiPingCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && shuiPingCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkDaBuLiuXing(player) {
@@ -1362,8 +1404,13 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let baiYangCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation1) {
+        baiYangCount++;
+      }
+
       if ((gangList[i] < 38 && gangList[i] > 10) || (gangList[i] > 40 && gangList[i] !== 41)) {
         flag = false;
       }
@@ -1375,27 +1422,47 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation1] > 0) {
+      baiYangCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && baiYangCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkXingLiuYingJi(player) {
-    const colorArrs = [41, 42, 44, 48, 45, 47, 50, 50];
+    const colorArrs = [41, 42, 44, 48, 45, 47, 50, 52];
     const anGang = player.events["anGang"] || [];
     const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let blackCount = 0;
+    let redCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if ([Enums.constellation1, Enums.constellation2, Enums.constellation4, Enums.constellation8].includes(gangList[i])) {
+        blackCount++;
+      }
+      if ([Enums.constellation5, Enums.constellation7, Enums.constellation10, Enums.constellation12].includes(gangList[i])) {
+        redCount++;
+      }
+
       if ((gangList[i] < 38 && gangList[i] > 10) || (gangList[i] > 40 && !colorArrs.includes(gangList[i]))) {
         flag = false;
       }
     }
 
     for (let i = 1; i < 53; i++) {
+      if ([Enums.constellation1, Enums.constellation2, Enums.constellation4, Enums.constellation8].includes(i) && player.cards[i] > 0) {
+        blackCount++;
+      }
+      if ([Enums.constellation5, Enums.constellation7, Enums.constellation10, Enums.constellation12].includes(i) && player.cards[i] > 0) {
+        redCount++;
+      }
       if (player.cards[i] > 0 && ((i < 38 && i > 10) || (i > 40 && !colorArrs.includes(i)))) {
         flag = false;
       }
@@ -1404,7 +1471,8 @@ class TableState implements Serializable {
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && blackCount > 0 && redCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkYiXingHuanDou(player) {
@@ -1413,8 +1481,16 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let juXieCount = 0;
+    let jinNiuCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation2) {
+        jinNiuCount++;
+      }
+      if (gangList[i] === Enums.constellation4) {
+        juXieCount++;
+      }
       if ((gangList[i] < 38 && ![4, 5, 6].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![42, 44].includes(gangList[i]))) {
         flag = false;
       }
@@ -1426,10 +1502,18 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation2] > 0) {
+      jinNiuCount++;
+    }
+    if (player.cards[Enums.constellation4] > 0) {
+      juXieCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && jinNiuCount > 0 && juXieCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkYiTianXingDou(player) {
@@ -1438,8 +1522,16 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let moJieCount = 0;
+    let baiYangCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation1) {
+        baiYangCount++;
+      }
+      if (gangList[i] === Enums.constellation10) {
+        moJieCount++;
+      }
       if ((gangList[i] < 38 && ![6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![41, 50].includes(gangList[i]))) {
         flag = false;
       }
@@ -1451,10 +1543,18 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation1] > 0) {
+      baiYangCount++;
+    }
+    if (player.cards[Enums.constellation10] > 0) {
+      moJieCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && baiYangCount > 0 && moJieCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkQiBuXingChen(player) {
@@ -1463,8 +1563,16 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let shiZiCount = 0;
+    let shuangZiCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation3) {
+        shuangZiCount++;
+      }
+      if (gangList[i] === Enums.constellation5) {
+        shiZiCount++;
+      }
       if ((gangList[i] < 38 && ![1, 2, 3, 4].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![43, 45].includes(gangList[i]))) {
         flag = false;
       }
@@ -1476,10 +1584,18 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation3] > 0) {
+      shuangZiCount++;
+    }
+    if (player.cards[Enums.constellation5] > 0) {
+      shiZiCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && shuangZiCount > 0 && shiZiCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkXingLiYueHui(player) {
@@ -1488,8 +1604,16 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let sheShouCount = 0;
+    let jinNiuCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation2) {
+        jinNiuCount++;
+      }
+      if (gangList[i] === Enums.constellation9) {
+        sheShouCount++;
+      }
       if ((gangList[i] < 38 && gangList[i] > 10 && gangList[i] < 20) || (gangList[i] > 40 && ![42, 49].includes(gangList[i]))) {
         flag = false;
       }
@@ -1501,10 +1625,18 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation2] > 0) {
+      jinNiuCount++;
+    }
+    if (player.cards[Enums.constellation9] > 0) {
+      sheShouCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && jinNiuCount > 0 && sheShouCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkWuLiuXingDian(player) {
@@ -1513,8 +1645,16 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
+    let shuiPingCount = 0;
+    let tianXieCount = 0;
 
     for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] === Enums.constellation8) {
+        tianXieCount++;
+      }
+      if (gangList[i] === Enums.constellation11) {
+        shuiPingCount++;
+      }
       if ((gangList[i] < 38 && gangList[i] % 2 !== 0) || (gangList[i] > 40 && ![48, 51].includes(gangList[i]))) {
         flag = false;
       }
@@ -1526,10 +1666,18 @@ class TableState implements Serializable {
       }
     }
 
+    if (player.cards[Enums.constellation8] > 0) {
+      tianXieCount++;
+    }
+    if (player.cards[Enums.constellation11] > 0) {
+      shuiPingCount++;
+    }
+
     console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
       player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
-    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+    return flag && tianXieCount > 0 && shuiPingCount > 0 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) ||
+      (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkXingLiuDianJi(player) {
@@ -2970,7 +3118,7 @@ class TableState implements Serializable {
                                 }
                               })
                             }
-                            if (msg.hu) {
+                            if (msg.hu || huCards.findIndex(c => c.card === msg.card) !== -1) {
                               huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
                             }
 
@@ -3166,7 +3314,7 @@ class TableState implements Serializable {
                             }
                           })
                         }
-                        if (msg.hu) {
+                        if (msg.humsg.hu || huCards.findIndex(c => c.card === msg.card) !== -1) {
                           huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
                         }
 
@@ -3499,7 +3647,7 @@ class TableState implements Serializable {
                 }
               })
             }
-            if (msg.hu) {
+            if (msg.hu || huCards.findIndex(c => c.card === msg.card) !== -1) {
               huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
             }
 
