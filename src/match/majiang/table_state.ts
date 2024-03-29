@@ -3066,7 +3066,6 @@ class TableState implements Serializable {
                       const huCards = [];
                       xiajia.oldCards = xiajia.cards.slice();
                       xiajia.competiteCards = [];
-                      const cards = xiajia.cards.slice();
 
                       if (!this.isAllHu) {
                         const newCard = await this.consumeCard(xiajia)
@@ -3101,7 +3100,7 @@ class TableState implements Serializable {
                               {
                                 id: this.cardTypes.cardId,
                                 multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-                              }, cards);
+                              }, xiajia.oldCards);
 
                             if (!msg) {
                               console.error("consume card error msg ", msg)
@@ -3264,7 +3263,6 @@ class TableState implements Serializable {
                   let gangCards = [];
                   let gangCardIndexs = [];
                   const huCards = [];
-                  const cards = xiajia.cards.slice();
                   xiajia.competiteCards = [];
                   xiajia.oldCards = xiajia.cards.slice();
 
@@ -3297,7 +3295,7 @@ class TableState implements Serializable {
                       if (newCard) {
                         const msg = xiajia.takeCompetiteCard(this.turn, newCard, {
                           id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-                        }, cards);
+                        }, xiajia.oldCards);
 
                         if (!msg) {
                           console.error("consume card error msg ", msg)
