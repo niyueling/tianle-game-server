@@ -3586,7 +3586,9 @@ class TableState implements Serializable {
     // 处理打牌
     for (let i = 0; i < msg.daCards.length; i++) {
       const daMsg = await this.onPlayerCompetiteDa(player, cards.slice(), msg.daCards[i]);
-      msgs.push({type: "da", card: daMsg.card, index: daMsg.index});
+      if (daMsg) {
+        msgs.push({type: "da", card: daMsg.card, index: daMsg.index});
+      }
     }
 
     // 处理胡牌
@@ -3857,10 +3859,10 @@ class TableState implements Serializable {
 
     if (this.state !== stateWaitDa) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError});
-      return;
+      return null;
     } else if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound});
-      return;
+      return null;
     }
 
     // 将本次要操作的牌加入到牌堆中
