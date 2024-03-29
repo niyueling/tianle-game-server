@@ -1289,13 +1289,13 @@ class TableState implements Serializable {
     let flag = true;
 
     for (let i = 0; i < gangList.length; i++) {
-      if ((gangList[i] < 38 && [6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![50].includes(gangList[i]))) {
+      if ((gangList[i] < 38 && ![6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![50].includes(gangList[i]))) {
         flag = false;
       }
     }
 
     for (let i = 1; i < 53; i++) {
-      if (player.cards[i] > 0 && ((i < 38 && [6, 7, 8, 9].includes(i % 10)) || (i > 40 && ![50].includes(i)))) {
+      if (player.cards[i] > 0 && ((i < 38 && ![6, 7, 8, 9].includes(i % 10)) || (i > 40 && ![50].includes(i)))) {
         flag = false;
       }
     }
@@ -1415,13 +1415,13 @@ class TableState implements Serializable {
     let flag = true;
 
     for (let i = 0; i < gangList.length; i++) {
-      if ((gangList[i] < 38 && [4, 5, 6].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![42, 44].includes(gangList[i]))) {
+      if ((gangList[i] < 38 && ![4, 5, 6].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![42, 44].includes(gangList[i]))) {
         flag = false;
       }
     }
 
     for (let i = 1; i < 53; i++) {
-      if (player.cards[i] > 0 && ((i < 38 && [4, 5, 6].includes(i % 10)) || (i > 40 && ![42, 44].includes(i)))) {
+      if (player.cards[i] > 0 && ((i < 38 && ![4, 5, 6].includes(i % 10)) || (i > 40 && ![42, 44].includes(i)))) {
         flag = false;
       }
     }
@@ -1440,13 +1440,13 @@ class TableState implements Serializable {
     let flag = true;
 
     for (let i = 0; i < gangList.length; i++) {
-      if ((gangList[i] < 38 && [6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![41, 50].includes(gangList[i]))) {
+      if ((gangList[i] < 38 && ![6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![41, 50].includes(gangList[i]))) {
         flag = false;
       }
     }
 
     for (let i = 1; i < 53; i++) {
-      if (player.cards[i] > 0 && ((i < 38 && [6, 7, 8, 9].includes(i % 10)) || (i > 40 && ![41, 50].includes(i)))) {
+      if (player.cards[i] > 0 && ((i < 38 && ![6, 7, 8, 9].includes(i % 10)) || (i > 40 && ![41, 50].includes(i)))) {
         flag = false;
       }
     }
@@ -1465,13 +1465,13 @@ class TableState implements Serializable {
     let flag = true;
 
     for (let i = 0; i < gangList.length; i++) {
-      if ((gangList[i] < 38 && [1, 2, 3, 4].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![43, 45].includes(gangList[i]))) {
+      if ((gangList[i] < 38 && ![1, 2, 3, 4].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![43, 45].includes(gangList[i]))) {
         flag = false;
       }
     }
 
     for (let i = 1; i < 53; i++) {
-      if (player.cards[i] > 0 && ((i < 38 && [1, 2, 3, 4].includes(i % 10)) || (i > 40 && ![43, 45].includes(i)))) {
+      if (player.cards[i] > 0 && ((i < 38 && ![1, 2, 3, 4].includes(i % 10)) || (i > 40 && ![43, 45].includes(i)))) {
         flag = false;
       }
     }
