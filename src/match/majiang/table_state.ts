@@ -971,6 +971,7 @@ class TableState implements Serializable {
   }
 
   async checkGangShangPao(player, dianPaoPlayer) {
+    console.warn("isGangHouDa-%s, jiePao-%s", dianPaoPlayer && dianPaoPlayer.isGangHouDa, this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
     return dianPaoPlayer && this.lastDa && dianPaoPlayer.isGangHouDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
   }
 
@@ -979,6 +980,7 @@ class TableState implements Serializable {
   }
 
   async checkGangShangHua(player) {
+    console.warn("lastOperateType-%s, jiePao-%s", player.lastOperateType, player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0));
     return player.lastOperateType === 3 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
   }
 
@@ -987,13 +989,14 @@ class TableState implements Serializable {
   }
 
   async checkMenQing(player) {
-    // 双星辰
     const peng = player.events["peng"];
     const jieGang = player.events["mingGang"];
 
     if (peng || jieGang) {
       return false;
     }
+
+    console.warn("jiePao-%s", this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
   }
@@ -1027,7 +1030,8 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("anGang-%s, buGang-%s, jieGang-%s, gangCount-%s", JSON.stringify(anGang), JSON.stringify(buGang), JSON.stringify(jieGang), gangCount);
+    console.warn("anGang-%s, buGang-%s, jieGang-%s, gangCount-%s, zimo-%s, jiePao-%s", JSON.stringify(anGang), JSON.stringify(buGang), JSON.stringify(jieGang), gangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return gangCount >= 2 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
@@ -1591,6 +1595,7 @@ class TableState implements Serializable {
         if (isJiePao) {
           this.actionResolver.requestAction(player, 'hu', async () => {
             this.lastHuCard = card;
+            this.cardTypes = await this.getCardTypes(player, 2);
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
               logger.info('hu player %s jiepao %s', index, ok)
 
@@ -1819,6 +1824,7 @@ class TableState implements Serializable {
 
           this.actionResolver.tryResolve()
         } else if (isZiMo) {
+          this.cardTypes = await this.getCardTypes(player, 1);
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
           if (ok && player.daHuPai(card, null)) {
             this.lastDa = player;
