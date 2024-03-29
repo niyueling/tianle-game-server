@@ -1926,7 +1926,7 @@ class TableState implements Serializable {
   async checkSanSeXingChen(player) {
     const blackArrs = [41, 42, 44, 48];
     const blueArrs = [43, 46, 49, 51];
-    const bredArrs = [45, 47, 50, 50];
+    const bredArrs = [45, 47, 50, 52];
     let colorCount = 0;
     for (let i = 0; i < blackArrs.length; i++) {
       if (player.cards[blackArrs[i]] > 0) {
