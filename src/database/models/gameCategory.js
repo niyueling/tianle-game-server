@@ -28,6 +28,11 @@ const schema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    // 底分
+    base: {
+        type: Number,
+        required: true,
+    },
     // 最高倍率
     maxMultiple: {
         type: Number,

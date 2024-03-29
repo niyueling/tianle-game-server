@@ -889,7 +889,7 @@ class TableState implements Serializable {
       const msg = this.zhuang.takeCard(this.turn, nextCard, false, false,
         {
           id: this.cardTypes.cardId,
-          multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+          multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
         })
 
       const index = this.atIndex(this.zhuang);
@@ -2588,7 +2588,7 @@ class TableState implements Serializable {
               const msg = player.gangTakeCard(this.turn, nextCard,
                 {
                   id: this.cardTypes.cardId,
-                  multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                  multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                 });
               if (msg) {
                 this.room.broadcast('game/oppoTakeCard', {
@@ -2662,7 +2662,7 @@ class TableState implements Serializable {
           const msg = player.gangTakeCard(this.turn, nextCard,
             {
               id: this.cardTypes.cardId,
-              multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+              multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
             });
           if (msg) {
             this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
@@ -2766,7 +2766,7 @@ class TableState implements Serializable {
           const msg = player.takeCard(this.turn, nextCard, false, false,
             {
               id: this.cardTypes.cardId,
-              multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+              multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
             });
           if (!msg) {
             return;
@@ -2814,7 +2814,7 @@ class TableState implements Serializable {
                     constellationCards: player.constellationCards,
                     huType: {
                       id: this.cardTypes.cardId,
-                      multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                      multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                     }
                   }
                 });
@@ -2926,7 +2926,7 @@ class TableState implements Serializable {
                           const msg = xiajia.takeCard(this.turn, newCard, false, false,
                             {
                               id: this.cardTypes.cardId,
-                              multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                              multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                             })
 
                           if (!msg) {
@@ -2952,7 +2952,7 @@ class TableState implements Serializable {
                             const msg = xiajia.takeCompetiteCard(this.turn, newCard,
                               {
                                 id: this.cardTypes.cardId,
-                                multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                                multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                               }, cards);
 
                             if (!msg) {
@@ -3042,7 +3042,7 @@ class TableState implements Serializable {
                 constellationCards: player.constellationCards,
                 huType: {
                   id: this.cardTypes.cardId,
-                  multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                  multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                 }
               }
             });
@@ -3126,7 +3126,7 @@ class TableState implements Serializable {
                       const msg = xiajia.takeCard(this.turn, newCard, false, false,
                         {
                           id: this.cardTypes.cardId,
-                          multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                          multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                         })
 
                       if (!msg) {
@@ -3148,8 +3148,7 @@ class TableState implements Serializable {
                       const newCard = await this.consumeCard(xiajia)
                       if (newCard) {
                         const msg = xiajia.takeCompetiteCard(this.turn, newCard, {
-                          id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.minAmount
-                          > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                          id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                         }, cards);
 
                         if (!msg) {
@@ -3276,7 +3275,7 @@ class TableState implements Serializable {
                 const msg = xiajia.takeCard(this.turn, newCard, false, false,
                   {
                     id: this.cardTypes.cardId,
-                    multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                    multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
                   })
 
                 if (!msg) {
@@ -3539,7 +3538,7 @@ class TableState implements Serializable {
         playersModifyGolds,
         huType: {
           id: this.cardTypes.cardId,
-          multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple / conf.Ante : this.cardTypes.multiple * conf.minAmount / conf.Ante
+          multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
         }
       };
     } else {
@@ -3573,7 +3572,7 @@ class TableState implements Serializable {
       // 扣除三家金币
       if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
         const model = await service.playerService.getPlayerModel(p._id.toString());
-        const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple) * conf.Ante;
+        const balance = (conf.base * conf.Ante * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * this.cardTypes.multiple * conf.Ante) * 10;
         p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
         winBalance += Math.abs(p.balance);
         p.juScore += p.balance;
@@ -3604,7 +3603,7 @@ class TableState implements Serializable {
       roomId: this.room._id,
       failList,
       failFromList,
-      multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * 10 ? conf.maxMultiple * 10 : conf.minAmount * this.cardTypes.multiple,
+      multiple: conf.base * conf.Ante * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * conf.Ante * this.cardTypes.multiple,
       juIndex: this.room.game.juIndex,
       cardTypes: this.cardTypes,
       categoryId: this.room.gameRule.categoryId
@@ -3781,7 +3780,7 @@ class TableState implements Serializable {
             const msg = xiajia.takeCard(this.turn, newCard, false, false,
               {
                 id: this.cardTypes.cardId,
-                multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+                multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
               });
 
             if (!msg) {
@@ -3845,7 +3844,7 @@ class TableState implements Serializable {
           this.cardTypes = await this.getCardTypes(p, 2);
           msg["huType"] = {
             id: this.cardTypes.cardId,
-            multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+            multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
           }
           p.record('choice', card, msg)
 
@@ -3957,7 +3956,7 @@ class TableState implements Serializable {
           failList.push(from._id);
           failFromList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
-          const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple * conf.Ante);
+          const balance = (conf.base * conf.Ante * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * this.cardTypes.multiple * conf.Ante) * 10;
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           from.juScore += from.balance;
@@ -3973,7 +3972,7 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = (conf.minAmount * this.cardTypes.multiple > conf.maxMultiple * conf.Ante ? conf.maxMultiple * conf.Ante : conf.minAmount * this.cardTypes.multiple * conf.Ante);
+              const balance = (conf.base * conf.Ante * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * this.cardTypes.multiple * conf.Ante) * 10;
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               p.juScore += p.balance;
@@ -4007,7 +4006,7 @@ class TableState implements Serializable {
           failList,
           failFromList,
           failGoldList,
-          multiple: conf.minAmount * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.minAmount * this.cardTypes.multiple,
+          multiple: conf.base * conf.Ante * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * conf.Ante * this.cardTypes.multiple,
           juIndex: this.room.game.juIndex,
           cardTypes: this.cardTypes,
           categoryId: this.room.gameRule.categoryId
@@ -4376,7 +4375,7 @@ class TableState implements Serializable {
           if (newCard) {
             const msg = xiajia.takeCard(this.turn, newCard, false, false, {
               id: this.cardTypes.cardId,
-              multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+              multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
             })
 
             if (!msg) {
@@ -4678,7 +4677,7 @@ class TableState implements Serializable {
           if (actions["hu"]) {
             actions["huType"] = {
               id: this.cardTypes.cardId,
-              multiple: this.cardTypes.multiple * conf.minAmount > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.minAmount
+              multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
             };
           }
           pushMsg.current = {
