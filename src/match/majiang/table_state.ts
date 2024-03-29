@@ -1992,7 +1992,7 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
 
-    for (let i = 1; i < gangList.length; i++) {
+    for (let i = 0; i < gangList.length; i++) {
       if (gangList[i] < 38 && gangList[i] % 10 < 7) {
         flag = false;
       }
@@ -2017,7 +2017,7 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
 
-    for (let i = 1; i < gangList.length; i++) {
+    for (let i = 0; i < gangList.length; i++) {
       if (gangList[i] < 38 && (gangList[i] % 10 < 4 || gangList[i] % 10 > 6)) {
         flag = false;
         break;
@@ -2044,7 +2044,7 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
 
-    for (let i = 1; i < gangList.length; i++) {
+    for (let i = 0; i < gangList.length; i++) {
       if (gangList[i] < 38 && gangList[i] % 10 > 3) {
         flag = false;
       }
@@ -2137,7 +2137,7 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
 
-    for (let i = 1; i < gangList.length; i++) {
+    for (let i = 0; i < gangList.length; i++) {
       if (gangList[i] < 38 && gangList[i] % 2 === 0) {
         flag = false;
       }
@@ -2162,7 +2162,7 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
 
-    for (let i = 1; i < gangList.length; i++) {
+    for (let i = 0; i < gangList.length; i++) {
       if (gangList[i] < 38 && gangList[i] % 2 !== 0) {
         flag = false;
       }
@@ -2200,7 +2200,7 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = true;
 
-    for (let i = 1; i < gangList.length; i++) {
+    for (let i = 0; i < gangList.length; i++) {
       if (gangList[i] > 40 || ![1, 11, 21, 9, 19, 29].includes(gangList[i])) {
         flag = false;
       }
@@ -2255,7 +2255,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < gangList.length; i++) {
+    for (let i = 0; i < gangList.length; i++) {
       if (gangList[i] < 10) {
         const index = gangList.findIndex(g => g === gangList[i] + 10 || g === gangList[i] + 20);
         if (index !== -1) {
