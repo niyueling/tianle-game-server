@@ -1322,6 +1322,28 @@ class TableState implements Serializable {
     return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
+  async deepCopyMixedArray(arr) {
+    // 创建一个新数组来存储复制的元素
+    const newArr = [];
+
+    // 遍历原始数组的每个元素
+    for (let i = 0; i < arr.length; i++) {
+      const element = arr[i];
+
+      // 检查元素是否是对象
+      if (typeof element === 'object' && element !== null) {
+        // 如果是对象，则进行深拷贝
+        newArr.push(JSON.parse(JSON.stringify(element)));
+      } else {
+        // 如果不是对象，则直接添加到新数组
+        newArr.push(element);
+      }
+    }
+
+    // 返回复制后的新数组
+    return newArr;
+  }
+
   async checkZhongXingPengYue(player) {
     const anGang = player.events["anGang"] || [];
     const buGang = player.events["buGang"] || [];
@@ -3064,7 +3086,7 @@ class TableState implements Serializable {
                       let gangCards = [];
                       let gangCardIndexs = [];
                       const huCards = [];
-                      xiajia.oldCards = xiajia.cards.slice();
+                      xiajia.oldCards = this.deepCopyMixedArray(xiajia.cards);
                       xiajia.competiteCards = [];
 
                       if (!this.isAllHu) {
@@ -3264,7 +3286,7 @@ class TableState implements Serializable {
                   let gangCardIndexs = [];
                   const huCards = [];
                   xiajia.competiteCards = [];
-                  xiajia.oldCards = xiajia.cards.slice();
+                  xiajia.oldCards = this.deepCopyMixedArray(xiajia.cards);
 
                   if (!this.isAllHu) {
                     const newCard = await this.consumeCard(xiajia)
@@ -3614,7 +3636,7 @@ class TableState implements Serializable {
         let gangCards = [];
         let gangCardIndexs = [];
         const huCards = [];
-        xiajia.oldCards = xiajia.cards.slice();
+        xiajia.oldCards = this.deepCopyMixedArray(xiajia.cards);
         xiajia.competiteCards = [];
 
         for (let i = 0; i < 3; i++) {
