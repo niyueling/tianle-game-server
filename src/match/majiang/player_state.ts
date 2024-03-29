@@ -508,7 +508,7 @@ class PlayerState implements Serializable {
     }
 
     let huResult = this.checkCompetiteZiMo(cards);
-    console.warn("checkCompetiteZiMo-%s", JSON.stringify(huResult));
+    console.warn("checkCompetiteZiMo-%s cards-%s", JSON.stringify(huResult), JSON.stringify(this.getCardList(cards)));
     if (huResult.hu) {
       msg.huType = huType;
       if (this.hadQiaoXiang) {
