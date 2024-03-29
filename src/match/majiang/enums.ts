@@ -68,6 +68,7 @@ const enums = {
   constellation10: 50,// 摩羯座
   constellation11: 51,// 水瓶座
   constellation12: 52,// 双鱼座
+  constellationColors: [1, 1, 2, 1, 3, 2, 3, 1, 2, 3, 2, 3],
 
   dong: 31,
   nan: 32,
