@@ -3312,7 +3312,7 @@ class TableState implements Serializable {
                             }
                           })
                         }
-                        if (msg.humsg.hu || huCards.findIndex(c => c.card === msg.card) !== -1) {
+                        if (msg.hu || huCards.findIndex(c => c.card === msg.card) !== -1) {
                           huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
                         }
 
