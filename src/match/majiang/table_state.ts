@@ -1851,7 +1851,7 @@ class TableState implements Serializable {
     }
 
     for (let i = 1; i < 38; i++) {
-      if (player.cards[i] > 0 && gangList[i] % 10 < 7) {
+      if (player.cards[i] > 0 && i % 10 < 7) {
         flag = false;
       }
     }
@@ -1877,7 +1877,7 @@ class TableState implements Serializable {
     }
 
     for (let i = 1; i < 38; i++) {
-      if (player.cards[i] > 0 && (gangList[i] % 10 < 4 || gangList[i] % 10 > 6)) {
+      if (player.cards[i] > 0 && (i % 10 < 4 || i % 10 > 6)) {
         flag = false;
         break;
       }
