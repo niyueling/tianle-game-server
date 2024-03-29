@@ -3089,7 +3089,6 @@ class TableState implements Serializable {
                       const moCards = [];
                       xiajia.oldCards = await this.deepCopyMixedArray(xiajia.cards);
                       xiajia.competiteCards = [];
-                      console.warn(xiajia.oldCards);
 
                       if (!this.isAllHu) {
                         const newCard = await this.consumeCard(xiajia)
@@ -3295,7 +3294,6 @@ class TableState implements Serializable {
                   const moCards = [];
                   xiajia.competiteCards = [];
                   xiajia.oldCards = await this.deepCopyMixedArray(xiajia.cards);
-                  console.warn(xiajia.oldCards);
 
                   if (!this.isAllHu) {
                     const newCard = await this.consumeCard(xiajia)
@@ -3653,7 +3651,6 @@ class TableState implements Serializable {
         const moCards = [];
         xiajia.oldCards = await this.deepCopyMixedArray(xiajia.cards);
         xiajia.competiteCards = [];
-        console.warn(xiajia.oldCards);
 
         for (let i = 0; i < 3; i++) {
           const newCard = await this.consumeCard(xiajia);
