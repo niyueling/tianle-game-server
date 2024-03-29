@@ -2803,6 +2803,7 @@ class TableState implements Serializable {
               from = this.atIndex(this.lastDa);
               if (ok && player.daHuPai(card, this.players[from])) {
                 player.lastOperateType = 4;
+                player.isGameDa = true;
                 this.lastDa = player;
                 await player.sendMessage('game/huReply', {
                   ok: true,
@@ -3030,6 +3031,7 @@ class TableState implements Serializable {
           if (ok && player.daHuPai(card, null)) {
             this.lastDa = player;
             player.lastOperateType = 4;
+            player.isGameDa = true;
             from = this.atIndex(this.lastDa);
             await player.sendMessage('game/huReply', {
               ok: true,
