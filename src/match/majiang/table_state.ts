@@ -845,6 +845,10 @@ class TableState implements Serializable {
       const constellationCards = [];
       for (let i = 0; i < cards13.length; i++) {
         if (cards13[i] > Enums.athena && !constellationCards.includes(cards13[i])) {
+          // 计算序数牌相加
+          if (cards13[i] < Enums.zeus) {
+            p.numberCount += cards13[i] % 10;
+          }
           constellationCards.push(cards13[i]);
         }
       }
@@ -1079,9 +1083,744 @@ class TableState implements Serializable {
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
       }
+
+      // 三暗刻
+      if (cardTypes[i].cardId === 26) {
+        const status = await this.checkSanAnKe(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 三色星辰
+      if (cardTypes[i].cardId === 27) {
+        const status = await this.checkSanSeXingChen(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 七对
+      if (cardTypes[i].cardId === 28) {
+        const status = await this.checkQiDui(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 四节高
+      if (cardTypes[i].cardId === 29) {
+        const status = await this.checkSiJieGao(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 全单刻
+      if (cardTypes[i].cardId === 30) {
+        const status = await this.checkQuanDanKe(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 全双刻
+      if (cardTypes[i].cardId === 31) {
+        const status = await this.checkQuanShuangKe(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 四暗刻
+      if (cardTypes[i].cardId === 32) {
+        const status = await this.checkSiAnKe(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 十二星座
+      if (cardTypes[i].cardId === 33) {
+        const status = await this.checkErXingZuo(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 景星麟凤
+      if (cardTypes[i].cardId === 35) {
+        const status = await this.checkJingXingLinFeng(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 天胡
+      if (cardTypes[i].cardId === 36) {
+        const status = await this.checkTianHu(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 一路福星
+      if (cardTypes[i].cardId === 37) {
+        const status = await this.checkYiLuFuXing(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 三星高照
+      if (cardTypes[i].cardId === 38) {
+        const status = await this.checkSanXingGaoZhao(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 星流电击
+      if (cardTypes[i].cardId === 39) {
+        const status = await this.checkXingLiuDianJi(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 流星望电
+      if (cardTypes[i].cardId === 40) {
+        const status = await this.checkWuLiuXingDian(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 星离月会
+      if (cardTypes[i].cardId === 41) {
+        const status = await this.checkXingLiYueHui(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 棋布星陈
+      if (cardTypes[i].cardId === 42) {
+        const status = await this.checkQiBuXingChen(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 一天星斗
+      if (cardTypes[i].cardId === 43) {
+        const status = await this.checkYiTianXingDou(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 移星换斗
+      if (cardTypes[i].cardId === 44) {
+        const status = await this.checkYiXingHuanDou(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 星流影集
+      if (cardTypes[i].cardId === 45) {
+        const status = await this.checkXingLiuYingJi(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 大步流星
+      if (cardTypes[i].cardId === 46) {
+        const status = await this.checkDaBuLiuXing(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 月落星沉
+      if (cardTypes[i].cardId === 47) {
+        const status = await this.checkYueLuoXingChen(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 众星捧月
+      if (cardTypes[i].cardId === 48) {
+        const status = await this.checkZhongXingPengYue(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 摩羯之吻
+      if (cardTypes[i].cardId === 49) {
+        const status = await this.checkMoJieZhiWen(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 星蝎交辉
+      if (cardTypes[i].cardId === 50) {
+        const status = await this.checkXingHeJiaoHui(player);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
     }
 
     return cardType;
+  }
+
+  async checkXingHeJiaoHui(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] > 40 && ![48].includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = 41; i < 53; i++) {
+      if (player.cards[i] > 0 && ![48].includes(i)) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return player.numberCount >= 100 && flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkMoJieZhiWen(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && [6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![50].includes(gangList[i]))) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && [6, 7, 8, 9].includes(gangList[i] % 10)) || (i > 40 && ![50].includes(i)))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkZhongXingPengYue(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && gangList[i] % 2 === 0) || (gangList[i] > 40 && ![45, 51].includes(gangList[i]))) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && i % 2 === 0) || (i > 40 && ![45, 51].includes(i)))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkYueLuoXingChen(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && gangList[i] < 10) || (gangList[i] > 40 && gangList[i] !== 51)) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && i < 10) || (i > 40 && i !== 51))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkDaBuLiuXing(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && gangList[i] > 10) || (gangList[i] > 40 && gangList[i] !== 41)) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && i > 10) || (i > 40 && i !== 41))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkXingLiuYingJi(player) {
+    const colorArrs = [41, 42, 44, 48, 45, 47, 50, 50];
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && gangList[i] > 10) || (gangList[i] > 40 && !colorArrs.includes(gangList[i]))) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && i > 10) || (i > 40 && !colorArrs.includes(i)))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkYiXingHuanDou(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && [4, 5, 6].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![42, 44].includes(gangList[i]))) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && [4, 5, 6].includes(gangList[i] % 10)) || (i > 40 && ![42, 44].includes(i)))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkYiTianXingDou(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && [6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![41, 50].includes(gangList[i]))) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && [6, 7, 8, 9].includes(gangList[i] % 10)) || (i > 40 && ![41, 50].includes(i)))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkQiBuXingChen(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && [1, 2, 3, 4].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![43, 45].includes(gangList[i]))) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && [1, 2, 3, 4].includes(gangList[i] % 10)) || (i > 40 && ![43, 45].includes(i)))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkXingLiYueHui(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && gangList[i] > 10 && gangList[i] < 20) || (gangList[i] > 40 && ![42, 49].includes(gangList[i]))) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && gangList[i] > 10 && gangList[i] < 20) || (i > 40 && ![42, 49].includes(i)))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkWuLiuXingDian(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if ((gangList[i] < 38 && gangList[i] % 2 !== 0) || (gangList[i] > 40 && ![48, 51].includes(gangList[i]))) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] > 0 && ((i < 38 && i % 2 !== 0) || (i > 40 && ![48, 51].includes(i)))) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkXingLiuDianJi(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let gangCount = 0;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] > 40) {
+        gangCount++;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (i > 40 && player.cards[i] >= 3) {
+        gangCount++;
+      }
+    }
+
+    console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return gangCount >= 4 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkSanXingGaoZhao(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let gangCount = 0;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] > 40) {
+        gangCount++;
+      }
+    }
+
+    for (let i = 1; i < 53; i++) {
+      if (i > 40 && player.cards[i] >= 3) {
+        gangCount++;
+      }
+    }
+
+    console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return gangCount >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkYiLuFuXing(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let flag = true;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] < 38) {
+        flag = false;
+      }
+    }
+
+    for (let i = 1; i < 38; i++) {
+      if (player.cards[i] > 0) {
+        flag = false;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkTianHu(player) {
+    // 起手叫
+    return !player.isGameDa && player.zhuang && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+  }
+
+  async checkJingXingLinFeng(player) {
+    let cardCount = 0;
+    for (let i = 0; i < 53; i++) {
+      if (player.cards[i] > 0) {
+        cardCount += player.cards[i];
+      }
+    }
+    return cardCount === 1 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkErXingZuo(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    let gangCount = 0;
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] > 40) {
+        gangCount++;
+      }
+    }
+
+    console.warn("GangCount-%s, zimo-%s, jiePao-%s", gangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return gangCount >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkSiAnKe(player) {
+    const anGang = player.events["anGang"] || [];
+    let anGangCount = anGang.length;
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] >= 3) {
+        anGangCount++;
+      }
+    }
+
+    console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return anGangCount >= 4 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkQuanShuangKe(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangCount = 0;
+    let duiCount = 0;
+
+    for (let i = 0; i < anGang.length; i++) {
+      if (anGang[i] < 38 && anGang[i] % 2 === 0) {
+        gangCount++;
+      }
+    }
+
+    for (let i = 0; i < buGang.length; i++) {
+      if (buGang[i] < 38 && buGang[i] % 2 === 0) {
+        gangCount++;
+      }
+    }
+
+    for (let i = 0; i < jieGang.length; i++) {
+      if (jieGang[i] < 38 && jieGang[i] % 2 === 0) {
+        gangCount++;
+      }
+    }
+
+    for (let i = 1; i < 38; i++) {
+      if (player.cards[i] >= 3 && i % 2 === 0) {
+        gangCount++;
+      }
+
+      if (player.cards[i] === 2 && i % 2 === 0) {
+        duiCount++;
+      }
+    }
+
+    console.warn("duiCount-%s, gangCount-%s, zimo-%s, jiePao-%s", duiCount, gangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return gangCount === 4 && duiCount === 1 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkQuanDanKe(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangCount = 0;
+    let duiCount = 0;
+
+    for (let i = 0; i < anGang.length; i++) {
+      if (anGang[i] < 38 && anGang[i] % 2 === 1) {
+        gangCount++;
+      }
+    }
+
+    for (let i = 0; i < buGang.length; i++) {
+      if (buGang[i] < 38 && buGang[i] % 2 === 1) {
+        gangCount++;
+      }
+    }
+
+    for (let i = 0; i < jieGang.length; i++) {
+      if (jieGang[i] < 38 && jieGang[i] % 2 === 1) {
+        gangCount++;
+      }
+    }
+
+    for (let i = 1; i < 38; i++) {
+      if (player.cards[i] >= 3 && i % 2 === 1) {
+        gangCount++;
+      }
+
+      if (player.cards[i] === 2 && i % 2 === 1) {
+        duiCount++;
+      }
+    }
+
+    console.warn("duiCount-%s, gangCount-%s, zimo-%s, jiePao-%s", duiCount, gangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return gangCount === 4 && duiCount === 1 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkSiJieGao(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
+    gangList.sort((a, b) => a - b);
+    let flag = false;
+
+    for (let i = 1; i < 30; i++) {
+      if ((gangList.includes(i) || player.cards[i] >= 3) && (gangList.includes(i + 1) || player.cards[i + 1] >= 3) &&
+        (gangList.includes(i + 2) || player.cards[i + 2] >= 3) && (gangList.includes(i + 3) || player.cards[i + 3] >= 3)) {
+        flag = true;
+      }
+    }
+
+    console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return flag && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkQiDui(player) {
+    let duiCount = 0;
+    for (let i = 0; i < 53; i++) {
+      if (player.cards[i] === 2 || player.cards[i] === 4) {
+        duiCount += player.cards[i] / 2;
+        break;
+      }
+    }
+
+    console.warn("duiCount-%s, zimo-%s, jiePao-%s", duiCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return duiCount === 7 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkSanSeXingChen(player) {
+    const blackArrs = [41, 42, 44, 48];
+    const blueArrs = [43, 46, 49, 51];
+    const bredArrs = [45, 47, 50, 50];
+    let colorCount = 0;
+    for (let i = 0; i < blackArrs.length; i++) {
+      if (player.cards[blackArrs[i]] > 0) {
+        colorCount++;
+        break;
+      }
+    }
+
+    for (let i = 0; i < blueArrs.length; i++) {
+      if (player.cards[blueArrs[i]] > 0) {
+        colorCount++;
+        break;
+      }
+    }
+
+    for (let i = 0; i < bredArrs.length; i++) {
+      if (player.cards[bredArrs[i]] > 0) {
+        colorCount++;
+        break;
+      }
+    }
+
+    console.warn("colorCount-%s, zimo-%s, jiePao-%s", colorCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return colorCount >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
+  }
+
+  async checkSanAnKe(player) {
+    const anGang = player.events["anGang"] || [];
+    let anGangCount = anGang.length;
+
+    for (let i = 1; i < 53; i++) {
+      if (player.cards[i] >= 3) {
+        anGangCount++;
+      }
+    }
+
+    console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+
+    return anGangCount >= 3 && (player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0) || (this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa)));
   }
 
   async checkXingMieGuangLi(player) {
@@ -1133,12 +1872,14 @@ class TableState implements Serializable {
     for (let i = 1; i < gangList.length; i++) {
       if (gangList[i] < 38 && (gangList[i] % 10 < 4 || gangList[i] % 10 > 6)) {
         flag = false;
+        break;
       }
     }
 
     for (let i = 1; i < 38; i++) {
       if (player.cards[i] > 0 && (gangList[i] % 10 < 4 || gangList[i] % 10 > 6)) {
         flag = false;
+        break;
       }
     }
 
