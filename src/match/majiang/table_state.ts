@@ -725,7 +725,7 @@ class TableState implements Serializable {
   async consumeGangOrKeCard(cardNum?) {
     const isGang = Math.random() < 0.1;
 
-    const cardNumber = isGang && !cardNum ? 4 : (!cardNum && Math.random() < 0.3 ? 2 : 3);
+    const cardNumber = isGang && !cardNum ? 4 : (!cardNum && Math.random() < 0.1 ? 2 : 3);
     let cards = [];
     this.remainCards -= cardNumber;
     const counter = {};
