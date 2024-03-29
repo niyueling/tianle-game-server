@@ -470,7 +470,6 @@ class PlayerState implements Serializable {
     this.huForbiddenCards = [];
 
     this.lastCardToken = card;
-    cards[card]++;
     this.cards[card]++;
     const msg = {card, turn, gang: null, hu: false, huInfo: null, huType: {}};
     this.recorder.recordUserEvent(this, 'moPai', card);
@@ -481,14 +480,14 @@ class PlayerState implements Serializable {
 
         if (this.caiShen.includes(i)) continue;
 
-        if (cards[i] === 4) {
+        if (this.cards[i] === 4) {
           if (!msg.gang) {
             msg.gang = [[i, 'anGang']];
           } else {
             msg.gang.push([i, 'anGang']);
           }
         }
-        if (cards[i] === 1 && this.events.peng && this.events.peng.contains(i) && !this.isForbidForGang(i)) {
+        if (this.cards[i] === 1 && this.events.peng && this.events.peng.contains(i) && !this.isForbidForGang(i)) {
           this.gangForbid.push(card);
           if (!msg.gang) {
             msg.gang = [[i, 'buGang']];
@@ -508,7 +507,7 @@ class PlayerState implements Serializable {
     }
 
     let huResult = this.checkZiMo();
-    console.warn("shortId-%s, checkCompetiteZiMo-%s, cards-%s", this.model.shortId, JSON.stringify(huResult), JSON.stringify(this.getCardList(cards)));
+    console.warn("shortId-%s, checkCompetiteZiMo-%s, cards-%s", this.model.shortId, JSON.stringify(huResult), JSON.stringify(this.getCardList(this.cards)));
     if (huResult.hu) {
       msg.huType = huType;
       if (this.hadQiaoXiang) {
