@@ -491,7 +491,13 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
 
-    let cardIndex = --this.remainCards;
+    if (this.remainCards === 0) {
+
+    }
+
+    const count = --this.remainCards;
+
+    let cardIndex = count < 0 ? 0 : count;
     let card = this.cards[cardIndex];
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
