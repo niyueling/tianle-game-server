@@ -2912,9 +2912,6 @@ class TableState implements Serializable {
     player.on(Enums.da, async (turn, card) => {
       await this.onPlayerDa(player, turn, card);
     })
-    player.on(Enums.topDa, async (turn, card) => {
-      await this.onPlayerCompetiteDa(player, turn, card);
-    })
 
     player.on(Enums.competiteHu, async (msg) => {
       await this.onCompetiteHu(player, msg);
@@ -3874,7 +3871,6 @@ class TableState implements Serializable {
   }
 
   async onCompetiteHu(player, msg) {
-    const cards = player.cards.slice();
     const msgs = [];
     const changeGolds = [
       {index: 0, changeGold: [], isBroke: false, currentGold: 0},
@@ -3885,14 +3881,14 @@ class TableState implements Serializable {
 
     // 把摸牌3张移除
     for (let i = 0; i < msg.cards.length; i++) {
-      if (cards[msg.cards[i]] > 0) {
-        cards[msg.cards[i]]--;
+      if (player.cards[msg.cards[i]] > 0) {
+        player.cards[msg.cards[i]]--;
       }
     }
 
     // 处理打牌
     for (let i = 0; i < msg.daCards.length; i++) {
-      const daMsg = await this.onPlayerCompetiteDa(player, cards.slice(), msg.daCards[i]);
+      const daMsg = await this.onPlayerCompetiteDa(player, msg.daCards[i]);
       if (daMsg) {
         msgs.push({type: "da", card: daMsg.card, index: daMsg.index});
       }
@@ -3900,7 +3896,7 @@ class TableState implements Serializable {
 
     // 处理胡牌
     for (let i = 0; i < msg.huCards.length; i++) {
-      const huMsg = await this.onPlayerCompetiteHu(player, cards.slice(), msg.huCards[i]);
+      const huMsg = await this.onPlayerCompetiteHu(player, msg.huCards[i]);
 
       if (huMsg) {
         if (!huMsg.playersModifyGolds) {
@@ -4016,19 +4012,15 @@ class TableState implements Serializable {
     }
   }
 
-  async onPlayerCompetiteHu(player, cards, card) {
+  async onPlayerCompetiteHu(player, card) {
     let index = this.players.indexOf(player);
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
     // 将本次要操作的牌加入到牌堆中
-    cards[card]++;
+    player.cards[card]++;
     this.cardTypes = await this.getCardTypes(player, 1);
 
-    const ok = player.competiteZimo(card, false, this.remainCards === 0, cards.slice());
-    console.warn({
-      cards,
-      playerCards: player.cards
-    });
+    const ok = player.competiteZimo(card, false, this.remainCards === 0);
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
       const playersModifyGolds = await this.competiteGameOver(player);
@@ -4166,7 +4158,7 @@ class TableState implements Serializable {
     return playersModifyGolds;
   }
 
-  async onPlayerCompetiteDa(player, cards, card) {
+  async onPlayerCompetiteDa(player, card) {
     const index = this.players.indexOf(player);
 
     if (this.state !== stateWaitDa) {
@@ -4178,7 +4170,7 @@ class TableState implements Serializable {
     }
 
     // 将本次要操作的牌加入到牌堆中
-    cards[card]++;
+    player.cards[card]++;
 
     const ok = player.daPai(card);
     if (!ok) {

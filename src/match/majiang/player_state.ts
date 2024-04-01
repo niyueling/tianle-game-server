@@ -969,16 +969,16 @@ class PlayerState implements Serializable {
     return cardArray
   }
 
-  competiteZimo(card, first, haiDi, cards) {
-    if (cards[card] > 0) {
-      cards.first = first;
-      cards.haiDi = haiDi;
-      cards.takeSelfCard = true;
-      cards.gang = this.gang
-      cards.qiaoXiang = this.hadQiaoXiang
-      cards.alreadyTakenCard = this.alreadyTakenCard
+  competiteZimo(card, first, haiDi) {
+    if (this.cards[card] > 0) {
+      this.cards.first = first;
+      this.cards.haiDi = haiDi;
+      this.cards.takeSelfCard = true;
+      this.cards.gang = this.gang
+      this.cards.qiaoXiang = this.hadQiaoXiang
+      this.cards.alreadyTakenCard = this.alreadyTakenCard
 
-      const checkResult = HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
+      const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
       console.warn("checkResult-%s", JSON.stringify(checkResult));
       checkResult.zhuang = this.zhuang
 
@@ -993,7 +993,7 @@ class PlayerState implements Serializable {
       return true;
     }
 
-    console.warn(`zimo error card %s cards[card] %s`, card, cards[card]);
+    console.warn(`zimo error card %s cards[card] %s`, card, this.cards[card]);
     return false;
   }
 
