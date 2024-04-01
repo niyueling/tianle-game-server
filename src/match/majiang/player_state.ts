@@ -980,17 +980,19 @@ class PlayerState implements Serializable {
 
       const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
       console.warn("checkResult-%s", JSON.stringify(checkResult));
-      checkResult.zhuang = this.zhuang
+      if (checkResult.hu) {
+        checkResult.zhuang = this.zhuang
 
-      this.recordGameEvent(Enums.huCards, card)
-      this.recordGameEvent(Enums.hu, checkResult)
-      this.recordGameEvent(Enums.zimo, card)
-      this.emitter.emit('recordZiMo', checkResult)
-      this.room.recordPlayerEvent('ziMo', this.model._id)
-      this.room.recordPlayerEvent(`fan${checkResult.fan}`, this.model._id)
+        this.recordGameEvent(Enums.huCards, card)
+        this.recordGameEvent(Enums.hu, checkResult)
+        this.recordGameEvent(Enums.zimo, card)
+        this.emitter.emit('recordZiMo', checkResult)
+        this.room.recordPlayerEvent('ziMo', this.model._id)
+        this.room.recordPlayerEvent(`fan${checkResult.fan}`, this.model._id)
 
-      this.record('ziMo', card)
-      return true;
+        this.record('ziMo', card)
+        return true;
+      }
     }
 
     console.warn(`zimo error card %s cards[card] %s`, card, this.cards[card]);
