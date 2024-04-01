@@ -3960,6 +3960,9 @@ class TableState implements Serializable {
         for (let i = 0; i < 3; i++) {
           const newCard = await this.consumeCard(xiajia);
           if (newCard) {
+            xiajia.cards[newCard]++;
+            this.cardTypes = await this.getCardTypes(xiajia, 1);
+            xiajia.cards[newCard]--;
             const msg = await xiajia.takeCompetiteCard(this.turn, newCard, {
               id: this.cardTypes.cardId, multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore
             }, xiajia.cards);
@@ -4322,7 +4325,7 @@ class TableState implements Serializable {
           p.gangForbid.push(card);
           this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo);
         }
-        if (check[Enums.peng] && !check[Enums.peng].isGameHu && !check[Enums.gang]) this.actionResolver.appendAction(check[Enums.peng], 'peng');
+        if (check[Enums.peng] && !check[Enums.peng].isGameHu) this.actionResolver.appendAction(check[Enums.peng], 'peng');
       }
 
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
