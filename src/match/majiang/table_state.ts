@@ -490,22 +490,22 @@ class TableState implements Serializable {
 
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
-
     const count = --this.remainCards;
+    console.warn("remainCards-%s", count);
 
     if (this.remainCards < 0) {
+      this.remainCards = 0;
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
       return
     }
 
-    let cardIndex = this.remainCards;
+    let cardIndex = count;
     let card = this.cards[cardIndex];
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
-    this.remainCards = count < 0 ? 0 : count;
 
     const pengIndex = await this.getPlayerPengCards(player);
     if (pengIndex && Math.random() < 0.2) {
