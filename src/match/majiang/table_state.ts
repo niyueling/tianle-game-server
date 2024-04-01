@@ -491,17 +491,7 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
 
-    if (this.remainCards === 0) {
-
-    }
-
     const count = --this.remainCards;
-
-    let cardIndex = count < 0 ? 0 : count;
-    let card = this.cards[cardIndex];
-    if (cardIndex === 0 && player) {
-      player.takeLastCard = true
-    }
 
     if (this.remainCards < 0) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
@@ -510,9 +500,25 @@ class TableState implements Serializable {
       return
     }
 
+    let cardIndex = this.remainCards;
+    let card = this.cards[cardIndex];
+    if (cardIndex === 0 && player) {
+      player.takeLastCard = true
+    }
+    this.remainCards = count < 0 ? 0 : count;
+
     const pengIndex = await this.getPlayerPengCards(player);
     if (pengIndex && Math.random() < 0.2) {
       const moIndex = this.cards.findIndex(card => card === pengIndex);
+      if (moIndex !== -1) {
+        cardIndex = moIndex;
+        card = this.cards[moIndex];
+      }
+    }
+
+    const duiIndex = await this.getPlayerDuiCards(player);
+    if (duiIndex && Math.random() < 0.2) {
+      const moIndex = this.cards.findIndex(card => card === duiIndex);
       if (moIndex !== -1) {
         cardIndex = moIndex;
         card = this.cards[moIndex];
@@ -558,6 +564,17 @@ class TableState implements Serializable {
     const cards = p.cards.slice();
     for (let i = 0; i < cards.length; i++) {
       if (cards[i] === 3) {
+        return i;
+      }
+    }
+
+    return false;
+  }
+
+  async getPlayerDuiCards(p) {
+    const cards = p.cards.slice();
+    for (let i = 0; i < cards.length; i++) {
+      if (cards[i] === 2) {
         return i;
       }
     }
