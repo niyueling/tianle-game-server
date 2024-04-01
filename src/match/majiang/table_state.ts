@@ -3761,6 +3761,7 @@ class TableState implements Serializable {
   }
 
   async onPlayerCompetiteHu(player, cards, card) {
+    this.cardTypes = await this.getCardTypes(player, 1);
     let index = this.players.indexOf(player);
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
