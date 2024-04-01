@@ -3763,12 +3763,12 @@ class TableState implements Serializable {
   }
 
   async onPlayerCompetiteHu(player, cards, card) {
-    this.cardTypes = await this.getCardTypes(player, 1);
     let index = this.players.indexOf(player);
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
     // 将本次要操作的牌加入到牌堆中
     cards[card]++;
+    this.cardTypes = await this.getCardTypes(player, 1);
 
     const ok = player.competiteZimo(card, false, this.remainCards === 0, cards.slice());
     if (ok && player.daHuPai(card, null)) {
