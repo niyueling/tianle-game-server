@@ -629,12 +629,17 @@ class TableState implements Serializable {
       [Enums.constellation7, Enums.constellation8, Enums.constellation11, Enums.constellation12],
     ];
 
-    let check1 = true;
+    let check1 = false;
     for (let i = 0; i < minWorldArrs.length; i++) {
+      let checked = true;
       for (let j = 0; j < minWorldArrs[i].length; j++) {
         if (!constellationCards.includes(minWorldArrs[i][j])) {
-          check1 = false;
+          checked = false;
         }
+      }
+
+      if (checked) {
+        check1 = true;
       }
     }
 
@@ -650,12 +655,17 @@ class TableState implements Serializable {
       [Enums.constellation4, Enums.constellation8, Enums.constellation12],
     ];
 
-    let check2 = true;
+    let check2 = false;
     for (let i = 0; i < oneSkyArrs.length; i++) {
+      let checked = true;
       for (let j = 0; j < oneSkyArrs[i].length; j++) {
         if (!constellationCards.includes(oneSkyArrs[i][j])) {
-          check2 = false;
+          checked = false;
         }
+      }
+
+      if (checked) {
+        check2 = true;
       }
     }
 
@@ -670,12 +680,17 @@ class TableState implements Serializable {
       [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12],
     ];
 
-    let check3 = true;
+    let check3 = false;
     for (let i = 0; i < oneWordArrs.length; i++) {
+      let checked = true;
       for (let j = 0; j < oneWordArrs[i].length; j++) {
         if (!constellationCards.includes(oneWordArrs[i][j])) {
-          check3 = false;
+          checked = false;
         }
+      }
+
+      if (checked) {
+        check3 = true;
       }
     }
 
@@ -693,12 +708,17 @@ class TableState implements Serializable {
       [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12, Enums.constellation4, Enums.constellation8],
     ];
 
-    let check4 = true;
+    let check4 = false;
     for (let i = 0; i < IronCalliArrs.length; i++) {
+      let checked = true;
       for (let j = 0; j < IronCalliArrs[i].length; j++) {
         if (!constellationCards.includes(IronCalliArrs[i][j])) {
-          check4 = false;
+          checked = false;
         }
+      }
+
+      if (checked) {
+        check4 = true;
       }
     }
 
