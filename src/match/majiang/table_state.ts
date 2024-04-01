@@ -4025,6 +4025,10 @@ class TableState implements Serializable {
     this.cardTypes = await this.getCardTypes(player, 1);
 
     const ok = player.competiteZimo(card, false, this.remainCards === 0, cards.slice());
+    console.warn({
+      cards,
+      playerCards: player.cards
+    });
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
       const playersModifyGolds = await this.competiteGameOver(player);
