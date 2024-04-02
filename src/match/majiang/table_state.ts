@@ -4020,6 +4020,7 @@ class TableState implements Serializable {
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
     // 将本次要操作的牌加入到牌堆中
+    this.lastTakeCard = card;
     player.cards[card]++;
     this.cardTypes = await this.getCardTypes(player, 1);
 
