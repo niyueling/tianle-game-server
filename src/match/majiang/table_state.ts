@@ -2774,12 +2774,13 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
-        if (this.isAllHu && this.atIndex(player) === 0) {
-          setTimeout(function () {}, 5000);
-        }
 
         if (!this.isAllHu && !player.onDeposit) {
-          return ;
+          if (!player.zhuang) {
+            player.onDeposit = true;
+          } else {
+            return ;
+          }
         }
 
         const nextDo = async () => {
