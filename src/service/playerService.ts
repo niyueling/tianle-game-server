@@ -12,6 +12,7 @@ import {service} from "./importService";
 import GoldRecord from "../database/models/goldRecord";
 import {ConsumeLogType} from "@fm/common/constants";
 import UserRechargeOrder from "../database/models/userRechargeOrder";
+import CombatGain from "../database/models/combatGain";
 
 // 玩家信息
 export default class PlayerService extends BaseService {
@@ -190,10 +191,8 @@ export default class PlayerService extends BaseService {
   }
 
   // 获取上局金豆输赢情况
-  async getLastRoomRuby(playerId) {
-    return PlayerRoomRuby.findOne({
-      playerId,
-    })
+  async getLastRoomRuby(playerId, roomId) {
+    return CombatGain.findOne({playerId, uid: roomId}).sort({time: -1});
   }
 
   // 玩家金豆救助次数

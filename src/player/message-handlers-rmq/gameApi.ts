@@ -1,4 +1,4 @@
-import {ConsumeLogType, GlobalConfigKeys} from "@fm/common/constants";
+import {ConsumeLogType, GlobalConfigKeys, TianleErrorCode} from "@fm/common/constants";
 import {addApi} from "../../common/api";
 import * as config from "../../config";
 import {service} from "../../service/importService";
@@ -127,27 +127,31 @@ export class GameApi extends BaseApi {
   // 金豆翻倍 or 金豆免输
   @addApi({
     rule: {
-      roomNum: "string", // 房间号
+      roomId: "number", // 房间号
     }
   })
   async restoreOrDoubleRuby(msg) {
-    const record = await service.playerService.getLastRoomRuby(this.player.model._id)
-    const player = await service.playerService.getPlayerModel(this.player.model._id)
+    const record = await service.playerService.getLastRoomRuby(this.player.model._id, msg.roomId);
+    const player = await service.playerService.getPlayerModel(this.player.model._id);
     if (record && record.roomNum === msg.roomNum) {
-      if (record.ruby < 0) {
+      if (record.score < 0) {
         // 免输
-        player.ruby -= record.ruby
+        player.gold -= record.score;
+        // 记录金豆日志
+        await service.playerService.logGoldConsume(player._id, ConsumeLogType.doubleWinOrFail, -record.score,
+          player.gold, `结算免输:${msg.roomId}`);
       } else {
         // 翻倍
-        player.ruby += record.ruby
+        player.gold += record.score;
+        // 记录金豆日志
+        await service.playerService.logGoldConsume(player._id, ConsumeLogType.doubleWinOrFail, record.score,
+          player.gold, `结算双倍奖励:${msg.roomId}`);
       }
-      await player.save()
-      await this.player.updateResource2Client()
-      this.replySuccess({rubyChange: Math.abs(record.ruby)})
-      record.ruby = 0
-      await record.save()
+      await player.save();
+      await this.player.updateResource2Client();
+      this.replySuccess({scoreChange: Math.abs(record.score)})
     } else {
-      console.error(`no room ${msg.roomNum} ruby record`)
+      this.replyFail(TianleErrorCode.configNotFound);
     }
   }
 
