@@ -29,6 +29,7 @@ import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import roomScoreRecord from "../../database/models/roomScoreRecord";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import PlayerMedal from "../../database/models/PlayerMedal";
+import {service} from "../../service/importService";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -155,9 +156,9 @@ class Room extends RoomBase {
     this.playersOrder = new Array(this.capacity).fill(null)
     this.snapshot = []
     this.isPublic = rule.isPublic
-    this.disconnectCallback = messageBoyd => {
+    this.disconnectCallback = async messageBoyd => {
       const disconnectPlayer = this.getPlayerById(messageBoyd.from)
-      this.playerDisconnect(disconnectPlayer)
+      await this.playerDisconnect(disconnectPlayer)
     }
 
     this.readyPlayers = []
@@ -697,7 +698,7 @@ class Room extends RoomBase {
     return true
   }
 
-  playerDisconnect(player) {
+  async playerDisconnect(player) {
     const p = player
     const index = this.players.indexOf(player)
     if (index === -1) {
@@ -705,8 +706,11 @@ class Room extends RoomBase {
     }
     p.room = null
     const readyIndex = this.readyPlayers.indexOf(p._id);
-    console.warn("readyIndex-%s", readyIndex);
-    if (!this.gameState || readyIndex === -1) {
+
+    const model = await service.playerService.getPlayerModel(p._id);
+
+    console.warn("readyIndex-%s gold-%s", readyIndex, model.gold);
+    if (!this.gameState || readyIndex === -1 || model.gold <= 0) {
       this.removeReadyPlayer(p.model._id.toString())
       this.forceDissolve();
     }
