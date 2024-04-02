@@ -704,7 +704,7 @@ class Room extends RoomBase {
       return false;
     }
     p.room = null
-    if (!this.gameState) {
+    if (!this.gameState || p.isBroke) {
       this.removeReadyPlayer(p.model._id.toString())
       this.forceDissolve();
     }
