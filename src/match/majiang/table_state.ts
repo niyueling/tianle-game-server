@@ -4068,7 +4068,7 @@ class TableState implements Serializable {
       // 扣除三家金币
       if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
         const model = await service.playerService.getPlayerModel(p._id.toString());
-        const balance = (conf.base * conf.Ante * this.cardTypes.multiple * to.constellationScore > conf.maxMultiple ? conf.maxMultiple : conf.base * this.cardTypes.multiple * conf.Ante * to.constellationScore) * 10;
+        const balance = (conf.base * conf.Ante * this.cardTypes.multiple * to.constellationScore * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * to.constellationScore * 10);
         p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
         winBalance += Math.abs(p.balance);
         p.juScore += p.balance;
@@ -4452,7 +4452,7 @@ class TableState implements Serializable {
           failList.push(from._id);
           failFromList.push(this.atIndex(from));
           const model = await service.playerService.getPlayerModel(from._id.toString());
-          const balance = (conf.base * conf.Ante * this.cardTypes.multiple * to.constellationScore > conf.maxMultiple ? conf.maxMultiple : conf.base * this.cardTypes.multiple * conf.Ante * to.constellationScore) * 10;
+          const balance = (conf.base * conf.Ante * this.cardTypes.multiple * to.constellationScore * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * to.constellationScore * 10);
           from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(from.balance);
           from.juScore += from.balance;
@@ -4468,7 +4468,7 @@ class TableState implements Serializable {
             // 扣除三家金币
             if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
               const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = (conf.base * conf.Ante * this.cardTypes.multiple * to.constellationScore > conf.maxMultiple ? conf.maxMultiple : conf.base * this.cardTypes.multiple * conf.Ante * to.constellationScore) * 10;
+              const balance = (conf.base * conf.Ante * this.cardTypes.multiple * to.constellationScore * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * to.constellationScore * 10);
               p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
               winBalance += Math.abs(p.balance);
               p.juScore += p.balance;

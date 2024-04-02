@@ -33,6 +33,11 @@ const schema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    // 单次最多赢豆
+    maxGold: {
+      type: Number,
+      required: true,
+    },
     // 最高倍率
     maxMultiple: {
         type: Number,
