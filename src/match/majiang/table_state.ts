@@ -5056,6 +5056,12 @@ class TableState implements Serializable {
   listenRoom(room) {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       const player = this.players[index];
+
+      // 如果房间已结束，则解散房间
+      if (this.state === stateGameOver) {
+        return await this.room.forceDissolve();
+      }
+
       player.reconnect(playerMsgDispatcher);
       player.sendMessage('game/reconnect', {ok: true, data: await this.generateReconnectMsg(index)})
     })
@@ -5076,7 +5082,7 @@ class TableState implements Serializable {
   async onRefresh(index) {
     const player = this.players[index]
     if (!player) {
-      return
+      return ;
     }
     player.sendMessage('room/refresh', await this.restoreMessageForPlayer(player))
   }
