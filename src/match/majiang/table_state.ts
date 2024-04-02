@@ -5058,6 +5058,7 @@ class TableState implements Serializable {
       const player = this.players[index];
 
       // 如果房间已结束，则解散房间
+      console.warn(this.state);
       if (this.state === stateGameOver) {
         return await this.room.forceDissolve();
       }
