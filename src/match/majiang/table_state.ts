@@ -3004,7 +3004,7 @@ class TableState implements Serializable {
               turn, from
             }
           }, player.msgDispatcher)
-          console.warn("state-%s, stateData-%s hangUpList-%s", this.state, JSON.stringify(this.stateData), JSON.stringify(hangUpList));
+          console.warn("state-%s, stateData-%s hangUpList-%s onDeposit-%s", this.state, JSON.stringify(this.stateData), JSON.stringify(hangUpList), player.onDeposit);
           if (hangUpList.length > 0) {    // 向所有挂起的玩家回复
             hangUpList.forEach(hangUpMsg => {
               hangUpMsg[0].emitter.emit(hangUpMsg[1], ...hangUpMsg[2])
