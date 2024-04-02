@@ -4757,6 +4757,7 @@ class TableState implements Serializable {
 
   async playerGameOver(p, niaos, states) {
     p.gameOver();
+    this.room.removeReadyPlayer(p);
 
     if (!this.brokeList.includes(p._id.toString())) {
       p.isBroke = true;
