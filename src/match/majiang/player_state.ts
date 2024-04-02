@@ -1353,6 +1353,9 @@ class PlayerState implements Serializable {
         cards.push(i)
       }
     }
+
+    this.events.huCards = this.huCards;
+
     return {
       index,
       cards,
