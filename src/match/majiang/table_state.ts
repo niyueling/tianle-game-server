@@ -4024,7 +4024,7 @@ class TableState implements Serializable {
     player.cards[card]++;
     this.cardTypes = await this.getCardTypes(player, 1);
 
-    console.warn({cardId: this.cardTypes.cardId, multiple: this.cardTypes.multiple, cards: this.getCardArray(player.cards)});
+    // console.warn({cardId: this.cardTypes.cardId, multiple: this.cardTypes.multiple, cards: this.getCardArray(player.cards)});
 
     const ok = player.competiteZimo(card, false, this.remainCards === 0);
     if (ok && player.daHuPai(card, null)) {
@@ -5058,12 +5058,6 @@ class TableState implements Serializable {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       const player = this.players[index];
 
-      // 如果房间已结束，则解散房间
-      console.warn(this.state);
-      if (this.state === stateGameOver) {
-        return await this.room.forceDissolve();
-      }
-
       player.reconnect(playerMsgDispatcher);
       player.sendMessage('game/reconnect', {ok: true, data: await this.generateReconnectMsg(index)})
     })
@@ -5164,7 +5158,7 @@ class TableState implements Serializable {
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da];
-        console.warn("this.stateData.msg-%s daPlayerId-%s playerId-%s", JSON.stringify(this.stateData.msg), daPlayer._id.toString(), player._id.toString());
+        // console.warn("this.stateData.msg-%s daPlayerId-%s playerId-%s", JSON.stringify(this.stateData.msg), daPlayer._id.toString(), player._id.toString());
         if (daPlayer._id.toString() === player._id.toString()) {
           pushMsg.current = {
             index,
