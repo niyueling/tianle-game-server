@@ -704,8 +704,9 @@ class Room extends RoomBase {
       return false;
     }
     p.room = null
-    console.warn("readyPlayer-%s", JSON.stringify(this.readyPlayers));
-    if (!this.gameState || p.isBroke) {
+    const readyIndex = this.readyPlayers.indexOf(p._id);
+    console.warn("readyIndex-%s", readyIndex);
+    if (!this.gameState || readyIndex === -1) {
       this.removeReadyPlayer(p.model._id.toString())
       this.forceDissolve();
     }
