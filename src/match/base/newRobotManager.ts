@@ -421,9 +421,9 @@ export class NewRobotManager {
       if (playerId !== "" || this.room.players[i]) {
         continue
       }
-      if (i === 0) {
-        await this.room.forceDissolve();
-      }
+      // if (i === 0) {
+      //   await this.room.forceDissolve();
+      // }
 
       const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id);
       const robotProxy = await this.createProxy(model._id.toString());
