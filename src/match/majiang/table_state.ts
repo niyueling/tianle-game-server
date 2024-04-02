@@ -923,6 +923,11 @@ class TableState implements Serializable {
         zhuangIndex = i;
       }
 
+      if (!p.zhuang) {
+        p.onDeposit = true;
+        await p.sendMessage('game/startDepositReply', {ok: true, data: {}});
+      }
+
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards, zhuangIndex)
     }
 
@@ -2999,6 +3004,7 @@ class TableState implements Serializable {
               turn, from
             }
           }, player.msgDispatcher)
+          console.warn("state-%s, stateData-%s hangUpList-%s", this.state, JSON.stringify(this.stateData), JSON.stringify(hangUpList));
           if (hangUpList.length > 0) {    // 向所有挂起的玩家回复
             hangUpList.forEach(hangUpMsg => {
               hangUpMsg[0].emitter.emit(hangUpMsg[1], ...hangUpMsg[2])
@@ -5142,13 +5148,13 @@ class TableState implements Serializable {
         msg.roomRubyReward = roomRubyReward;
         msg.constellationCards = this.players[i].constellationCards;
         msg.constellationCardLevel = await this.calcConstellationCardScore(this.players[i]);
-        pushMsg.status.push(msg)
+        pushMsg.status.push(msg);
       } else {
         msg = this.players[i].genOppoStates(i);
         msg.roomRubyReward = roomRubyReward;
         msg.constellationCards = this.players[i].constellationCards;
         msg.constellationCardLevel = await this.calcConstellationCardScore(this.players[i]);
-        pushMsg.status.push(msg)
+        pushMsg.status.push(msg);
       }
 
       msg.model.medalId = medalId;
