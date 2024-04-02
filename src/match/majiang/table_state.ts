@@ -1996,8 +1996,8 @@ class TableState implements Serializable {
       }
     }
 
-    // console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
-    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    console.warn("四暗刻 anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return anGangCount >= 4 && (isZiMo || isJiePao);
   }
@@ -2198,8 +2198,8 @@ class TableState implements Serializable {
       }
     }
 
-    // console.warn("anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
-    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
+    console.warn("三暗刻 anGangCount-%s, zimo-%s, jiePao-%s", anGangCount,
+      player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return anGangCount >= 3 && (isZiMo || isJiePao);
   }
