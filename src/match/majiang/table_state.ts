@@ -4023,7 +4023,7 @@ class TableState implements Serializable {
     player.cards[card]++;
     this.cardTypes = await this.getCardTypes(player, 1);
 
-    console.warn(this.getCardArray(player.cards));
+    console.warn(player.cards, {cardId: this.cardTypes.cardId, multiple: this.cardTypes.multiple});
 
     const ok = player.competiteZimo(card, false, this.remainCards === 0);
     if (ok && player.daHuPai(card, null)) {
