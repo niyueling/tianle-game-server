@@ -4043,7 +4043,7 @@ class TableState implements Serializable {
       player.sendMessage('game/huReply', {
         ok: false,
         info: TianleErrorCode.huInvaid,
-        data: {type: "ziMo"}
+        data: {type: "ziMo", card, cards: this.getCardArray(player.cards)}
       });
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
