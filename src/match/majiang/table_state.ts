@@ -3316,6 +3316,14 @@ class TableState implements Serializable {
                   }
                 });
 
+                // 记录胡牌次数
+                if (!player.huTypeList.includes(this.cardTypes.cardId)) {
+                  const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
+                  cardTypeRecord.count++;
+                  await cardTypeRecord.save();
+                  player.huTypeList.push(this.cardTypes.cardId);
+                }
+
                 if (!player.isGameHu) {
                   player.isGameHu = true;
                 }
@@ -3548,6 +3556,14 @@ class TableState implements Serializable {
                 }
               }
             });
+
+            // 记录胡牌次数
+            if (!player.huTypeList.includes(this.cardTypes.cardId)) {
+              const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
+              cardTypeRecord.count++;
+              await cardTypeRecord.save();
+              player.huTypeList.push(this.cardTypes.cardId);
+            }
 
             if (!player.isGameHu) {
               player.isGameHu = true;
@@ -3981,6 +3997,10 @@ class TableState implements Serializable {
         xiajia.competiteCards = [];
 
         for (let i = 0; i < 3; i++) {
+          if (this.remainCards < 0) {
+            break;
+          }
+
           const newCard = await this.consumeCard(xiajia);
           if (newCard) {
             xiajia.cards[newCard]++;
@@ -4047,12 +4067,19 @@ class TableState implements Serializable {
     player.cards[card]++;
     this.cardTypes = await this.getCardTypes(player, 1);
 
-    // console.warn({cardId: this.cardTypes.cardId, multiple: this.cardTypes.multiple, cards: this.getCardArray(player.cards)});
-
     const ok = player.competiteZimo(card, false, this.remainCards === 0);
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
       const playersModifyGolds = await this.competiteGameOver(player);
+
+      // 记录胡牌次数
+      if (!player.huTypeList.includes(this.cardTypes.cardId)) {
+        const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
+        cardTypeRecord.count++;
+        await cardTypeRecord.save();
+        player.huTypeList.push(this.cardTypes.cardId);
+      }
+
       return {
         card,
         from: index,
