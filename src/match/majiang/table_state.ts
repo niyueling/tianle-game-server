@@ -3944,7 +3944,7 @@ class TableState implements Serializable {
 
         msgs.push({
           type: "hu",
-          card: huMsg.card,
+          card: msg.huCards[i],
           index: huMsg.from,
           playersModifyGolds: huMsg.playersModifyGolds,
           constellationCards: huMsg.constellationCards,
@@ -3962,7 +3962,7 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
       changeGolds[i].currentGold = model.gold;
-      changeGolds[i].isBroke = changeGolds[i].currentGold === 0;
+      changeGolds[i].isBroke = model.gold === 0;
     }
 
     this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs[0].index, msg: msgs}});
