@@ -4061,7 +4061,7 @@ class TableState implements Serializable {
         }, xiajia.msgDispatcher)
       }
 
-      setTimeout(nextDo, 2500);
+      setTimeout(nextDo, 1500);
     }
   }
 
@@ -4398,12 +4398,12 @@ class TableState implements Serializable {
 
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
-          if (isHu && msg["hu"]) {
-            msg["hu"] = false;
-
-            if (!msg["peng"] && !msg["gang"])
-              continue;
-          }
+          // if (isHu && msg["hu"]) {
+          //   msg["hu"] = false;
+          //
+          //   if (!msg["peng"] && !msg["gang"])
+          //     continue;
+          // }
 
           if (msg["hu"]) {
             isHu = true;
