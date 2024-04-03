@@ -4382,19 +4382,31 @@ class TableState implements Serializable {
       }
 
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+      let isHu = false;
 
       for (let i = 1; i < this.players.length; i++) {
         const j = (from + i) % this.players.length;
         const p = this.players[j];
 
         const msg = this.actionResolver.allOptions(p)
+        if (isHu) {
+          msg["hu"] = false;
+
+          if (!msg["peng"] && !msg["gang"])
+          continue;
+        }
+
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
-          this.cardTypes = await this.getCardTypes(p, 2);
-          msg["huType"] = {
-            id: this.cardTypes.cardId,
-            multiple: this.cardTypes.multiple * conf.base * conf.Ante * p.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * p.constellationScore
+          if (msg["hu"]) {
+            isHu = true;
+            this.cardTypes = await this.getCardTypes(p, 2);
+            msg["huType"] = {
+              id: this.cardTypes.cardId,
+              multiple: this.cardTypes.multiple * conf.base * conf.Ante * p.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * p.constellationScore
+            }
           }
+
           p.record('choice', card, msg)
 
           // 如果用户可以杠，并且胡牌已托管，则取消托管
@@ -4405,8 +4417,6 @@ class TableState implements Serializable {
 
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
-
-          if (msg["hu"]) break;
         }
       }
 
