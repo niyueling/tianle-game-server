@@ -4047,6 +4047,11 @@ class TableState implements Serializable {
 
         xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
 
+        const playerIds = [];
+        this.players.map((v) => playerIds.push(v._id));
+
+        console.warn(xiajia._id, this.atIndex(xiajia), JSON.stringify(playerIds));
+
         const sendMsg = {index: this.atIndex(xiajia), cards: takeCards, gangCards, huCards}
         this.room.broadcast('game/oppoTakeThreeCard', {
           ok: true,
