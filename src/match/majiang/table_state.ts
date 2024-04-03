@@ -3986,6 +3986,7 @@ class TableState implements Serializable {
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
     } else {
+      const xiajiaIndex = this.atIndex(xiajia);
       const nextDo = async () => {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const takeCards = [];
@@ -4050,9 +4051,9 @@ class TableState implements Serializable {
         const playerIds = [];
         this.players.map((v) => playerIds.push(v._id));
 
-        console.warn(xiajia._id, this.atIndex(xiajia), JSON.stringify(playerIds));
+        console.warn(xiajia._id, xiajiaIndex, JSON.stringify(playerIds));
 
-        const sendMsg = {index: this.atIndex(xiajia), cards: takeCards, gangCards, huCards}
+        const sendMsg = {index: xiajiaIndex, cards: takeCards, gangCards, huCards}
         this.room.broadcast('game/oppoTakeThreeCard', {
           ok: true,
           data: sendMsg
