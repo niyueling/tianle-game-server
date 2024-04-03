@@ -14,8 +14,29 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
     console.warn(`playerId: ${this.playerState.model.shortId}, name: ${this.playerState.model.nickname}, onDeposit: ${this.playerState.onDeposit}`)
     if (this.playerState) {
       // 从牌堆中取出合适的牌
-      // const index = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
-      // await this.room.gameState.onPlayerDa(this.playerState, this.room.gameState.turn, index);
+      const card = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
+      if (this.room.gameState.isAllHu) {
+        const msg = {
+          cards: [],
+          daCards: [],
+          huCards: []
+        };
+
+        for (let i = 0; i < this.playerState.competiteCards.length; i++) {
+          if (this.playerState.competiteCards[i].hu) {
+            msg.huCards.push(this.playerState.competiteCards[i].card);
+          } else {
+            msg.daCards.push(this.playerState.competiteCards[i].card);
+          }
+
+          msg.cards.push(this.playerState.competiteCards[i].card);
+        }
+
+        this.playerState.emitter.emit(Enums.competiteHu, msg);
+      } else {
+        this.playerState.emitter.emit(Enums.da, this.room.gameState.turn, card);
+      }
+
       this.playerState.onDeposit = true;
     }
   }
