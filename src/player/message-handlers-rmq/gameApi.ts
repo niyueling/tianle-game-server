@@ -54,7 +54,7 @@ export class GameApi extends BaseApi {
         totalGold -= records[i].failGoldList[index];
         scoreRecords.push({
           playerId: this.player._id,
-          gold: -records[i].failGoldList[index],
+          gold: records[i].failGoldList[index],
           cardTypes: records[i].cardTypes,
           winnerIndex: records[i].winnerFrom,
           conf
