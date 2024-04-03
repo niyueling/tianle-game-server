@@ -4304,8 +4304,7 @@ class TableState implements Serializable {
           const r = p.markJiePao(card, result);
           if (r.hu) {
             if (!check.hu || check.hu.length === 0) {
-              check.hu = [];
-              check.hu.push(p);
+              check.hu = [p];
               p.huInfo = r.check;
             }
           }
