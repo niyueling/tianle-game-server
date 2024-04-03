@@ -4388,7 +4388,10 @@ class TableState implements Serializable {
         const j = (from + i) % this.players.length;
         const p = this.players[j];
 
-        const msg = this.actionResolver.allOptions(p)
+        const msg = this.actionResolver.allOptions(p);
+
+        console.warn(msg);
+
         if (isHu && msg["hu"]) {
           msg["hu"] = false;
 
