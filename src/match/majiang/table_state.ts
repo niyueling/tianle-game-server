@@ -4410,6 +4410,7 @@ class TableState implements Serializable {
 
           if (msg["hu"]) {
             isHu = true;
+            this.lastHuCard = card;
             this.cardTypes = await this.getCardTypes(p, 2);
             msg["huType"] = {
               id: this.cardTypes.cardId,
