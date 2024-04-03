@@ -1358,7 +1358,7 @@ class PlayerState implements Serializable {
       }
     }
 
-    this.events.huCards = this.huCards;
+    this.events.huCards = this.huCards.slice();
 
     return {
       index,
