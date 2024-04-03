@@ -86,11 +86,11 @@ export class RobotManager extends NewRobotManager {
             this.waitInterval[key] = 0;
 
 
-            if (ziMoHu.hu) {
+            if (ziMoHu.hu && !this.room.gameState.isAllHu) {
               await proxy.choice(Enums.hu)
-            } else if (AnGangIndex) {
+            } else if (AnGangIndex && !this.room.gameState.isAllHu) {
               await proxy.gang(Enums.anGang, AnGangIndex)
-            } else if (buGangIndex) {
+            } else if (buGangIndex && !this.room.gameState.isAllHu) {
               await proxy.gang(Enums.buGang, buGangIndex)
             } else {
               await proxy.playCard();
