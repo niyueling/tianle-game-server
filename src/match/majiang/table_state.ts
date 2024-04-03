@@ -2967,6 +2967,7 @@ class TableState implements Serializable {
         const ok = player.pengPai(card, this.lastDa);
         if (ok) {
           player.lastOperateType = 2;
+          player.onDeposit = false;
           const hangUpList = this.stateData.hangUp;
           this.turn++;
           this.state = stateWaitDa;
