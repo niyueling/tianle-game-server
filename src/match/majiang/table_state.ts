@@ -396,9 +396,6 @@ class TableState implements Serializable {
     multiple: number;
   }
 
-  // 解决偶发性重复发牌问题
-  isFaPai: boolean = false;
-
   // 是否等待复活
   waitRecharge: boolean = false;
 
@@ -899,11 +896,15 @@ class TableState implements Serializable {
       const constellationCards = [];
       for (let i = 0; i < cards13.length; i++) {
         if (cards13[i] > Enums.athena && !constellationCards.includes(cards13[i])) {
-          // 计算序数牌相加
-          if (cards13[i] < Enums.zeus) {
-            p.numberCount += cards13[i] % 10;
-          }
           constellationCards.push(cards13[i]);
+        }
+
+        // 计算序数牌相加
+        if (cards13[i] < Enums.zeus) {
+          p.numberCount += cards13[i] % 10;
+        }
+        if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(cards13[i])) {
+          p.numberCount += 10;
         }
       }
       p.constellationCards = constellationCards;
@@ -943,7 +944,7 @@ class TableState implements Serializable {
 
     const nextDo = async () => {
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-      const nextCard = await this.consumeCard(this.zhuang)
+      const nextCard = await this.consumeCard(this.zhuang);
       this.cardTypes = await this.getCardTypes(this.zhuang, 1);
       const msg = this.zhuang.takeCard(this.turn, nextCard, false, false,
         {
@@ -3150,29 +3151,23 @@ class TableState implements Serializable {
 
         this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher);
 
-        if (!this.isFaPai) {
-          this.isFaPai = true;
+        this.cardTypes = await this.getCardTypes(player, 1);
+        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
-          this.cardTypes = await this.getCardTypes(player, 1);
-          const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-
-          const nextCard = await this.consumeCard(player);
-          const msg = player.gangTakeCard(this.turn, nextCard,
-            {
-              id: this.cardTypes.cardId,
-              multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
-            });
-          if (msg) {
-            this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
-            this.state = stateWaitDa;
-            this.stateData = {msg, da: player, card: nextCard};
-          } else {
-            logger.info('gangByOtherDa player-%s card:%s GangReply error:4', index, card)
-            player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
-            return;
-          }
-
-          this.isFaPai = false;
+        const nextCard = await this.consumeCard(player);
+        const msg = player.gangTakeCard(this.turn, nextCard,
+          {
+            id: this.cardTypes.cardId,
+            multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
+          });
+        if (msg) {
+          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
+          this.state = stateWaitDa;
+          this.stateData = {msg, da: player, card: nextCard};
+        } else {
+          logger.info('gangByOtherDa player-%s card:%s GangReply error:4', index, card)
+          player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
+          return;
         }
 
         const check: IActionCheck = {card};
@@ -4962,7 +4957,6 @@ class TableState implements Serializable {
             })
 
             if (!msg) {
-              this.isFaPai = false;
               const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
               const nextZhuang = this.nextZhuang()
               await this.gameAllOver(states, [], nextZhuang);
@@ -4983,7 +4977,6 @@ class TableState implements Serializable {
               ok: true,
               data: sendMsg
             }, xiajia.msgDispatcher)
-            this.isFaPai = false;
           }
         }
 
