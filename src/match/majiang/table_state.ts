@@ -4392,15 +4392,15 @@ class TableState implements Serializable {
 
         console.warn(msg);
 
-        if (isHu && msg["hu"]) {
-          msg["hu"] = false;
-
-          if (!msg["peng"] && !msg["gang"])
-          continue;
-        }
-
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
+          if (isHu && msg["hu"]) {
+            msg["hu"] = false;
+
+            if (!msg["peng"] && !msg["gang"])
+              continue;
+          }
+
           if (msg["hu"]) {
             isHu = true;
             this.cardTypes = await this.getCardTypes(p, 2);
