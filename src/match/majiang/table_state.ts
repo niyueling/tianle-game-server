@@ -2858,7 +2858,7 @@ class TableState implements Serializable {
           }
         }
 
-        setTimeout(nextDo, this.isAllHu ? 3000 : 500);
+        setTimeout(nextDo, this.isAllHu ? 2000 : 500);
       })
     })
     player.on('waitForDoSomeThing', msg => {
