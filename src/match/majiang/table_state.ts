@@ -24,6 +24,7 @@ import GameCardRecord from "../../database/models/gameCardRecord";
 import PlayerMedal from "../../database/models/PlayerMedal";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import PlayerCardTable from "../../database/models/PlayerCardTable";
+import PlayerCardTypeRecord from "../../database/models/playerCardTypeRecord";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -3046,7 +3047,15 @@ class TableState implements Serializable {
               const me = this.atIndex(player)
               player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
 
+              // 计算杠牌次数
               await Player.update({_id: player._id}, {$inc: {gangCount: 1}});
+
+              // 如果是星座杠，记录星座杠次数
+              if (card >= Enums.constellation1) {
+                const cardTypeRecord = await this.getPlayerCardTypeRecord(player, card, 2);
+                cardTypeRecord.count++;
+                await cardTypeRecord.save();
+              }
 
               for (let i = 1; i < 4; i++) {
                 const playerIndex = (from + i) % this.players.length
@@ -3130,6 +3139,13 @@ class TableState implements Serializable {
         });
 
         await Player.update({_id: player._id}, {$inc: {gangCount: 1}});
+
+        // 如果是星座杠，记录星座杠次数
+        if (card >= Enums.constellation1) {
+          const cardTypeRecord = await this.getPlayerCardTypeRecord(player, card, 2);
+          cardTypeRecord.count++;
+          await cardTypeRecord.save();
+        }
 
         this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher);
 
@@ -4760,6 +4776,20 @@ class TableState implements Serializable {
     }
 
     return count;
+  }
+
+  async getPlayerCardTypeRecord(player, typeId, taskType) {
+    let cardTypeRecord = await PlayerCardTypeRecord.findOne({playerId: player._id, taskType: taskType, typeId: typeId});
+    if (cardTypeRecord) {
+      return cardTypeRecord;
+    }
+
+    return await PlayerCardTypeRecord.create({
+      playerId: player._id,
+      taskType: taskType,
+      typeId: typeId,
+      count: 0
+    });
   }
 
   async playerGameOver(p, niaos, states) {

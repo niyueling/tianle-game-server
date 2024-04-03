@@ -242,6 +242,9 @@ class PlayerState implements Serializable {
   // 序数牌相加
   numberCount: number = 0
 
+  // 本局胡的牌型
+  huTypeList: any[] = [];
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -286,6 +289,7 @@ class PlayerState implements Serializable {
     this.isGangHouDa = false;
     this.numberCount = 0;
     this.constellationScore = 1;
+    this.huTypeList = [];
   }
 
   setGameRecorder(r) {
