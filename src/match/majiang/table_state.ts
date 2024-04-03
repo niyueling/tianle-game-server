@@ -942,9 +942,9 @@ class TableState implements Serializable {
     }
 
     const nextDo = async () => {
-      this.cardTypes = await this.getCardTypes(this.zhuang, 1);
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
       const nextCard = await this.consumeCard(this.zhuang)
+      this.cardTypes = await this.getCardTypes(this.zhuang, 1);
       const msg = this.zhuang.takeCard(this.turn, nextCard, false, false,
         {
           id: this.cardTypes.cardId,
