@@ -4328,11 +4328,10 @@ class TableState implements Serializable {
       const env = {card, from, turn: this.turn}
       this.actionResolver = new ActionResolver(env, async () => {
         if (xiajia) {
-          this.cardTypes = await this.getCardTypes(xiajia, 1);
           const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-
           const newCard = await this.consumeCard(xiajia);
           if (newCard) {
+            this.cardTypes = await this.getCardTypes(xiajia, 1);
             const msg = xiajia.takeCard(this.turn, newCard, false, false,
               {
                 id: this.cardTypes.cardId,
@@ -4397,8 +4396,6 @@ class TableState implements Serializable {
 
         const msg = this.actionResolver.allOptions(p);
 
-        console.warn(msg);
-
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
           if (isHu && msg["hu"]) {
@@ -4425,6 +4422,8 @@ class TableState implements Serializable {
             p.onDeposit = false;
             p.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}})
           }
+
+          console.warn("room-%s msg-%s", this.room._id, JSON.stringify(msg));
 
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
