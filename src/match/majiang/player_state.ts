@@ -1380,12 +1380,14 @@ class PlayerState implements Serializable {
   }
 
   genOppoStates(index) {
-    const cardCount = HuPaiDetect.remain(this.cards)
+    const cardCount = HuPaiDetect.remain(this.cards);
+    this.events.huCards = this.huCards.slice();
     return {
       index,
       cardCount,
       tingPai: this.tingPai,
       locked: this.locked,
+      huCards: this.huCards,
       events: this.events,
       model: this.model,
       dropped: this.dropped,
