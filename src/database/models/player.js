@@ -52,6 +52,7 @@ const schema = new Schema({
   city: {type: String},
   robot: {type: Boolean, default: false},
   tourist: {type: Boolean, default: false},
+  isGame: {type: Boolean, default: false},// 是否正在游戏中
   isBindWechat: {type: Boolean, default: false, required: true},
   createAt: {type: Date, default: Date.now},
 });

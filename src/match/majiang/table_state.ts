@@ -4680,154 +4680,6 @@ class TableState implements Serializable {
     this.logger.close()
   }
 
-  async saveCardType() {
-    const cardTypes = [
-      {cardName: "起手叫", multiple: 4, isOrdinal: false, isTianHu: true, cardId: 1},
-      {cardName: "双星辰", multiple: 4, isOrdinal: false, constellateCount: 2, level: 1, cardId: 2},
-      {
-        cardName: "门清",
-        multiple: 2,
-        isOrdinal: false,
-        condition: {peng: false, mingGang: false, hu: true, dianPao: true},
-        level: 1,
-        cardId: 3
-      },
-      {cardName: "杠上开花", multiple: 3, isOrdinal: false, condition: {gang: true, hu: true}, cardId: 4},
-      {
-        cardName: "妙手回春",
-        multiple: 3,
-        isOrdinal: false,
-        condition: {residueCount: 0, zimo: true, hu: true},
-        level: 1,
-        cardId: 5
-      },
-      {
-        cardName: "海底捞月",
-        multiple: 2,
-        isOrdinal: false,
-        condition: {residueCount: 0, hu: true, jiePao: true},
-        level: 1,
-        cardId: 6
-      },
-      {
-        cardName: "杠上炮",
-        multiple: 2,
-        isOrdinal: false,
-        condition: {gang: true, hu: true, jiePao: true},
-        cardId: 7
-      },
-      {
-        cardName: "抢杠胡",
-        multiple: 2,
-        isOrdinal: false,
-        condition: {buGang: true, hu: true, jiePao: true},
-        cardId: 8
-      },
-      {cardName: "绝张", multiple: 2, isOrdinal: false, condition: {simpleCount: 1, hu: true}, cardId: 9},
-      {
-        cardName: "对对胡",
-        multiple: 2,
-        isOrdinal: false,
-        condition: {keCount: 4, hu: true},
-        level: 1,
-        cardId: 10
-      },
-      {cardName: "单色星辰", multiple: 2, isOrdinal: false, constellateCount: 1, level: 1, cardId: 11},
-      {cardName: "双同刻", multiple: 2, isOrdinal: false, condition: {keCount: 2}, level: 1, cardId: 12},
-      {cardName: "十二行星", multiple: 3, isOrdinal: false, condition: {gangCount: 3}, level: 1, cardId: 13},
-      {cardName: "十八行星", multiple: 4, isOrdinal: false, condition: {gangCount: 4}, level: 1, cardId: 14},
-      {
-        cardName: "断么九",
-        multiple: 6,
-        isOrdinal: true,
-        ordinalCard: [2, 3, 4, 5, 6, 7, 8],
-        level: 1,
-        cardId: 15
-      },
-      {
-        cardName: "不求人",
-        multiple: 6,
-        isOrdinal: false,
-        condition: {peng: false, mingGang: false, hu: true, zimo: true},
-        level: 1,
-        cardId: 16
-      },
-      {
-        cardName: "混双",
-        multiple: 6,
-        isOrdinal: true,
-        ordinalCard: [2, 4, 6, 8],
-        constellateCount: 1,
-        level: 1,
-        cardId: 17
-      },
-      {
-        cardName: "混单",
-        multiple: 6,
-        isOrdinal: true,
-        ordinalCard: [1, 3, 5, 7, 9],
-        constellateCount: 1,
-        level: 1,
-        cardId: 18
-      },
-      {cardName: "双暗刻", multiple: 6, isOrdinal: false, condition: {anGangCount: 2}, level: 1, cardId: 19},
-      {
-        cardName: "三节高",
-        multiple: 8,
-        isOrdinal: false,
-        condition: {huaType: "simple", keCount: 3},
-        level: 1,
-        cardId: 20
-      },
-      {cardName: "双色星辰", multiple: 8, isOrdinal: false, constellateCount: 2, level: 1, cardId: 21},
-      {cardName: "混小", multiple: 12, isOrdinal: true, ordinalCard: [1, 2, 3], level: 1, cardId: 22},
-      {cardName: "混中", multiple: 12, isOrdinal: true, ordinalCard: [4, 5, 6], level: 1, cardId: 23},
-      {cardName: "混大", multiple: 12, isOrdinal: true, ordinalCard: [7, 8, 9], level: 1, cardId: 24},
-      {cardName: "星灭光离", multiple: 12, isOrdinal: false, condition: {laiCount: 0}, level: 1, cardId: 25},
-      {cardName: "三暗刻", multiple: 12, isOrdinal: false, condition: {anGangCount: 3}, level: 1, cardId: 26},
-      {cardName: "三色星辰", multiple: 16, isOrdinal: false, constellateCount: 3, level: 1, cardId: 27},
-      {cardName: "七对", multiple: 16, isOrdinal: false, condition: {duiCount: 7}, level: 1, cardId: 28},
-      {
-        cardName: "四节高",
-        multiple: 16,
-        isOrdinal: false,
-        condition: {huaType: "simple", keCount: 4},
-        level: 1,
-        cardId: 29
-      },
-      {cardName: "全单刻", multiple: 24, isOrdinal: true, ordinalCard: [1, 3, 5, 7, 9], level: 1, cardId: 30},
-      {cardName: "全双刻", multiple: 24, isOrdinal: true, ordinalCard: [2, 4, 6, 8], level: 1, cardId: 31},
-      {cardName: "四暗刻", multiple: 24, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 32},
-      {
-        cardName: "十二星座",
-        multiple: 24,
-        isOrdinal: false,
-        constellateCount: 3,
-        condition: {gangCount: 3},
-        level: 1,
-        cardId: 33
-      },
-      {cardName: "地胡", multiple: 32, isOrdinal: false, condition: {anGangCount: 4}, cardId: 34},
-      {cardName: "景星麟凤", multiple: 36, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 35},
-      {cardName: "天胡", multiple: 48, isOrdinal: false, condition: {anGangCount: 4}, cardId: 36},
-      {cardName: "一路福星", multiple: 72, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 37},
-      {cardName: "三星高照", multiple: 99, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 38},
-      {cardName: "星流电击", multiple: 188, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 39},
-      {cardName: "流星望电", multiple: 246, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 40},
-      {cardName: "星离月会", multiple: 266, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 41},
-      {cardName: "棋布星陈", multiple: 288, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 42},
-      {cardName: "一天星斗", multiple: 288, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 43},
-      {cardName: "移星换斗", multiple: 299, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 44},
-      {cardName: "星流影集", multiple: 318, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 45},
-      {cardName: "大步流星", multiple: 333, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 46},
-      {cardName: "月落星沉", multiple: 366, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 47},
-      {cardName: "众星捧月", multiple: 377, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 48},
-      {cardName: "摩羯之吻", multiple: 399, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 49},
-      {cardName: "星蝎交辉", multiple: 488, isOrdinal: false, condition: {anGangCount: 4}, level: 1, cardId: 50},
-    ];
-    await CardTypeModel.insertMany(cardTypes);
-  }
-
   checkPlayerSimpleCrdCount(player) {
     const cards = player.cards.slice();
     let count = 0;
@@ -4894,6 +4746,7 @@ class TableState implements Serializable {
 
     const model = await Player.findOne({_id: p._id});
 
+    model.isGame = false;
     model.juCount++;
     if (p.juScore > 0) {
       model.juWinCount++;
@@ -5108,9 +4961,10 @@ class TableState implements Serializable {
 
     // 计算胜率
     for (let i = 0; i < this.players.length; i++) {
-      if (!this.players[i].isCalcJu) {
-        const model = await Player.findOne({_id: this.players[i]._id});
+      const model = await Player.findOne({_id: this.players[i]._id});
+      model.isGame = false;
 
+      if (!this.players[i].isCalcJu) {
         model.juCount++;
         if (this.players[i].juScore > 0) {
           model.juWinCount++;
@@ -5136,9 +4990,9 @@ class TableState implements Serializable {
             model.looseMoneyBoyAmount = Math.abs(this.players[i].juScore);
           }
         }
-
-        model.save();
       }
+
+      model.save();
     }
 
     if (gameOverMsg.states.length > 0) {

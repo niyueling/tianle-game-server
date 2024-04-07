@@ -74,13 +74,14 @@ export default class PlayerService extends BaseService {
     const max = rubyRequired.minAmount + Math.floor(rand * (rubyRequired.maxAmount - rubyRequired.minAmount));
     const gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
     const result = await Player.aggregate([
-      {$match: { robot: true }},
+      {$match: { robot: true, isGame: false }},
       {$sample: { size: 1}}
     ]);
     // console.warn("minAmount %s maxAmount %s rand %s max %s gold %s", rubyRequired.minAmount, rubyRequired.maxAmount, rand, max, gold);
     const randomPlayer = await this.getPlayerModel(result[0]._id);
     // 重新随机设置 ruby
     randomPlayer.gold = gold;
+    randomPlayer.isGame = true;
 
     // 记录金豆日志
     await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
