@@ -82,6 +82,7 @@ export default class PlayerService extends BaseService {
     // 重新随机设置 ruby
     randomPlayer.gold = gold;
     randomPlayer.isGame = true;
+    randomPlayer.gameTime = new Date();
 
     // 记录金豆日志
     await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
