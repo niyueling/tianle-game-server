@@ -4992,7 +4992,7 @@ class TableState implements Serializable {
         }
       }
 
-      model.save();
+      await model.save();
     }
 
     if (gameOverMsg.states.length > 0) {

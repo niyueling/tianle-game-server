@@ -30,6 +30,7 @@ import roomScoreRecord from "../../database/models/roomScoreRecord";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import PlayerMedal from "../../database/models/PlayerMedal";
 import {service} from "../../service/importService";
+import Player from "../../database/models/player";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -685,6 +686,13 @@ class Room extends RoomBase {
     clearTimeout(this.dissolveTimeout)
     this.roomState = ''
     this.dissolveTimeout = null
+
+    for (let i = 0; i < this.players.length; i++) {
+      const model = await Player.findOne({_id: this.players[i]._id});
+      model.isGame = false;
+
+      await model.save();
+    }
 
     this.players
       .filter(p => p)
