@@ -4243,10 +4243,9 @@ class TableState implements Serializable {
           if (r.hu) {
             if (!check.hu || check.hu.length === 0) {
               check.hu = [];
+              check.hu.push(p);
+              p.huInfo = r.check;
             }
-
-            check.hu.push(p);
-            p.huInfo = r.check;
           }
         }
       }
