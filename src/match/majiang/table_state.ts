@@ -955,7 +955,7 @@ class TableState implements Serializable {
         })
 
       const index = this.atIndex(this.zhuang);
-      this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, this.zhuang.msgDispatcher)
+      this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, this.zhuang.msgDispatcher)
       this.state = stateWaitDa
       this.stateData = {msg, da: this.zhuang, card: nextCard}
     }
@@ -3089,7 +3089,7 @@ class TableState implements Serializable {
               if (msg) {
                 this.room.broadcast('game/oppoTakeCard', {
                   ok: true,
-                  data: {index}
+                  data: {index, card: nextCard}
                 }, player.msgDispatcher);
                 this.state = stateWaitDa;
                 this.stateData = {da: player, card: nextCard, msg};
@@ -3167,7 +3167,7 @@ class TableState implements Serializable {
             multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
           });
         if (msg) {
-          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher);
+          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, player.msgDispatcher);
           this.state = stateWaitDa;
           this.stateData = {msg, da: player, card: nextCard};
         } else {
@@ -3272,7 +3272,7 @@ class TableState implements Serializable {
           if (!msg) {
             return;
           }
-          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index}}, player.msgDispatcher)
+          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, player.msgDispatcher)
           this.state = stateWaitDa
           this.stateData = {msg, da: player, card: nextCard}
         } else {
@@ -3451,7 +3451,7 @@ class TableState implements Serializable {
 
                           this.state = stateWaitDa;
                           this.stateData = {da: xiajia, card: newCard, msg};
-                          const sendMsg = {index: this.players.indexOf(xiajia)}
+                          const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
                           this.room.broadcast('game/oppoTakeCard', {
                             ok: true,
                             data: sendMsg
@@ -3668,7 +3668,7 @@ class TableState implements Serializable {
                       // console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
                       this.state = stateWaitDa;
                       this.stateData = {da: xiajia, card: newCard, msg};
-                      const sendMsg = {index: this.players.indexOf(xiajia)};
+                      const sendMsg = {index: this.players.indexOf(xiajia), card: newCard};
                       this.room.broadcast('game/oppoTakeCard', {
                         ok: true,
                         data: sendMsg
@@ -3833,7 +3833,7 @@ class TableState implements Serializable {
 
                 this.state = stateWaitDa;
                 this.stateData = {da: xiajia, card: newCard, msg};
-                const sendMsg = {index: this.players.indexOf(xiajia)}
+                const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
                 this.room.broadcast('game/oppoTakeCard', {
                   ok: true,
                   data: sendMsg
@@ -4368,7 +4368,7 @@ class TableState implements Serializable {
 
             this.state = stateWaitDa;
             this.stateData = {da: xiajia, card: newCard, msg};
-            const sendMsg = {index: this.players.indexOf(xiajia)};
+            const sendMsg = {index: this.players.indexOf(xiajia), card: newCard};
             this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
             logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
           }
@@ -4829,7 +4829,7 @@ class TableState implements Serializable {
 
             this.state = stateWaitDa;
             this.stateData = {da: xiajia, card: newCard, msg};
-            const sendMsg = {index: this.players.indexOf(xiajia)}
+            const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
             this.room.broadcast('game/oppoTakeCard', {
               ok: true,
               data: sendMsg
