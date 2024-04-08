@@ -92,15 +92,6 @@ export default class PlayerService extends BaseService {
     return randomPlayer;
   }
 
-  async logOldGemConsume(playerId, note, gem) {
-    new ConsumeRecord({
-      player: playerId,
-      note,
-      createAt: new Date(),
-      gem,
-    }).save();
-  }
-
   // 记录房卡消耗
   async logGemConsume(playerId, type, amount, totalAmount, note) {
     await DiamondRecord.create({

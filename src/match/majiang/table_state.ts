@@ -4140,8 +4140,6 @@ class TableState implements Serializable {
     let winBalance = 0;
     let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
-    console.warn("players-%s", JSON.stringify(this.players));
-
     // 自摸胡
     for (const p of this.players) {
       // 扣除三家金币
@@ -4160,6 +4158,7 @@ class TableState implements Serializable {
         }
       }
     }
+
 
     //增加胡牌用户金币
     to.balance = winBalance;
@@ -4221,15 +4220,13 @@ class TableState implements Serializable {
       playersModifyGolds.push(params);
     }
 
+    console.warn(playersModifyGolds, this.remainCards);
+
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
 
-    if (this.remainCards <= 0) {
+    if (this.remainCards <= 0 || this.isGameOver || brokePlayers.length >= 3) {
       return await this.gameAllOver(states, [], nextZhuang);
-    }
-
-    if (this.isGameOver || brokePlayers.length >= 3) {
-      await this.gameAllOver(states, [], nextZhuang);
     }
 
     if (waits.length > 0 && !this.isGameOver) {
