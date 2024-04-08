@@ -3930,6 +3930,7 @@ class TableState implements Serializable {
 
   async onCompetiteHu(player, msg) {
     const msgs = [];
+    let index = this.players.indexOf(player);
     const changeGolds = [
       {index: 0, changeGold: [], isBroke: false, currentGold: 0},
       {index: 1, changeGold: [], isBroke: false, currentGold: 0},
@@ -3954,7 +3955,7 @@ class TableState implements Serializable {
 
     // 处理胡牌
     for (let i = 0; i < msg.huCards.length; i++) {
-      const huMsg = await this.onPlayerCompetiteHu(player, msg.huCards[i]);
+      const huMsg = await this.onPlayerCompetiteHu(player, msg.huCards[i], index);
 
       if (huMsg) {
         if (!huMsg.playersModifyGolds) {
@@ -3989,6 +3990,7 @@ class TableState implements Serializable {
 
     // 给下家摸牌
     let xiajia = null;
+    let xiajiaIndex = null;
     let startIndex = (this.atIndex(player) + 1) % this.players.length;
 
     // 从 startIndex 开始查找未破产的玩家
@@ -3996,6 +3998,7 @@ class TableState implements Serializable {
       let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
       if (!this.players[index].isBroke) {
         xiajia = this.players[index];
+        xiajiaIndex = index;
         break;
       }
     }
@@ -4005,7 +4008,6 @@ class TableState implements Serializable {
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
     } else {
-      const xiajiaIndex = this.atIndex(xiajia);
       const nextDo = async () => {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const takeCards = [];
@@ -4083,8 +4085,8 @@ class TableState implements Serializable {
     }
   }
 
-  async onPlayerCompetiteHu(player, card) {
-    let index = this.players.indexOf(player);
+  async onPlayerCompetiteHu(player, card, index) {
+
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
     // 将本次要操作的牌加入到牌堆中
