@@ -74,7 +74,7 @@ export default class PlayerService extends BaseService {
     const max = rubyRequired.minAmount + Math.floor(rand * (rubyRequired.maxAmount - rubyRequired.minAmount));
     const gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
     const result = await Player.aggregate([
-      {$match: { $or: [{ robot: true }, { tourist: true }], isGame: false }},
+      {$match: {robot: true, isGame: false }},
       {$sample: { size: 1}}
     ]);
     // console.warn("minAmount %s maxAmount %s rand %s max %s gold %s", rubyRequired.minAmount, rubyRequired.maxAmount, rand, max, gold);
