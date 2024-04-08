@@ -583,7 +583,7 @@ class TableState implements Serializable {
   async calcConstellationCardScore(player) {
     const constellationCards = player.constellationCards;
     const cardCount = constellationCards.length;
-    let score = 0;
+    let score = 1;
 
     if (cardCount <= 3) {
       score = 2 * cardCount;
@@ -1354,9 +1354,6 @@ class TableState implements Serializable {
       numberCount += this.lastHuCard % 10;
     }
 
-    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
-
     return numberCount >= 100 && tianXieCount > 0 && flag && (isZiMo || isJiePao);
   }
 
@@ -1397,9 +1394,6 @@ class TableState implements Serializable {
         flag = false;
       }
     }
-
-    // console.warn("flag-%s, zimo-%s, jiePao-%s", flag,
-    //   player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0), this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa));
 
     return flag && moJieCount > 0 && (isZiMo || isJiePao);
   }
@@ -4284,13 +4278,15 @@ class TableState implements Serializable {
       }
 
       if (check[Enums.pengGang]) {
-        if (check[Enums.gang]) {
+        if (check[Enums.gang] && !check[Enums.gang].isGameHu) {
           const p = check[Enums.gang];
           const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())];
           p.gangForbid.push(card);
           this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo);
         }
-        if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng');
+        if (check[Enums.peng] && !check[Enums.peng].isGameHu) {
+          this.actionResolver.appendAction(check[Enums.peng], 'peng');
+        }
       }
 
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
