@@ -489,7 +489,7 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
     const count = --this.remainCards;
-    console.warn("remainCards-%s", count);
+    // console.warn("remainCards-%s", count);
 
     if (this.remainCards < 0) {
       this.remainCards = 0;
@@ -2871,10 +2871,10 @@ class TableState implements Serializable {
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
         const nextDo = async () => {
-          if (todo === Enums.peng && !player.isGameHu) {
+          if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
             player.emitter.emit(Enums.peng, this.turn, card)
             player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
-          } else if (todo === Enums.gang && !player.isGameHu) {
+          } else if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
             player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
           } else if (todo === Enums.hu) {
