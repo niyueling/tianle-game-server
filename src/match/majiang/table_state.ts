@@ -4434,7 +4434,7 @@ class TableState implements Serializable {
             p.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}})
           }
 
-          console.warn("index-%s shortId-%s room-%s card-%s msg-%s", this.atIndex(p), p.model.shortId, this.room._id, card, JSON.stringify(msg));
+          // console.warn("index-%s shortId-%s room-%s card-%s msg-%s", this.atIndex(p), p.model.shortId, this.room._id, card, JSON.stringify(msg));
 
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
