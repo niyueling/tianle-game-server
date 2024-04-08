@@ -4382,11 +4382,11 @@ class TableState implements Serializable {
       });
 
       for (let j = 1; j < this.players.length; j++) {
-        const i = (index + j) % this.players.length
-        const p = this.players[i]
+        const i = (index + j) % this.players.length;
+        const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p._id);
         if (p.contacted(this.lastDa) < 2 && !p.isBroke && model.gold > 0) {
-          check = p.checkPengGang(card, check)
+          check = p.checkPengGang(card, check);
         }
       }
 
@@ -4396,18 +4396,17 @@ class TableState implements Serializable {
         }
       }
 
-      if (check[Enums.pengGang] && (!check[Enums.hu] || check[Enums.hu].length === 0)) {
+      if (check[Enums.pengGang]) {
         if (check[Enums.gang]) {
           const p = check[Enums.gang];
           const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())];
           p.gangForbid.push(card);
           this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo);
         }
-        if (check[Enums.peng] && !check[Enums.peng].isGameHu) this.actionResolver.appendAction(check[Enums.peng], 'peng');
+        if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng');
       }
 
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-      let isHu = false;
 
       for (let i = 1; i < this.players.length; i++) {
         const j = (from + i) % this.players.length;
@@ -4417,15 +4416,7 @@ class TableState implements Serializable {
 
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
-          // if (isHu && msg["hu"]) {
-          //   msg["hu"] = false;
-          //
-          //   if (!msg["peng"] && !msg["gang"])
-          //     continue;
-          // }
-
           if (msg["hu"]) {
-            isHu = true;
             this.lastHuCard = card;
             this.cardTypes = await this.getCardTypes(p, 2);
             msg["huType"] = {
@@ -4460,19 +4451,6 @@ class TableState implements Serializable {
     }
 
     setTimeout(nextDo, 200);
-  }
-
-  checkPlayerCount(player) {
-    const cards = player.cards.slice();
-    let count = 0;
-
-    for (let i = 0; i < cards.length; i++) {
-      if (cards[i] > 0) {
-        count += cards[i];
-      }
-    }
-
-    return count;
   }
 
   nextZhuang(): PlayerState {
