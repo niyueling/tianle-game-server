@@ -516,7 +516,7 @@ class Room extends RoomBase {
   }
 
   async reconnect(reconnectPlayer) {
-    console.warn("room reconnect")
+    // console.warn("room reconnect")
     const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer.model._id.toString()))
     reconnectPlayer.room = this
     this.arrangePos(reconnectPlayer, true)
@@ -636,7 +636,7 @@ class Room extends RoomBase {
 
   async nextGame(thePlayer) {
     if (this.game.juShu <= 0 && !this.isPublic) {
-      console.warn("room error start")
+      // console.warn("room error start")
       thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
       return
     }
@@ -717,7 +717,7 @@ class Room extends RoomBase {
 
     const model = await service.playerService.getPlayerModel(p._id);
 
-    console.warn("readyIndex-%s gold-%s", readyIndex, model.gold);
+    // console.warn("readyIndex-%s gold-%s", readyIndex, model.gold);
     if (!this.gameState || readyIndex === -1 || model.gold <= 0) {
       this.removeReadyPlayer(p.model._id.toString())
       this.forceDissolve();
@@ -743,7 +743,7 @@ class Room extends RoomBase {
   }
 
   leave(player) {
-    console.warn("room")
+    // console.warn("room")
     if (!player) {
       // 玩家不存在
       console.warn("玩家不存在");

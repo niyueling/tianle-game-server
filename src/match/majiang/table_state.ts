@@ -4159,7 +4159,6 @@ class TableState implements Serializable {
       }
     }
 
-
     //增加胡牌用户金币
     to.balance = winBalance;
     to.juScore += winBalance;

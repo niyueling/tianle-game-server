@@ -11,7 +11,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
 
   // 出牌
   async playCard() {
-    console.warn(`playerId: ${this.playerState.model.shortId}, name: ${this.playerState.model.nickname}, onDeposit: ${this.playerState.onDeposit}`)
+    // console.warn(`playerId: ${this.playerState.model.shortId}, name: ${this.playerState.model.nickname}, onDeposit: ${this.playerState.onDeposit}`)
     if (this.playerState) {
       // 从牌堆中取出合适的牌
       const card = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
@@ -72,7 +72,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   }
 
   async gang(action, index = 0) {
-    console.warn(`${this.playerState.model.shortId}(${this.playerState.model.nickname})执行操作：${action}`)
+    // console.warn(`${this.playerState.model.shortId}(${this.playerState.model.nickname})执行操作：${action}`)
 
     switch (action) {
       case Enums.gang:

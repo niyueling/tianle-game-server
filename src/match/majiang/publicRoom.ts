@@ -154,7 +154,7 @@ export class PublicRoom extends Room {
   // 检查房间是否升级
   async nextGame(thePlayer) {
     if (!this.robotManager && thePlayer) {
-      console.warn("public room error start")
+      // console.warn("public room error start")
       return thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
     }
     // 检查金豆
@@ -221,7 +221,7 @@ export class PublicRoom extends Room {
     }
   }
   async reconnect(reconnectPlayer) {
-    console.warn("public reconnect")
+    // console.warn("public reconnect")
     // 检查最少金豆是否够
     const resp = await service.gameConfig.rubyRequired(
       reconnectPlayer.model._id.toString(),
