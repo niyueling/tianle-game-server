@@ -2616,7 +2616,7 @@ class TableState implements Serializable {
   }
 
   listenPlayer(player) {
-    const index = this.players.indexOf(player)
+    const index = this.atIndex(player)
     player.registerHook('game/canDoSomething', msg => {
       player.emitter.emit('waitForDoSomeThing', msg)
     })
