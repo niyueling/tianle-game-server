@@ -3915,6 +3915,8 @@ class TableState implements Serializable {
       playersModifyGolds.push(params);
     }
 
+    console.warn("waits-%s playersModifyGolds-%s isGameOver-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver);
+
     if (this.remainCards <= 0 || this.isGameOver || brokePlayers.length >= 3) {
       return await this.gameAllOver(states, [], nextZhuang);
     }
