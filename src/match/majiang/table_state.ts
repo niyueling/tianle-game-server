@@ -4140,6 +4140,8 @@ class TableState implements Serializable {
     let winBalance = 0;
     let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
+    console.warn("players-%s", JSON.stringify(this.players));
+
     // 自摸胡
     for (const p of this.players) {
       // 扣除三家金币
