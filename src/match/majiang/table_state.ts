@@ -3932,7 +3932,6 @@ class TableState implements Serializable {
   }
 
   async onPlayerBroke(player) {
-    this.state = stateWaitDa;
     await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
 
@@ -4694,6 +4693,10 @@ class TableState implements Serializable {
     p.gameOver();
     this.room.removeReadyPlayer(p._id.toString());
 
+    if (this.atIndex(p) === 0) {
+      this.waitRecharge = false;
+    }
+
     if (!this.brokeList.includes(p._id.toString())) {
       p.isBroke = true;
       p.isGameOver = true;
@@ -4710,7 +4713,6 @@ class TableState implements Serializable {
 
     //获取用户当局对局流水
     const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
-
     const gameOverMsg = {
       niaos,
       creator: this.room.creator.model._id,
