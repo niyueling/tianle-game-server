@@ -3875,6 +3875,55 @@ class TableState implements Serializable {
     this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs[0].index, msg: msgs}});
     this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
 
+    const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+    const nextZhuang = this.nextZhuang()
+
+    // 判断是否破产，破产提醒客户端充值钻石
+    let brokePlayers = [];
+    let playersModifyGolds = [];
+    let waits = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const model = await service.playerService.getPlayerModel(p.model._id.toString());
+      let params = {
+        index: this.atIndex(p),
+        _id: p.model._id.toString(),
+        shortId: p.model.shortId,
+        gold: p.balance,
+        currentGold: model.gold,
+        isBroke: p.isBroke,
+        huType: this.cardTypes
+      };
+      if (model.gold <= 0) {
+        if (params.index === 0) {
+          if (!p.isBroke) {
+            waits.push(params);
+          } else {
+            brokePlayers.push(p);
+          }
+        } else {
+          if (!p.isBroke) {
+            // 用户第一次破产
+            params.isBroke = true;
+            await this.playerGameOver(p, [], p.genGameStatus(this.atIndex(p), 1));
+          }
+
+          brokePlayers.push(p);
+        }
+      }
+
+      playersModifyGolds.push(params);
+    }
+
+    if (this.remainCards <= 0 || this.isGameOver || brokePlayers.length >= 3) {
+      return await this.gameAllOver(states, [], nextZhuang);
+    }
+
+    if (waits.length > 0 && !this.isGameOver) {
+      this.waitRecharge = true;
+      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+    }
+
     // 给下家摸牌
     let xiajia = null;
     let xiajiaIndex = null;
@@ -4107,18 +4156,6 @@ class TableState implements Serializable {
     }
 
     console.warn("playersModifyGolds-%s remainCards-%s", playersModifyGolds, this.remainCards);
-
-    const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-    const nextZhuang = this.nextZhuang()
-
-    if (this.remainCards <= 0 || this.isGameOver || brokePlayers.length >= 3) {
-      return await this.gameAllOver(states, [], nextZhuang);
-    }
-
-    if (waits.length > 0 && !this.isGameOver) {
-      this.waitRecharge = true;
-      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
-    }
 
     return playersModifyGolds;
   }
