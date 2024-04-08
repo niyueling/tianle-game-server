@@ -4051,7 +4051,7 @@ class TableState implements Serializable {
     if (winBalance !== 0) {
       await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
       await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
-        to.model.gold + to.balance, `对局获得`);
+        to.model.gold + to.balance, `对局获得${this.room._id}`);
     }
 
     // 生成金豆记录
@@ -4442,7 +4442,7 @@ class TableState implements Serializable {
         if (winBalance !== 0) {
           await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
           await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
-            to.model.gold + to.balance, `对局获得`);
+            to.model.gold + to.balance, `对局获得${this.room._id}`);
         }
 
         // 生成金豆记录
