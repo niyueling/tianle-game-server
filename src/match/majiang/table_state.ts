@@ -4219,7 +4219,7 @@ class TableState implements Serializable {
       playersModifyGolds.push(params);
     }
 
-    console.warn(playersModifyGolds, this.remainCards);
+    console.warn("playersModifyGolds-%s remainCards-%s", playersModifyGolds, this.remainCards);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()

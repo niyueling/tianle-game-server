@@ -105,11 +105,10 @@ export function createHandler(redisClient: AsyncRedisClient) {
       } catch (e) {
         console.warn(e);
       }
-
     },
 
     'room/next-game': player => {
-      player.requestToCurrentRoom('room/next-game')
+      player.requestToCurrentRoom('room/next-game');
     },
     'room/leave': player => {
       // if (!player.room) {
