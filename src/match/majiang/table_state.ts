@@ -4019,7 +4019,7 @@ class TableState implements Serializable {
         xiajia.competiteCards = [];
 
         for (let i = 0; i < 3; i++) {
-          if (this.remainCards < 0) {
+          if (this.remainCards === 0) {
             break;
           }
 
@@ -4071,9 +4071,6 @@ class TableState implements Serializable {
 
         const playerIds = [];
         this.players.map((v) => playerIds.push(v._id));
-
-        console.warn(xiajia._id, xiajiaIndex, JSON.stringify(playerIds));
-
         const sendMsg = {index: xiajiaIndex, cards: takeCards, gangCards, huCards}
         this.room.broadcast('game/oppoTakeThreeCard', {
           ok: true,
