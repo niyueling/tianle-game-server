@@ -2872,13 +2872,13 @@ class TableState implements Serializable {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
-        console.warn("waitForDoSomeThing index-%s msg-%s todo-%s", this.atIndex(player), JSON.stringify(msg.data), todo);
 
         if (this.waitRecharge) {
           return ;
         }
 
         const nextDo = async () => {
+          console.warn("waitForDoSomeThing index-%s msg-%s todo-%s", this.atIndex(player), JSON.stringify(msg.data), todo);
           if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
             player.emitter.emit(Enums.peng, this.turn, card)
             player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
