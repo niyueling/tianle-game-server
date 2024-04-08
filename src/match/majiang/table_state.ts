@@ -2763,9 +2763,11 @@ class TableState implements Serializable {
             player.emitter.emit(Enums.peng, this.turn, card)
             player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
           } else if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
+            console.warn("index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
             player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
           } else if (todo === Enums.hu) {
+            console.warn("index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             const simpleCount = this.checkPlayerSimpleCrdCount(player);
 
             if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
