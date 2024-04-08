@@ -2778,7 +2778,6 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
-
         if (!this.isAllHu && !player.onDeposit) {
           if (!player.zhuang) {
             player.onDeposit = true;
@@ -2794,12 +2793,12 @@ class TableState implements Serializable {
             const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
             if (todo === Enums.gang && !this.isAllHu && !player.isGameHu) {
-              const gangCard = msg.gang[0][0]
-              player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
+              const gangCard = msg.gang[0][0];
+              player.emitter.emit(Enums.gangBySelf, this.turn, gangCard);
               player.sendMessage('game/depositGangBySelf', {
                 ok: true,
                 data: {card: gangCard, turn: this.turn}
-              })
+              });
             } else if (todo === Enums.hu) {
               if (!this.isAllHu) {
                 const simpleCount = this.checkPlayerSimpleCrdCount(player);
@@ -2869,6 +2868,7 @@ class TableState implements Serializable {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
+        console.warn("waitForDoSomeThing index-%s msg-%s todo-%s", this.atIndex(player), JSON.stringify(msg.data), todo);
 
         const nextDo = async () => {
           if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
