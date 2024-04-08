@@ -76,7 +76,7 @@ export class RobotManager extends NewRobotManager {
       const ziMoHu = proxy.playerState.checkZiMo();
       const jiePaoHu = proxy.playerState.checkHuState(this.room.gameState.stateData.card);
 
-      if (!this.room.gameState.waitRecharge) {
+      // if (!this.room.gameState.waitRecharge) {
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
           await proxy.gang(this.isPlayerGang(playerId))
         } else if (this.isPlayerChoice(playerId, jiePaoHu) && this.room.gameState.state === 2) {
@@ -103,9 +103,9 @@ export class RobotManager extends NewRobotManager {
             await proxy.guo();
           }
         }
-      } else {
-        console.warn("await player invive game-state %s current-index %s isBroke %s gold %s", this.room.gameState.state, this.room.gameState.atIndex(proxy), proxy.isBroke, model.gold)
-      }
+      // } else {
+      //   console.warn("await player invive game-state %s current-index %s isBroke %s gold %s", this.room.gameState.state, this.room.gameState.atIndex(proxy), proxy.isBroke, model.gold)
+      // }
     }
   }
 
