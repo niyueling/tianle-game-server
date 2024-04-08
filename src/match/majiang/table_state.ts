@@ -2760,12 +2760,12 @@ class TableState implements Serializable {
         const nextDo = async () => {
           console.warn("waitForDoSomeThing index-%s msg-%s todo-%s", this.atIndex(player), JSON.stringify(msg.data), todo);
           if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
-            player.emitter.emit(Enums.peng, this.turn, card)
-            player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}})
+            player.emitter.emit(Enums.peng, this.turn, card);
+            player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}});
           } else if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
             console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
-            player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
-            player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}})
+            player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
+            player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}});
           } else if (todo === Enums.hu) {
             console.warn("hu index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             const simpleCount = this.checkPlayerSimpleCrdCount(player);
@@ -2773,7 +2773,7 @@ class TableState implements Serializable {
             if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
               player.emitter.emit(Enums.guo, this.turn, card);
             } else {
-              player.emitter.emit(Enums.hu, this.turn, card)
+              player.emitter.emit(Enums.hu, this.turn, card);
               player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
             }
           } else {
@@ -2918,6 +2918,7 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     })
     player.on(Enums.gangByOtherDa, (turn, card) => {
+      console.warn("gangByOtherDa index-%s card-%s", this.atIndex(player), card);
       if (this.state !== stateWaitAction) {
         logger.info('gangByOtherDa player-%s card:%s state not is wait ', index, card)
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamStateInvaid});
