@@ -4391,14 +4391,14 @@ class TableState implements Serializable {
         }
       }
 
-      if (check[Enums.pengGang] && (!check[Enums.hu] || check[Enums.hu].length === 0)) {
+      if (check[Enums.pengGang]) {
         if (check[Enums.gang]) {
           const p = check[Enums.gang];
           const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())];
           p.gangForbid.push(card);
           this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo);
         }
-        if (check[Enums.peng] && !check[Enums.peng].isGameHu) this.actionResolver.appendAction(check[Enums.peng], 'peng');
+        if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng');
       }
 
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
