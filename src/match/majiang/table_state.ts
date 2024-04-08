@@ -2786,6 +2786,10 @@ class TableState implements Serializable {
           }
         }
 
+        if (this.waitRecharge) {
+          return ;
+        }
+
         const nextDo = async () => {
           if (msg) {
             const takenCard = msg.card;
@@ -2869,6 +2873,10 @@ class TableState implements Serializable {
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
         console.warn("waitForDoSomeThing index-%s msg-%s todo-%s", this.atIndex(player), JSON.stringify(msg.data), todo);
+
+        if (this.waitRecharge) {
+          return ;
+        }
 
         const nextDo = async () => {
           if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
@@ -4229,7 +4237,7 @@ class TableState implements Serializable {
     }
 
     if (waits.length > 0 && !this.isGameOver) {
-      this.state = stateWaitRecharge;
+      this.waitRecharge = true;
       this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
     }
 
@@ -4644,7 +4652,7 @@ class TableState implements Serializable {
       }
 
       if (waits.length > 0 && !this.isGameOver) {
-        this.state = stateWaitRecharge;
+        this.waitRecharge = true;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
     }

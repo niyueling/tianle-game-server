@@ -76,7 +76,7 @@ export class RobotManager extends NewRobotManager {
       const ziMoHu = proxy.playerState.checkZiMo();
       const jiePaoHu = proxy.playerState.checkHuState(this.room.gameState.stateData.card);
 
-      if (this.room.gameState.state !== 10) {
+      if (!this.room.gameState.waitRecharge) {
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
           await proxy.gang(this.isPlayerGang(playerId))
         } else if (this.isPlayerChoice(playerId, jiePaoHu) && this.room.gameState.state === 2) {
@@ -84,7 +84,6 @@ export class RobotManager extends NewRobotManager {
         } else if (this.isPlayerDa(playerId)) {
           if (this.waitInterval[key] >= this.getWaitSecond()) {
             this.waitInterval[key] = 0;
-
 
             if (ziMoHu.hu && !this.room.gameState.isAllHu) {
               await proxy.choice(Enums.hu)
