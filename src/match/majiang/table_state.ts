@@ -4281,7 +4281,7 @@ class TableState implements Serializable {
         }
       }
 
-      if (check[Enums.pengGang]) {
+      if (check[Enums.pengGang] && (!check[Enums.hu] || check[Enums.hu].length === 0)) {
         if (check[Enums.gang] && !check[Enums.gang].isGameHu) {
           const p = check[Enums.gang];
           const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())];

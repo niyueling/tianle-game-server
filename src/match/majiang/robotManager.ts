@@ -108,23 +108,6 @@ export class RobotManager extends NewRobotManager {
     }
   }
 
-  checkPlayerSimpleCrdCount(player) {
-    const cards = player.cards.slice();
-    let count = 0;
-
-    for (let i = 0; i < cards.length; i++) {
-      if ([Enums.athena, Enums.poseidon, Enums.zeus].includes(i)) {
-        continue;
-      }
-
-      if (cards[i] === 1) {
-        count++;
-      }
-    }
-
-    return count;
-  }
-
   // 打
   isPlayerDa(playerId) {
     return this.room.gameState.stateData[Enums.da] &&
