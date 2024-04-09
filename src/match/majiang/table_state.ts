@@ -3067,29 +3067,29 @@ class TableState implements Serializable {
           return;
         }
 
-        // const check: IActionCheck = {card};
-        //
-        // if (!isAnGang) {
-        //   const qiangGangCheck: HuCheck = {card}
-        //   let qiang = null
-        //
-        //   gangIndex = this.atIndex(player)
-        //
-        //   for (let i = 1; i < this.players.length; i++) {
-        //     const playerIndex = (gangIndex + i) % this.players.length;
-        //     const otherPlayer = this.players[playerIndex];
-        //
-        //     if (otherPlayer != player) {
-        //       const r = otherPlayer.markJiePao(card, qiangGangCheck, true);
-        //       if (r.hu) {
-        //         if (!check.hu) check.hu = []
-        //         check.hu.push(otherPlayer)
-        //         otherPlayer.huInfo = r.check
-        //         qiang = otherPlayer
-        //         break
-        //       }
-        //     }
-        //   }
+        const check: IActionCheck = {card};
+
+        if (!isAnGang) {
+          const qiangGangCheck: HuCheck = {card}
+          let qiang = null
+
+          gangIndex = this.atIndex(player)
+
+          for (let i = 1; i < this.players.length; i++) {
+            const playerIndex = (gangIndex + i) % this.players.length
+            const otherPlayer = this.players[playerIndex]
+
+            if (otherPlayer != player) {
+              const r = otherPlayer.markJiePao(card, qiangGangCheck, true)
+              if (r.hu) {
+                if (!check.hu) check.hu = []
+                check.hu.push(otherPlayer)
+                otherPlayer.huInfo = r.check
+                qiang = otherPlayer
+                break
+              }
+            }
+          }
 
           // if (qiang && !this.stateData.cancelQiang) {
           //   logger.info(qiang, this.stateData.cancelQiang);
@@ -3111,7 +3111,7 @@ class TableState implements Serializable {
           //   }
           //   return
           // }
-        // }
+        }
 
         // for (let i = 1; i < this.players.length; i++) {
         //   const j = (from + i) % this.players.length;
@@ -3130,7 +3130,7 @@ class TableState implements Serializable {
         //     this.lastDa = player
         //   }
         // }
-        this.actionResolver.tryResolve()
+        // this.actionResolver.tryResolve()
       } else {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
       }
