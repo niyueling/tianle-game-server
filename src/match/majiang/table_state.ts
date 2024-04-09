@@ -2918,7 +2918,6 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     })
     player.on(Enums.gangByOtherDa, (turn, card) => {
-      console.warn("gangByOtherDa index-%s card-%s", this.atIndex(player), card);
       if (this.state !== stateWaitAction) {
         logger.info('gangByOtherDa player-%s card:%s state not is wait ', index, card)
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamStateInvaid});
@@ -2935,6 +2934,7 @@ class TableState implements Serializable {
           player, 'gang',
           async () => {
             const ok = player.gangByPlayerDa(card, this.lastDa);
+            console.warn("gangByOtherDa index-%s card-%s ok-%s", this.atIndex(player), card, ok);
             if (ok) {
               player.lastOperateType = 3;
               this.turn++;
@@ -3171,6 +3171,7 @@ class TableState implements Serializable {
         }
       }
     })
+
     player.on(Enums.hu, async (turn, card) => {
       let from;
       const chengbaoStarted = this.remainCards <= 3;
