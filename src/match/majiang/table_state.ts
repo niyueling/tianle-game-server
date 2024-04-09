@@ -3879,6 +3879,12 @@ class TableState implements Serializable {
     this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs[0].index, msg: msgs}});
     this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
 
+    if (this.remainCards <= 0) {
+      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+      const nextZhuang = this.nextZhuang()
+      await this.gameAllOver(states, [], nextZhuang);
+    }
+
     // 给下家摸牌
     let xiajia = null;
     let xiajiaIndex = null;
@@ -4112,7 +4118,7 @@ class TableState implements Serializable {
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
 
-    if (this.remainCards <= 0 || this.isGameOver || brokePlayers.length >= 3) {
+    if (this.isGameOver || brokePlayers.length >= 3) {
       await this.gameAllOver(states, [], nextZhuang);
     }
 
