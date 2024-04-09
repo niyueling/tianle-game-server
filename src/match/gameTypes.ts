@@ -1,1 +1,1 @@
-export type GameTypes = 'majiang';
+export type GameTypes = 'majiang' | 'xueliu' | 'guobiao';

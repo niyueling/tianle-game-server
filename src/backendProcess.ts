@@ -13,8 +13,6 @@ import {service} from "./service/importService";
 import createClient from "./utils/redis";
 import { TianleErrorCode } from "@fm/common/constants";
 import GameCategory from "./database/models/gameCategory";
-import PlayerMedal from "./database/models/PlayerMedal";
-import playerMedal from "./database/models/PlayerMedal";
 import PlayerCardTable from "./database/models/PlayerCardTable";
 
 const alwaysOk = () => true
@@ -98,8 +96,6 @@ export class BackendProcess {
 
       const messageBody = JSON.parse(message.content.toString())
       const playerRouteKey = `user.${messageBody.from}.${messageBody.payload.myGameType}`
-
-      console.log(`${__filename}:172 \n`, messageBody);
 
       if (messageBody.name === 'clearRoomInfoFromRedis') {
         const roomId = messageBody.payload.roomId

@@ -14,7 +14,7 @@ class IDGenerator {
   get() {
     if (this.pool.size >= this.poolCapacity) {
       const value = this.pool.values().next().value;
-      this.pool.delete(value)
+      this.pool.delete(value);
       return value;
     }
 

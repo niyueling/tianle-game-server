@@ -3415,7 +3415,7 @@ class TableState implements Serializable {
                   cards: player.cards,
                   calcCard: card,
                   room: this.room._id,
-                  game: "majiang",
+                  game: "xueliu",
                   type: 2,
                 })
                 player.sendMessage('game/huReply', {
@@ -3630,7 +3630,7 @@ class TableState implements Serializable {
               cards: player.cards,
               calcCard: card,
               room: this.room._id,
-              game: "majiang",
+              game: "xueliu",
               type: 1,
             })
             player.sendMessage('game/huReply', {
