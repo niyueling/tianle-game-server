@@ -4111,11 +4111,12 @@ class TableState implements Serializable {
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
-    console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
 
     if (this.remainCards <= 0 || this.isGameOver || brokePlayers.length >= 3) {
       return await this.gameAllOver(states, [], nextZhuang);
     }
+
+    console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
 
     if (waits.length > 0 && !this.isGameOver) {
       this.waitRecharge = true;
