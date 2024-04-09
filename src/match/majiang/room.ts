@@ -719,7 +719,7 @@ class Room extends RoomBase {
 
     console.warn("gameState-%s readyIndex-%s gold-%s", this.gameState, readyIndex, model.gold);
     if (!this.gameState || readyIndex === -1 || model.gold <= 0) {
-      this.removeReadyPlayer(p.model._id.toString())
+      // this.removeReadyPlayer(p.model._id.toString())
       this.forceDissolve();
     }
 
@@ -734,7 +734,7 @@ class Room extends RoomBase {
   }
 
   removeReadyPlayer(playerId: string) {
-    const index = this.readyPlayers.indexOf(playerId)
+    const index = this.readyPlayers.findIndex((p) => { p.toString() === playerId })
     if (index >= 0) {
       this.readyPlayers.splice(index, 1)
       return true
