@@ -3067,69 +3067,69 @@ class TableState implements Serializable {
           return;
         }
 
-        const check: IActionCheck = {card};
+        // const check: IActionCheck = {card};
+        //
+        // if (!isAnGang) {
+        //   const qiangGangCheck: HuCheck = {card}
+        //   let qiang = null
+        //
+        //   gangIndex = this.atIndex(player)
+        //
+        //   for (let i = 1; i < this.players.length; i++) {
+        //     const playerIndex = (gangIndex + i) % this.players.length;
+        //     const otherPlayer = this.players[playerIndex];
+        //
+        //     if (otherPlayer != player) {
+        //       const r = otherPlayer.markJiePao(card, qiangGangCheck, true);
+        //       if (r.hu) {
+        //         if (!check.hu) check.hu = []
+        //         check.hu.push(otherPlayer)
+        //         otherPlayer.huInfo = r.check
+        //         qiang = otherPlayer
+        //         break
+        //       }
+        //     }
+        //   }
 
-        if (!isAnGang) {
-          const qiangGangCheck: HuCheck = {card}
-          let qiang = null
+          // if (qiang && !this.stateData.cancelQiang) {
+          //   logger.info(qiang, this.stateData.cancelQiang);
+          //   this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
+          //   qiang.sendMessage('game/canDoSomething', {
+          //     ok: true, data: {
+          //       card, turn: this.turn, hu: true,
+          //       chi: false, chiCombol: [],
+          //       peng: false, gang: false, bu: false,
+          //     }
+          //   })
+          //
+          //   this.state = stateQiangGang
+          //   this.stateData = {
+          //     whom: player,
+          //     who: qiang,
+          //     event: Enums.gangBySelf,
+          //     card, turn: this.turn
+          //   }
+          //   return
+          // }
+        // }
 
-          gangIndex = this.atIndex(player)
-
-          for (let i = 1; i < this.players.length; i++) {
-            const playerIndex = (gangIndex + i) % this.players.length
-            const otherPlayer = this.players[playerIndex]
-
-            if (otherPlayer != player) {
-              const r = otherPlayer.markJiePao(card, qiangGangCheck, true)
-              if (r.hu) {
-                if (!check.hu) check.hu = []
-                check.hu.push(otherPlayer)
-                otherPlayer.huInfo = r.check
-                qiang = otherPlayer
-                break
-              }
-            }
-          }
-
-          if (qiang && !this.stateData.cancelQiang) {
-            logger.info(qiang, this.stateData.cancelQiang);
-            this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
-            qiang.sendMessage('game/canDoSomething', {
-              ok: true, data: {
-                card, turn: this.turn, hu: true,
-                chi: false, chiCombol: [],
-                peng: false, gang: false, bu: false,
-              }
-            })
-
-            this.state = stateQiangGang
-            this.stateData = {
-              whom: player,
-              who: qiang,
-              event: Enums.gangBySelf,
-              card, turn: this.turn
-            }
-            return
-          }
-        }
-
-        for (let i = 1; i < this.players.length; i++) {
-          const j = (from + i) % this.players.length;
-          const p = this.players[j]
-          const msg = this.actionResolver.allOptions(p)
-          if (msg) {
-            p.sendMessage('game/canDoSomething', {ok: true, data: msg})
-            this.state = stateWaitAction
-            this.stateData = {
-              whom: player,
-              event: Enums.gangBySelf,
-              card, turn,
-              hu: check.hu,
-              huInfo: p.huInfo,
-            }
-            this.lastDa = player
-          }
-        }
+        // for (let i = 1; i < this.players.length; i++) {
+        //   const j = (from + i) % this.players.length;
+        //   const p = this.players[j]
+        //   const msg = this.actionResolver.allOptions(p)
+        //   if (msg) {
+        //     p.sendMessage('game/canDoSomething', {ok: true, data: msg})
+        //     this.state = stateWaitAction
+        //     this.stateData = {
+        //       whom: player,
+        //       event: Enums.gangBySelf,
+        //       card, turn,
+        //       hu: check.hu,
+        //       huInfo: p.huInfo,
+        //     }
+        //     this.lastDa = player
+        //   }
+        // }
         this.actionResolver.tryResolve()
       } else {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
@@ -4113,7 +4113,7 @@ class TableState implements Serializable {
     const nextZhuang = this.nextZhuang()
 
     if (this.remainCards <= 0 || this.isGameOver || brokePlayers.length >= 3) {
-      return await this.gameAllOver(states, [], nextZhuang);
+      await this.gameAllOver(states, [], nextZhuang);
     }
 
     console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
