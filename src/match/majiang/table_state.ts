@@ -2759,10 +2759,11 @@ class TableState implements Serializable {
 
         const nextDo = async () => {
           console.warn("waitForDoSomeThing index-%s msg-%s todo-%s", this.atIndex(player), JSON.stringify(msg.data), todo);
-          if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
-            player.emitter.emit(Enums.peng, this.turn, card);
-            player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}});
-          } else if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
+          // if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
+          //   player.emitter.emit(Enums.peng, this.turn, card);
+          //   player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}});
+          // }
+          if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
             console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
             player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}});
