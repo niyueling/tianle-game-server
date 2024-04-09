@@ -6,7 +6,7 @@ import {service} from "../../service/importService";
 import {getPlayerRmqProxy} from "../PlayerRmqProxy";
 import {autoSerializePropertyKeys} from "../serializeDecorator";
 import Room from "./room";
-import TableState, {stateGameOver} from "./table_state";
+import TableState from "./table_state";
 
 // 金豆房
 export class PublicRoom extends Room {
