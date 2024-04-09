@@ -63,6 +63,11 @@ export class RobotManager extends NewRobotManager {
     let playerId;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
+      if (proxy.playerState.onDeposit) {
+        continue;
+      }
+
+      proxy.playerState.onDeposit = true;
 
       playerId = proxy.model._id.toString();
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
