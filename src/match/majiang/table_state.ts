@@ -3879,7 +3879,7 @@ class TableState implements Serializable {
     this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs[0].index, msg: msgs}});
     this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
 
-    if (this.remainCards <= 0) {
+    if (this.remainCards <= 0 || this.isGameOver || this.brokeList.length >= 3) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
@@ -4080,6 +4080,7 @@ class TableState implements Serializable {
 
     // 判断是否破产，破产提醒客户端充值钻石
     let brokePlayers = [];
+    this.brokeList = [];
     let playersModifyGolds = [];
     let waits = [];
     for (let i = 0; i < this.players.length; i++) {
@@ -4099,6 +4100,9 @@ class TableState implements Serializable {
           if (!p.isBroke) {
             waits.push(params);
           } else {
+            if (!this.brokeList.includes(p._id.toString())) {
+              this.brokeList.push(p._id.toString());
+            }
             brokePlayers.push(p);
           }
         } else {
@@ -4109,6 +4113,9 @@ class TableState implements Serializable {
           }
 
           brokePlayers.push(p);
+          if (!this.brokeList.includes(p._id.toString())) {
+            this.brokeList.push(p._id.toString());
+          }
         }
       }
 
@@ -4117,10 +4124,6 @@ class TableState implements Serializable {
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
-
-    if (this.isGameOver || brokePlayers.length >= 3) {
-      await this.gameAllOver(states, [], nextZhuang);
-    }
 
     console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
 
