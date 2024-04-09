@@ -3879,7 +3879,8 @@ class TableState implements Serializable {
     this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs[0].index, msg: msgs}});
     this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
 
-    if (this.remainCards <= 0 || this.isGameOver || this.brokeList.length >= 3) {
+    console.warn("remainCards-%s isGameOver-%s", this.remainCards, this.isGameOver);
+    if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
@@ -4100,9 +4101,6 @@ class TableState implements Serializable {
           if (!p.isBroke) {
             waits.push(params);
           } else {
-            if (!this.brokeList.includes(p._id.toString())) {
-              this.brokeList.push(p._id.toString());
-            }
             brokePlayers.push(p);
           }
         } else {
@@ -4113,17 +4111,15 @@ class TableState implements Serializable {
           }
 
           brokePlayers.push(p);
-          if (!this.brokeList.includes(p._id.toString())) {
-            this.brokeList.push(p._id.toString());
-          }
         }
       }
 
       playersModifyGolds.push(params);
     }
 
-    const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-    const nextZhuang = this.nextZhuang()
+    if (brokePlayers.length >= 3) {
+      this.isGameOver = true;
+    }
 
     console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
 
