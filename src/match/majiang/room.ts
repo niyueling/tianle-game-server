@@ -688,10 +688,12 @@ class Room extends RoomBase {
     this.dissolveTimeout = null
 
     for (let i = 0; i < this.players.length; i++) {
-      const model = await Player.findOne({_id: this.players[i]._id});
-      model.isGame = false;
+      if (this.players[i]) {
+        const model = await Player.findOne({_id: this.players[i]._id});
+        model.isGame = false;
 
-      await model.save();
+        await model.save();
+      }
     }
 
     this.players
