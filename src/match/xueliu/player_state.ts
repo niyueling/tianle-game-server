@@ -1420,6 +1420,7 @@ class PlayerState implements Serializable {
     return {
       index,
       cardCount,
+      mode: this.mode,
       tingPai: this.tingPai,
       locked: this.locked,
       huCards: this.huCards,
