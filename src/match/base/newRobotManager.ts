@@ -307,6 +307,7 @@ export class NewRobotManager {
   // 玩家是否到齐
   async isNoPlayerAbsent() {
     const count = this.room.players.filter(x => x).length;
+    console.log("playerCount-%s", count);
     return count === this.room.gameRule.playerCount;
   }
 
