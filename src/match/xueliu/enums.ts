@@ -91,6 +91,7 @@ const enums = {
   pengGang: 'pengGang',
   broke: 'broke',
   openCard: 'openCard',
+  dingQue: 'dingQue',
   startDeposit: 'startDeposit',
   competiteHu: 'competiteHu',
   topHu: 'topHu',

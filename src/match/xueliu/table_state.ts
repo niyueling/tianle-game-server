@@ -520,7 +520,7 @@ class TableState implements Serializable {
 
   async onSelectMode(player: PlayerState, mode: string) {
     player.mode = mode;
-    this.room.broadcast("game/selectMode", {ok: true, data: {mode, inde: this.atIndex(player)}});
+    this.room.broadcast("game/selectMode", {ok: true, data: {mode, index: this.atIndex(player)}});
   }
 
   async start() {
@@ -2459,6 +2459,11 @@ class TableState implements Serializable {
       } else {
         await player.sendMessage('game/openCardReply', {ok: false, data: {}});
       }
+    })
+
+    player.on(Enums.dingQue, async (msg) => {
+      player.mode = msg.mode;
+      this.room.broadcast("game/selectMode", {ok: true, data: {mode: msg.mode, index: this.atIndex(player)}});
     })
 
     player.on(Enums.startDeposit, async () => {

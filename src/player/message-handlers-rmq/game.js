@@ -44,6 +44,9 @@ const exportObj = {
   'game/openCard': (player, msg) => {
     player.emit('game/openCard', msg);
   },
+  'game/dingQue': (player, msg) => {
+    player.emit('game/dingQue', msg);
+  },
   'game/competiteHu': (player, msg) => {
     player.emit('game/competiteHu', msg);
   },
