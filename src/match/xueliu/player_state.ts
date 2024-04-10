@@ -1417,7 +1417,7 @@ class PlayerState implements Serializable {
     this.listenDispatcher(msgDispatcher)
   }
 
-  async selectMode() {
+  selectMode() {
     let wanCount = 0;
     let tiaoCount = 0;
     let tongCount = 0;
@@ -1462,6 +1462,7 @@ class PlayerState implements Serializable {
       this.timeoutTask = setTimeout(() => {
         if (this.room.robotManager.model.step === RobotStep.selectMode) {
           console.warn("wait player select mode");
+          this.selectMode();
           return;
         } else {
           this.onDeposit = true
