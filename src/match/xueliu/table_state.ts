@@ -3830,11 +3830,13 @@ class TableState implements Serializable {
         const model = await service.playerService.getPlayerModel(this.players[index]._id);
         if (!p.isBroke && model.gold > 0) {
           const r = p.markJiePao(card, result);
-          if (r.hu) {
+          const isDingQue = this.checkDingQueCard(p);
+          if (r.hu && isDingQue) {
             if (!check.hu || check.hu.length === 0) {
               check.hu = [];
               check.hu.push(p);
               p.huInfo = r.check;
+              break;
             }
           }
         }
@@ -3963,6 +3965,35 @@ class TableState implements Serializable {
     }
 
     setTimeout(nextDo, 200);
+  }
+
+  // 检测用户是否含有定缺牌
+  async checkDingQueCard(player) {
+    let wanCount = 0;
+    let tiaoCount = 0;
+    let tongCount = 0;
+    for (let j = 1; j <= 9; j++) {
+      wanCount += player.cards[j];
+      if (wanCount > 0 && player.mode === "wan") {
+        return false;
+      }
+    }
+
+    for (let j = 11; j <= 19; j++) {
+      tiaoCount += player.cards[j];
+      if (tiaoCount > 0 && player.mode === "tiao") {
+        return false;
+      }
+    }
+
+    for (let j = 21; j <= 29; j++) {
+      tongCount += player.cards[j];
+      if (tongCount > 0 && player.mode === "tong") {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   nextZhuang(): PlayerState {

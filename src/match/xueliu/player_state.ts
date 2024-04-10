@@ -421,7 +421,8 @@ class PlayerState implements Serializable {
     }
 
     let huResult = this.checkZiMo()
-    if (huResult.hu) {
+    const isDingQue = this.checkDingQueCard();
+    if (huResult.hu && isDingQue) {
       msg.huType = huType;
       if (this.hadQiaoXiang) {
         // 不用选择 直接胡
@@ -462,6 +463,35 @@ class PlayerState implements Serializable {
     this.alreadyTakenCard = true
 
     return ret
+  }
+
+  // 检测用户是否含有定缺牌
+  checkDingQueCard() {
+    let wanCount = 0;
+    let tiaoCount = 0;
+    let tongCount = 0;
+    for (let j = 1; j <= 9; j++) {
+      wanCount += this.cards[j];
+      if (wanCount > 0 && this.mode === "wan") {
+        return false;
+      }
+    }
+
+    for (let j = 11; j <= 19; j++) {
+      tiaoCount += this.cards[j];
+      if (tiaoCount > 0 && this.mode === "tiao") {
+        return false;
+      }
+    }
+
+    for (let j = 21; j <= 29; j++) {
+      tongCount += this.cards[j];
+      if (tongCount > 0 && this.mode === "tong") {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   @recordChoiceAfterTakeCard
@@ -514,8 +544,9 @@ class PlayerState implements Serializable {
     }
 
     let huResult = this.checkZiMo();
+    const isDingQue = this.checkDingQueCard();
     // console.warn("shortId-%s, checkCompetiteZiMo-%s, cards-%s", this.model.shortId, JSON.stringify(huResult), JSON.stringify(this.getCardList(this.cards)));
-    if (huResult.hu) {
+    if (huResult.hu && isDingQue) {
       msg.huType = huType;
       if (this.hadQiaoXiang) {
         this.emitter.emit('waitForDa', msg);
