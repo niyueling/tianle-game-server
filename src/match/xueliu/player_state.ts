@@ -242,7 +242,7 @@ class PlayerState implements Serializable {
 
   // 定缺模式
   @autoSerialize
-  mode: "wan" | "tong" | "tiao" | "unknown" = 'unknown'
+  mode: string = 'unknown'
 
   constructor(userSocket, room, rule) {
     this.room = room
@@ -1415,6 +1415,36 @@ class PlayerState implements Serializable {
     this.msgDispatcher = msgDispatcher
     this.onDeposit = false
     this.listenDispatcher(msgDispatcher)
+  }
+
+  async selectMode() {
+    let wanCount = 0;
+    let tiaoCount = 0;
+    let tongCount = 0;
+    let mode = "wan";
+
+    for (let i = 1; i <= 9; i++) {
+      wanCount += this.cards[i];
+    }
+
+    for (let i = 11; i <= 19; i++) {
+      tiaoCount += this.cards[i];
+    }
+
+    for (let i = 21; i <= 29; i++) {
+      tongCount += this.cards[i];
+    }
+
+    if (Math.min(wanCount, tiaoCount, tongCount) === tiaoCount) {
+      mode = "tiao";
+    }
+
+    if (Math.min(wanCount, tiaoCount, tongCount) === tongCount) {
+      mode = "tong";
+    }
+
+    this.mode = mode;
+    this.room.broadcast("game/selectMode", {ok: true, data: {mode, inde: this.room.gameState.atIndex(this)}});
   }
 
   deposit(callback) {

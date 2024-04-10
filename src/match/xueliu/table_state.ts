@@ -518,7 +518,7 @@ class TableState implements Serializable {
     return cards;
   }
 
-  async onSelectMode(player: PlayerState, mode: 'wan' | 'tong' | 'tiao') {
+  async onSelectMode(player: PlayerState, mode: string) {
     player.mode = mode;
     this.room.broadcast("game/selectMode", {ok: true, data: {mode, inde: this.atIndex(player)}});
   }
