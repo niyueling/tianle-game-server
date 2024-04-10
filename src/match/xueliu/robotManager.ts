@@ -82,7 +82,7 @@ export class RobotManager extends NewRobotManager {
     for (let i = 0; i < this.room.gameState.players.length; i++) {
       playerState = this.room.gameState.players[i];
       proxy = this.room.players[i];
-      console.warn(this.isHumanPlayerOffline(proxy), proxy.cards[i]);
+      console.warn(this.isHumanPlayerOffline(proxy), proxy.cards);
       if (playerState && !this.isHumanPlayerOffline(proxy)) {
         // 在线用户
         if (proxy.mode === 'unknown') {
@@ -91,16 +91,16 @@ export class RobotManager extends NewRobotManager {
           let tongCount = 0;
           let mode = "wan";
 
-          for (let i = 1; i <= 9; i++) {
-            wanCount += proxy.cards[i];
+          for (let j = 1; j <= 9; j++) {
+            wanCount += proxy.cards[j];
           }
 
-          for (let i = 11; i <= 19; i++) {
-            tiaoCount += proxy.cards[i];
+          for (let j = 11; j <= 19; j++) {
+            tiaoCount += proxy.cards[j];
           }
 
-          for (let i = 21; i <= 29; i++) {
-            tongCount += proxy.cards[i];
+          for (let j = 21; j <= 29; j++) {
+            tongCount += proxy.cards[j];
           }
 
           if (Math.min(wanCount, tiaoCount, tongCount) === tiaoCount) {
