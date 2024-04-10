@@ -369,16 +369,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
             this.currentRoom = messageBody.payload.data._id
           }
 
-          if (messageBody.name === 'newClubRoomCreated') {
-            this.sendMessage('club/updateClubInfo', messageBody.payload)
-            return;
-          }
-
-          if (messageBody.name === 'clubRequest') {
-            this.sendMessage('club/haveRequest', {})
-            return;
-          }
-
           if (messageBody.name === 'resources/updateGold') {
             this.updateGoldGemRuby({gold: messageBody.payload.gold})
           }
