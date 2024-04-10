@@ -216,9 +216,6 @@ class PlayerState implements Serializable {
   // 是否计算对局
   isCalcJu = false
 
-  // 星座牌
-  constellationCards: any[] = []
-
   // 星座加分
   constellationScore: number = 1
 
@@ -739,7 +736,7 @@ class PlayerState implements Serializable {
     return HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
   }
 
-  onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle: boolean, constellationCards, zhuangIndex: number) {
+  onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle: boolean, zhuangIndex: number) {
     cards.forEach(x => {
       this.cards[x]++;
     })
@@ -748,7 +745,7 @@ class PlayerState implements Serializable {
     this.seatIndex = seatIndex;
 
     this.recorder.recordUserEvent(this, 'shuffle');
-    this.sendMessage('game/Shuffle', {ok: true, data: {juShu, cards, caiShen, remainCards, juIndex, needShuffle: !!needShuffle, constellationCards, zhuang: zhuangIndex}});
+    this.sendMessage('game/Shuffle', {ok: true, data: {juShu, cards, caiShen, remainCards, juIndex, needShuffle: !!needShuffle, zhuang: zhuangIndex}});
   }
 
   @triggerAfterAction

@@ -400,7 +400,6 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
     const count = --this.remainCards;
-    // console.warn("remainCards-%s", count);
 
     if (this.remainCards < 0) {
       this.remainCards = 0;
@@ -437,35 +436,6 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
-    if (card > Enums.athena && !playerState.constellationCards.includes(card) && !playerState.isGameHu) {
-      playerState.constellationCards.push(card);
-
-      if (playerState.constellationCards.length >= 6) {
-        const model = await service.playerService.getPlayerModel(playerState._id);
-
-        model.triumphantCount++;
-        await model.save();
-      }
-
-      let constellationCardLists = [];
-
-      for (let i = 0; i < this.players.length; i++) {
-        const p = this.players[i];
-        constellationCardLists.push({
-          index: i,
-          _id: p._id,
-          roomId: this.room._id,
-          constellationCards: p.constellationCards,
-          multiple: await this.calcConstellationCardScore(p)
-        })
-      }
-
-      for (let i = 0; i < this.players.length; i++) {
-        const p = this.players[i];
-        p.sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
-      }
-    }
-
     return card;
   }
 
@@ -489,174 +459,6 @@ class TableState implements Serializable {
     }
 
     return false;
-  }
-
-  async calcConstellationCardScore(player) {
-    const constellationCards = player.constellationCards;
-    const cardCount = constellationCards.length;
-    let score = 1;
-
-    if (cardCount <= 3) {
-      score = 2 * cardCount;
-    }
-    if (cardCount > 3 && cardCount <= 6) {
-      score = 4 * cardCount;
-    }
-    if (cardCount > 6 && cardCount <= 9) {
-      score = 6 * cardCount;
-    }
-
-    if (cardCount > 9 && cardCount <= 12) {
-      score = 8 * cardCount;
-    }
-
-    // 生肖图-大世界
-    if (cardCount === 12) {
-      score += 24;
-    }
-
-    // 生肖图-圆六角
-    const sixArrs = [Enums.constellation2, Enums.constellation3, Enums.constellation5, Enums.constellation8, Enums.constellation10, Enums.constellation11];
-    let check = true;
-    for (let i = 0; i < sixArrs.length; i++) {
-      if (!constellationCards.includes(sixArrs[i])) {
-        check = false;
-      }
-    }
-
-    if (check) {
-      score += 16;
-    }
-
-    // 生肖图-小世界
-    const minWorldArrs = [
-      [Enums.constellation1, Enums.constellation2, Enums.constellation5, Enums.constellation6],
-      [Enums.constellation2, Enums.constellation3, Enums.constellation6, Enums.constellation7],
-      [Enums.constellation3, Enums.constellation4, Enums.constellation7, Enums.constellation8],
-      [Enums.constellation5, Enums.constellation6, Enums.constellation9, Enums.constellation10],
-      [Enums.constellation6, Enums.constellation7, Enums.constellation10, Enums.constellation11],
-      [Enums.constellation7, Enums.constellation8, Enums.constellation11, Enums.constellation12],
-    ];
-
-    let check1 = false;
-    for (let i = 0; i < minWorldArrs.length; i++) {
-      let checked = true;
-      for (let j = 0; j < minWorldArrs[i].length; j++) {
-        if (!constellationCards.includes(minWorldArrs[i][j])) {
-          checked = false;
-        }
-      }
-
-      if (checked) {
-        check1 = true;
-      }
-    }
-
-    if (check1) {
-      score += 4;
-    }
-
-    // 生肖图-一线天
-    const oneSkyArrs = [
-      [Enums.constellation1, Enums.constellation5, Enums.constellation9],
-      [Enums.constellation2, Enums.constellation6, Enums.constellation10],
-      [Enums.constellation3, Enums.constellation7, Enums.constellation11],
-      [Enums.constellation4, Enums.constellation8, Enums.constellation12],
-    ];
-
-    let check2 = false;
-    for (let i = 0; i < oneSkyArrs.length; i++) {
-      let checked = true;
-      for (let j = 0; j < oneSkyArrs[i].length; j++) {
-        if (!constellationCards.includes(oneSkyArrs[i][j])) {
-          checked = false;
-        }
-      }
-
-      if (checked) {
-        check2 = true;
-      }
-    }
-
-    if (check2) {
-      score += 6;
-    }
-
-    // 生肖图-一字禅
-    const oneWordArrs = [
-      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4],
-      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8],
-      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12],
-    ];
-
-    let check3 = false;
-    for (let i = 0; i < oneWordArrs.length; i++) {
-      let checked = true;
-      for (let j = 0; j < oneWordArrs[i].length; j++) {
-        if (!constellationCards.includes(oneWordArrs[i][j])) {
-          checked = false;
-        }
-      }
-
-      if (checked) {
-        check3 = true;
-      }
-    }
-
-    if (check3) {
-      score += 8;
-    }
-
-    // 生肖图-铁拐李
-    const IronCalliArrs = [
-      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4, Enums.constellation5, Enums.constellation9],
-      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4, Enums.constellation8, Enums.constellation12],
-      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8, Enums.constellation1, Enums.constellation9],
-      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8, Enums.constellation4, Enums.constellation12],
-      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12, Enums.constellation1, Enums.constellation5],
-      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12, Enums.constellation4, Enums.constellation8],
-    ];
-
-    let check4 = false;
-    for (let i = 0; i < IronCalliArrs.length; i++) {
-      let checked = true;
-      for (let j = 0; j < IronCalliArrs[i].length; j++) {
-        if (!constellationCards.includes(IronCalliArrs[i][j])) {
-          checked = false;
-        }
-      }
-
-      if (checked) {
-        check4 = true;
-      }
-    }
-
-    if (check4) {
-      score += 16;
-    }
-
-    // 生肖图-四方阵
-    const squareArrs = [Enums.constellation1, Enums.constellation4, Enums.constellation9, Enums.constellation12];
-    let check5 = true;
-    for (let i = 0; i < squareArrs.length; i++) {
-      if (!constellationCards.includes(squareArrs[i])) {
-        check5 = false;
-      }
-    }
-
-    if (check5) {
-      score += 10;
-    }
-
-   if (score > 0) {
-     player.constellationScore = score;
-   }
-
-    if (player.isMingCard) {
-      player.constellationScore *= 6;
-    }
-
-    return score;
   }
 
   async consumeSimpleCard(p: PlayerState) {
@@ -768,7 +570,7 @@ class TableState implements Serializable {
 
       while (13 - cards.length > 0) {
         this.remainCards--;
-        const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
+        const index = this.cards.findIndex(c => c === Enums.zhong);
         if (index !== -1) {
           cards.push(this.cards[index]);
           this.lastTakeCard = this.cards[index];
@@ -787,12 +589,10 @@ class TableState implements Serializable {
   async fapai() {
     this.shuffle()
     this.sleepTime = 1500;
-    this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
-
+    this.caishen = this.rule.useCaiShen ? [Enums.zhong] : [Enums.slotNoCard]
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
     const needShuffle = this.room.shuffleData.length > 0;
-    const constellationCardLists = [];
     let zhuangIndex = 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
@@ -804,33 +604,15 @@ class TableState implements Serializable {
         await model.save();
       }
 
-      const constellationCards = [];
       for (let i = 0; i < cards13.length; i++) {
-        if (cards13[i] > Enums.athena && !constellationCards.includes(cards13[i])) {
-          constellationCards.push(cards13[i]);
-        }
-
         // 计算序数牌相加
-        if (cards13[i] < Enums.zeus) {
+        if (cards13[i] < Enums.zhong) {
           p.numberCount += cards13[i] % 10;
         }
-        if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(cards13[i])) {
+        if (cards13[i] === Enums.zhong) {
           p.numberCount += 10;
         }
       }
-      p.constellationCards = constellationCards;
-
-      if (p.constellationCards.length >= 6) {
-        model.triumphantCount++;
-        await model.save();
-      }
-
-      constellationCardLists.push({
-        index: i,
-        _id: p._id,
-        constellationCards,
-        multiple: await this.calcConstellationCardScore(p)
-      })
 
       if (p.zhuang) {
         zhuangIndex = i;
@@ -841,11 +623,7 @@ class TableState implements Serializable {
         await p.sendMessage('game/startDepositReply', {ok: true, data: {}});
       }
 
-      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards, zhuangIndex)
-    }
-
-    for (let i = 0, iMax = this.players.length; i < iMax; i++) {
-      this.players[i].sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
+      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, zhuangIndex)
     }
 
     // 金豆房扣除开局金豆
@@ -3116,7 +2894,6 @@ class TableState implements Serializable {
                     card,
                     from,
                     type: "jiepao",
-                    constellationCards: player.constellationCards,
                     huType: {
                       id: this.cardTypes.cardId,
                       multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
@@ -3162,7 +2939,6 @@ class TableState implements Serializable {
                     card,
                     from,
                     index,
-                    constellationCards: player.constellationCards,
                     huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
                   }
                 }, player.msgDispatcher);
@@ -3184,7 +2960,6 @@ class TableState implements Serializable {
                         card,
                         from,
                         index: playerIndex,
-                        constellationCards: player.constellationCards,
                         huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
                       }
                     }, nextPlayer.msgDispatcher)
@@ -3363,7 +3138,6 @@ class TableState implements Serializable {
                 card,
                 from: this.atIndex(player),
                 type: "zimo",
-                constellationCards: player.constellationCards,
                 huType: {
                   id: this.cardTypes.cardId,
                   multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
@@ -3404,7 +3178,6 @@ class TableState implements Serializable {
                 card,
                 from,
                 index,
-                constellationCards: player.constellationCards,
                 huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
               }
             }, player.msgDispatcher);
@@ -3570,7 +3343,7 @@ class TableState implements Serializable {
               this.stateData.whom.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
               this.room.broadcast('game/oppoHu', {
                 ok: true,
-                data: {turn, card, from, index, constellationCards: player.constellationCards,}
+                data: {turn, card, from, index}
               }, player.msgDispatcher);
               const huPlayerIndex = this.atIndex(player)
               for (let i = 1; i < this.players.length; i++) {
@@ -3586,7 +3359,7 @@ class TableState implements Serializable {
                   nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
                   this.room.broadcast('game/oppoHu', {
                     ok: true,
-                    data: {turn, card, index: playerIndex, constellationCards: player.constellationCards,}
+                    data: {turn, card, index: playerIndex}
                   }, nextPlayer.msgDispatcher)
                 }
               }
@@ -3770,7 +3543,6 @@ class TableState implements Serializable {
           card: msg.huCards[i],
           index: huMsg.from,
           playersModifyGolds: huMsg.playersModifyGolds,
-          constellationCards: huMsg.constellationCards,
           huType: huMsg.huType
         });
 
@@ -3916,7 +3688,6 @@ class TableState implements Serializable {
       return {
         card,
         from: index,
-        constellationCards: player.constellationCards,
         playersModifyGolds,
         huType: {
           id: this.cardTypes.cardId,
@@ -4850,17 +4621,6 @@ class TableState implements Serializable {
       pushMsg.cardTableId = playerCardTable.propId;
     }
 
-    for (let i = 0; i < this.players.length; i++) {
-      let p = this.players[i];
-      p.constellationCards = [];
-
-      for (let j = Enums.constellation1; j <= Enums.constellation12; j++) {
-        if (!p.constellationCards.includes(j) && p.cards[j] > 0) {
-          p.constellationCards.push(j);
-        }
-      }
-    }
-
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
     let msg;
@@ -4882,14 +4642,10 @@ class TableState implements Serializable {
       if (i === index) {
         msg = this.players[i].genSelfStates(i);
         msg.roomRubyReward = roomRubyReward;
-        msg.constellationCards = this.players[i].constellationCards;
-        msg.constellationCardLevel = await this.calcConstellationCardScore(this.players[i]);
         pushMsg.status.push(msg);
       } else {
         msg = this.players[i].genOppoStates(i);
         msg.roomRubyReward = roomRubyReward;
-        msg.constellationCards = this.players[i].constellationCards;
-        msg.constellationCardLevel = await this.calcConstellationCardScore(this.players[i]);
         pushMsg.status.push(msg);
       }
 
