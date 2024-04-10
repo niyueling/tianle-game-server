@@ -432,15 +432,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
     }
   }
 
-  // 前端强制解散
-  // forceCloseRoom(gameName, roomNum){
-  //   this.channel.publish(
-  //     'exGameCenter',
-  //     `${gameName}.${roomNum}`,
-  //     this.toBuffer({name:'forceDissolve'}),
-  //     {replyTo: this.myQueue})
-  // }
-
   setGameName(gameType) {
     this.gameName = gameType || 'paodekuai';
   }
