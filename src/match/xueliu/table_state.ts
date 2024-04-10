@@ -3968,7 +3968,7 @@ class TableState implements Serializable {
   }
 
   // 检测用户是否含有定缺牌
-  async checkDingQueCard(player) {
+  checkDingQueCard(player) {
     let wanCount = 0;
     let tiaoCount = 0;
     let tongCount = 0;
@@ -4775,13 +4775,32 @@ class TableState implements Serializable {
     if (cards[lastTakeCard] > 0) cards[lastTakeCard]--;
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
-    if (ting.hu) {
+    const isDingQue = this.checkDingQueCard(player);
+    if (ting.hu && isDingQue) {
       if (player.cards[lastTakeCard] > 0 && lastTakeCard === Enums.zhong) return lastTakeCard;
     }
 
     // 如果用户已经胡牌，则直接打摸牌
     if (player.isGameHu && player.cards[lastTakeCard] > 0) {
       return lastTakeCard;
+    }
+
+    // 如果定缺万，还有万就打万
+    if (player.mode === "wan") {
+      const wanCard = this.getDingQueCard(player, 1, 9);
+      if (wanCard.code) return wanCard.index;
+    }
+
+    // 如果定缺条，还有条就打条
+    if (player.mode === "tiao") {
+      const tiaoCard = this.getDingQueCard(player, 11, 19);
+      if (tiaoCard.code) return tiaoCard.index;
+    }
+
+    // 如果定缺筒，还有筒就打筒
+    if (player.mode === "tong") {
+      const tongCard = this.getDingQueCard(player, 21, 29);
+      if (tongCard.code) return tongCard.index;
     }
 
     // 有单张打单张
@@ -4792,8 +4811,7 @@ class TableState implements Serializable {
     const twoEightLonelyCard = this.getCardTwoCard(player);
     if (twoEightLonelyCard.code) return twoEightLonelyCard.index;
 
-    // 摸到什么牌打什么牌
-    return player.cards.findIndex(value => value > 0);
+    return player.cards.findIndex(value => value > 0 && value < 3);
   }
 
   getCardTwoCard(player) {
@@ -4805,6 +4823,16 @@ class TableState implements Serializable {
       const result = this.checkUserHasCard(player.cards, i);
       if (result.count === 2) {
         return {code: true, index: result.index};
+      }
+    }
+
+    return {code: false, index: 0};
+  }
+
+  getDingQueCard(player, start, end) {
+    for (let i = start; i <= end; i++) {
+      if (player.cards[i] > 0) {
+        return {code: true, index: i};
       }
     }
 
