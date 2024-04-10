@@ -470,21 +470,6 @@ class TableState implements Serializable {
     return card;
   }
 
-  async consumeSpecialCard(p: PlayerState) {
-    this.remainCards--;
-    const index = this.cards.findIndex(c => c === Enums.zhong);
-    if (index !== -1) {
-      const card = this.cards[index]
-      this.lastTakeCard = card;
-      this.cards.splice(index, 1);
-
-      return card;
-    } else {
-      const card = await this.consumeSimpleCard(p);
-      return card;
-    }
-  }
-
   async consumeGangOrKeCard(cardNum?) {
     const isGang = Math.random() < 0.1;
 
@@ -521,68 +506,16 @@ class TableState implements Serializable {
 
   async take13Cards(player: PlayerState) {
     let cards = []
-
-    for (let i = 0; i < 3; i++) {
-      const consumeCards = await this.consumeGangOrKeCard();
-      cards = [...cards, ...consumeCards];
-    }
-
-    const residueCards = 13 - cards.length;
-    const flag = Math.random();
-    if (residueCards > 3 && flag < 0.2) {
-      const consumeCards = await this.consumeGangOrKeCard(3);
-      cards = [...cards, ...consumeCards];
-    }
+    const consumeCards = await this.consumeGangOrKeCard();
+    cards = [...cards, ...consumeCards];
 
     const cardCount = 13 - cards.length;
-    let specialCount = 0;
 
     for (let i = 0; i < cardCount; i++) {
-      const rank = Math.random();
-
-      if ((rank < 0.6 && specialCount === 0) || rank < 0.1 && specialCount === 1) {
-        const card = await this.consumeSpecialCard(player);
-        if (card) {
-          specialCount++;
-          cards.push(card);
-        }
-      } else {
-        cards.push(await this.consumeSimpleCard(player));
-      }
+      cards.push(await this.consumeSimpleCard(player));
     }
 
     return cards;
-  }
-
-  async takeDominateCards(p) {
-    {
-      let cards = []
-
-      for (let i = 0; i < 3; i++) {
-        const consumeCards = await this.consumeGangOrKeCard(3);
-        cards = [...cards, ...consumeCards];
-      }
-
-      const residueCards = 13 - cards.length;
-      if (residueCards > 3) {
-        const consumeCards = await this.consumeGangOrKeCard(3);
-        cards = [...cards, ...consumeCards];
-      }
-
-      while (13 - cards.length > 0) {
-        this.remainCards--;
-        const index = this.cards.findIndex(c => c === Enums.zhong);
-        if (index !== -1) {
-          cards.push(this.cards[index]);
-          this.lastTakeCard = this.cards[index];
-          this.cards.splice(index, 1);
-        } else {
-          cards.push(await this.consumeSimpleCard(p));
-        }
-      }
-
-      return cards;
-    }
   }
 
   async start() {
@@ -599,13 +532,7 @@ class TableState implements Serializable {
     let zhuangIndex = 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
-      const model = await service.playerService.getPlayerModel(p._id);
-      const cards13 = model.dominateCount > 0 ? await this.takeDominateCards(p) : await this.take13Cards(p);
-
-      if (model.dominateCount > 0) {
-        model.dominateCount--;
-        await model.save();
-      }
+      const cards13 = await this.take13Cards(p);
 
       for (let i = 0; i < cards13.length; i++) {
         // 计算序数牌相加
