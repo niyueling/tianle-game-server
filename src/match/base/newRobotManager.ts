@@ -555,10 +555,17 @@ export class NewRobotManager {
         return;
       }
       if (flag) {
-        this.model.step = RobotStep.running;
+        // 如果游戏类型是血流红中，则添加状态定缺状态
+        this.room.gameRule.gameType === GameType.xueliu ? this.model.step = RobotStep.selectMode : this.model.step = RobotStep.running;
       }
       await this.save();
     }
+
+    // 如果游戏类型是血流红中，并且是定缺状态
+    if (this.room.gameRule.gameType === GameType.xueliu && this.model.step === RobotStep.selectMode && this.room.gameState) {
+        console.warn(JSON.stringify(this.room.players))
+    }
+
     if (this.model.step === RobotStep.running && this.isPlayed) {
       this.isPlayed = false;
       // 游戏未结束
