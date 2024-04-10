@@ -216,9 +216,6 @@ class PlayerState implements Serializable {
   // 是否计算对局
   isCalcJu = false
 
-  // 星座加分
-  constellationScore: number = 1
-
   isMingCard = false
 
   // 巅峰对决摸到的牌
@@ -285,7 +282,6 @@ class PlayerState implements Serializable {
     this.isGameDa = false;
     this.isGangHouDa = false;
     this.numberCount = 0;
-    this.constellationScore = 1;
     this.huTypeList = [];
   }
 
