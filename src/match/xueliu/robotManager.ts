@@ -85,22 +85,22 @@ export class RobotManager extends NewRobotManager {
       console.warn(playerState && !this.isHumanPlayerOffline(proxy), playerState.cards);
       if (playerState && !this.isHumanPlayerOffline(proxy)) {
         // 在线用户
-        if (proxy.mode === 'unknown') {
+        if (playerState.mode === 'unknown') {
           let wanCount = 0;
           let tiaoCount = 0;
           let tongCount = 0;
           let mode = "wan";
 
           for (let j = 1; j <= 9; j++) {
-            wanCount += proxy.cards[j];
+            wanCount += playerState.cards[j];
           }
 
           for (let j = 11; j <= 19; j++) {
-            tiaoCount += proxy.cards[j];
+            tiaoCount += playerState.cards[j];
           }
 
           for (let j = 21; j <= 29; j++) {
-            tongCount += proxy.cards[j];
+            tongCount += playerState.cards[j];
           }
 
           if (Math.min(wanCount, tiaoCount, tongCount) === tiaoCount) {
@@ -112,7 +112,7 @@ export class RobotManager extends NewRobotManager {
           }
 
           proxy.mode = mode;
-          await this.room.gameState.onSelectMode(proxy, mode);
+          await this.room.gameState.onSelectMode(playerState, mode);
         }
       }
     }
