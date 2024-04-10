@@ -90,6 +90,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
         if (room) {
           // 掉线的子游戏类型
           player.model.disconnectedRoom = true;
+          player.model.disconnectedRoomId = room;
           player.model.continueGameType = allGameTypes[i];
         }
       }
