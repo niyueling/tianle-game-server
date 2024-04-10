@@ -128,7 +128,10 @@ export class NewRobotManager {
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐
-      console.log('some one absent', this.room._id)
+      console.log('some one absent %s gameState %s', this.room._id, this.room.gameState);
+      if (!this.room.gameState) {
+        await this.room.forceDissolve();
+      }
       return;
     }
 
