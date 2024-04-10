@@ -1417,41 +1417,16 @@ class PlayerState implements Serializable {
     this.listenDispatcher(msgDispatcher)
   }
 
-  selectMode() {
-    let wanCount = 0;
-    let tiaoCount = 0;
-    let tongCount = 0;
-    let mode = "wan";
-
-    for (let i = 1; i <= 9; i++) {
-      wanCount += this.cards[i];
-    }
-
-    for (let i = 11; i <= 19; i++) {
-      tiaoCount += this.cards[i];
-    }
-
-    for (let i = 21; i <= 29; i++) {
-      tongCount += this.cards[i];
-    }
-
-    if (Math.min(wanCount, tiaoCount, tongCount) === tiaoCount) {
-      mode = "tiao";
-    }
-
-    if (Math.min(wanCount, tiaoCount, tongCount) === tongCount) {
-      mode = "tong";
-    }
-
-    this.mode = mode;
-    this.room.broadcast("game/selectMode", {ok: true, data: {mode, inde: this.room.gameState.atIndex(this)}});
-  }
-
   deposit(callback) {
     let minutes = 15 * 1000;
 
     if (!this.msgDispatcher) {
       return ;
+    }
+
+    if (this.room.robotManager.model.step === RobotStep.selectMode) {
+      console.warn("wait player select mode");
+      return;
     }
 
     this.cancelTimeout()
@@ -1460,16 +1435,10 @@ class PlayerState implements Serializable {
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
-        if (this.room.robotManager.model.step === RobotStep.selectMode) {
-          console.warn("wait player select mode");
-          this.selectMode();
-          return;
-        } else {
-          this.onDeposit = true
-          this.sendMessage('game/startDepositReply', {ok: true, data: {}})
-          callback()
-          this.timeoutTask = null
-        }
+        this.onDeposit = true
+        this.sendMessage('game/startDepositReply', {ok: true, data: {}})
+        callback()
+        this.timeoutTask = null
       }, minutes)
     } else {
       const isRobot = this.msgDispatcher.isRobot()

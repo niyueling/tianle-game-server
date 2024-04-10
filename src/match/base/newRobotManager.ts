@@ -19,6 +19,7 @@ export class NewRobotManager {
   isWatching: boolean
   waitPublicRobot: number
   isPlayed: boolean
+  selectModeTimes: number
   constructor(room, depositCount) {
     // 房间管理器
     this.room = room;
@@ -29,6 +30,7 @@ export class NewRobotManager {
     this.isWatching = false;
     this.waitPublicRobot = 0;
     this.isPlayed = true;
+    this.selectModeTimes = 0;
     this.startMonit();
   }
 

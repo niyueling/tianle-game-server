@@ -3,6 +3,7 @@ import {NewRobotManager} from "../base/newRobotManager";
 import Enums from "./enums";
 import {MJRobotRmqProxy} from "./robotRmqProxy";
 import {RobotStep} from "@fm/common/constants";
+import * as config from '../../config';
 
 // 机器人出牌
 export class RobotManager extends NewRobotManager {
@@ -46,7 +47,13 @@ export class RobotManager extends NewRobotManager {
         const flag = await this.selectMode();
         isOk = await this.isHumanPlayerSelectMode();
         if (!isOk) {
+          this.selectModeTimes++;
           console.log(`human player not select mode`, this.room._id);
+
+          if (this.selectModeTimes >= config.game.this.selectModeTimes) {
+            this.selectModeTimes = 0;
+            await this.selectOnlineMode();
+          }
           return;
         }
 
@@ -63,6 +70,50 @@ export class RobotManager extends NewRobotManager {
       await this.playCard();
 
       this.isPlayed = true;
+    }
+  }
+
+  async selectOnlineMode() {
+    if (!this.room.gameState) {
+      return false;
+    }
+    let proxy;
+    let playerState;
+    for (let i = 0; i < this.room.gameState.players.length; i++) {
+      playerState = this.room.gameState.players[i];
+      proxy = this.room.players[i];
+      if (playerState && !this.isHumanPlayerOffline(proxy)) {
+        // 在线用户
+        if (playerState.mode === 'unknown') {
+          let wanCount = 0;
+          let tiaoCount = 0;
+          let tongCount = 0;
+          let mode = "wan";
+
+          for (let i = 1; i <= 9; i++) {
+            wanCount += playerState.cards[i];
+          }
+
+          for (let i = 11; i <= 19; i++) {
+            tiaoCount += playerState.cards[i];
+          }
+
+          for (let i = 21; i <= 29; i++) {
+            tongCount += playerState.cards[i];
+          }
+
+          if (Math.min(wanCount, tiaoCount, tongCount) === tiaoCount) {
+            mode = "tiao";
+          }
+
+          if (Math.min(wanCount, tiaoCount, tongCount) === tongCount) {
+            mode = "tong";
+          }
+
+          playerState.mode = mode;
+          await this.room.gameState.onSelectMode(playerState, mode);
+        }
+      }
     }
   }
 
