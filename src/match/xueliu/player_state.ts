@@ -12,6 +12,7 @@ import HuPaiDetect from './HuPaiDetect'
 import Room from './room'
 import Rule from './Rule'
 import CardTypeModel from "../../database/models/CardType";
+import {RobotStep} from "@fm/common/constants";
 
 export class SourceCardMap extends Array<number> {
   first: boolean
@@ -1419,9 +1420,12 @@ class PlayerState implements Serializable {
   deposit(callback) {
     let minutes = 15 * 1000;
 
-
     if (!this.msgDispatcher) {
       return ;
+    }
+    if (this.room.robotManager.model.step === RobotStep.selectMode) {
+      console.warn("wait player select mode");
+      return;
     }
     this.cancelTimeout()
 
