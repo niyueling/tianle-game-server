@@ -48,7 +48,7 @@ export class RobotManager extends NewRobotManager {
         isOk = await this.isHumanPlayerSelectMode();
         if (!isOk) {
           this.selectModeTimes++;
-          console.log(`human player not select mode`, this.room._id);
+          console.log(`human player not select mode roomId %s selectModeTimes %s`, this.room._id, this.selectModeTimes);
 
           if (this.selectModeTimes >= config.game.selectModeTimes) {
             this.selectModeTimes = 0;
@@ -84,22 +84,22 @@ export class RobotManager extends NewRobotManager {
       proxy = this.room.players[i];
       if (playerState && !this.isHumanPlayerOffline(proxy)) {
         // 在线用户
-        if (playerState.mode === 'unknown') {
+        if (proxy.mode === 'unknown') {
           let wanCount = 0;
           let tiaoCount = 0;
           let tongCount = 0;
           let mode = "wan";
 
           for (let i = 1; i <= 9; i++) {
-            wanCount += playerState.cards[i];
+            wanCount += proxy.cards[i];
           }
 
           for (let i = 11; i <= 19; i++) {
-            tiaoCount += playerState.cards[i];
+            tiaoCount += proxy.cards[i];
           }
 
           for (let i = 21; i <= 29; i++) {
-            tongCount += playerState.cards[i];
+            tongCount += proxy.cards[i];
           }
 
           if (Math.min(wanCount, tiaoCount, tongCount) === tiaoCount) {
@@ -110,8 +110,8 @@ export class RobotManager extends NewRobotManager {
             mode = "tong";
           }
 
-          playerState.mode = mode;
-          await this.room.gameState.onSelectMode(playerState, mode);
+          proxy.mode = mode;
+          await this.room.gameState.onSelectMode(proxy, mode);
         }
       }
     }

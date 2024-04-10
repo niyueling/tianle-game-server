@@ -133,7 +133,7 @@ module.exports = {
     // 金豆救助次数
     rubyHelpTimes: 5,
     // 定缺牌选择等待时间
-    selectModeTimes: 15,
+    selectModeTimes: 5,
     // 10w金豆
     rubyHelpAmount: 100000,
     prizeIndex2Prize: [
