@@ -82,7 +82,6 @@ export class RobotManager extends NewRobotManager {
     for (let i = 0; i < this.room.gameState.players.length; i++) {
       playerState = this.room.gameState.players[i];
       proxy = this.room.players[i];
-      console.warn(playerState && !this.isHumanPlayerOffline(proxy), playerState.cards);
       if (playerState && !this.isHumanPlayerOffline(proxy)) {
         // 在线用户
         if (playerState.mode === 'unknown') {
@@ -111,7 +110,6 @@ export class RobotManager extends NewRobotManager {
             mode = "tong";
           }
 
-          proxy.mode = mode;
           await this.room.gameState.onSelectMode(playerState, mode);
         }
       }
