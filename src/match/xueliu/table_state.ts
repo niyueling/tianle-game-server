@@ -75,36 +75,6 @@ interface StateData {
   huInfo?: any
 }
 
-const getCanPengCards = (p, checks) => {
-  const ret = []
-  checks.forEach(x => {
-    if (x.peng === p) {
-      ret.push(x.card)
-    }
-  })
-  return ret
-}
-
-const getCanGangCards = (p, checks, gangPlayer) => {
-  const ret = []
-  checks.forEach(x => {
-    if (x.gang === p) {
-      ret.push([x.card, p.getGangKind(x.card, p === gangPlayer)])
-    }
-  })
-  return ret
-}
-
-const getCanBuCards = (p, checks, gangPlayer) => {
-  const ret = []
-  checks.forEach(x => {
-    if (x.bu === p) {
-      ret.push([x.card, p.getGangKind(x.card, p === gangPlayer)])
-    }
-  })
-  return ret
-}
-
 const generateCards = function () {
   const cards = []
   const addSpan = function (start, end) {
@@ -118,67 +88,11 @@ const generateCards = function () {
 
   addSpan(Enums.wanzi1, Enums.wanzi9)
   addSpan(Enums.shuzi1, Enums.shuzi9)
-  addSpan(Enums.constellation1, Enums.constellation12)
-  addSpan(Enums.zeus, Enums.athena);
+  addSpan(Enums.tongzi1, Enums.tongzi9)
+  addSpan(Enums.zhong, Enums.zhong);
 
   return cards
 }
-
-function getTimeString() {
-  return moment().format('YYYYMMDDHHmm')
-}
-
-export function cardChangeDebugger<T extends new(...args: any[]) => {
-  room: any
-  cards: any
-  remainCards: any
-  listenPlayer(p: PlayerState): void
-}>(constructor: T) {
-
-  return class TableWithDebugger extends constructor {
-
-    constructor(...args) {
-      super(...args)
-    }
-
-    listenPlayer(player: PlayerState) {
-      super.listenPlayer(player)
-
-      player.on('changePlayerCards', msg => {
-        this.changePlayerCards(player, msg)
-      })
-      player.on('changeNextCards', msg => {
-        this.changNextCards(msg)
-      })
-    }
-
-    changNextCards(cards) {
-      cards.forEach(card => {
-        this.cards.push(card)
-      })
-      this.remainCards = this.cards.length;
-    }
-
-    changePlayerCards(player, cards) {
-      for (let i = 0; i < 53; i++) {
-        player.cards[i] = 0
-      }
-      cards.forEach(c => {
-        player.cards[c]++
-      })
-      const handCards = []
-      for (let i = 0; i < player.cards.length; i++) {
-        const c = player.cards[i]
-        for (let j = 0; j < c; j++) {
-          handCards.push(i)
-        }
-      }
-      this.room.broadcast('game/changeCards', {index: player.seatIndex, cards: handCards})
-      player.sendMessage('game/changePlayerCardsReply', {ok: true, info: '换牌成功！'})
-    }
-  }
-}
-
 type Action = 'hu' | 'peng' | 'gang' | 'chi'
 
 interface ActionOption {
@@ -222,9 +136,6 @@ export class ActionResolver implements Serializable {
     return serializeHelp(this)
   }
 
-  resume(actionJSON) {
-    console.log('resume')
-  }
 
   appendAction(player: PlayerState, action: Action, extra?: any) {
     if (action === 'chi' || action === 'hu' || action === 'gang') {
