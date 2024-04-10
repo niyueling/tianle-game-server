@@ -1453,20 +1453,22 @@ class PlayerState implements Serializable {
     if (!this.msgDispatcher) {
       return ;
     }
-    if (this.room.robotManager.model.step === RobotStep.selectMode) {
-      console.warn("wait player select mode");
-      return;
-    }
+
     this.cancelTimeout()
 
     // console.warn("shortId-%s onDeposit-%s", this.model.shortId, this.onDeposit);
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
-        this.onDeposit = true
-        this.sendMessage('game/startDepositReply', {ok: true, data: {}})
-        callback()
-        this.timeoutTask = null
+        if (this.room.robotManager.model.step === RobotStep.selectMode) {
+          console.warn("wait player select mode");
+          return;
+        } else {
+          this.onDeposit = true
+          this.sendMessage('game/startDepositReply', {ok: true, data: {}})
+          callback()
+          this.timeoutTask = null
+        }
       }, minutes)
     } else {
       const isRobot = this.msgDispatcher.isRobot()
