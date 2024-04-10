@@ -553,7 +553,7 @@ class TableState implements Serializable {
     return cards;
   }
 
-  async takeDominateCards() {
+  async takeDominateCards(p) {
     {
       let cards = []
 
@@ -575,6 +575,8 @@ class TableState implements Serializable {
           cards.push(this.cards[index]);
           this.lastTakeCard = this.cards[index];
           this.cards.splice(index, 1);
+        } else {
+          cards.push(await this.consumeSimpleCard(p));
         }
       }
 
@@ -597,7 +599,7 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
-      const cards13 = model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p);
+      const cards13 = model.dominateCount > 0 ? await this.takeDominateCards(p) : await this.take13Cards(p);
 
       if (model.dominateCount > 0) {
         model.dominateCount--;
@@ -4749,56 +4751,11 @@ class TableState implements Serializable {
     return pushMsg
   }
 
-  distance(p1, p2) {
-    if (p1 === p2) {
-      return 0
-    }
-    const p1Index = this.players.indexOf(p1)
-    const len = this.players.length
-    for (let i = 1; i < len; i++) {
-      const p = this.players[(p1Index + i) % len]
-      if (p === p2) {
-        return i
-      }
-    }
-    return -1
-  }
-
-  hasPlayerHu() {
-    return this.players.find(x => x.isHu()) != null
-  }
-
   setGameRecorder(recorder) {
     this.recorder = recorder
     for (const p of this.players) {
       p.setGameRecorder(recorder)
     }
-  }
-
-  arrangeCaiShen() {
-    const caiShen = this.cards[0]
-    const cardsWithoutCaiShen = this.cards.filter(c => c !== caiShen)
-
-    const newCards = [caiShen]
-
-    const caiShenIndex = [
-      random(3, 13 * 4),
-      random(13 * 4 + 8, 13 * 4 + 16),
-      random(13 * 4 + 40, 13 * 4 + 48)]
-      .map(i => i + 33)
-
-    let nextCaiIndex = caiShenIndex.shift()
-    for (let i = 1; i < this.cards.length; i++) {
-      if (i === nextCaiIndex) {
-        newCards.push(caiShen)
-        nextCaiIndex = caiShenIndex.shift()
-      } else {
-        newCards.push(cardsWithoutCaiShen.shift())
-      }
-    }
-
-    this.cards = newCards.reverse()
-
   }
 
   async onPlayerGuo(player, playTurn, playCard) {
@@ -4852,7 +4809,7 @@ class TableState implements Serializable {
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
-      if (player.cards[lastTakeCard] > 0 && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(lastTakeCard)) return lastTakeCard;
+      if (player.cards[lastTakeCard] > 0 && lastTakeCard === Enums.zhong) return lastTakeCard;
     }
 
     // 如果用户已经胡牌，则直接打摸牌
@@ -4874,7 +4831,7 @@ class TableState implements Serializable {
 
   getCardTwoCard(player) {
     for (let i = 1; i < 53; i++) {
-      if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(i)) {
+      if (i === Enums.zhong) {
         continue;
       }
 
@@ -4889,7 +4846,7 @@ class TableState implements Serializable {
 
   getCardLonelyCard(player) {
     for (let i = 1; i < 53; i++) {
-      if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(i)) {
+      if (i === Enums.zhong) {
         continue;
       }
 
