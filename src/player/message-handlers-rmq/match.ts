@@ -77,7 +77,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
 
     'room/login': async (player, message) => {
       const playerId = message.playerId;
-      const gameType = message.gameType || "xueliu";
+      const gameType = message.gameType || "majiang";
       player.model = await PlayerModel.findOne({_id: playerId}).lean();
       player.setGameName(gameType)
       await player.connectToBackend(gameType);
@@ -103,7 +103,6 @@ export function createHandler(redisClient: AsyncRedisClient) {
         rule.gameType = gameType;
         const playerId = message.playerId;
         player.model = await PlayerModel.findOne({_id: playerId}).lean();
-        console.warn("room create shortId-%s gameType-%s rule-%s lobby-%s", player.model.shortId, rule.gameType, JSON.stringify(rule), lobbyQueueNameFrom(gameType));
         return player.requestTo(lobbyQueueNameFrom(gameType), 'createRoom', {rule, gameType});
       } catch (e) {
         console.warn(e);

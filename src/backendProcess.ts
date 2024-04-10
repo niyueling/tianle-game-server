@@ -74,7 +74,6 @@ export class BackendProcess {
 
       const unfinishedRoomId = await service.roomRegister.getDisconnectedRoom(messageBody.from, this.gameName);
       if (unfinishedRoomId) {
-        console.warn("unfinishedRoomId-%s", unfinishedRoomId);
         return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
       }
 
@@ -82,7 +81,6 @@ export class BackendProcess {
       if (playerModel) {
         const alreadyInRoom = await service.roomRegister.roomNumber(playerModel._id, this.gameName)
         if (alreadyInRoom) {
-          console.warn("alreadyInRoom-%s", unfinishedRoomId);
           return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
         }
 
