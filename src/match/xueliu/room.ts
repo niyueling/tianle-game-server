@@ -8,7 +8,6 @@ import * as lodash from 'lodash'
 import {pick, values} from 'lodash'
 import * as mongoose from 'mongoose'
 import * as logger from 'winston'
-import Club from '../../database/models/club'
 import ConsumeRecord from '../../database/models/consumeRecord'
 import DiamondRecord from "../../database/models/diamondRecord";
 import DissolveRecord from '../../database/models/dissolveRecord'
@@ -25,7 +24,6 @@ import Game from './game'
 import {eqlModelId} from "./modelId"
 import {RobotManager} from "./robotManager";
 import TableState from "./table_state"
-import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import roomScoreRecord from "../../database/models/roomScoreRecord";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import PlayerMedal from "../../database/models/PlayerMedal";

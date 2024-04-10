@@ -2,6 +2,7 @@ import Club from '../../database/models/club'
 import ClubMember from '../../database/models/clubMember'
 import PlayerModel from '../../database/models/player'
 import majiangLobby from '../../match/majiang/centerlobby'
+import xueliuLobby from '../../match/xueliu/centerlobby'
 import {service} from "../../service/importService";
 import {AsyncRedisClient} from "../../utils/redis"
 import {ISocketPlayer} from "../ISocketPlayer"
@@ -11,11 +12,12 @@ export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
 }
 
-const allGameName = ['majiang']
+const allGameName = ['majiang', 'xueliu']
 
 function getLobby(gameType) {
   const gameType2Lobby = {
     majiang: majiangLobby,
+    xueliu: xueliuLobby,
   }
   return gameType2Lobby[gameType] || gameType2Lobby.majiang
 }
@@ -101,6 +103,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
         rule.gameType = gameType;
         const playerId = message.playerId;
         player.model = await PlayerModel.findOne({_id: playerId}).lean();
+        console.warn("room create model-%s gameType-%s rule-%s", JSON.stringify(player.model), rule.gameType, JSON.stringify(rule));
         return player.requestTo(lobbyQueueNameFrom(gameType), 'createRoom', {rule, gameType});
       } catch (e) {
         console.warn(e);

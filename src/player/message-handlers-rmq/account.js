@@ -38,7 +38,7 @@ export const AccountAction = {
 
 const redisClient = createClient();
 
-const allGameName = ['paodekuai', 'niuniu', 'zhadan', 'majiang', 'shisanshui', 'biaofen']
+const allGameName = ['xueliu', 'guobiao', 'majiang']
 
 const locker = createLock()
 
