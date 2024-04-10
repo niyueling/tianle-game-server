@@ -4277,7 +4277,7 @@ class TableState implements Serializable {
       room: this.room.uid,
       juIndex: this.room.game.juIndex,
       playerId: p.model._id,
-      gameName: "十二星座",
+      gameName: "血流红中",
       caregoryName: category.title,
       time: new Date(),
       score: p.juScore
@@ -4417,7 +4417,7 @@ class TableState implements Serializable {
           room: this.room.uid,
           juIndex: this.room.game.juIndex,
           playerId: states[i].model._id,
-          gameName: "十二星座",
+          gameName: "血流红中",
           caregoryName: category.title,
           time: new Date(),
           score: states[i].score
