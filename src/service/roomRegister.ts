@@ -82,17 +82,11 @@ export default class RoomRegister extends BaseService {
   }
 
   // 从 mongo 中获取掉线房间号
-  async getDisconnectRoomByPlayerId(joinId: string) {
-    // 根据最近的房间排序(有可能有多个房间,数据未同步)
-    const joinList = await RoomJoinModel.find({joinId}).sort({joinAt: -1});
-    for (const joinInfo of joinList) {
-      if (joinInfo) {
-        // 检查房间号是否存在
-        const exists = await this.isRoomExists(joinInfo.roomId);
-        if (exists) {
-          return joinInfo;
-        }
-      }
+  async getDisconnectRoomByPlayerId(joinId: string, gameType) {
+    const roomNumber = await this.roomNumber(joinId, gameType);
+    const roomExist = await this.redis.getAsync(this.roomKey(roomNumber))
+    if (roomExist) {
+      return roomNumber;
     }
     return null;
   }
