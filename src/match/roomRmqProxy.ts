@@ -1,7 +1,5 @@
 import {Channel, Message, Replies} from "amqplib"
 import * as winston from 'winston'
-import Club from "../database/models/club";
-import ClubMember from "../database/models/clubMember";
 import {saveRoomDetail} from "../database/models/roomDetail";
 import {delRoomInfo} from "../database/models/roomInfo";
 import {service} from "../service/importService";
@@ -119,6 +117,7 @@ export default class RoomProxy {
         const messageBody = toMessageBody(message.content)
         const cls = getActionClass();
         const methodName = cls.getMethodName(messageBody.name);
+        console.log("exGameCenter gameName-%s messageBody-%s methodName-%s roomId-%s", gameName, JSON.stringify(messageBody), methodName, room._id)
         if (methodName) {
           console.log(`${room._id}: call ${messageBody.name}, payload ${JSON.stringify(messageBody.payload)}`)
           const instance = new cls(this.room);
