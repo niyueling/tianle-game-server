@@ -239,6 +239,10 @@ class PlayerState implements Serializable {
   // 本局胡的牌型
   huTypeList: any[] = [];
 
+  // 定缺模式
+  @autoSerialize
+  mode: "wan" | "tong" | "tiao" | "unknown" = 'unknown'
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -1320,6 +1324,7 @@ class PlayerState implements Serializable {
       index,
       score: this.juScore,
       cards,
+      mode: this.mode,
       niaoCount: this.niaoCount,
       niaoCards: this.niaoCards,
       jieGangCount: this.gangFrom.length,
@@ -1356,6 +1361,7 @@ class PlayerState implements Serializable {
     return {
       index,
       cards,
+      mode: this.mode,
       tingPai: this.tingPai,
       locked: this.locked,
       dropped: this.dropped,

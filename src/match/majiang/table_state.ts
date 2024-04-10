@@ -737,9 +737,10 @@ class TableState implements Serializable {
       score += 10;
     }
 
-   if (score > 0) {
-     player.constellationScore = score;
-   }
+    if (score <= 0) {
+      score = 1;
+    }
+    player.constellationScore = score;
 
     if (player.isMingCard) {
       player.constellationScore *= 6;

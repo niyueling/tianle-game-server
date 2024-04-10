@@ -518,8 +518,16 @@ class TableState implements Serializable {
     return cards;
   }
 
+  async onSelectMode(player: PlayerState, mode: 'wan' | 'tong' | 'tiao') {
+    player.mode = mode;
+    this.room.broadcast("game/selectMode", {ok: true, data: {mode, inde: this.atIndex(player)}});
+  }
+
   async start() {
     await this.fapai();
+    // 下发开始定缺牌消息
+    this.room.broadcast("game/startSelectMode", {ok: true, data: {room: this.room._id}});
+    await this.room.robotManager.setCardReady();
   }
 
   async fapai() {

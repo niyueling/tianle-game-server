@@ -2,6 +2,7 @@ import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
 import Enums from "./enums";
 import {MJRobotRmqProxy} from "./robotRmqProxy";
+import {RobotStep} from "@fm/common/constants";
 
 // 机器人出牌
 export class RobotManager extends NewRobotManager {
@@ -15,6 +16,124 @@ export class RobotManager extends NewRobotManager {
       console.error('no model for', playerId)
     }
     return new MJRobotRmqProxy(model)
+  }
+
+  async readyAndPlay() {
+    // 检查是否准备好
+    let isOk;
+    if (this.model.step === RobotStep.start) {
+      // 离线用户准备
+      const flag = await this.robotPlayerReady();
+      isOk = await this.isHumanPlayerReady();
+      if (!isOk) {
+        console.log(`human player not ready`, this.room._id);
+        return;
+      }
+      if (flag) {
+        this.model.step = RobotStep.checkCardReady;
+      }
+      await this.save();
+    }
+
+    if (this.model.step === RobotStep.selectMode) {
+      // 选择模式
+      isOk = await this.isModeSelect();
+      if (isOk) {
+        this.model.step = RobotStep.running;
+        await this.save();
+      } else {
+        // 机器人选择模式
+        const flag = await this.selectMode();
+        isOk = await this.isHumanPlayerSelectMode();
+        if (!isOk) {
+          console.log(`human player not select mode`, this.room._id);
+          return;
+        }
+
+        if (flag) {
+          this.model.step = RobotStep.running;
+          await this.save();
+        }
+      }
+    }
+
+    if (this.model.step === RobotStep.running && this.isPlayed) {
+      this.isPlayed = false;
+      // 游戏未结束
+      await this.playCard();
+
+      this.isPlayed = true;
+    }
+  }
+
+  // 为离线用户选择模式
+  async selectMode() {
+    // 在线用户都选好模式了
+    for (const proxy of Object.values(this.disconnectPlayers)) {
+      if (!proxy.playerState) {
+        console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
+        continue;
+      }
+      let wanCount = 0;
+      let tiaoCount = 0;
+      let tongCount = 0;
+      let mode = "wan";
+
+      for (let i = 1; i <= 9; i++) {
+        wanCount += proxy.playerState.cards[i];
+      }
+
+      for (let i = 11; i <= 19; i++) {
+        tiaoCount += proxy.playerState.cards[i];
+      }
+
+      for (let i = 21; i <= 29; i++) {
+        tongCount += proxy.playerState.cards[i];
+      }
+
+      if (Math.min(wanCount, tiaoCount, tongCount) === tiaoCount) {
+        mode = "tiao";
+      }
+
+      if (Math.min(wanCount, tiaoCount, tongCount) === tongCount) {
+        mode = "tong";
+      }
+
+      await this.room.gameState.onSelectMode(proxy.playerState, mode);
+    }
+    return true;
+  }
+
+  isHumanPlayerSelectMode() {
+    if (!this.room.gameState) {
+      return false;
+    }
+    let proxy;
+    let playerState;
+    for (let i = 0; i < this.room.gameState.players.length; i++) {
+      playerState = this.room.gameState.players[i];
+      proxy = this.room.players[i];
+      if (playerState && !this.isHumanPlayerOffline(proxy)) {
+        // 在线用户
+        if (playerState.mode === 'unknown') {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  isModeSelect() {
+    if (!this.room.gameState) {
+      return false;
+    }
+    for (const proxy of this.room.gameState.players) {
+      if (proxy.mode === 'unknown' || proxy.playerState.cards.length === 0) {
+        // 还有人没选模式 或者还没发牌
+        return false;
+      }
+    }
+    return true;
   }
 
   // 更新代理机器人等待出牌的时间
@@ -34,21 +153,6 @@ export class RobotManager extends NewRobotManager {
         }
       }
     }
-  }
-
-  checkIsRobot(player) {
-    const keys = Object.keys(this.disconnectPlayers);
-    let proxy;
-    let flag = false;
-    for (const key of keys) {
-      proxy = this.disconnectPlayers[key];
-      if (proxy.model._id.toString() === player._id.toString()) {
-        flag = true;
-        break;
-      }
-    }
-
-    return flag;
   }
 
   // 出牌
@@ -173,5 +277,11 @@ export class RobotManager extends NewRobotManager {
       }
     }
     return false;
+  }
+
+  // 发牌完成
+  async setCardReady() {
+    this.model.step = RobotStep.selectMode;
+    await this.save();
   }
 }
