@@ -525,9 +525,6 @@ class TableState implements Serializable {
 
   async start() {
     await this.fapai();
-    // 下发开始定缺牌消息
-    this.room.broadcast("game/startSelectMode", {ok: true, data: {room: this.room._id}});
-    await this.room.robotManager.setCardReady();
   }
 
   async fapai() {
@@ -585,6 +582,10 @@ class TableState implements Serializable {
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, this.zhuang.msgDispatcher)
       this.state = stateWaitDa
       this.stateData = {msg, da: this.zhuang, card: nextCard}
+
+      // 下发开始定缺牌消息
+      this.room.broadcast("game/startSelectMode", {ok: true, data: {room: this.room._id}});
+      await this.room.robotManager.setCardReady();
     }
 
     if (this.sleepTime === 0) {
