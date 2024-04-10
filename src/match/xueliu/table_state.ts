@@ -472,16 +472,17 @@ class TableState implements Serializable {
 
   async consumeSpecialCard(p: PlayerState) {
     this.remainCards--;
-    const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
+    const index = this.cards.findIndex(c => c === Enums.zhong);
     if (index !== -1) {
       const card = this.cards[index]
       this.lastTakeCard = card;
       this.cards.splice(index, 1);
 
       return card;
+    } else {
+      const card = await this.consumeSimpleCard(p);
+      return card;
     }
-
-    return null;
   }
 
   async consumeGangOrKeCard(cardNum?) {
@@ -501,7 +502,7 @@ class TableState implements Serializable {
       }
     }
 
-    const result = Object.keys(counter).filter(num => counter[num] >= cardNumber && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(Number(num)));
+    const result = Object.keys(counter).filter(num => counter[num] >= cardNumber && Number(num) !== Enums.zhong);
     const randomNumber = Math.floor(Math.random() * result.length);
 
     for (let i = 0; i < cardNumber; i++) {
