@@ -179,7 +179,7 @@ export class RobotManager extends NewRobotManager {
       return false;
     }
     for (const proxy of this.room.gameState.players) {
-      if (proxy.mode === 'unknown' || proxy.playerState.cards.length === 0) {
+      if (proxy.mode === 'unknown') {
         // 还有人没选模式 或者还没发牌
         return false;
       }
