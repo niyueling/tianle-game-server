@@ -20,7 +20,7 @@ import gameHandlers from './message-handlers-rmq/game'
 import {GameApi} from "./message-handlers-rmq/gameApi";
 import {GoodsApi} from "./message-handlers-rmq/goodsApi";
 import mailHandlers from './message-handlers-rmq/mail';
-import {createHandler} from './message-handlers-rmq/match'
+import {createHandler, lobbyQueueNameFrom} from './message-handlers-rmq/match'
 import resourceHandlers from './message-handlers-rmq/resource'
 import {ResourceApi} from "./message-handlers-rmq/resourceApi";
 import socialHandlers from './message-handlers-rmq/social'
@@ -406,6 +406,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
 
   requestTo(queue, name, message) {
     const playerIp = this.getIpAddress()
+    console.warn("requestTo queue-%s name-%s message-%s", queue, name, JSON.stringify(message));
     this.channel.sendToQueue(
       queue,
       this.toBuffer({name, from: this._id, payload: message, ip: playerIp}),

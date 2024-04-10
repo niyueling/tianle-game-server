@@ -103,7 +103,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
         rule.gameType = gameType;
         const playerId = message.playerId;
         player.model = await PlayerModel.findOne({_id: playerId}).lean();
-        console.warn("room create model-%s gameType-%s rule-%s", JSON.stringify(player.model), rule.gameType, JSON.stringify(rule));
+        console.warn("room create shortId-%s gameType-%s rule-%s lobby-%s", player.model.shortId, rule.gameType, JSON.stringify(rule), lobbyQueueNameFrom(gameType));
         return player.requestTo(lobbyQueueNameFrom(gameType), 'createRoom', {rule, gameType});
       } catch (e) {
         console.warn(e);
