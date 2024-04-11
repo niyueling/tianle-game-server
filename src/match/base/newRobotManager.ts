@@ -483,7 +483,7 @@ export class NewRobotManager {
   async updateNoRuby() {
     let waitRuby = false;
     for (const p of this.room.players) {
-      if (p) console.warn(JSON.stringify(p));
+      if (p) console.warn(JSON.stringify(this.room.gameState.players[1]));
       if (!p || p.isBroke || !this.room.gameState) {
         continue;
       }
