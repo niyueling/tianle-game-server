@@ -227,7 +227,7 @@ export class ActionResolver implements Serializable {
   }
 
   appendAction(player: PlayerState, action: Action, extra?: any) {
-    if (action === 'chi' || action === 'hu' || action === 'gang') {
+    if (action === 'hu' || action === 'gang') {
       this.actionsOptions.push(
         {who: player, action, state: 'waiting', option: extra}
       )
@@ -239,11 +239,11 @@ export class ActionResolver implements Serializable {
   }
 
   requestAction(player: PlayerState, action: Action, resolve: () => void, reject: () => void) {
-    this.actionsOptions.filter(ao => ao.who === player)
+    this.actionsOptions.filter(ao => ao.who._id === player._id)
       .forEach(ao => {
         ao.state = 'cancel'
       })
-    const actionOption = this.actionsOptions.find(ao => ao.who === player && ao.action === action)
+    const actionOption = this.actionsOptions.find(ao => ao.who._id === player._id && ao.action === action)
     actionOption.state = 'try'
 
     actionOption.onResolve = resolve
@@ -251,7 +251,7 @@ export class ActionResolver implements Serializable {
   }
 
   cancel(player: PlayerState) {
-    this.actionsOptions.filter(ao => ao.who === player)
+    this.actionsOptions.filter(ao => ao.who._id === player._id)
       .forEach(ao => {
         ao.state = 'cancel'
       })
@@ -288,7 +288,7 @@ export class ActionResolver implements Serializable {
   }
 
   allOptions(player: PlayerState) {
-    const oas = this.actionsOptions.filter(ao => ao.who === player && ao.state === 'waiting')
+    const oas = this.actionsOptions.filter(ao => ao.who._id === player._id && ao.state === 'waiting')
 
     if (oas.length === 0) {
       return null
