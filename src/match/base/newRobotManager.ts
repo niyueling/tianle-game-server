@@ -483,7 +483,8 @@ export class NewRobotManager {
   async updateNoRuby() {
     let waitRuby = false;
     for (const p of this.room.players) {
-      if (!p || !p.isBroke || !this.room.gameState) {
+      if (p) console.warn("isBroke-%s", p.isBroke);
+      if (!p || p.isBroke || !this.room.gameState) {
         continue;
       }
       const resp = await service.gameConfig.rubyRequired(
