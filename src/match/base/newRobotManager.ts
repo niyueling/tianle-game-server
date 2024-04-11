@@ -218,11 +218,11 @@ export class NewRobotManager {
     robotProxy.room = this.room;
     this.room.players[posIndex] = robotProxy;
     // 替换 playerState
-    if (this.room.gameState) {
-      // 游戏已经开始了
-      const oldPlayerState = this.room.gameState.players[posIndex];
-      await oldPlayerState.reconnect(robotProxy);
-    }
+    // if (this.room.gameState) {
+    //   // 游戏已经开始了
+    //   const oldPlayerState = this.room.gameState.players[posIndex];
+    //   await oldPlayerState.reconnect(robotProxy);
+    // }
     if (!this.model.depositPlayer[playerId]) {
       // 第一次离线
       this.model.depositPlayer[playerId] = this.depositCount;
