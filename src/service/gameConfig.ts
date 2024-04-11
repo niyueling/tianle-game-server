@@ -98,6 +98,7 @@ export default class GameConfig extends BaseService {
       // 配置错了，继续玩吧
       return {isUpgrade: false, isNeedRuby: false};
     }
+
     const model = await service.playerService.getPlayerModel(playerId);
     // 房间要升级
     const isUpgrade = model.gold > conf.maxAmount;

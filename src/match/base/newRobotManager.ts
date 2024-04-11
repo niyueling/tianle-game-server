@@ -498,7 +498,7 @@ export class NewRobotManager {
   async updateNoRuby() {
     let waitRuby = false;
     for (const p of this.room.players) {
-      if (!p || this.room.gameState) {
+      if (!p || !p.isBroke || !this.room.gameState) {
         continue;
       }
       const resp = await service.gameConfig.rubyRequired(
@@ -514,9 +514,6 @@ export class NewRobotManager {
         if (this.noRubyInterval[p.model._id.toString()] > config.game.waitForRuby) {
           // 30s 过了，金豆还是不够，解散房间
           await this.room.forceDissolve();
-          // 删除托管的机器人用户
-          // delete this.disconnectPlayers[p.model._id.toString()];
-          // delete this.noRubyInterval[p.model._id.toString()];
         } else {
           waitRuby = true;
         }
