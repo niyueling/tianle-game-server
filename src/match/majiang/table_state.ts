@@ -4365,7 +4365,6 @@ class TableState implements Serializable {
       }
 
       if (check[Enums.pengGang] || check[Enums.hu]) {
-        // console.warn("stateData-%s", JSON.stringify(check));
         this.state = stateWaitAction;
         this.stateData = check;
         this.stateData.hangUp = [];
