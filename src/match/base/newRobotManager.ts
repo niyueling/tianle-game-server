@@ -3,6 +3,7 @@ import * as config from '../../config'
 import {RobotMangerModel} from '../../database/models/robotManager';
 import {service} from "../../service/importService";
 import { RobotRmqProxy } from "./robotRmqProxy";
+import Enums from "../majiang/enums";
 
 // 机器人出牌
 export class NewRobotManager {
@@ -482,8 +483,9 @@ export class NewRobotManager {
   // 检查金豆情况
   async updateNoRuby() {
     let waitRuby = false;
-    for (const p of this.room.players) {
-      if (p) console.warn(JSON.stringify(this.room.gameState.players[1]));
+    for (let i = 0; i < this.room.gameState.players.length; i++) {
+      const p = this.room.gameState.players[i];
+      if (p) console.warn("p.isBroke-%s", p.isBroke);
       if (!p || p.isBroke || !this.room.gameState) {
         continue;
       }
@@ -498,8 +500,8 @@ export class NewRobotManager {
         this.noRubyInterval[p.model._id.toString()]++;
         // 等待 30s 充值时间
         if (this.noRubyInterval[p.model._id.toString()] > config.game.waitForRuby) {
-          // 30s 过了，金豆还是不够，解散房间
-          await this.room.forceDissolve();
+          // 30s 过了，金豆还是不够，用户破产
+          p.emitter.emit(Enums.broke);
         } else {
           waitRuby = true;
         }
