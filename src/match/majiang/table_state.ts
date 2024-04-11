@@ -15,7 +15,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {ConsumeLogType, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import CombatGain from "../../database/models/combatGain";
@@ -25,6 +25,7 @@ import PlayerMedal from "../../database/models/PlayerMedal";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import PlayerCardTable from "../../database/models/PlayerCardTable";
 import PlayerCardTypeRecord from "../../database/models/playerCardTypeRecord";
+import {MJRobotRmqProxy} from "./robotRmqProxy";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -227,7 +228,7 @@ export class ActionResolver implements Serializable {
   }
 
   appendAction(player: PlayerState, action: Action, extra?: any) {
-    if (action === 'chi' || action === 'hu' || action === 'gang') {
+    if (action === 'hu' || action === 'gang') {
       this.actionsOptions.push(
         {who: player, action, state: 'waiting', option: extra}
       )
@@ -239,11 +240,12 @@ export class ActionResolver implements Serializable {
   }
 
   requestAction(player: PlayerState, action: Action, resolve: () => void, reject: () => void) {
-    this.actionsOptions.filter(ao => ao.who === player)
+    this.actionsOptions.filter(ao => ao.who._id === player._id)
       .forEach(ao => {
         ao.state = 'cancel'
       })
-    const actionOption = this.actionsOptions.find(ao => ao.who === player && ao.action === action)
+    const actionOption = this.actionsOptions.find(ao => ao.who._id === player._id && ao.action === action)
+    console.warn(actionOption);
     actionOption.state = 'try'
 
     actionOption.onResolve = resolve
@@ -251,7 +253,7 @@ export class ActionResolver implements Serializable {
   }
 
   cancel(player: PlayerState) {
-    this.actionsOptions.filter(ao => ao.who === player)
+    this.actionsOptions.filter(ao => ao.who._id === player._id)
       .forEach(ao => {
         ao.state = 'cancel'
       })
@@ -288,7 +290,7 @@ export class ActionResolver implements Serializable {
   }
 
   allOptions(player: PlayerState) {
-    const oas = this.actionsOptions.filter(ao => ao.who === player && ao.state === 'waiting')
+    const oas = this.actionsOptions.filter(ao => ao.who._id === player._id && ao.state === 'waiting')
 
     if (oas.length === 0) {
       return null
@@ -926,10 +928,10 @@ class TableState implements Serializable {
         zhuangIndex = i;
       }
 
-      if (!p.zhuang) {
-        p.onDeposit = true;
-        await p.sendMessage('game/startDepositReply', {ok: true, data: {}});
-      }
+      // if (!p.zhuang) {
+      //   p.onDeposit = true;
+      //   await p.sendMessage('game/startDepositReply', {ok: true, data: {}});
+      // }
 
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards, zhuangIndex)
     }
@@ -983,7 +985,7 @@ class TableState implements Serializable {
       if (cardTypes[i].cardId === 1 && type === 1) {
         const status = await this.checkQiShouJiao(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
-          cardType = cardTypes[i];
+        cardType = cardTypes[i];
       }
 
       // 双星辰，含有两种星座牌组成的刻(杠的和牌)
@@ -2659,6 +2661,7 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
+        return ;
         if (!this.isAllHu && !player.onDeposit) {
           if (!player.zhuang) {
             player.onDeposit = true;
@@ -2750,6 +2753,7 @@ class TableState implements Serializable {
     })
     player.on('waitForDoSomeThing', msg => {
       player.deposit(async () => {
+        return;
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
@@ -3028,7 +3032,6 @@ class TableState implements Serializable {
       this.turn++;
 
       const broadcastMsg = {turn: this.turn, card, index, isAnGang}
-
       const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
       if (ok) {
         player.lastOperateType = 3;
@@ -3190,8 +3193,8 @@ class TableState implements Serializable {
 
         if (isJiePao) {
           this.actionResolver.requestAction(player, 'hu', async () => {
-              this.lastHuCard = card;
-              this.cardTypes = await this.getCardTypes(player, 2);
+            this.lastHuCard = card;
+            this.cardTypes = await this.getCardTypes(player, 2);
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
               logger.info('hu player %s jiepao %s', index, ok)
 
@@ -3492,7 +3495,7 @@ class TableState implements Serializable {
               }
             }
 
-            //第一次胡牌自动托管
+            // 第一次胡牌自动托管
             if (!player.onDeposit && !this.isAllHu && player.zhuang) {
               // player.onDeposit = true
               // 创建机器人代理
@@ -4148,7 +4151,7 @@ class TableState implements Serializable {
     console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
 
     if (waits.length > 0 && !this.isGameOver) {
-      this.waitRecharge = true;
+      this.room.robotManager.model.step = RobotStep.waitRuby;
       this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
     }
 
@@ -4566,7 +4569,7 @@ class TableState implements Serializable {
       }
 
       if (waits.length > 0 && !this.isGameOver) {
-        this.waitRecharge = true;
+        this.room.robotManager.model.step = RobotStep.waitRuby;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
     }
@@ -4609,7 +4612,7 @@ class TableState implements Serializable {
     this.room.removeReadyPlayer(p._id.toString());
 
     if (this.atIndex(p) === 0) {
-      this.waitRecharge = false;
+      this.room.robotManager.model.step = RobotStep.waitRuby;
     }
 
     if (!this.brokeList.includes(p._id.toString())) {
