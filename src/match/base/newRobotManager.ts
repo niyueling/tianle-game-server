@@ -217,7 +217,6 @@ export class NewRobotManager {
     robotProxy.seatIndex = posIndex;
     robotProxy.room = this.room;
     this.room.players[posIndex] = robotProxy;
-    console.warn("add robot index-%s shortId-%s gameState-%s", posIndex, robotProxy.model.shortId, this.room.gameState);
     // 替换 playerState
     if (this.room.gameState) {
       // 游戏已经开始了
@@ -230,6 +229,7 @@ export class NewRobotManager {
       await this.save();
     }
     this.disconnectPlayers[playerId] = robotProxy;
+    console.warn("add robot index-%s shortId-%s gameState-%s disconnectPlayers-%s", posIndex, robotProxy.model.shortId, this.room.gameState, JSON.stringify(this.disconnectPlayers));
   }
 
   // 是否需要托管
