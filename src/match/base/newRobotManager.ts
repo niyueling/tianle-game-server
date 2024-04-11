@@ -130,7 +130,7 @@ export class NewRobotManager {
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐
-      console.log('some one absent %s gameState %s', this.room._id, this.room.gameState);
+      console.log('some one absent %s', this.room._id);
       if (!this.room.gameState) {
         await this.room.forceDissolve();
       }
@@ -386,7 +386,7 @@ export class NewRobotManager {
     for (let i = 0; i < this.room.players.length; i++) {
       const playerId = await this.getOfflinePlayerByIndex(i)
       if (playerId !== "") {
-        console.warn();
+        console.warn("playerId-%s offlineTimes-%s offlineDelayTime-%s", playerId, this.model.offlineTimes[playerId], config.game.offlineDelayTime);
         // 有人离线
         if (this.model.offlineTimes[playerId] > config.game.offlineDelayTime) {
           // 离线时间超过 5s
@@ -398,23 +398,6 @@ export class NewRobotManager {
         }
       }
     }
-  }
-
-  async nextRound() {
-    // 更新位置
-    if (this.model.step !== RobotStep.running) {
-      return;
-    }
-    await this.updatePlayerOrder();
-    await this.decreaseDepositTimes();
-    if (this.room.isPublic) {
-      // 金豆房，要检查金豆
-      this.model.step = RobotStep.waitRuby;
-    } else {
-      this.model.step = RobotStep.start;
-    }
-    await this.save();
-    console.log('next round', this.room._id)
   }
 
   async addRobotForPublicRoom() {
