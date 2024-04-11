@@ -3030,7 +3030,6 @@ class TableState implements Serializable {
       this.turn++;
 
       const broadcastMsg = {turn: this.turn, card, index, isAnGang}
-
       const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
       if (ok) {
         player.lastOperateType = 3;

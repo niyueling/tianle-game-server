@@ -169,7 +169,7 @@ export class NewRobotManager {
   // 默认出牌间隔 5s
   getWaitSecond() {
     if (this.room.gameRule.isPublic) {
-      return Math.floor(Math.random() * 2 + 1);
+      return Math.floor(Math.random() * 5 + 3);
     }
     return config.game.waitDelayTime;
   }
@@ -261,6 +261,7 @@ export class NewRobotManager {
     for (const key of Object.keys(this.model.depositPlayer)) {
       this.model.depositPlayer[key]--;
     }
+
     await this.save();
   }
 
