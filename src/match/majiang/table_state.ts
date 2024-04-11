@@ -2672,18 +2672,9 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
-        return ;
-        if (!this.isAllHu && !player.onDeposit) {
-          if (!player.zhuang) {
-            player.onDeposit = true;
-          } else {
-            return ;
-          }
+        if (!player.zhuang) {
+          return ;
         }
-
-        // if (this.waitRecharge) {
-        //   return ;
-        // }
 
         const nextDo = async () => {
           if (msg) {
@@ -2764,7 +2755,10 @@ class TableState implements Serializable {
     })
     player.on('waitForDoSomeThing', msg => {
       player.deposit(async () => {
-        return;
+        if (!player.zhuang) {
+          return ;
+        }
+
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
