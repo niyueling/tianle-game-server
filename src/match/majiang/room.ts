@@ -820,7 +820,7 @@ class Room extends RoomBase {
   broadcast(name, message, except?) {
     for (let i = 0; i < this.players.length; ++i) {
       const player = this.players[i]
-      if (player && player !== except) {
+      if (player && player._id !== except._id) {
         player.sendMessage(name, message)
       }
     }
