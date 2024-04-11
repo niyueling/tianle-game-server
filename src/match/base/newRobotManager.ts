@@ -469,7 +469,7 @@ export class NewRobotManager {
         isAllRobot = false
       }
     }
-    if (isAllRobot) {
+    if (isAllRobot && !this.room.gameState) {
       console.log('dissolve room by robotManager', this.room._id);
       // 所有人都是机器人，解散房间
       await this.room.forceDissolve();
