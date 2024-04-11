@@ -509,7 +509,11 @@ export class NewRobotManager {
         // 删除等待时间
         delete this.noRubyInterval[p.model._id.toString()];
       }
+
+      this.waitInterval[p._id] = 0;
     }
+
+
     return waitRuby;
   }
 
