@@ -386,6 +386,7 @@ export class NewRobotManager {
     for (let i = 0; i < this.room.players.length; i++) {
       const playerId = await this.getOfflinePlayerByIndex(i)
       if (playerId !== "") {
+        console.warn();
         // 有人离线
         if (this.model.offlineTimes[playerId] > config.game.offlineDelayTime) {
           // 离线时间超过 5s
@@ -598,6 +599,7 @@ export class NewRobotManager {
   // 有位置离线
   async getOfflinePlayerByIndex(index) {
     for (const item of this.room.disconnected) {
+      console.warn(`item-${item}`);
       if (item[1] === index) {
         // 这个位置有人了
         return item[0]

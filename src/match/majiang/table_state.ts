@@ -25,6 +25,7 @@ import PlayerMedal from "../../database/models/PlayerMedal";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import PlayerCardTable from "../../database/models/PlayerCardTable";
 import PlayerCardTypeRecord from "../../database/models/playerCardTypeRecord";
+import {MJRobotRmqProxy} from "./robotRmqProxy";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -3236,10 +3237,12 @@ class TableState implements Serializable {
                 }
 
                 //第一次胡牌自动托管
-                // if (!player.onDeposit && !this.isAllHu) {
-                //   player.onDeposit = true
-                //   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-                // }
+                if (!player.onDeposit && !this.isAllHu) {
+                  // player.onDeposit = true
+                  // 创建机器人代理
+                  const robotRmqProxy = await this.room.robotManager.createProxy(player._id);
+                  await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+                }
 
                 this.stateData[Enums.hu].remove(player);
                 this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
