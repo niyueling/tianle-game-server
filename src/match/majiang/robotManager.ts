@@ -2,7 +2,6 @@ import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
 import Enums from "./enums";
 import {MJRobotRmqProxy} from "./robotRmqProxy";
-import {RedisKey} from "@fm/common/constants";
 
 // 机器人出牌
 export class RobotManager extends NewRobotManager {
@@ -37,21 +36,6 @@ export class RobotManager extends NewRobotManager {
     }
   }
 
-  checkIsRobot(player) {
-    const keys = Object.keys(this.disconnectPlayers);
-    let proxy;
-    let flag = false;
-    for (const key of keys) {
-      proxy = this.disconnectPlayers[key];
-      if (proxy.model._id.toString() === player._id.toString()) {
-        flag = true;
-        break;
-      }
-    }
-
-    return flag;
-  }
-
   // 出牌
   async playCard() {
     if (!this.room.gameState && !this.isPlayed) {
@@ -63,12 +47,6 @@ export class RobotManager extends NewRobotManager {
     let playerId;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
-      if (proxy.playerState.onDeposit) {
-        continue;
-      }
-
-      proxy.playerState.onDeposit = true;
-
       playerId = proxy.model._id.toString();
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);

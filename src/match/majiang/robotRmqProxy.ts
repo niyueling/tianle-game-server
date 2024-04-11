@@ -1,7 +1,6 @@
 import {GameType, RedisKey} from "@fm/common/constants";
 import {RobotRmqProxy} from "../base/robotRmqProxy";
 import Enums from "./enums";
-import {service} from "../../service/importService";
 
 // 机器人
 export class MJRobotRmqProxy extends RobotRmqProxy {
@@ -35,8 +34,6 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
       } else {
         this.playerState.emitter.emit(Enums.da, this.room.gameState.turn, card);
       }
-
-      this.playerState.onDeposit = true;
     }
   }
 

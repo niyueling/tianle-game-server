@@ -926,10 +926,10 @@ class TableState implements Serializable {
         zhuangIndex = i;
       }
 
-      if (!p.zhuang) {
-        p.onDeposit = true;
-        await p.sendMessage('game/startDepositReply', {ok: true, data: {}});
-      }
+      // if (!p.zhuang) {
+      //   p.onDeposit = true;
+      //   await p.sendMessage('game/startDepositReply', {ok: true, data: {}});
+      // }
 
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards, zhuangIndex)
     }
@@ -2659,6 +2659,7 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
+        return ;
         if (!this.isAllHu && !player.onDeposit) {
           if (!player.zhuang) {
             player.onDeposit = true;
@@ -2750,6 +2751,7 @@ class TableState implements Serializable {
     })
     player.on('waitForDoSomeThing', msg => {
       player.deposit(async () => {
+        return;
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
@@ -3235,10 +3237,10 @@ class TableState implements Serializable {
                 }
 
                 //第一次胡牌自动托管
-                if (!player.onDeposit && !this.isAllHu) {
-                  player.onDeposit = true
-                  await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-                }
+                // if (!player.onDeposit && !this.isAllHu) {
+                //   player.onDeposit = true
+                //   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+                // }
 
                 this.stateData[Enums.hu].remove(player);
                 this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
@@ -3482,10 +3484,10 @@ class TableState implements Serializable {
             }
 
             //第一次胡牌自动托管
-            if (!player.onDeposit && !this.isAllHu) {
-              player.onDeposit = true
-              await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-            }
+            // if (!player.onDeposit && !this.isAllHu) {
+            //   player.onDeposit = true
+            //   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+            // }
 
             this.room.broadcast('game/oppoZiMo', {
               ok: true,

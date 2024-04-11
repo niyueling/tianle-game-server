@@ -4,7 +4,6 @@ import GoodsExchangeRuby from "../../database/models/goodsExchangeRuby";
 import Player from "../../database/models/player";
 import {service} from "../../service/importService";
 import {BaseApi} from "./baseApi";
-import WatchAdverRecord from "../../database/models/watchAdverRecord";
 
 // 资源
 export class ResourceApi extends BaseApi {
