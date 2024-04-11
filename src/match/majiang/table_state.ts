@@ -15,7 +15,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {ConsumeLogType, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import CombatGain from "../../database/models/combatGain";
@@ -4127,7 +4127,7 @@ class TableState implements Serializable {
     console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
 
     if (waits.length > 0 && !this.isGameOver) {
-      this.waitRecharge = true;
+      this.room.robotManager.model.step = RobotStep.waitRuby;
       this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
     }
 
@@ -4545,7 +4545,7 @@ class TableState implements Serializable {
       }
 
       if (waits.length > 0 && !this.isGameOver) {
-        this.waitRecharge = true;
+        this.room.robotManager.model.step = RobotStep.waitRuby;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
     }
@@ -4588,7 +4588,7 @@ class TableState implements Serializable {
     this.room.removeReadyPlayer(p._id.toString());
 
     if (this.atIndex(p) === 0) {
-      this.waitRecharge = false;
+      this.room.robotManager.model.step = RobotStep.waitRuby;
     }
 
     if (!this.brokeList.includes(p._id.toString())) {
