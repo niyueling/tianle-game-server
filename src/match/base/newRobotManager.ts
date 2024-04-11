@@ -599,7 +599,7 @@ export class NewRobotManager {
   // 有位置离线
   async getOfflinePlayerByIndex(index) {
     for (const item of this.room.disconnected) {
-      console.warn(`item-${item}`);
+      console.warn(`item-${JSON.stringify(item)}`);
       if (item[1] === index) {
         // 这个位置有人了
         return item[0]
