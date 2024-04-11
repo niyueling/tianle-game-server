@@ -3237,7 +3237,7 @@ class TableState implements Serializable {
                 }
 
                 //第一次胡牌自动托管
-                if (!player.onDeposit && !this.isAllHu) {
+                if (!player.onDeposit && !this.isAllHu && player.zhuang) {
                   // player.onDeposit = true
                   // 创建机器人代理
                   let flag = true;
@@ -3249,9 +3249,8 @@ class TableState implements Serializable {
 
                   if (flag) {
                     this.room.disconnected.push([player._id.toString(), this.atIndex(player)]);
+                    await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                   }
-
-                  await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                 }
 
                 this.stateData[Enums.hu].remove(player);
@@ -3496,7 +3495,7 @@ class TableState implements Serializable {
             }
 
             // 第一次胡牌自动托管
-            if (!player.onDeposit && !this.isAllHu) {
+            if (!player.onDeposit && !this.isAllHu && player.zhuang) {
               // player.onDeposit = true
               // 创建机器人代理
               let flag = true;
@@ -3508,9 +3507,8 @@ class TableState implements Serializable {
 
               if (flag) {
                 this.room.disconnected.push([player._id.toString(), this.atIndex(player)]);
+                await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
               }
-
-              await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
             }
 
             this.room.broadcast('game/oppoZiMo', {
