@@ -4195,7 +4195,6 @@ class TableState implements Serializable {
 
   async onPlayerDa(player, turn, card) {
     const index = this.players.indexOf(player);
-    this.logger.info('da player-%s card:%s lastDa %s', index, card, this.lastDa ? this.lastDa._id : null)
     let from;
 
     if (this.state !== stateWaitDa) {
@@ -4246,9 +4245,10 @@ class TableState implements Serializable {
           if (r.hu) {
             if (!check.hu || check.hu.length === 0) {
               check.hu = [];
-              check.hu.push(p);
-              p.huInfo = r.check;
             }
+
+            check.hu.push(p);
+            p.huInfo = r.check;
           }
         }
       }
@@ -4268,40 +4268,40 @@ class TableState implements Serializable {
 
       const env = {card, from, turn: this.turn}
       this.actionResolver = new ActionResolver(env, async () => {
-        if (xiajia) {
-          const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-          const newCard = await this.consumeCard(xiajia);
-          if (newCard) {
-            xiajia.cards[newCard]++;
-            this.cardTypes = await this.getCardTypes(xiajia, 1);
-            xiajia.cards[newCard]--;
-            const msg = xiajia.takeCard(this.turn, newCard, false, false,
-              {
-                id: this.cardTypes.cardId,
-                multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore
-              });
-
-            if (!msg) {
-              console.error("consume card error msg ", msg);
-              return;
-            }
-
-            // 如果用户可以杠，并且胡牌已托管，则取消托管
-            if (msg.gang && xiajia.isGameHu && xiajia.onDeposit) {
-              xiajia.onDeposit = false;
-              xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {card: newCard}})
-            }
-
-            this.state = stateWaitDa;
-            this.stateData = {da: xiajia, card: newCard, msg};
-            const sendMsg = {index: this.players.indexOf(xiajia), card: newCard};
-            this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
-            logger.info('da broadcast game/oppoTakeCard  msg %s', JSON.stringify(sendMsg), "remainCard", this.remainCards);
-          }
-        } else {
+        if (!xiajia) {
           const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
           const nextZhuang = this.nextZhuang()
           await this.gameAllOver(states, [], nextZhuang);
+
+        }
+
+        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+        const newCard = await this.consumeCard(xiajia);
+        if (newCard) {
+          xiajia.cards[newCard]++;
+          this.cardTypes = await this.getCardTypes(xiajia, 1);
+          xiajia.cards[newCard]--;
+          const msg = xiajia.takeCard(this.turn, newCard, false, false,
+            {
+              id: this.cardTypes.cardId,
+              multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore
+            });
+
+          if (!msg) {
+            console.error("consume card error msg ", msg);
+            return;
+          }
+
+          // 如果用户可以杠，并且胡牌已托管，则取消托管
+          if (msg.gang && xiajia.isGameHu && xiajia.onDeposit) {
+            xiajia.onDeposit = false;
+            xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {card: newCard}})
+          }
+
+          this.state = stateWaitDa;
+          this.stateData = {da: xiajia, card: newCard, msg};
+          const sendMsg = {index: this.players.indexOf(xiajia), card: newCard};
+          this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
         }
       });
 
@@ -4309,7 +4309,7 @@ class TableState implements Serializable {
         const i = (index + j) % this.players.length;
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p._id);
-        if (p.contacted(this.lastDa) < 2 && !p.isBroke && model.gold > 0) {
+        if (!p.isBroke && model.gold > 0 && !p.isGameHu) {
           check = p.checkPengGang(card, check);
         }
       }
@@ -4320,14 +4320,15 @@ class TableState implements Serializable {
         }
       }
 
-      if (check[Enums.pengGang] && (!check[Enums.hu] || check[Enums.hu].length === 0)) {
-        if (check[Enums.gang] && !check[Enums.gang].isGameHu) {
+      if (check[Enums.pengGang]) {
+      // if (check[Enums.pengGang] && (!check[Enums.hu] || check[Enums.hu].length === 0)) {
+        if (check[Enums.gang]) {
           const p = check[Enums.gang];
           const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())];
           p.gangForbid.push(card);
           this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo);
         }
-        if (check[Enums.peng] && !check[Enums.peng].isGameHu) {
+        if (check[Enums.peng]) {
           this.actionResolver.appendAction(check[Enums.peng], 'peng');
         }
       }
@@ -4350,15 +4351,13 @@ class TableState implements Serializable {
             }
           }
 
-          p.record('choice', card, msg)
+          p.record('choice', card, msg);
 
           // 如果用户可以杠，并且胡牌已托管，则取消托管
           if (msg["gang"] && p.isGameHu && p.onDeposit) {
             p.onDeposit = false;
             p.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}})
           }
-
-          // console.warn("index-%s shortId-%s room-%s card-%s msg-%s", this.atIndex(p), p.model.shortId, this.room._id, card, JSON.stringify(msg));
 
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});

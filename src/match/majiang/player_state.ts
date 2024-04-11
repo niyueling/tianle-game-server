@@ -576,15 +576,13 @@ class PlayerState implements Serializable {
   }
 
   checkPengGang(card, map) {
-    if (this.caiShen.includes(card))
+    if (this.caiShen.includes(card)) {
       return map
-
-    if (card === Enums.bai) {
-      card = this.caiShen[0]
     }
 
-    if (this.hadQiaoXiang)
+    if (this.hadQiaoXiang) {
       return map
+    }
 
     if (this.pengForbidden.indexOf(card) >= 0) {
       return map
