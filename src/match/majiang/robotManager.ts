@@ -54,9 +54,10 @@ export class RobotManager extends NewRobotManager {
       const ziMoHu = proxy.playerState.checkZiMo();
       const jiePaoHu = proxy.playerState.checkHuState(this.room.gameState.stateData.card);
       const isPlayerDa = this.isPlayerDa(playerId);
+      const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
 
       if (this.room.gameState.atIndex(proxy.playerState) === 0) {
-        console.warn("playerId-%s AnGangIndex-%s buGangIndex-%s ziMoHu-%s jiePaoHu-%s isPlayerDa-%s", playerId, AnGangIndex, buGangIndex, ziMoHu, jiePaoHu, isPlayerDa);
+        console.warn("playerId-%s AnGangIndex-%s buGangIndex-%s ziMoHu-%s jiePaoHu-%s isPlayerDa-%s isPlayerChoice-%s", playerId, AnGangIndex, buGangIndex, ziMoHu, jiePaoHu, isPlayerDa, isPlayerChoice);
       }
 
       // if (!this.room.gameState.waitRecharge) {
