@@ -409,11 +409,12 @@ class TableState implements Serializable {
     multiple: number;
   }
 
-  // 是否等待复活
-  waitRecharge: boolean = false;
-
   // 判断是否打牌
   isGameDa: boolean = false;
+
+  // 是否一炮多响
+  isManyHu: boolean = false;
+  manyHuArray: any[] = [];
 
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
@@ -445,8 +446,9 @@ class TableState implements Serializable {
     this.brokeCount = 0;
     this.brokeList = [];
     this.isAllHu = false;
-    this.waitRecharge = false;
     this.isGameDa = false;
+    this.isManyHu = false;
+    this.manyHuArray = [];
   }
 
   toJSON() {
@@ -4334,6 +4336,7 @@ class TableState implements Serializable {
       }
 
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+      let huCount = 0;
 
       for (let i = 1; i < this.players.length; i++) {
         const j = (from + i) % this.players.length;
@@ -4343,6 +4346,8 @@ class TableState implements Serializable {
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
           if (msg["hu"]) {
+            huCount++;
+            this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}})
             this.lastHuCard = card;
             this.cardTypes = await this.getCardTypes(p, 2);
             msg["huType"] = {
@@ -4362,6 +4367,11 @@ class TableState implements Serializable {
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
         }
+      }
+
+      huCount > 1 ? this.isManyHu = true : this.manyHuArray = [];
+      if (huCount > 1) {
+        console.warn("manyHuArray-%s", JSON.stringify(this.manyHuArray));
       }
 
       if (check[Enums.pengGang] || check[Enums.hu]) {
