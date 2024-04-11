@@ -485,7 +485,6 @@ export class NewRobotManager {
     let waitRuby = false;
     for (let i = 0; i < this.room.gameState.players.length; i++) {
       const p = this.room.gameState.players[i];
-      if (p) console.warn("p.isBroke-%s", p.isBroke);
       if (!p || p.isBroke || !this.room.gameState) {
         continue;
       }
