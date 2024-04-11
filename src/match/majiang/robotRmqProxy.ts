@@ -37,19 +37,6 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
     }
   }
 
-  checkPlayerCount(player) {
-    const cards = player.cards.slice();
-    let count = 0;
-
-    for (let i = 0; i < cards.length; i++) {
-      if (cards[i] > 0) {
-        count += cards[i];
-      }
-    }
-
-    return count;
-  }
-
   async guo() {
     if (this.playerState) {
       // 过
@@ -68,8 +55,6 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   }
 
   async gang(action, index = 0) {
-    // console.warn(`${this.playerState.model.shortId}(${this.playerState.model.nickname})执行操作：${action}`)
-
     switch (action) {
       case Enums.gang:
         await this.room.gameState.promptWithOther(Enums.gang, this.playerState);
