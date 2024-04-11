@@ -3240,7 +3240,17 @@ class TableState implements Serializable {
                 if (!player.onDeposit && !this.isAllHu) {
                   // player.onDeposit = true
                   // 创建机器人代理
-                  const robotRmqProxy = await this.room.robotManager.createProxy(player._id);
+                  let flag = true;
+                  this.room.disconnected.map((v) => {
+                    if (v[0] === player._id.toString()) {
+                      flag = false;
+                    }
+                  })
+
+                  if (flag) {
+                    this.room.disconnected.push([player._id.toString(), this.atIndex(player)]);
+                  }
+
                   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                 }
 
@@ -3485,11 +3495,23 @@ class TableState implements Serializable {
               }
             }
 
-            //第一次胡牌自动托管
-            // if (!player.onDeposit && !this.isAllHu) {
-            //   player.onDeposit = true
-            //   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-            // }
+            // 第一次胡牌自动托管
+            if (!player.onDeposit && !this.isAllHu) {
+              // player.onDeposit = true
+              // 创建机器人代理
+              let flag = true;
+              this.room.disconnected.map((v) => {
+                if (v[0] === player._id.toString()) {
+                  flag = false;
+                }
+              })
+
+              if (flag) {
+                this.room.disconnected.push([player._id.toString(), this.atIndex(player)]);
+              }
+
+              await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+            }
 
             this.room.broadcast('game/oppoZiMo', {
               ok: true,
