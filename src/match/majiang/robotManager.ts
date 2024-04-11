@@ -43,7 +43,7 @@ export class RobotManager extends NewRobotManager {
     }
 
     const keys = Object.keys(this.disconnectPlayers);
-    console.warn("disconnectPlayers-%s keys-%s", JSON.stringify(this.disconnectPlayers), JSON.stringify(keys));
+    // console.warn("disconnectPlayers-%s keys-%s", JSON.stringify(this.disconnectPlayers), JSON.stringify(keys));
     let proxy;
     let playerId;
     for (const key of keys) {
@@ -53,6 +53,11 @@ export class RobotManager extends NewRobotManager {
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const ziMoHu = proxy.playerState.checkZiMo();
       const jiePaoHu = proxy.playerState.checkHuState(this.room.gameState.stateData.card);
+      const isPlayerDa = this.isPlayerDa(playerId);
+
+      if (this.room.gameState.atIndex(proxy.playerState) === 0) {
+        console.warn("playerId-%s AnGangIndex-%s buGangIndex-%s ziMoHu-%s jiePaoHu-%s isPlayerDa-%s", playerId, AnGangIndex, buGangIndex, ziMoHu, jiePaoHu, isPlayerDa);
+      }
 
       // if (!this.room.gameState.waitRecharge) {
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
