@@ -3215,6 +3215,13 @@ class TableState implements Serializable {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         if (isJiePao) {
+          // 一炮多响
+          if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
+            this.manyHuPlayers.push(player._id.toString());
+            console.warn("player index-%s choice jiePao card-%s", this.atIndex(player), card);
+            return ;
+          }
+
           this.actionResolver.requestAction(player, 'hu', async () => {
             this.lastHuCard = card;
             this.cardTypes = await this.getCardTypes(player, 2);
