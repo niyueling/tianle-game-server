@@ -5287,12 +5287,11 @@ class TableState implements Serializable {
         // 如果机器人没有选择胡，则push到数组
         if (!this.manyHuPlayers.includes(player._id.toString())) {
           this.manyHuPlayers.push(player._id.toString());
+          this.setManyAction(player, Enums.hu);
         }
 
-        console.warn("card-%s manyHuPlayers-%s canManyHuPlayers-%s", this.stateData.card, JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers));
-
         if (this.manyHuPlayers.length === this.manyHuArray.length) {
-          console.warn("manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
+          console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
         }
 
         break;
