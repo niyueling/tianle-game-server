@@ -3361,7 +3361,7 @@ class TableState implements Serializable {
                 await this.gameOver(this.players[from], player);
 
                 const gameCompetite = async () => {
-                  if (!this.isAllHu && isAllHu) {
+                  if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
                     this.isAllHu = isAllHu;
 
                     this.room.broadcast('game/gameCompetite', {
@@ -3592,7 +3592,7 @@ class TableState implements Serializable {
             this.logger.info('hu  player %s zimo gameover', index)
 
             const gameCompetite = async () => {
-              if (!this.isAllHu && isAllHu) {
+              if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
                 this.isAllHu = isAllHu;
 
                 this.room.broadcast('game/gameCompetite', {
