@@ -143,6 +143,10 @@ export class RobotManager extends NewRobotManager {
         return action;
       }
 
+      if (action === Enums.hu && jiePaoHu.hu) {
+        console.warn("action-%s isArray-%s arrayLength-%s stateData.hu-%s", action, Array.isArray(this.room.gameState.stateData[action]), this.room.gameState.stateData[action].length, JSON.stringify(this.room.gameState.stateData[action]));
+      }
+
       if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
         this.room.gameState.stateData[action].length > 0 && jiePaoHu.hu) {
         if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
