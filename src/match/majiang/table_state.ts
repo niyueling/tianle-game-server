@@ -3991,12 +3991,11 @@ class TableState implements Serializable {
       }
     }
 
-
     for (let i = 0; i < this.manyHuArray.length; i++) {
       // 处理过牌
       if (this.manyHuArray[i].action === Enums.guo || ([Enums.gang, Enums.peng].includes(this.manyHuArray[i].action) && huCount > 0)) {
         this.players[this.manyHuArray[i].to].emitter.emit(Enums.guo, this.turn, this.manyHuArray[i].card);
-        msgs.push({type: this.manyHuArray[i].action, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
+        msgs.push({type: Enums.guo, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
       }
 
       // 处理胡牌
