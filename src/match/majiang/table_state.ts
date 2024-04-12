@@ -5225,6 +5225,7 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.gangBySelf, this.turn, card)
         break;
       case Enums.hu:
+        console.warn(todo, this.stateData.card);
         // 不是一炮多响，则直接执行
         if (!this.room.gameState.isManyHu) {
           return player.emitter.emit(Enums.hu, this.turn, this.stateData.card)
