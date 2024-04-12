@@ -4045,7 +4045,11 @@ class TableState implements Serializable {
     }
 
     this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs}});
-    this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
+
+    const nextDo1 = async () => {
+      this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
+    }
+    setTimeout(nextDo1, 2000);
 
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
@@ -4251,7 +4255,10 @@ class TableState implements Serializable {
 
     if (waits.length > 0 && !this.isGameOver) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
-      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      const nextDo1 = async () => {
+        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      }
+      setTimeout(nextDo1, 2000);
     }
 
     return playersModifyGolds;
@@ -4402,7 +4409,10 @@ class TableState implements Serializable {
 
     if (waits.length > 0 && !this.isGameOver) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
-      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      const nextDo1 = async () => {
+        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      }
+      setTimeout(nextDo1, 2000);
     }
 
     return playersModifyGolds;
@@ -4833,7 +4843,10 @@ class TableState implements Serializable {
 
       if (waits.length > 0 && !this.isGameOver) {
         this.room.robotManager.model.step = RobotStep.waitRuby;
-        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+        const nextDo1 = async () => {
+          this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+        }
+        setTimeout(nextDo1, 2000);
       }
     }
     this.logger.close()
