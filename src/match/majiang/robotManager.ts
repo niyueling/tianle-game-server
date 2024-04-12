@@ -56,11 +56,6 @@ export class RobotManager extends NewRobotManager {
       const isPlayerDa = this.isPlayerDa(playerId);
       const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
 
-      // if (playerId === "660386980e613a7d20370125" && (isPlayerDa || isPlayerChoice)) {
-      //   console.warn("playerId-%s AnGangIndex-%s buGangIndex-%s isPlayerDa-%s isPlayerChoice-%s", playerId, AnGangIndex, buGangIndex, isPlayerDa, isPlayerChoice);
-      // }
-
-      // if (!this.room.gameState.waitRecharge) {
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
           await proxy.gang(this.isPlayerGang(playerId))
         } else if (isPlayerChoice && this.room.gameState.state === 2) {
@@ -79,17 +74,12 @@ export class RobotManager extends NewRobotManager {
               await proxy.playCard();
             }
           }
-
-          break;
         } else {
           // 过
           if (this.isPlayerGuo(playerId)) {
             await proxy.guo();
           }
         }
-      // } else {
-      //   console.warn("await player invive game-state %s current-index %s isBroke %s gold %s", this.room.gameState.state, this.room.gameState.atIndex(proxy), proxy.isBroke, model.gold)
-      // }
     }
   }
 
