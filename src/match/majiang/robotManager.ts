@@ -63,9 +63,9 @@ export class RobotManager extends NewRobotManager {
       // if (!this.room.gameState.waitRecharge) {
         if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
           await proxy.gang(this.isPlayerGang(playerId))
-        } else if (this.isPlayerChoice(playerId, jiePaoHu) && this.room.gameState.state === 2) {
-          await proxy.choice(this.isPlayerChoice(playerId, jiePaoHu))
-        } else if (this.isPlayerDa(playerId)) {
+        } else if (isPlayerChoice && this.room.gameState.state === 2) {
+          await proxy.choice(isPlayerChoice)
+        } else if (isPlayerDa) {
           if (this.waitInterval[key] >= this.getWaitSecond()) {
             this.waitInterval[key] = 0;
 

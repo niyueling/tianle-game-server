@@ -415,6 +415,7 @@ class TableState implements Serializable {
   // 是否一炮多响
   isManyHu: boolean = false;
   manyHuArray: any[] = [];
+  manyHuPlayers: any[] = [];
 
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
@@ -449,6 +450,7 @@ class TableState implements Serializable {
     this.isGameDa = false;
     this.isManyHu = false;
     this.manyHuArray = [];
+    this.manyHuPlayers = [];
   }
 
   toJSON() {
@@ -2771,10 +2773,10 @@ class TableState implements Serializable {
 
         const nextDo = async () => {
           console.warn("waitForDoSomeThing index-%s msg-%s todo-%s", this.atIndex(player), JSON.stringify(msg.data), todo);
-          // if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
-          //   player.emitter.emit(Enums.peng, this.turn, card);
-          //   player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}});
-          // }
+          if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
+            player.emitter.emit(Enums.peng, this.turn, card);
+            player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}});
+          }
           if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
             console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
@@ -2786,8 +2788,17 @@ class TableState implements Serializable {
             if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
               player.emitter.emit(Enums.guo, this.turn, card);
             } else {
-              player.emitter.emit(Enums.hu, this.turn, card);
-              player.sendMessage('game/depositHu', {ok: true, data: {card, turn: this.turn}})
+              // 不是一炮多响，则直接执行
+              if (!this.room.gameState.isManyHu) {
+                return player.emitter.emit(Enums.hu, this.turn, card);
+              }
+
+              // 一炮多响
+              if (!this.manyHuPlayers.includes(player._id)) {
+                this.manyHuPlayers.push(player._id.toString());
+                console.warn("player index-%s not choice card-%s", this.atIndex(player), card);
+                return ;
+              }
             }
           } else {
             player.emitter.emit(Enums.guo, this.turn, card)
@@ -5214,7 +5225,26 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.gangBySelf, this.turn, card)
         break;
       case Enums.hu:
-        player.emitter.emit(Enums.hu, this.turn, this.stateData.card)
+        // 不是一炮多响，则直接执行
+        if (!this.room.gameState.isManyHu) {
+          return player.emitter.emit(Enums.hu, this.turn, this.stateData.card)
+        }
+
+        // 一炮多响
+        if (!this.manyHuPlayers.includes(this.zhuang._id)) {
+          console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
+          return ;
+        }
+
+        // 如果机器人没有选择胡，则push到数组
+        if (!this.manyHuPlayers.includes(player._id)) {
+          this.manyHuPlayers.push(player._id);
+        }
+
+        if (this.manyHuPlayers.length === this.manyHuArray.length) {
+          console.warn("manyHuPlayers-%s card-%s", JSON.stringify(this.manyHuPlayers), this.stateData.card);
+        }
+
         break;
     }
   }
