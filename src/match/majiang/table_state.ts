@@ -5242,7 +5242,6 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.gangBySelf, this.turn, card)
         break;
       case Enums.hu:
-        console.warn(todo, this.stateData.card);
         // 不是一炮多响，则直接执行
         if (!this.room.gameState.isManyHu) {
           return player.emitter.emit(Enums.hu, this.turn, this.stateData.card)
@@ -5258,6 +5257,8 @@ class TableState implements Serializable {
         if (!this.manyHuPlayers.includes(player._id.toString())) {
           this.manyHuPlayers.push(player._id.toString());
         }
+
+        console.warn("card-%s manyHuPlayers-%s canManyHuPlayers-%s", this.stateData.card, JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers));
 
         if (this.manyHuPlayers.length === this.manyHuArray.length) {
           console.warn("manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
