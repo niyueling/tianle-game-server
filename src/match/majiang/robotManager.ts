@@ -43,7 +43,6 @@ export class RobotManager extends NewRobotManager {
     }
 
     const keys = Object.keys(this.disconnectPlayers);
-    // console.warn("disconnectPlayers-%s keys-%s", JSON.stringify(this.disconnectPlayers), JSON.stringify(keys));
     let proxy;
     let playerId;
     for (const key of keys) {
@@ -55,31 +54,32 @@ export class RobotManager extends NewRobotManager {
       const jiePaoHu = proxy.playerState.checkHuState(this.room.gameState.stateData.card);
       const isPlayerDa = this.isPlayerDa(playerId);
       const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
+      console.log("playerId-%s state-%s isPlayerChoice-%s", playerId, this.room.gameState.state, isPlayerChoice);
 
-        if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
-          await proxy.gang(this.isPlayerGang(playerId))
-        } else if (isPlayerChoice && this.room.gameState.state === 2) {
-          await proxy.choice(isPlayerChoice)
-        } else if (isPlayerDa) {
-          if (this.waitInterval[key] >= this.getWaitSecond()) {
-            this.waitInterval[key] = 0;
+      if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
+        await proxy.gang(this.isPlayerGang(playerId))
+      } else if (isPlayerChoice && this.room.gameState.state === 2) {
+        await proxy.choice(isPlayerChoice)
+      } else if (isPlayerDa) {
+        if (this.waitInterval[key] >= this.getWaitSecond()) {
+          this.waitInterval[key] = 0;
 
-            if (ziMoHu.hu && !this.room.gameState.isAllHu) {
-              await proxy.choice(Enums.hu)
-            } else if (AnGangIndex && !this.room.gameState.isAllHu) {
-              await proxy.gang(Enums.anGang, AnGangIndex)
-            } else if (buGangIndex && !this.room.gameState.isAllHu) {
-              await proxy.gang(Enums.buGang, buGangIndex)
-            } else {
-              await proxy.playCard();
-            }
-          }
-        } else {
-          // 过
-          if (this.isPlayerGuo(playerId)) {
-            await proxy.guo();
+          if (ziMoHu.hu && !this.room.gameState.isAllHu) {
+            await proxy.choice(Enums.hu)
+          } else if (AnGangIndex && !this.room.gameState.isAllHu) {
+            await proxy.gang(Enums.anGang, AnGangIndex)
+          } else if (buGangIndex && !this.room.gameState.isAllHu) {
+            await proxy.gang(Enums.buGang, buGangIndex)
+          } else {
+            await proxy.playCard();
           }
         }
+      } else {
+        // 过
+        if (this.isPlayerGuo(playerId)) {
+          await proxy.guo();
+        }
+      }
     }
   }
 
