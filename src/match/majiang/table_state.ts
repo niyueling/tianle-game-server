@@ -5242,18 +5242,18 @@ class TableState implements Serializable {
         }
 
         // 一炮多响
-        if (!this.manyHuPlayers.includes(this.zhuang._id) && this.canManyHuPlayers.includes(this.zhuang._id)) {
+        if (!this.manyHuPlayers.includes(this.zhuang._id.toString()) && this.canManyHuPlayers.includes(this.zhuang._id.toString())) {
           console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
           return ;
         }
 
         // 如果机器人没有选择胡，则push到数组
-        if (!this.manyHuPlayers.includes(player._id)) {
-          this.manyHuPlayers.push(player._id);
+        if (!this.manyHuPlayers.includes(player._id.toString())) {
+          this.manyHuPlayers.push(player._id.toString());
         }
 
         if (this.manyHuPlayers.length === this.manyHuArray.length) {
-          console.warn("manyHuPlayers-%s card-%s", JSON.stringify(this.manyHuPlayers), this.stateData.card);
+          console.warn("manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
         }
 
         break;
