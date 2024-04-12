@@ -2639,8 +2639,8 @@ class TableState implements Serializable {
   }
 
   setManyAction(player: PlayerState, action) {
-    const object = this.manyHuArray.findIndex(p => p.to === this.atIndex(player));
-    object["action"] = action;
+    const index = this.manyHuArray.findIndex(p => p.to === this.atIndex(player));
+    this.manyHuArray[index].action = action;
   }
 
   listenPlayer(player) {
