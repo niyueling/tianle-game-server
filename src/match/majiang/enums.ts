@@ -106,6 +106,7 @@ const enums = {
   anGang: 'anGang',
   jiePao: 'jiePao',
   dianPao: 'dianPao',
+  multipleHu: 'multipleHu',
   huCards: 'huCards',
 
   hunhun: 'hunhun',
