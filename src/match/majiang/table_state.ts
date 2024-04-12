@@ -3998,6 +3998,18 @@ class TableState implements Serializable {
         msgs.push({type: Enums.guo, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
       }
 
+      // 处理碰牌
+      if (this.manyHuArray[i].action === Enums.peng && huCount === 0) {
+        this.players[this.manyHuArray[i].to].emitter.emit(Enums.peng, this.turn, this.manyHuArray[i].card);
+        msgs.push({type: Enums.peng, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
+      }
+
+      // 处理杠牌
+      if (this.manyHuArray[i].action === Enums.gang && huCount === 0) {
+        this.players[this.manyHuArray[i].to].emitter.emit(Enums.gangByOtherDa, this.turn, this.manyHuArray[i].card);
+        msgs.push({type: Enums.gang, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
+      }
+
       // 处理胡牌
       if (this.manyHuArray[i].action === Enums.hu) {
         const huMsg = await this.onMultipleHu(this.players[this.manyHuArray[i].to], this.manyHuArray[i]);
@@ -4040,60 +4052,61 @@ class TableState implements Serializable {
       await this.gameAllOver(states, [], nextZhuang);
     }
 
+    if (huCount > 0) {
+      // 给下家摸牌
+      let xiajia = null;
+      let startIndex = (this.manyHuArray[0].from + 1) % this.players.length;
 
-    // 给下家摸牌
-    let xiajia = null;
-    let startIndex = (this.manyHuArray[0].from + 1) % this.players.length;
-
-    // 从 startIndex 开始查找未破产的玩家
-    for (let i = startIndex; i < startIndex + this.players.length; i++) {
-      let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-      if (!this.players[index].isBroke) {
-        xiajia = this.players[index];
-        break;
+      // 从 startIndex 开始查找未破产的玩家
+      for (let i = startIndex; i < startIndex + this.players.length; i++) {
+        let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+        if (!this.players[index].isBroke) {
+          xiajia = this.players[index];
+          break;
+        }
       }
-    }
 
-    if (!xiajia) {
-      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
-    } else {
-      const nextDo = async () => {
-        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-        const newCard = await this.consumeCard(xiajia);
-        if (newCard) {
-          xiajia.cards[newCard]++;
-          this.cardTypes = await this.getCardTypes(xiajia, 1);
-          xiajia.cards[newCard]--;
-          const msg = xiajia.takeCard(this.turn, newCard, false, false,
-            {
-              id: this.cardTypes.cardId,
-              multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore
-            })
+      if (!xiajia) {
+        const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+        const nextZhuang = this.nextZhuang()
+        await this.gameAllOver(states, [], nextZhuang);
+      } else {
+        const nextDo = async () => {
+          const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+          const newCard = await this.consumeCard(xiajia);
+          if (newCard) {
+            xiajia.cards[newCard]++;
+            this.cardTypes = await this.getCardTypes(xiajia, 1);
+            xiajia.cards[newCard]--;
+            const msg = xiajia.takeCard(this.turn, newCard, false, false,
+              {
+                id: this.cardTypes.cardId,
+                multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore
+              })
 
-          if (!msg) {
-            console.error("consume card error msg ", msg);
-            return;
+            if (!msg) {
+              console.error("consume card error msg ", msg);
+              return;
+            }
+
+            this.state = stateWaitDa;
+            this.stateData = {da: xiajia, card: newCard, msg};
+            const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
+            this.room.broadcast('game/oppoTakeCard', {
+              ok: true,
+              data: sendMsg
+            }, xiajia.msgDispatcher);
           }
 
-          this.state = stateWaitDa;
-          this.stateData = {da: xiajia, card: newCard, msg};
-          const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
-          this.room.broadcast('game/oppoTakeCard', {
-            ok: true,
-            data: sendMsg
-          }, xiajia.msgDispatcher);
+          this.isManyHu = false;
+          this.isRunMultiple = false;
+          this.manyHuArray = [];
+          this.manyHuPlayers = [];
+          this.canManyHuPlayers = [];
         }
 
-        this.isManyHu = false;
-        this.isRunMultiple = false;
-        this.manyHuArray = [];
-        this.manyHuPlayers = [];
-        this.canManyHuPlayers = [];
+        setTimeout(nextDo, 1500);
       }
-
-      setTimeout(nextDo, 1500);
     }
   }
 
