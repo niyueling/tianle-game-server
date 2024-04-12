@@ -4574,9 +4574,9 @@ class TableState implements Serializable {
         const model = await service.playerService.getPlayerModel(p.model._id);
         if (msg && model.gold > 0 && !p.isBroke) {
           huCount++;
+          this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});
+          this.canManyHuPlayers.push(p._id.toString());
           if (msg["hu"]) {
-            this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});
-            this.canManyHuPlayers.push(p._id.toString());
             this.lastHuCard = card;
             this.cardTypes = await this.getCardTypes(p, 2);
             msg["huType"] = {
