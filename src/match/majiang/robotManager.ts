@@ -54,12 +54,13 @@ export class RobotManager extends NewRobotManager {
       const jiePaoHu = proxy.playerState.checkHuState(this.room.gameState.stateData.card);
       const isPlayerDa = this.isPlayerDa(playerId);
       const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
+      const isPlayerGang = this.isPlayerGang(playerId);
       if (this.room.gameState.state === 2) {
         console.log("playerId-%s index-%s state-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState), this.room.gameState.state, isPlayerChoice, JSON.stringify(jiePaoHu));
       }
 
-      if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
-        await proxy.gang(this.isPlayerGang(playerId))
+      if (isPlayerGang && this.room.gameState.state === 2) {
+        await proxy.gang(isPlayerGang)
       } else if (isPlayerChoice && this.room.gameState.state === 2) {
         await proxy.choice(isPlayerChoice)
       } else if (isPlayerDa) {
