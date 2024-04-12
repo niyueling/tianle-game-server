@@ -2860,7 +2860,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.multipleHu, async () => {
-      await this.onPlayerMultipleHu(player);
+      await this.onPlayerMultipleHu();
     })
 
     player.on(Enums.openCard, async () => {
@@ -4069,7 +4069,7 @@ class TableState implements Serializable {
     }
   }
 
-  async onPlayerMultipleHu(player) {
+  async onPlayerMultipleHu() {
     const msgs = [];
     const changeGolds = [
       {index: 0, changeGold: [], isBroke: false, currentGold: 0},
@@ -5555,13 +5555,13 @@ class TableState implements Serializable {
           return ;
         }
 
+        console.warn("manyHuPlayers-%s canManyHuPlayers-%s playerId-%s flag-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), player._id, this.manyHuPlayers.includes(player._id.toString()));
+
         // 如果机器人没有选择胡，则push到数组
         if (!this.manyHuPlayers.includes(player._id.toString())) {
           this.manyHuPlayers.push(player._id.toString());
           this.setManyAction(player, Enums.hu);
         }
-
-        console.warn("manyHuPlayers-%s canManyHuPlayers-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers));
 
         if (this.manyHuPlayers.length === this.manyHuArray.length && !this.isRunMultiple) {
           this.isRunMultiple = true;
