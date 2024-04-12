@@ -144,15 +144,15 @@ export class RobotManager extends NewRobotManager {
       }
 
       if (action === Enums.hu && jiePaoHu.hu) {
-        console.warn("action-%s isArray-%s arrayLength-%s stateData.hu-%s", action, Array.isArray(this.room.gameState.stateData[action]), this.room.gameState.stateData[action].length, JSON.stringify(this.room.gameState.stateData[action]));
+        return action;
       }
 
-      if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
-        this.room.gameState.stateData[action].length > 0 && jiePaoHu.hu) {
-        if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
-          this.room.gameState.stateData[action][0]._id.toString()
-          : this.room.gameState.stateData[action]._id.toString())) return action;
-      }
+      // if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
+      //   this.room.gameState.stateData[action].length > 0 && jiePaoHu.hu) {
+      //   if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
+      //     this.room.gameState.stateData[action][0]._id.toString()
+      //     : this.room.gameState.stateData[action]._id.toString())) return action;
+      // }
     }
     return false;
   }
