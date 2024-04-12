@@ -2638,6 +2638,11 @@ class TableState implements Serializable {
     return this.players.findIndex(p => p._id.toString() === player._id.toString())
   }
 
+  setManyAction(player: PlayerState, action) {
+    const object = this.manyHuArray.findIndex(p => p.to === this.atIndex(player));
+    object["action"] = action;
+  }
+
   listenPlayer(player) {
     const index = this.atIndex(player)
     player.registerHook('game/canDoSomething', msg => {
@@ -2885,6 +2890,14 @@ class TableState implements Serializable {
         return
       }
 
+      // 一炮多响
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
+        this.manyHuPlayers.push(player._id.toString());
+        this.setManyAction(player, Enums.peng);
+        console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.peng);
+        return ;
+      }
+
       this.actionResolver.requestAction(player, 'peng', () => {
         const ok = player.pengPai(card, this.lastDa);
         if (ok) {
@@ -2956,6 +2969,14 @@ class TableState implements Serializable {
         logger.info('gangByOtherDa player-%s card:%s this.stateData.card:%s has another player pengGang', player.model._id.toString(), card, this.stateData.card)
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
         return
+      }
+
+      // 一炮多响
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
+        this.manyHuPlayers.push(player._id.toString());
+        this.setManyAction(player, Enums.gang);
+        console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.gang);
+        return ;
       }
 
       try {
@@ -3218,7 +3239,8 @@ class TableState implements Serializable {
           // 一炮多响
           if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
             this.manyHuPlayers.push(player._id.toString());
-            console.warn("player index-%s choice jiePao card-%s", this.atIndex(player), card);
+            this.setManyAction(player, Enums.hu);
+            console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.hu);
             return ;
           }
 
@@ -5205,6 +5227,14 @@ class TableState implements Serializable {
   }
 
   async onPlayerGuo(player, playTurn, playCard) {
+    // 一炮多响
+    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
+      this.manyHuPlayers.push(player._id.toString());
+      this.setManyAction(player, Enums.guo);
+      console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), playCard, JSON.stringify(this.manyHuArray), Enums.guo);
+      return ;
+    }
+
     const index = this.players.indexOf(player);
     // const from = this.atIndex(this.lastDa)
     if (this.turn !== playTurn) {
@@ -5230,7 +5260,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    console.log(todo, card)
+    console.log(todo, this.stateData.card)
     switch (todo) {
       case Enums.peng:
         player.emitter.emit(Enums.peng, this.turn, this.stateData.card)
