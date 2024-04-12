@@ -64,7 +64,7 @@ export class RobotManager extends NewRobotManager {
         if (this.waitInterval[key] >= this.getWaitSecond()) {
           this.waitInterval[key] = 0;
 
-          if (ziMoHu.hu && !this.room.gameState.isAllHu) {
+          if (ziMoHu.hu) {
             await proxy.choice(Enums.hu)
           } else if (AnGangIndex && !this.room.gameState.isAllHu) {
             await proxy.gang(Enums.anGang, AnGangIndex)

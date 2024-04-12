@@ -5495,7 +5495,34 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.gangBySelf, this.turn, card)
         break;
       case Enums.hu:
-        player.emitter.emit(Enums.hu, this.turn, this.stateData.card);
+        if (!this.isAllHu) {
+          const simpleCount = this.checkPlayerSimpleCrdCount(player);
+          const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
+          if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(this.stateData.card) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
+            const card = this.promptWithPattern(player, this.lastTakeCard);
+            player.emitter.emit(Enums.da, this.turn, card);
+          } else {
+            player.emitter.emit(Enums.hu, this.turn, this.stateData.card);
+          }
+        } else {
+          const msg = {
+            cards: [],
+            daCards: [],
+            huCards: []
+          };
+
+          for (let i = 0; i < player.competiteCards.length; i++) {
+            if (player.competiteCards[i].hu) {
+              msg.huCards.push(player.competiteCards[i].card);
+            } else {
+              msg.daCards.push(player.competiteCards[i].card);
+            }
+
+            msg.cards.push(player.competiteCards[i].card);
+          }
+
+          player.emitter.emit(Enums.competiteHu, msg)
+        }
 
         break;
     }
