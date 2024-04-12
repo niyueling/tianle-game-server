@@ -117,7 +117,6 @@ export default class RoomProxy {
         const messageBody = toMessageBody(message.content)
         const cls = getActionClass();
         const methodName = cls.getMethodName(messageBody.name);
-        console.log("exGameCenter gameName-%s messageBody-%s methodName-%s roomId-%s", gameName, JSON.stringify(messageBody), methodName, room._id)
         if (methodName) {
           console.log(`${room._id}: call ${messageBody.name}, payload ${JSON.stringify(messageBody.payload)}`)
           const instance = new cls(this.room);
