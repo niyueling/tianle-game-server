@@ -414,8 +414,12 @@ class TableState implements Serializable {
 
   // 是否一炮多响
   isManyHu: boolean = false;
+  // 一炮多响每个用户的胡牌信息
   manyHuArray: any[] = [];
+  // 一炮多响操作完成的用户
   manyHuPlayers: any[] = [];
+  // 一炮多响可以胡牌的用户
+  canManyHuPlayers: any[] = [];
 
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
@@ -451,6 +455,7 @@ class TableState implements Serializable {
     this.isManyHu = false;
     this.manyHuArray = [];
     this.manyHuPlayers = [];
+    this.canManyHuPlayers = [];
   }
 
   toJSON() {
@@ -4358,7 +4363,8 @@ class TableState implements Serializable {
         if (msg && model.gold > 0 && !p.isBroke) {
           if (msg["hu"]) {
             huCount++;
-            this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}})
+            this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});
+            this.canManyHuPlayers.push(p._id.toString());
             this.lastHuCard = card;
             this.cardTypes = await this.getCardTypes(p, 2);
             msg["huType"] = {
@@ -4381,9 +4387,13 @@ class TableState implements Serializable {
         }
       }
 
-      huCount > 1 ? this.isManyHu = true : this.manyHuArray = [];
-      if (huCount > 1) {
-        console.warn("manyHuArray-%s", JSON.stringify(this.manyHuArray));
+      if (huCount <= 1) {
+        this.isManyHu = false;
+        this.manyHuArray = [];
+        this.canManyHuPlayers = [];
+      } else {
+        this.isManyHu = true;
+        console.warn("isManyHu-%s manyHuArray-%s", this.isManyHu, JSON.stringify(this.manyHuArray));
       }
 
       if (check[Enums.pengGang] || check[Enums.hu]) {
@@ -5232,7 +5242,7 @@ class TableState implements Serializable {
         }
 
         // 一炮多响
-        if (!this.manyHuPlayers.includes(this.zhuang._id)) {
+        if (!this.manyHuPlayers.includes(this.zhuang._id) && this.canManyHuPlayers.includes(this.zhuang._id)) {
           console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
           return ;
         }
