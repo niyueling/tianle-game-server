@@ -4209,7 +4209,7 @@ class TableState implements Serializable {
 
       return {
         card: msg.card,
-        from: this.players[msg.to],
+        from: msg.to,
         constellationCards: player.constellationCards,
         playersModifyGolds,
         huType: {
