@@ -4001,13 +4001,13 @@ class TableState implements Serializable {
       // 处理碰牌
       if (this.manyHuArray[i].action === Enums.peng && huCount === 0) {
         this.players[this.manyHuArray[i].to].emitter.emit(Enums.peng, this.turn, this.manyHuArray[i].card);
-        msgs.push({type: Enums.peng, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
+        msgs.push({type: Enums.peng, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to, from: this.manyHuArray[i].from});
       }
 
       // 处理杠牌
       if (this.manyHuArray[i].action === Enums.gang && huCount === 0) {
         this.players[this.manyHuArray[i].to].emitter.emit(Enums.gangByOtherDa, this.turn, this.manyHuArray[i].card);
-        msgs.push({type: Enums.gang, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
+        msgs.push({type: Enums.gang, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to, from: this.manyHuArray[i].from});
       }
 
       // 处理胡牌
@@ -4023,6 +4023,7 @@ class TableState implements Serializable {
             type: "hu",
             card: this.manyHuArray[i].card,
             index: huMsg.from,
+            from: this.manyHuArray[i].from,
             playersModifyGolds: huMsg.playersModifyGolds,
             constellationCards: huMsg.constellationCards,
             huType: huMsg.huType
