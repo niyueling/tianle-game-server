@@ -420,6 +420,8 @@ class TableState implements Serializable {
   manyHuPlayers: any[] = [];
   // 一炮多响可以胡牌的用户
   canManyHuPlayers: any[] = [];
+  // 是否正在执行一炮多响
+  isRunMultiple: boolean = false;
 
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
@@ -456,6 +458,7 @@ class TableState implements Serializable {
     this.manyHuArray = [];
     this.manyHuPlayers = [];
     this.canManyHuPlayers = [];
+    this.isRunMultiple = false;
   }
 
   toJSON() {
@@ -4112,11 +4115,6 @@ class TableState implements Serializable {
       changeGolds[i].isBroke = this.players[i].isBroke;
     }
 
-    this.isManyHu = false;
-    this.manyHuArray = [];
-    this.manyHuPlayers = [];
-    this.canManyHuPlayers = [];
-
     this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs}});
     this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
 
@@ -4171,6 +4169,12 @@ class TableState implements Serializable {
             data: sendMsg
           }, xiajia.msgDispatcher);
         }
+
+        this.isManyHu = false;
+        this.isRunMultiple = false;
+        this.manyHuArray = [];
+        this.manyHuPlayers = [];
+        this.canManyHuPlayers = [];
       }
 
       setTimeout(nextDo, 1500);
@@ -5554,7 +5558,8 @@ class TableState implements Serializable {
 
         console.warn("manyHuPlayers-%s canManyHuPlayers-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers));
 
-        if (this.manyHuPlayers.length === this.manyHuArray.length) {
+        if (this.manyHuPlayers.length === this.manyHuArray.length && !this.isRunMultiple) {
+          this.isRunMultiple = true;
           player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
           console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
         }
