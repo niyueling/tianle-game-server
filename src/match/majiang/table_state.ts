@@ -5454,6 +5454,8 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
         console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
       }
+
+      return ;
     }
     switch (todo) {
       case Enums.peng:
