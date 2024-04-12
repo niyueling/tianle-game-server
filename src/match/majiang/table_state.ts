@@ -5230,6 +5230,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
+    console.log(todo, card)
     switch (todo) {
       case Enums.peng:
         player.emitter.emit(Enums.peng, this.turn, this.stateData.card)
