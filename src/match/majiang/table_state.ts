@@ -5290,6 +5290,8 @@ class TableState implements Serializable {
           this.setManyAction(player, Enums.hu);
         }
 
+        console.warn("manyHuPlayers-%s canManyHuPlayers-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers));
+
         if (this.manyHuPlayers.length === this.manyHuArray.length) {
           console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
         }
