@@ -2776,8 +2776,8 @@ class TableState implements Serializable {
           return ;
         }
 
-        const card = msg.data.card
-        const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
+        const card = msg.data.card;
+        const todo = player.ai.onCanDoSomething(msg.data, player.cards, card);
         const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
 
@@ -2786,6 +2786,8 @@ class TableState implements Serializable {
           this.manyHuPlayers.push(player._id.toString());
           this.setManyAction(player, todo);
           console.warn("player index-%s deposit choice card-%s", this.atIndex(player), card);
+
+          player.sendMessage("game/chooseMultiple", {ok: true, data: {action: todo, card, index: this.atIndex(player)}});
           return ;
         }
 
@@ -2895,7 +2897,9 @@ class TableState implements Serializable {
       if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.peng);
-        console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.peng);
+        console.warn("player index-%s choice peng card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.peng);
+
+        player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.peng, card, index: this.atIndex(player)}})
         return ;
       }
 
@@ -2976,7 +2980,9 @@ class TableState implements Serializable {
       if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.gang);
-        console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.gang);
+        console.warn("player index-%s choice gang card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.gang);
+
+        player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.gang, card, index: this.atIndex(player)}})
         return ;
       }
 
@@ -3242,6 +3248,8 @@ class TableState implements Serializable {
             this.manyHuPlayers.push(player._id.toString());
             this.setManyAction(player, Enums.hu);
             console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.hu);
+
+            player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.hu, card, index: this.atIndex(player)}})
             return ;
           }
 
@@ -5404,7 +5412,9 @@ class TableState implements Serializable {
     if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
       this.manyHuPlayers.push(player._id.toString());
       this.setManyAction(player, Enums.guo);
-      console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), playCard, JSON.stringify(this.manyHuArray), Enums.guo);
+      console.warn("player index-%s choice guo card-%s manyHuArray-%s action-%s", this.atIndex(player), playCard, JSON.stringify(this.manyHuArray), Enums.guo);
+
+      player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.guo, card: playCard, index: this.atIndex(player)}})
       return ;
     }
 
