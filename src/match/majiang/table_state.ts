@@ -4585,7 +4585,7 @@ class TableState implements Serializable {
 
           // 碰、杠等
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
-          this.room.broadcast('game/oppoCanDoSomething', {ok: true, data: {...msg, ...{index: this.atIndex(p)}}}, p);
+          this.room.broadcast('game/oppoCanDoSomething', {ok: true, data: {...msg, ...{index: this.atIndex(p)}}}, p.msgDispatcher);
         }
       }
 
