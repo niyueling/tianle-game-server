@@ -5451,7 +5451,7 @@ class TableState implements Serializable {
         return ;
       }
 
-      console.warn("manyHuPlayers-%s canManyHuPlayers-%s playerId-%s flag-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), player._id, this.manyHuPlayers.includes(player._id.toString()));
+      console.warn("manyHuPlayers-%s canManyHuPlayers-%s playerId-%s flag-%s todo-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), player._id, this.manyHuPlayers.includes(player._id.toString()), todo);
 
       // 如果机器人没有操作，则push到数组
       if (!this.manyHuPlayers.includes(player._id.toString())) {
