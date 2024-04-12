@@ -4398,7 +4398,7 @@ class TableState implements Serializable {
       this.isGameOver = true;
     }
 
-    console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
+    // console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
 
     if (waits.length > 0 && !this.isGameOver) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
@@ -4618,6 +4618,7 @@ class TableState implements Serializable {
         this.canManyHuPlayers = [];
       } else {
         this.isManyHu = true;
+        this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}});
         console.warn("isManyHu-%s manyHuArray-%s", this.isManyHu, JSON.stringify(this.manyHuArray));
       }
 
