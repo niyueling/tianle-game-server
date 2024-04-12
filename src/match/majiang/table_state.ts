@@ -2802,14 +2802,15 @@ class TableState implements Serializable {
               player.emitter.emit(Enums.guo, this.turn, card);
             } else {
               // 不是一炮多响，则直接执行
-              if (!this.room.gameState.isManyHu) {
+              if (!this.isManyHu) {
                 return player.emitter.emit(Enums.hu, this.turn, card);
               }
 
               // 一炮多响
               if (!this.manyHuPlayers.includes(player._id)) {
                 this.manyHuPlayers.push(player._id.toString());
-                console.warn("player index-%s not choice card-%s", this.atIndex(player), card);
+                this.setManyAction(player, Enums.hu);
+                console.warn("player index-%s deposit choice card-%s", this.atIndex(player), card);
                 return ;
               }
             }
@@ -4079,31 +4080,35 @@ class TableState implements Serializable {
 
     // 处理过牌
     for (let i = 0; i < this.manyHuArray.length; i++) {
-      this.players[this.manyHuArray[i].to].emitter.emit(Enums.guo, this.turn, this.manyHuArray[i].card);
-      msgs.push({type: this.manyHuArray[i].action, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
+      if (this.manyHuArray[i].action === Enums.guo) {
+        this.players[this.manyHuArray[i].to].emitter.emit(Enums.guo, this.turn, this.manyHuArray[i].card);
+        msgs.push({type: this.manyHuArray[i].action, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
+      }
     }
 
     // 处理胡牌
     for (let i = 0; i < this.manyHuArray.length; i++) {
-      const huMsg = await this.onMultipleHu(this.players[this.manyHuArray[i].to], this.manyHuArray[i]);
+      if (this.manyHuArray[i].action === Enums.hu) {
+        const huMsg = await this.onMultipleHu(this.players[this.manyHuArray[i].to], this.manyHuArray[i]);
 
-      if (huMsg) {
-        if (!huMsg.playersModifyGolds) {
-          huMsg.playersModifyGolds = [];
-        }
+        if (huMsg) {
+          if (!huMsg.playersModifyGolds) {
+            huMsg.playersModifyGolds = [];
+          }
 
-        msgs.push({
-          type: "hu",
-          card: this.manyHuArray[i].card,
-          index: huMsg.from,
-          playersModifyGolds: huMsg.playersModifyGolds,
-          constellationCards: huMsg.constellationCards,
-          huType: huMsg.huType
-        });
+          msgs.push({
+            type: "hu",
+            card: this.manyHuArray[i].card,
+            index: huMsg.from,
+            playersModifyGolds: huMsg.playersModifyGolds,
+            constellationCards: huMsg.constellationCards,
+            huType: huMsg.huType
+          });
 
-        for (let j = 0; j < huMsg.playersModifyGolds.length; j++) {
-          if (huMsg.playersModifyGolds[j].gold !== 0) {
-            changeGolds[j].changeGold.push(huMsg.playersModifyGolds[j].gold);
+          for (let j = 0; j < huMsg.playersModifyGolds.length; j++) {
+            if (huMsg.playersModifyGolds[j].gold !== 0) {
+              changeGolds[j].changeGold.push(huMsg.playersModifyGolds[j].gold);
+            }
           }
         }
       }
