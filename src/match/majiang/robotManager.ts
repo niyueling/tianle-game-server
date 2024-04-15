@@ -40,7 +40,7 @@ export class RobotManager extends NewRobotManager {
   // 出牌
   async playCard() {
     if (!this.room.gameState || this.isPlayed || this.model.step === RobotStep.waitOherDa) {
-      // console.warn(`wait other robot playCard`, this.room._id);
+      console.warn(`wait other robot playCard`, this.room._id);
       return;
     }
 
@@ -59,24 +59,23 @@ export class RobotManager extends NewRobotManager {
       const isPlayerDa = this.isPlayerDa(playerId);
       const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
       const isPlayerGang = this.isPlayerGang(playerId);
-      const seconds = this.getWaitSecond();
       if (this.room.gameState.state === 2 && jiePaoHu.hu) {
-        console.log("playerId-%s index-%s state-%s waitInterval-%s seconds-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState),
-          this.room.gameState.state, seconds, this.waitInterval[key], isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
+        console.log("playerId-%s index-%s state-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState), this.room.gameState.state, isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
       }
 
-      if (this.waitInterval[key] >= 1) {
+      if (this.waitInterval[key] >= this.getWaitSecond()) {
         if (isPlayerGang && this.room.gameState.state === 2) {
           await proxy.gang(isPlayerGang)
-        } else if ((isPlayerChoice && this.room.gameState.state === 2) || (ziMoHu.hu && !this.room.gameState.isAllHu)) {
-          await proxy.choice(isPlayerChoice || Enums.hu)
-        } else if (AnGangIndex && !this.room.gameState.isAllHu) {
-          await proxy.gang(Enums.anGang, AnGangIndex)
-        } else if (buGangIndex && !this.room.gameState.isAllHu) {
-          await proxy.gang(Enums.buGang, buGangIndex)
+        } else if (isPlayerChoice && this.room.gameState.state === 2) {
+          await proxy.choice(isPlayerChoice)
         } else if (isPlayerDa) {
-          if (this.waitInterval[key] >= seconds) {
-            this.waitInterval[key] = 0;
+          if (ziMoHu.hu && !this.room.gameState.isAllHu) {
+            await proxy.choice(Enums.hu)
+          } else if (AnGangIndex && !this.room.gameState.isAllHu) {
+            await proxy.gang(Enums.anGang, AnGangIndex)
+          } else if (buGangIndex && !this.room.gameState.isAllHu) {
+            await proxy.gang(Enums.buGang, buGangIndex)
+          } else {
             await proxy.playCard();
           }
         } else {
@@ -85,10 +84,10 @@ export class RobotManager extends NewRobotManager {
             await proxy.guo();
           }
         }
+
+        this.waitInterval[key] = 0;
       }
     }
-
-    this.model.step = RobotStep.running;
   }
 
   // 打
