@@ -3234,12 +3234,13 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.hu, async (turn, card) => {
-      const index = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
-      if (index !== -1) {
+      const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
+      if (tIndex !== -1) {
         console.warn("多次胡牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
         return;
       }
 
+      console.warn("多次胡牌操作 huTurnList-%s", JSON.stringify(player.huTurnList));
       player.huTurnList.push({card, turn});
 
       let from;
