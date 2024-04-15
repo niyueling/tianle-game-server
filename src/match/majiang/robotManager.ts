@@ -39,8 +39,8 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    if (!this.room.gameState || !this.isPlayed || this.model.step === RobotStep.waitOherDa) {
-      console.warn(`wait other robot playCard`, this.room._id);
+    if (!this.room.gameState || !this.isPlayed) {
+      // console.warn(`wait other robot playCard`, this.room._id);
       return;
     }
 
