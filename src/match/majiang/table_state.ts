@@ -252,9 +252,11 @@ export class ActionResolver implements Serializable {
         // console.warn("ao.who._id-%s player._id-%s ao.action-%s action-%s flag-%s", ao.who._id, player._id, ao.action, action, ao.who._id === player._id && ao.action === action);
         return ao.who._id === player._id && ao.action === action;
       })
-      actionOption.state = 'try'
-      actionOption.onResolve = resolve
-      actionOption.onReject = reject
+      if (actionOption) {
+        actionOption.state = 'try'
+        actionOption.onResolve = resolve
+        actionOption.onReject = reject
+      }
     } catch(e) {
       console.warn(actionOption);
     }
@@ -2643,7 +2645,6 @@ class TableState implements Serializable {
 
   setManyAction(player: PlayerState, action) {
     const index = this.manyHuArray.findIndex(p => p.to === this.atIndex(player));
-    console.warn(player._id, this.atIndex(player), index, action);
     if (index !== -1) {
       this.manyHuArray[index]["action"] = action;
     }
