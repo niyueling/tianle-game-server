@@ -5367,7 +5367,7 @@ class TableState implements Serializable {
         } else {
           pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'waitDaHaiDi'}
         }
-        break
+        break;
       }
       case stateWaitHaiDiPao: {
         const indices = this.stateData.currentIndex
@@ -5385,7 +5385,7 @@ class TableState implements Serializable {
         break
     }
 
-    return pushMsg
+    // return pushMsg
   }
 
   distance(p1, p2) {
