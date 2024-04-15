@@ -553,6 +553,7 @@ export class NewRobotManager {
 
     if (this.model.step === RobotStep.waitOherDa) {
       console.warn(`wait other player da`, this.room._id);
+      return;
     }
 
     if (this.model.step === RobotStep.running && this.isPlayed) {
