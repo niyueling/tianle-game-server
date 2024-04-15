@@ -4453,16 +4453,16 @@ class TableState implements Serializable {
     let from;
 
     if (this.state !== stateWaitDa) {
-      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError})
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError, data: {index: this.atIndex(player), card}})
       return
     } else if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
-      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound})
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound, data: {index: this.atIndex(player), card}})
       return
     }
 
     const ok = player.daPai(card);
     if (!ok) {
-      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard});
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard, data: {index: this.atIndex(player), card}});
       // return;
     }
 
