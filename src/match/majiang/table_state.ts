@@ -3945,7 +3945,7 @@ class TableState implements Serializable {
         }, xiajia.msgDispatcher)
       }
 
-      setTimeout(nextDo, 1500);
+      setTimeout(nextDo, 2500);
     }
   }
 
