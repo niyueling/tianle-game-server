@@ -63,28 +63,25 @@ export class RobotManager extends NewRobotManager {
         console.log("playerId-%s index-%s state-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState), this.room.gameState.state, isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
       }
 
-      if (isPlayerGang && this.room.gameState.state === 2) {
-        await proxy.gang(isPlayerGang)
-      } else if (isPlayerChoice && this.room.gameState.state === 2) {
-        await proxy.choice(isPlayerChoice)
-      } else if (isPlayerDa) {
-        if (this.waitInterval[key] >= this.getWaitSecond()) {
-          this.waitInterval[key] = 0;
-
-          if (ziMoHu.hu && !this.room.gameState.isAllHu) {
-            await proxy.choice(Enums.hu)
-          } else if (AnGangIndex && !this.room.gameState.isAllHu) {
-            await proxy.gang(Enums.anGang, AnGangIndex)
-          } else if (buGangIndex && !this.room.gameState.isAllHu) {
-            await proxy.gang(Enums.buGang, buGangIndex)
-          } else {
+      if (this.waitInterval[key] >= this.getWaitSecond() / 2) {
+        if (isPlayerGang && this.room.gameState.state === 2) {
+          await proxy.gang(isPlayerGang)
+        } else if ((isPlayerChoice && this.room.gameState.state === 2) || (ziMoHu.hu && !this.room.gameState.isAllHu)) {
+          await proxy.choice(isPlayerChoice || Enums.hu)
+        } else if (AnGangIndex && !this.room.gameState.isAllHu) {
+          await proxy.gang(Enums.anGang, AnGangIndex)
+        } else if (buGangIndex && !this.room.gameState.isAllHu) {
+          await proxy.gang(Enums.buGang, buGangIndex)
+        } else if (isPlayerDa) {
+          if (this.waitInterval[key] >= this.getWaitSecond()) {
+            this.waitInterval[key] = 0;
             await proxy.playCard();
           }
-        }
-      } else {
-        // 过
-        if (this.isPlayerGuo(playerId)) {
-          await proxy.guo();
+        } else {
+          // 过
+          if (this.isPlayerGuo(playerId)) {
+            await proxy.guo();
+          }
         }
       }
     }
