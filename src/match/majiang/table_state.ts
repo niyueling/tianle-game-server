@@ -3239,7 +3239,7 @@ class TableState implements Serializable {
       const recordCard = this.stateData.card;
 
       try {
-        const isJiePao = [stateWaitAction, stateQiangGang].includes(this.state) &&
+        const isJiePao = this.state === stateWaitAction &&
           recordCard === card && this.stateData[Enums.hu] &&
           this.stateData[Enums.hu].contains(player);
 
@@ -3307,18 +3307,6 @@ class TableState implements Serializable {
                 if (!player.onDeposit && !this.isAllHu && player.zhuang) {
                   player.onDeposit = true
                   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-                  // 创建机器人代理
-                  // let flag = true;
-                  // this.room.disconnected.map((v) => {
-                  //   if (v[0] === player._id.toString()) {
-                  //     flag = false;
-                  //   }
-                  // })
-                  //
-                  // if (flag) {
-                  //   this.room.disconnected.push([player._id.toString(), this.atIndex(player)]);
-                  //   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-                  // }
                 }
 
                 this.stateData[Enums.hu].remove(player);
@@ -4815,7 +4803,7 @@ class TableState implements Serializable {
         this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
       }
 
-      setTimeout(nextDo, 1500);
+      setTimeout(nextDo, this.cardTypes.cardId >= 45 ? 3000 : 1500);
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
