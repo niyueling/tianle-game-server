@@ -3234,15 +3234,6 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.hu, async (turn, card) => {
-      const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
-      if (tIndex !== -1) {
-        console.warn("多次胡牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
-        return;
-      }
-
-      console.warn("多次胡牌操作 huTurnList-%s", JSON.stringify(player.huTurnList));
-      player.huTurnList.push({card, turn});
-
       let from;
       const chengbaoStarted = this.remainCards <= 3;
       const recordCard = this.stateData.card;
@@ -3271,13 +3262,22 @@ class TableState implements Serializable {
             this.lastHuCard = card;
             this.cardTypes = await this.getCardTypes(player, 2);
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
-              logger.info('hu player %s jiepao %s', index, ok)
+              const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
+              if (tIndex !== -1) {
+                console.warn("多次胡牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+                return;
+              }
+
+              logger.info('hu player %s jiepao %s tIndex %s', index, ok, tIndex)
 
               from = this.atIndex(this.lastDa);
-              if (ok && player.daHuPai(card, this.players[from])) {
+              if (ok && player.daHuPai(card, this.players[from]) && tIndex !== -1) {
                 player.lastOperateType = 4;
                 player.isGameDa = true;
                 this.lastDa = player;
+                console.warn("多次胡牌操作 huTurnList-%s", JSON.stringify(player.huTurnList));
+                player.huTurnList.push({card, turn});
+
                 await player.sendMessage('game/huReply', {
                   ok: true,
                   data: {
