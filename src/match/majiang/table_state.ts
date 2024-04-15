@@ -3855,6 +3855,10 @@ class TableState implements Serializable {
       await this.gameAllOver(states, [], nextZhuang);
     }
 
+    if (player.zhuang) {
+      player.onDeposit = true;
+    }
+
     // 给下家摸牌
     let xiajia = null;
     let xiajiaIndex = null;
