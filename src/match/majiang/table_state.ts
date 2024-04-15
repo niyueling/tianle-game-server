@@ -3238,7 +3238,7 @@ class TableState implements Serializable {
       const recordCard = this.stateData.card;
 
       try {
-        const isJiePao = this.state === stateWaitAction &&
+        const isJiePao = [stateWaitAction, stateQiangGang].includes(this.state) &&
           recordCard === card && this.stateData[Enums.hu] &&
           this.stateData[Enums.hu].contains(player);
 
