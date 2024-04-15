@@ -2,6 +2,7 @@ import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
 import Enums from "./enums";
 import {MJRobotRmqProxy} from "./robotRmqProxy";
+import {RobotStep} from "@fm/common/constants";
 
 // 机器人出牌
 export class RobotManager extends NewRobotManager {
@@ -41,6 +42,9 @@ export class RobotManager extends NewRobotManager {
     if (!this.room.gameState && !this.isPlayed) {
       return;
     }
+
+    // 设置成在打zhuangtai
+    this.model.step = RobotStep.waitOherDa;
 
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
@@ -84,6 +88,9 @@ export class RobotManager extends NewRobotManager {
         }
       }
     }
+
+    // 取消在打状态
+    this.model.step = RobotStep.running;
   }
 
   // 打

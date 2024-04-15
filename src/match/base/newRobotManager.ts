@@ -551,6 +551,10 @@ export class NewRobotManager {
       await this.save();
     }
 
+    if (this.model.step === RobotStep.waitOherDa) {
+      console.warn(`wait other player da`, this.room._id);
+    }
+
     if (this.model.step === RobotStep.running && this.isPlayed) {
       this.isPlayed = false;
       // 游戏未结束
