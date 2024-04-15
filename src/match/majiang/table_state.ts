@@ -5466,7 +5466,7 @@ class TableState implements Serializable {
         return ;
       }
 
-      // console.warn("manyHuPlayers-%s canManyHuPlayers-%s playerId-%s flag-%s todo-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), player._id, this.manyHuPlayers.includes(player._id.toString()), todo);
+      console.warn("manyHuPlayers-%s canManyHuPlayers-%s playerId-%s flag-%s todo-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), player._id, this.manyHuPlayers.includes(player._id.toString()), todo);
 
       // 如果机器人没有操作，则push到数组
       if (!this.manyHuPlayers.includes(player._id.toString())) {
@@ -5477,7 +5477,7 @@ class TableState implements Serializable {
       if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
         this.isRunMultiple = true;
         player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
-        // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
+        console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
       }
 
       return ;
