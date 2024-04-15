@@ -5520,8 +5520,13 @@ class TableState implements Serializable {
           const simpleCount = this.checkPlayerSimpleCrdCount(player);
           const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
           if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(this.stateData.card) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
-            const card = this.promptWithPattern(player, this.lastTakeCard);
-            player.emitter.emit(Enums.da, this.turn, card);
+            if (this.state === stateWaitDa) {
+              const card = this.promptWithPattern(player, this.lastTakeCard);
+              player.emitter.emit(Enums.da, this.turn, card);
+            } else {
+              player.emitter.emit(Enums.guo, this.turn, card);
+            }
+
           } else {
             player.emitter.emit(Enums.hu, this.turn, this.stateData.card);
           }
