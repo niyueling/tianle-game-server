@@ -3236,7 +3236,7 @@ class TableState implements Serializable {
     player.on(Enums.hu, async (turn, card) => {
       const index = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
       if (index !== -1) {
-        console.warn("index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+        console.warn("多次胡牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
         return;
       }
 
@@ -3393,9 +3393,6 @@ class TableState implements Serializable {
                             console.error("consume card error msg ", msg);
                             return;
                           }
-
-                          // console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
-
 
                           this.state = stateWaitDa;
                           this.stateData = {da: xiajia, card: newCard, msg};
