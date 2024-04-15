@@ -76,7 +76,7 @@ export class RobotManager extends NewRobotManager {
           await proxy.gang(Enums.buGang, buGangIndex)
         } else if (isPlayerDa) {
           if (this.waitInterval[key] >= seconds) {
-
+            this.waitInterval[key] = 0;
             await proxy.playCard();
           }
         } else {
