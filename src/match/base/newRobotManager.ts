@@ -551,8 +551,6 @@ export class NewRobotManager {
       await this.save();
     }
 
-    console.warn("step-%s", this.model.step);
-
     if (this.model.step === RobotStep.waitOherDa) {
       console.warn(`wait other player da`, this.room._id);
       return;
