@@ -5290,7 +5290,7 @@ class TableState implements Serializable {
       msg.model.headerBorderId = headerBorderId;
     }
 
-    console.warn("this.stateData.msg-%s playerId-%s", JSON.stringify(this.stateData.msg), this.atIndex(player));
+    console.warn("this.stateData-%s playerId-%s", JSON.stringify(this.stateData), this.atIndex(player));
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da];
