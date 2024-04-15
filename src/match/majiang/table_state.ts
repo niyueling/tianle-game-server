@@ -2651,7 +2651,7 @@ class TableState implements Serializable {
   }
 
   listenPlayer(player) {
-    const index = this.atIndex(player)
+    const index = this.atIndex(player);
     player.registerHook('game/canDoSomething', msg => {
       player.emitter.emit('waitForDoSomeThing', msg)
     })
@@ -5496,7 +5496,7 @@ class TableState implements Serializable {
         this.setManyAction(player, todo);
       }
 
-      if (this.manyHuPlayers.length === this.manyHuArray.length && !this.isRunMultiple) {
+      if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
         this.isRunMultiple = true;
         player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
         console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
