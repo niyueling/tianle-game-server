@@ -3271,7 +3271,7 @@ class TableState implements Serializable {
               logger.info('hu player %s jiepao %s tIndex %s', index, ok, tIndex)
 
               from = this.atIndex(this.lastDa);
-              if (ok && player.daHuPai(card, this.players[from]) && tIndex !== -1) {
+              if (ok && player.daHuPai(card, this.players[from]) && tIndex === -1) {
                 player.lastOperateType = 4;
                 player.isGameDa = true;
                 this.lastDa = player;
