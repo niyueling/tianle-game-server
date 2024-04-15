@@ -64,30 +64,29 @@ export class RobotManager extends NewRobotManager {
           this.room.gameState.state, this.waitInterval[key], isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
       }
 
-      if (this.waitInterval[key] >= this.getWaitSecond()) {
-        if (isPlayerGang && this.room.gameState.state === 2) {
-          await proxy.gang(isPlayerGang)
-        } else if (isPlayerChoice && this.room.gameState.state === 2) {
-          console.warn(isPlayerChoice, this.room.gameState.state)
-          await proxy.choice(isPlayerChoice)
-        } else if (isPlayerDa) {
-          if (ziMoHu.hu && !this.room.gameState.isAllHu) {
-            await proxy.choice(Enums.hu)
-          } else if (AnGangIndex && !this.room.gameState.isAllHu) {
-            await proxy.gang(Enums.anGang, AnGangIndex)
-          } else if (buGangIndex && !this.room.gameState.isAllHu) {
-            await proxy.gang(Enums.buGang, buGangIndex)
-          } else {
-            await proxy.playCard();
-          }
+      if (isPlayerGang && this.room.gameState.state === 2) {
+        await proxy.gang(isPlayerGang)
+      } else if (isPlayerChoice && this.room.gameState.state === 2) {
+        console.warn(isPlayerChoice, this.room.gameState.state)
+        await proxy.choice(isPlayerChoice)
+      } else if (isPlayerDa) {
+        if (ziMoHu.hu && !this.room.gameState.isAllHu) {
+          await proxy.choice(Enums.hu)
+        } else if (AnGangIndex && !this.room.gameState.isAllHu) {
+          await proxy.gang(Enums.anGang, AnGangIndex)
+        } else if (buGangIndex && !this.room.gameState.isAllHu) {
+          await proxy.gang(Enums.buGang, buGangIndex)
         } else {
-          // 过
-          if (this.isPlayerGuo(playerId)) {
-            await proxy.guo();
+          if (this.waitInterval[key] >= this.getWaitSecond()) {
+            await proxy.playCard();
+            this.waitInterval[key] = 0;
           }
         }
-
-        this.waitInterval[key] = 0;
+      } else {
+        // 过
+        if (this.isPlayerGuo(playerId)) {
+          await proxy.guo();
+        }
       }
     }
 
