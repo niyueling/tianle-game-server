@@ -5380,6 +5380,8 @@ class TableState implements Serializable {
         break
       }
       default:
+        console.warn("room-%s is forceDissolve");
+        await this.room.forceDissolve();
         break
     }
 
