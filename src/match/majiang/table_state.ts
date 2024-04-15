@@ -3737,7 +3737,7 @@ class TableState implements Serializable {
             await this.gameAllOver(states, [], nextZhuang);
           }
         } else {
-          player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
+          // player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
           logger.info('hu  player %s stateQiangGang HuReply', index)
         }
       } catch (e) {
