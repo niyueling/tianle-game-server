@@ -3234,6 +3234,14 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.hu, async (turn, card) => {
+      const index = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
+      if (index !== -1) {
+        console.warn("index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+        return;
+      }
+
+      player.huTurnList.push({card, turn});
+
       let from;
       const chengbaoStarted = this.remainCards <= 3;
       const recordCard = this.stateData.card;
