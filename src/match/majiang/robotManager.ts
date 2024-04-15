@@ -39,7 +39,7 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    if (!this.room.gameState || !this.isPlayed) {
+    if (!this.room.gameState && !this.isPlayed) {
       // console.warn(`wait other robot playCard`, this.room._id);
       return;
     }
