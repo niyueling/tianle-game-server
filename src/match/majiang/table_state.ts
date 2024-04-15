@@ -3274,6 +3274,7 @@ class TableState implements Serializable {
                   data: {
                     card,
                     from,
+                    turn,
                     type: "jiepao",
                     constellationCards: player.constellationCards,
                     huType: {
@@ -3325,30 +3326,6 @@ class TableState implements Serializable {
                     huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
                   }
                 }, player.msgDispatcher);
-                const huPlayerIndex = this.atIndex(player);
-                for (let i = 1; i < this.players.length; i++) {
-                  const playerIndex = (huPlayerIndex + i) % this.players.length;
-                  const nextPlayer = this.players[playerIndex];
-                  if (nextPlayer === this.lastDa) {
-                    break;
-                  }
-
-                  if (nextPlayer.checkJiePao(card)) {
-                    nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa)
-                    nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
-                    this.room.broadcast('game/oppoHu', {
-                      ok: true,
-                      data: {
-                        turn,
-                        card,
-                        from,
-                        index: playerIndex,
-                        constellationCards: player.constellationCards,
-                        huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
-                      }
-                    }, nextPlayer.msgDispatcher)
-                  }
-                }
                 await this.gameOver(this.players[from], player);
 
                 const gameCompetite = async () => {
@@ -3522,6 +3499,7 @@ class TableState implements Serializable {
                 card,
                 from: this.atIndex(player),
                 type: "zimo",
+                turn,
                 constellationCards: player.constellationCards,
                 huType: {
                   id: this.cardTypes.cardId,
