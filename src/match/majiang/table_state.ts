@@ -5290,7 +5290,6 @@ class TableState implements Serializable {
       msg.model.headerBorderId = headerBorderId;
     }
 
-    console.warn("this.stateData-%s playerId-%s", JSON.stringify(this.stateData), this.atIndex(player));
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da];
@@ -5320,6 +5319,9 @@ class TableState implements Serializable {
             index, state: 'waitAction',
             msg: actions
           }
+        } else {
+          console.warn("room-%s action error forceDissolve", this.room._id);
+          await this.room.forceDissolve();
         }
         break
       }
@@ -5380,12 +5382,12 @@ class TableState implements Serializable {
         break
       }
       default:
-        console.warn("room-%s is forceDissolve");
+        console.warn("room-%s is forceDissolve", this.room._id);
         await this.room.forceDissolve();
         break
     }
 
-    // return pushMsg
+    return pushMsg
   }
 
   distance(p1, p2) {
