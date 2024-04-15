@@ -561,6 +561,7 @@ export class NewRobotManager {
       await this.playCard();
 
       this.isPlayed = true;
+      this.model.step = RobotStep.running;
     }
   }
 
