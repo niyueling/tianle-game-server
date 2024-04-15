@@ -59,11 +59,13 @@ export class RobotManager extends NewRobotManager {
       const isPlayerDa = this.isPlayerDa(playerId);
       const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
       const isPlayerGang = this.isPlayerGang(playerId);
+      const seconds = this.getWaitSecond();
       if (this.room.gameState.state === 2 && jiePaoHu.hu) {
-        console.log("playerId-%s index-%s state-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState), this.room.gameState.state, isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
+        console.log("playerId-%s index-%s state-%s waitInterval-%s seconds-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState),
+          this.room.gameState.state, seconds, this.waitInterval[key], isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
       }
 
-      if (this.waitInterval[key] >= this.getWaitSecond() / 2) {
+      if (this.waitInterval[key] >= 1) {
         if (isPlayerGang && this.room.gameState.state === 2) {
           await proxy.gang(isPlayerGang)
         } else if ((isPlayerChoice && this.room.gameState.state === 2) || (ziMoHu.hu && !this.room.gameState.isAllHu)) {
@@ -73,8 +75,8 @@ export class RobotManager extends NewRobotManager {
         } else if (buGangIndex && !this.room.gameState.isAllHu) {
           await proxy.gang(Enums.buGang, buGangIndex)
         } else if (isPlayerDa) {
-          if (this.waitInterval[key] >= this.getWaitSecond()) {
-            this.waitInterval[key] = 0;
+          if (this.waitInterval[key] >= seconds) {
+
             await proxy.playCard();
           }
         } else {
