@@ -2707,17 +2707,12 @@ class TableState implements Serializable {
             if (todo === Enums.gang && !this.isAllHu && !player.isGameHu) {
               const gangCard = msg.gang[0][0];
               player.emitter.emit(Enums.gangBySelf, this.turn, gangCard);
-              player.sendMessage('game/depositGangBySelf', {
-                ok: true,
-                data: {card: gangCard, turn: this.turn}
-              });
             } else if (todo === Enums.hu) {
               if (!this.isAllHu) {
                 const simpleCount = this.checkPlayerSimpleCrdCount(player);
                 if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(takenCard) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
                   const card = this.promptWithPattern(player, this.lastTakeCard);
                   player.emitter.emit(Enums.da, this.turn, card)
-                  player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
                 } else {
                   player.emitter.emit(Enums.hu, this.turn, takenCard)
                   player.sendMessage('game/depositZiMo', {

@@ -39,10 +39,12 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    if (!this.room.gameState && !this.isPlayed) {
+    if (!this.room.gameState || this.isPlayed || this.model.step === RobotStep.waitOherDa) {
       // console.warn(`wait other robot playCard`, this.room._id);
       return;
     }
+
+    this.model.step = RobotStep.waitOherDa;
 
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
@@ -86,6 +88,8 @@ export class RobotManager extends NewRobotManager {
         }
       }
     }
+
+    this.model.step = RobotStep.running;
   }
 
   // 打
