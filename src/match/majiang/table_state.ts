@@ -5473,6 +5473,7 @@ class TableState implements Serializable {
         if (!this.isAllHu) {
           const simpleCount = this.checkPlayerSimpleCrdCount(player);
           const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
+          console.warn("simpleCount-%s specialCardCount-%s card-%s isGameHu-%s state-%s", simpleCount, specialCardCount, this.stateData.card, player.isGameHu, this.state);
           if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(this.stateData.card) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
             if (this.state === stateWaitDa) {
               const card = this.promptWithPattern(player, this.lastTakeCard);
