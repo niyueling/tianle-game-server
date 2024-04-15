@@ -43,9 +43,6 @@ export class RobotManager extends NewRobotManager {
       return;
     }
 
-    // 设置成在打zhuangtai
-    this.model.step = RobotStep.waitOherDa;
-
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
     let playerId;

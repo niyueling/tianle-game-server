@@ -557,7 +557,7 @@ export class NewRobotManager {
 
     if (this.model.step === RobotStep.running && this.isPlayed) {
       this.isPlayed = false;
-      // 游戏未结束
+      this.model.step = RobotStep.waitOherDa;
       await this.playCard();
 
       this.isPlayed = true;
