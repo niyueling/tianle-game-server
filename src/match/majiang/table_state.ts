@@ -4029,7 +4029,7 @@ class TableState implements Serializable {
     const nextDo1 = async () => {
       this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
     }
-    setTimeout(nextDo1, 1000);
+    setTimeout(nextDo1, 2000);
 
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
