@@ -2,6 +2,7 @@ import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
 import Enums from "./enums";
 import {MJRobotRmqProxy} from "./robotRmqProxy";
+import {RobotStep} from "@fm/common/constants";
 
 // 机器人出牌
 export class RobotManager extends NewRobotManager {
@@ -38,7 +39,8 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    if (!this.room.gameState && !this.isPlayed) {
+    if (!this.room.gameState || !this.isPlayed || this.model.step === RobotStep.waitOherDa) {
+      console.warn(`wait other robot playCard`, this.room._id);
       return;
     }
 
