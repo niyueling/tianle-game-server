@@ -4004,6 +4004,7 @@ class TableState implements Serializable {
       // 处理胡牌
       if (this.manyHuArray[i].action === Enums.hu) {
         const huMsg = await this.onMultipleHu(this.players[this.manyHuArray[i].to], this.manyHuArray[i]);
+        console.warn("huMsg-%s", JSON.stringify(huMsg));
 
         if (huMsg) {
           if (!huMsg.playersModifyGolds) {
