@@ -247,6 +247,7 @@ class PlayerState implements Serializable {
 
   // 本局胡的turn
   huTurnList: any[] = [];
+  competiteTurnList: any[] = [];
 
   constructor(userSocket, room, rule) {
     this.room = room
@@ -294,6 +295,7 @@ class PlayerState implements Serializable {
     this.constellationScore = 1;
     this.huTypeList = [];
     this.huTurnList = [];
+    this.competiteTurnList = [];
   }
 
   setGameRecorder(r) {

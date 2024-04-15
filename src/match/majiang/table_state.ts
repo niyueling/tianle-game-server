@@ -3151,47 +3151,7 @@ class TableState implements Serializable {
               }
             }
           }
-
-          // if (qiang && !this.stateData.cancelQiang) {
-          //   logger.info(qiang, this.stateData.cancelQiang);
-          //   this.room.broadcast('game/oppoGangBySelf', {ok: true, data: broadcastMsg}, player.msgDispatcher)
-          //   qiang.sendMessage('game/canDoSomething', {
-          //     ok: true, data: {
-          //       card, turn: this.turn, hu: true,
-          //       chi: false, chiCombol: [],
-          //       peng: false, gang: false, bu: false,
-          //     }
-          //   })
-          //
-          //   this.state = stateQiangGang
-          //   this.stateData = {
-          //     whom: player,
-          //     who: qiang,
-          //     event: Enums.gangBySelf,
-          //     card, turn: this.turn
-          //   }
-          //   return
-          // }
         }
-
-        // for (let i = 1; i < this.players.length; i++) {
-        //   const j = (from + i) % this.players.length;
-        //   const p = this.players[j]
-        //   const msg = this.actionResolver.allOptions(p)
-        //   if (msg) {
-        //     p.sendMessage('game/canDoSomething', {ok: true, data: msg})
-        //     this.state = stateWaitAction
-        //     this.stateData = {
-        //       whom: player,
-        //       event: Enums.gangBySelf,
-        //       card, turn,
-        //       hu: check.hu,
-        //       huInfo: p.huInfo,
-        //     }
-        //     this.lastDa = player
-        //   }
-        // }
-        // this.actionResolver.tryResolve()
       } else {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
       }
@@ -3788,7 +3748,28 @@ class TableState implements Serializable {
     await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
 
+  arraysAreEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   async onCompetiteHu(player, msg) {
+    // 判断是否重复执行
+    const tIndex = player.competiteTurnList.findIndex(t => this.arraysAreEqual(t.cards, msg.cards));
+    if (tIndex !== -1) {
+      console.warn("巅峰对决胡牌操作 index-%s cards-%s", this.atIndex(player), JSON.stringify(msg.cards));
+      return;
+    }
+
+    player.competiteTurnList.push({cards: msg.cards});
+
     const msgs = [];
     let index = this.players.indexOf(player);
     const changeGolds = [
