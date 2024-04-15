@@ -88,6 +88,8 @@ export class RobotManager extends NewRobotManager {
         this.waitInterval[key] = 0;
       }
     }
+
+    this.model.step = RobotStep.running;
   }
 
   // 打
