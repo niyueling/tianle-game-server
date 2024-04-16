@@ -3228,7 +3228,7 @@ class TableState implements Serializable {
                 return;
               }
 
-              logger.info('hu player %s jiepao %s tIndex %s', index, ok, tIndex)
+              // logger.info('hu player %s jiepao %s tIndex %s', index, ok, tIndex)
 
               from = this.atIndex(this.lastDa);
               if (ok && player.daHuPai(card, this.players[from]) && tIndex === -1) {
@@ -3513,7 +3513,7 @@ class TableState implements Serializable {
               }
             }, player.msgDispatcher);
             await this.gameOver(null, player);
-            this.logger.info('hu  player %s zimo gameover', index)
+            // this.logger.info('hu  player %s zimo gameover', index)
 
             const gameCompetite = async () => {
               if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
@@ -5151,7 +5151,7 @@ class TableState implements Serializable {
 
     if (gameOverMsg.states.length > 0) {
       await this.room.gameOver(nextZhuang._id.toString(), states)
-      this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
+      // this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
 
       const nextDo = async () => {
         this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
