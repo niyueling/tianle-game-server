@@ -542,7 +542,7 @@ export class NewRobotManager {
       const flag = await this.robotPlayerReady();
       isOk = await this.isHumanPlayerReady();
       if (!isOk) {
-        console.log(`human player not ready`, this.room._id);
+        // console.log(`human player not ready`, this.room._id);
         return;
       }
       if (flag) {
