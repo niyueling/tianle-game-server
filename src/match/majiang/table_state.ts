@@ -4056,6 +4056,12 @@ class TableState implements Serializable {
 
         setTimeout(nextDo, 1500);
       }
+    } else {
+      this.isManyHu = false;
+      this.isRunMultiple = false;
+      this.manyHuArray = [];
+      this.manyHuPlayers = [];
+      this.canManyHuPlayers = [];
     }
   }
 
