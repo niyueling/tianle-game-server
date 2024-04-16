@@ -3653,7 +3653,7 @@ class TableState implements Serializable {
           }
         } else {
           // player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
-          logger.info('hu  player %s stateQiangGang HuReply', index)
+          // logger.info('hu  player %s stateQiangGang HuReply', index)
         }
       } catch (e) {
         console.warn(e)

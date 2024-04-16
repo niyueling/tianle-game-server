@@ -131,7 +131,7 @@ export class NewRobotManager {
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐
-      console.log('some one absent %s', this.room._id);
+      // console.log('some one absent %s', this.room._id);
       if (!this.room.gameState) {
         await this.room.forceDissolve();
       }
@@ -355,7 +355,7 @@ export class NewRobotManager {
         index = this.room.readyPlayers.findIndex((p: any) => p.toString() === proxy.model._id.toString());
         if (index === -1) {
           // 有在线用户没点下一局
-          console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`);
+          // console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`);
           return false;
         }
       }
