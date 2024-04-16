@@ -3798,6 +3798,7 @@ class TableState implements Serializable {
       }
     }
 
+    console.warn("playerCount-%s", this.players.length);
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
       console.warn("shortId-%s index-%s gold-%s gameGold-%s", model.shortId, this.atIndex(this.players[i]), model.gold, this.players[i].model.gold);

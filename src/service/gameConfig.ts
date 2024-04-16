@@ -104,6 +104,10 @@ export default class GameConfig extends BaseService {
     const isUpgrade = model.gold > conf.maxAmount;
     // 需要更金豆
     const isNeedRuby = model.gold < conf.minAmount;
+
+    if (isNeedRuby) {
+      console.warn("wait ruby shortId-%s gold-%s minAmount-%s", model.shortId, model.gold, conf.minAmount);
+    }
     return {isUpgrade, isNeedRuby, minAmount: conf.minAmount}
   }
 
