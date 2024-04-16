@@ -3216,7 +3216,7 @@ class TableState implements Serializable {
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
               const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
               if (tIndex !== -1) {
-                console.warn("多次胡牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+                console.warn("多次胡牌接炮操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
                 return;
               }
 
@@ -3446,7 +3446,12 @@ class TableState implements Serializable {
         } else if (isZiMo) {
           this.cardTypes = await this.getCardTypes(player, 1);
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
-          if (ok && player.daHuPai(card, null)) {
+          const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
+          if (tIndex !== -1) {
+            console.warn("多次胡牌自摸操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+            return;
+          }
+          if (ok && player.daHuPai(card, null) && tIndex === -1) {
             this.lastDa = player;
             player.lastOperateType = 4;
             player.isGameDa = true;
