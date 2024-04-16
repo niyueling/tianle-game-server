@@ -4216,7 +4216,7 @@ class TableState implements Serializable {
         this.zhuang.onDeposit = false;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
-      setTimeout(nextDo1, 2000);
+      setTimeout(nextDo1, 3000);
     }
 
     return playersModifyGolds;
@@ -4372,7 +4372,7 @@ class TableState implements Serializable {
         this.zhuang.onDeposit = false;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
-      setTimeout(nextDo1, 2000);
+      setTimeout(nextDo1, 3000);
     }
 
     return playersModifyGolds;
@@ -4819,7 +4819,7 @@ class TableState implements Serializable {
           this.zhuang.onDeposit = false;
           this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
         }
-        setTimeout(nextDo1, 2000);
+        setTimeout(nextDo1, this.cardTypes.cardId >= 45 ? 4500 : 2000);
       }
     }
     this.logger.close()
