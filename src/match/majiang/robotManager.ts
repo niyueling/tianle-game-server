@@ -40,7 +40,7 @@ export class RobotManager extends NewRobotManager {
   // 出牌
   async playCard() {
     if (!this.room.gameState || this.isPlayed || this.model.step === RobotStep.waitOherDa) {
-      console.warn(`wait other robot playCard`, this.room._id);
+      // console.warn(`wait other robot playCard`, this.room._id);
       return;
     }
 
@@ -59,10 +59,10 @@ export class RobotManager extends NewRobotManager {
       const isPlayerDa = this.isPlayerDa(playerId);
       const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
       const isPlayerGang = this.isPlayerGang(playerId);
-      if (this.room.gameState.state === 2 && jiePaoHu.hu) {
-        console.log("playerId-%s index-%s state-%s waitInterval-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState),
-          this.room.gameState.state, this.waitInterval[key], isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
-      }
+      // if (this.room.gameState.state === 2 && jiePaoHu.hu) {
+      //   console.log("playerId-%s index-%s state-%s waitInterval-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState),
+      //     this.room.gameState.state, this.waitInterval[key], isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
+      // }
 
       if (isPlayerGang && this.room.gameState.state === 2) {
         await proxy.gang(isPlayerGang)

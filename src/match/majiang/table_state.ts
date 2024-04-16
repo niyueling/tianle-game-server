@@ -3228,7 +3228,7 @@ class TableState implements Serializable {
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
               const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
               if (tIndex !== -1) {
-                console.warn("多次胡牌接炮操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+                // console.warn("多次胡牌接炮操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
                 return;
               }
 
@@ -3240,7 +3240,7 @@ class TableState implements Serializable {
                 player.isGameDa = true;
                 this.lastDa = player;
                 this.stateData = {};
-                console.warn("多次胡牌操作 huTurnList-%s", JSON.stringify(player.huTurnList));
+                // console.warn("多次胡牌操作 huTurnList-%s", JSON.stringify(player.huTurnList));
                 player.huTurnList.push({card, turn});
 
                 await player.sendMessage('game/huReply', {
@@ -3454,7 +3454,7 @@ class TableState implements Serializable {
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
           const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
           if (tIndex !== -1) {
-            console.warn("多次胡牌自摸操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+            // console.warn("多次胡牌自摸操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
             return;
           }
           if (ok && player.daHuPai(card, null) && tIndex === -1) {
@@ -3750,7 +3750,7 @@ class TableState implements Serializable {
     // 判断是否重复执行
     const tIndex = player.competiteTurnList.findIndex(t => this.arraysAreEqual(t.cards, msg.cards));
     if (tIndex !== -1) {
-      console.warn("巅峰对决胡牌操作 index-%s cards-%s", this.atIndex(player), JSON.stringify(msg.cards));
+      // console.warn("巅峰对决胡牌操作 index-%s cards-%s", this.atIndex(player), JSON.stringify(msg.cards));
       return;
     }
 
@@ -3784,7 +3784,7 @@ class TableState implements Serializable {
     // 处理胡牌
     for (let i = 0; i < msg.huCards.length; i++) {
       const huMsg = await this.onPlayerCompetiteHu(player, msg.huCards[i], index);
-      console.warn("huMsg-%s", JSON.stringify(huMsg));
+      // console.warn("huMsg-%s", JSON.stringify(huMsg));
 
       if (huMsg) {
         if (!huMsg.playersModifyGolds) {
@@ -3973,7 +3973,7 @@ class TableState implements Serializable {
       // 处理胡牌
       if (this.manyHuArray[i].action === Enums.hu) {
         const huMsg = await this.onMultipleHu(this.players[this.manyHuArray[i].to], this.manyHuArray[i]);
-        console.warn("huMsg-%s", JSON.stringify(huMsg));
+        // console.warn("huMsg-%s", JSON.stringify(huMsg));
 
         if (huMsg) {
           if (!huMsg.playersModifyGolds) {
@@ -4503,7 +4503,7 @@ class TableState implements Serializable {
         if (xiajia.huTurnList) {
           const tIndex = xiajia.huTurnList.findIndex(t => t.card === card && t.turn === turn);
           if (tIndex !== -1) {
-            console.warn("多次摸牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+            // console.warn("多次摸牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
             return;
           }
 
@@ -5469,8 +5469,8 @@ class TableState implements Serializable {
         return ;
       }
 
-      console.warn("manyHuPlayers-%s canManyHuPlayers-%s manyHuArray-%s playerId-%s flag-%s todo-%s isRunMultiple-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers),
-        JSON.stringify(this.manyHuArray), player._id, this.manyHuPlayers.includes(player._id.toString()), todo, this.isRunMultiple);
+      // console.warn("manyHuPlayers-%s canManyHuPlayers-%s manyHuArray-%s playerId-%s flag-%s todo-%s isRunMultiple-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers),
+      //   JSON.stringify(this.manyHuArray), player._id, this.manyHuPlayers.includes(player._id.toString()), todo, this.isRunMultiple);
 
       // 如果机器人没有操作，则push到数组
       if (!this.manyHuPlayers.includes(player._id.toString())) {
@@ -5481,7 +5481,7 @@ class TableState implements Serializable {
       if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
         this.isRunMultiple = true;
         player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
-        console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
+        // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
       }
 
       return ;
