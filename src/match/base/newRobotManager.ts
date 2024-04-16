@@ -491,7 +491,7 @@ export class NewRobotManager {
       const resp = await service.gameConfig.rubyRequired(
         p.model._id.toString(),
         this.room.gameRule.categoryId);
-      if (resp.isNeedRuby) {
+      if (resp.isResurrection) {
         // console.warn(`${p.model.shortId}金豆数量：${p.model.gold},场次最低需要：${resp.minAmount}，waitTimes: ${this.noRubyInterval[p.model._id.toString()]}`)
         if (!this.noRubyInterval[p.model._id.toString()]) {
           this.noRubyInterval[p.model._id.toString()] = 0;

@@ -104,11 +104,13 @@ export default class GameConfig extends BaseService {
     const isUpgrade = model.gold > conf.maxAmount;
     // 需要更金豆
     const isNeedRuby = model.gold < conf.minAmount;
+    // 是否复活成功
+    const isResurrection = model.gold <= 0;
 
     if (isNeedRuby) {
       console.warn("wait ruby shortId-%s gold-%s minAmount-%s", model.shortId, model.gold, conf.minAmount);
     }
-    return {isUpgrade, isNeedRuby, minAmount: conf.minAmount}
+    return {isUpgrade, isNeedRuby, isResurrection, minAmount: conf.minAmount}
   }
 
   // 复活礼包倍数
