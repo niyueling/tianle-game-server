@@ -3743,6 +3743,7 @@ class TableState implements Serializable {
   }
 
   async onCompetiteHu(player, msg) {
+    console.warn("msg-%s", JSON.stringify(msg));
     // 判断是否重复执行
     const tIndex = player.competiteTurnList.findIndex(t => this.arraysAreEqual(t.cards, msg.cards));
     if (tIndex !== -1) {
@@ -3780,7 +3781,6 @@ class TableState implements Serializable {
     // 处理胡牌
     for (let i = 0; i < msg.huCards.length; i++) {
       const huMsg = await this.onPlayerCompetiteHu(player, msg.huCards[i], index);
-      // console.warn("huMsg-%s", JSON.stringify(huMsg));
 
       if (huMsg) {
         if (!huMsg.playersModifyGolds) {
