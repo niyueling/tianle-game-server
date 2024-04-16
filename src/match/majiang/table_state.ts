@@ -3810,7 +3810,7 @@ class TableState implements Serializable {
       changeGolds[i].isBroke = model.gold === 0;
     }
 
-    this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs[0].index, msg: msgs}});
+    this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs}});
 
     const nextDo = async () => {
       this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
