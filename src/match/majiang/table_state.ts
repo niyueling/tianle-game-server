@@ -2867,6 +2867,18 @@ class TableState implements Serializable {
       }
     })
 
+    player.on(Enums.restoreGame, async () => {
+      if (this.room.robotManager.model.step === RobotStep.waitRuby) {
+        this.room.robotManager.model.step = RobotStep.running;
+        await player.sendMessage('game/restoreGameReply', {
+          ok: true,
+          data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
+        });
+      } else {
+        await player.sendMessage('game/openCardReply', {ok: false, data: {}});
+      }
+    })
+
     player.on(Enums.startDeposit, async () => {
       if (!player.onDeposit) {
         player.onDeposit = true

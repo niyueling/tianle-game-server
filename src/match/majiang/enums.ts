@@ -96,6 +96,7 @@ const enums = {
   topHu: 'topHu',
   topDa: 'topDa',
   topGang: 'topGang',
+  restoreGame: 'restoreGame',
 
   guo: 'guo',
   gangByOtherDa: 'gangByOtherDa',
