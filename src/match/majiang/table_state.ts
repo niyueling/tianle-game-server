@@ -2875,7 +2875,7 @@ class TableState implements Serializable {
           data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
         });
       } else {
-        await player.sendMessage('game/openCardReply', {ok: false, data: {}});
+        await player.sendMessage('game/restoreGameReply', {ok: false, data: {}});
       }
     })
 
