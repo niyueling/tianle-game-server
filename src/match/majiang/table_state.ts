@@ -3766,6 +3766,7 @@ class TableState implements Serializable {
     player.competiteTurnList.push({cards: msg.cards});
 
     const msgs = [];
+    let maxCardId = -1;
     let index = this.players.indexOf(player);
     const changeGolds = [
       {index: 0, changeGold: [], isBroke: false, currentGold: 0},
@@ -3812,6 +3813,10 @@ class TableState implements Serializable {
             changeGolds[j].changeGold.push(huMsg.playersModifyGolds[j].gold);
           }
         }
+
+        if (huMsg.huType.id && huMsg.huType.id > maxCardId) {
+          maxCardId = huMsg.huType.id;
+        }
       }
     }
 
@@ -3822,7 +3827,13 @@ class TableState implements Serializable {
     }
 
     this.room.broadcast("game/competiteHuReply", {ok: true, data: {index: msgs[0].index, msg: msgs}});
-    this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
+
+    const nextDo = async () => {
+      this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
+    }
+
+    setTimeout(nextDo, maxCardId >= 45 ? 3500 : 1500);
+
 
     // console.warn("remainCards-%s isGameOver-%s", this.remainCards, this.isGameOver);
     if (this.remainCards <= 0 || this.isGameOver) {
