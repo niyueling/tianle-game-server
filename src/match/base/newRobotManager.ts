@@ -121,7 +121,7 @@ export class NewRobotManager {
       isOk = await this.updateNoRuby();
       if (isOk) {
         // 继续等
-        console.log('wait for ruby', this.room._id)
+        // console.log('wait for ruby', this.room._id)
         return;
       }
       this.model.step = RobotStep.start;

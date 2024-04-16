@@ -107,9 +107,6 @@ export default class GameConfig extends BaseService {
     // 是否复活成功
     const isResurrection = model.gold <= 0;
 
-    if (isNeedRuby) {
-      console.warn("wait ruby shortId-%s gold-%s minAmount-%s", model.shortId, model.gold, conf.minAmount);
-    }
     return {isUpgrade, isNeedRuby, isResurrection, minAmount: conf.minAmount}
   }
 
