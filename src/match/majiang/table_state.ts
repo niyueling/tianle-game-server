@@ -3415,7 +3415,7 @@ class TableState implements Serializable {
                   }
                 }
               } else {
-                player.sendMessage('game/huReply', {
+                this.room.broadcast('game/huReply', {
                   ok: false,
                   info: TianleErrorCode.huInvaid,
                   data: {type: "jiePao", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), tIndex}
@@ -3629,7 +3629,7 @@ class TableState implements Serializable {
               }
             }
           } else {
-            player.sendMessage('game/huReply', {
+            this.room.broadcast('game/huReply', {
               ok: false,
               info: TianleErrorCode.huInvaid,
               data: {type: "ziMo", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), tIndex}
