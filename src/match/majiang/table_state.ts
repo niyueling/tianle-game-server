@@ -3770,10 +3770,10 @@ class TableState implements Serializable {
     // 处理胡牌
     for (let i = 0; i < msg.huCards.length; i++) {
       const huMsg = await this.onPlayerCompetiteHu(player, msg.huCards[i], index);
+      console.warn("huMsg-%s", JSON.stringify(huMsg));
 
       if (huMsg) {
         if (!huMsg.playersModifyGolds) {
-          console.warn("huMsg-%s", JSON.stringify(huMsg));
           huMsg.playersModifyGolds = [];
         }
 
@@ -3800,6 +3800,7 @@ class TableState implements Serializable {
 
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
+      console.warn("shortId-%s index-%s gold-%s gameGold-%s", model.shortId, this.atIndex(this.players[i]), model.gold, this.players[i].model.gold);
       changeGolds[i].currentGold = model.gold;
       changeGolds[i].isBroke = model.gold === 0;
     }
@@ -4228,6 +4229,7 @@ class TableState implements Serializable {
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
       const playersModifyGolds = await this.competiteGameOver(player);
+      console.warn("playersModifyGolds-%s", JSON.stringify(playersModifyGolds));
 
       // 记录胡牌次数
       if (!player.huTypeList.includes(this.cardTypes.cardId)) {
@@ -4853,7 +4855,7 @@ class TableState implements Serializable {
     this.room.removeReadyPlayer(p._id.toString());
 
     if (this.atIndex(p) === 0) {
-      this.room.robotManager.model.step = RobotStep.waitRuby;
+      this.room.robotManager.model.step = RobotStep.running;
     }
 
     if (!this.brokeList.includes(p._id.toString())) {
