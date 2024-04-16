@@ -4435,6 +4435,7 @@ class TableState implements Serializable {
 
       player.lastOperateType === 3 ? player.isGangHouDa = true : player.isGangHouDa = false;
       player.lastOperateType = 1;
+      this.stateData = {};
 
       await player.sendMessage('game/daReply', {ok: true, data: card});
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
