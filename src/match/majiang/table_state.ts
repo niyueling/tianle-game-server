@@ -3272,7 +3272,7 @@ class TableState implements Serializable {
                   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                 }
 
-                this.stateData[Enums.hu].remove(player);
+                // this.stateData[Enums.hu].remove(player);
                 this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
                 if (chengbaoStarted) {
                   this.lastDa.recordGameEvent(Enums.chengBao, {});
