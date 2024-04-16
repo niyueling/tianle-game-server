@@ -3814,7 +3814,7 @@ class TableState implements Serializable {
           }
         }
 
-        if (huMsg.huType.id && huMsg.huType.id > maxCardId) {
+        if (huMsg.huType && huMsg.huType.id > maxCardId) {
           maxCardId = huMsg.huType.id;
         }
       }
