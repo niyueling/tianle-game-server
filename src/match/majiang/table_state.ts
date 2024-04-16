@@ -3455,6 +3455,7 @@ class TableState implements Serializable {
             this.lastDa = player;
             player.lastOperateType = 4;
             player.isGameDa = true;
+            player.huTurnList.push({card, turn});
             from = this.atIndex(this.lastDa);
             await player.sendMessage('game/huReply', {
               ok: true,
@@ -4496,9 +4497,15 @@ class TableState implements Serializable {
           const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
           const nextZhuang = this.nextZhuang()
           await this.gameAllOver(states, [], nextZhuang);
-
         }
 
+        const tIndex = xiajia.huTurnList.findIndex(t => t.card === card && t.turn === turn);
+        if (tIndex !== -1) {
+          console.warn("多次摸牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+          return;
+        }
+
+        xiajia.huTurnList.push({card, turn});
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const newCard = await this.consumeCard(xiajia);
         if (newCard) {
