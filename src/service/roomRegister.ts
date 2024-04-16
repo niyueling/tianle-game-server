@@ -108,7 +108,6 @@ export default class RoomRegister extends BaseService {
   async getDisconnectedRoom(playerId: string, gameName) {
     const roomNumber = await this.roomNumber(playerId, gameName);
     const roomExist = await this.redis.getAsync(this.roomKey(roomNumber));
-    console.warn("roomNumber-%s roomExist-%s gameName-%s", roomNumber, roomExist, gameName);
     if (roomExist) {
       return roomNumber;
     }

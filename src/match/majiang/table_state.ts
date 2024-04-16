@@ -2794,7 +2794,7 @@ class TableState implements Serializable {
             console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
           } else if (todo === Enums.hu) {
-            console.warn("hu index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
+            // console.warn("hu index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             const simpleCount = this.checkPlayerSimpleCrdCount(player);
 
             if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
@@ -3995,7 +3995,7 @@ class TableState implements Serializable {
       changeGolds[i].isBroke = this.players[i].isBroke;
     }
 
-    this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs}});
+    this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs, huCount}});
 
     const nextDo1 = async () => {
       this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
