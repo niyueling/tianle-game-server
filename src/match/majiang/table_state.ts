@@ -3227,6 +3227,7 @@ class TableState implements Serializable {
                 player.lastOperateType = 4;
                 player.isGameDa = true;
                 this.lastDa = player;
+                this.stateData = {};
                 console.warn("多次胡牌操作 huTurnList-%s", JSON.stringify(player.huTurnList));
                 player.huTurnList.push({card, turn});
 
@@ -3449,6 +3450,7 @@ class TableState implements Serializable {
             player.lastOperateType = 4;
             player.isGameDa = true;
             player.huTurnList.push({card, turn});
+            this.stateData = {};
             from = this.atIndex(this.lastDa);
             await player.sendMessage('game/huReply', {
               ok: true,
