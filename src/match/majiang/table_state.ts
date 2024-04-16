@@ -2715,10 +2715,6 @@ class TableState implements Serializable {
                   player.emitter.emit(Enums.da, this.turn, card)
                 } else {
                   player.emitter.emit(Enums.hu, this.turn, takenCard)
-                  player.sendMessage('game/depositZiMo', {
-                    ok: true,
-                    data: {card: takenCard, turn: this.turn}
-                  })
                 }
               } else {
                 const msg = {
@@ -4271,9 +4267,9 @@ class TableState implements Serializable {
         data: {type: "ziMo", card, cards: this.getCardArray(player.cards), index: this.atIndex(player)}
       });
 
-      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
+      // const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+      // const nextZhuang = this.nextZhuang()
+      // await this.gameAllOver(states, [], nextZhuang);
 
       return {};
     }
