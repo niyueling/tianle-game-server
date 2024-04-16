@@ -3415,18 +3415,10 @@ class TableState implements Serializable {
                   }
                 }
               } else {
-                await GameCardRecord.create({
-                  playerIs: player._id,
-                  cards: player.cards,
-                  calcCard: card,
-                  room: this.room._id,
-                  game: "majiang",
-                  type: 2,
-                })
                 player.sendMessage('game/huReply', {
                   ok: false,
                   info: TianleErrorCode.huInvaid,
-                  data: {type: "jiePao", card}
+                  data: {type: "jiePao", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), tIndex}
                 });
 
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
@@ -3496,18 +3488,6 @@ class TableState implements Serializable {
             if (!player.onDeposit && !this.isAllHu && player.zhuang) {
               player.onDeposit = true
               await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-              // 创建机器人代理
-              // let flag = true;
-              // this.room.disconnected.map((v) => {
-              //   if (v[0] === player._id.toString()) {
-              //     flag = false;
-              //   }
-              // })
-              //
-              // if (flag) {
-              //   this.room.disconnected.push([player._id.toString(), this.atIndex(player)]);
-              //   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-              // }
             }
 
             this.room.broadcast('game/oppoZiMo', {
@@ -3649,18 +3629,10 @@ class TableState implements Serializable {
               }
             }
           } else {
-            await GameCardRecord.create({
-              playerIs: player._id,
-              cards: player.cards,
-              calcCard: card,
-              room: this.room._id,
-              game: "majiang",
-              type: 1,
-            })
             player.sendMessage('game/huReply', {
               ok: false,
               info: TianleErrorCode.huInvaid,
-              data: {type: "ziMo", card}
+              data: {type: "ziMo", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), tIndex}
             });
 
             const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
