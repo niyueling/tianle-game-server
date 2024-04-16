@@ -70,17 +70,18 @@ export class RobotManager extends NewRobotManager {
         console.warn(isPlayerChoice, this.room.gameState.state)
         await proxy.choice(isPlayerChoice)
       } else if (isPlayerDa) {
-        if (ziMoHu.hu && !this.room.gameState.isAllHu) {
-          await proxy.choice(Enums.hu)
-        } else if (AnGangIndex && !this.room.gameState.isAllHu) {
-          await proxy.gang(Enums.anGang, AnGangIndex)
-        } else if (buGangIndex && !this.room.gameState.isAllHu) {
-          await proxy.gang(Enums.buGang, buGangIndex)
-        } else {
-          if (this.waitInterval[key] >= this.getWaitSecond()) {
+        if (this.waitInterval[key] >= this.getWaitSecond()) {
+          if (ziMoHu.hu && !this.room.gameState.isAllHu) {
+            await proxy.choice(Enums.hu)
+          } else if (AnGangIndex && !this.room.gameState.isAllHu) {
+            await proxy.gang(Enums.anGang, AnGangIndex)
+          } else if (buGangIndex && !this.room.gameState.isAllHu) {
+            await proxy.gang(Enums.buGang, buGangIndex)
+          } else {
             await proxy.playCard();
-            this.waitInterval[key] = 0;
           }
+
+          this.waitInterval[key] = 0;
         }
       } else {
         // 过
