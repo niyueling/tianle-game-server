@@ -3773,6 +3773,7 @@ class TableState implements Serializable {
 
       if (huMsg) {
         if (!huMsg.playersModifyGolds) {
+          console.warn("huMsg-%s", JSON.stringify(huMsg));
           huMsg.playersModifyGolds = [];
         }
 
@@ -4247,10 +4248,10 @@ class TableState implements Serializable {
         }
       };
     } else {
-      player.sendMessage('game/huReply', {
+      this.room.broadcast('game/huReply', {
         ok: false,
         info: TianleErrorCode.huInvaid,
-        data: {type: "ziMo", card, cards: this.getCardArray(player.cards)}
+        data: {type: "ziMo", card, cards: this.getCardArray(player.cards), index: this.atIndex(player)}
       });
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
