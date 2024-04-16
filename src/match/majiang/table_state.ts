@@ -4229,7 +4229,7 @@ class TableState implements Serializable {
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
       const playersModifyGolds = await this.competiteGameOver(player);
-      console.warn("playersModifyGolds-%s", JSON.stringify(playersModifyGolds));
+      // console.warn("playersModifyGolds-%s", JSON.stringify(playersModifyGolds));
 
       // 记录胡牌次数
       if (!player.huTypeList.includes(this.cardTypes.cardId)) {
