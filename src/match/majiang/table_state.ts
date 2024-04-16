@@ -2762,7 +2762,6 @@ class TableState implements Serializable {
               } else {
                 player.emitter.emit(Enums.da, this.turn, card);
               }
-              player.sendMessage('game/depositDa', {ok: true, data: {card, turn: this.turn}})
             }
           }
         }
@@ -2794,12 +2793,10 @@ class TableState implements Serializable {
         const nextDo = async () => {
           if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
             player.emitter.emit(Enums.peng, this.turn, card);
-            player.sendMessage('game/depositPeng', {ok: true, data: {card, turn: this.turn}});
           }
           if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
             console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
-            player.sendMessage('game/depositGangByOtherDa', {ok: true, data: {card, turn: this.turn}});
           } else if (todo === Enums.hu) {
             console.warn("hu index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             const simpleCount = this.checkPlayerSimpleCrdCount(player);
