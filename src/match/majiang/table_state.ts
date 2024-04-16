@@ -3744,14 +3744,8 @@ class TableState implements Serializable {
 
   async onCompetiteHu(player, msg) {
     console.warn("msg-%s", JSON.stringify(msg));
-    // 判断是否重复执行
-    const tIndex = player.competiteTurnList.findIndex(t => this.arraysAreEqual(t.cards, msg.cards));
-    if (tIndex !== -1) {
-      // console.warn("巅峰对决胡牌操作 index-%s cards-%s", this.atIndex(player), JSON.stringify(msg.cards));
-      return;
-    }
 
-    player.competiteTurnList.push({cards: msg.cards});
+    this.stateData = {};
 
     const msgs = [];
     let maxCardId = -1;
