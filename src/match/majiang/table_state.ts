@@ -3305,7 +3305,6 @@ class TableState implements Serializable {
                 setTimeout(gameCompetite, 3000);
 
                 if (this.state !== stateGameOver) {
-                  this.turn++;
                   let xiajia = null;
                   let startIndex = (from + 1) % this.players.length;
 
@@ -3405,6 +3404,8 @@ class TableState implements Serializable {
                           data: sendMsg
                         }, xiajia.msgDispatcher)
                       }
+
+                      this.turn++;
                     }
 
                     setTimeout(nextDo, this.isAllHu ? 4500 : 2500);
@@ -3520,7 +3521,6 @@ class TableState implements Serializable {
             setTimeout(gameCompetite, 2000);
 
             if (this.state !== stateGameOver) {
-              this.turn++;
               let xiajia = null;
               let startIndex = (from + 1) % this.players.length;
 
@@ -3619,6 +3619,8 @@ class TableState implements Serializable {
                       data: sendMsg
                     }, xiajia.msgDispatcher)
                   }
+
+                  this.turn++;
                 }
 
                 setTimeout(nextDo, this.isAllHu ? 4500 : 2500);
