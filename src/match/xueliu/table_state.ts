@@ -4199,10 +4199,12 @@ class TableState implements Serializable {
       if (i === index) {
         msg = this.players[i].genSelfStates(i);
         msg.roomRubyReward = roomRubyReward;
+        msg.events.huCards = msg.huCards.slice();
         pushMsg.status.push(msg);
       } else {
         msg = this.players[i].genOppoStates(i);
         msg.roomRubyReward = roomRubyReward;
+        msg.events.huCards = msg.huCards.slice();
         pushMsg.status.push(msg);
       }
 
@@ -4213,7 +4215,6 @@ class TableState implements Serializable {
     switch (this.state) {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da];
-        // console.warn("this.stateData.msg-%s daPlayerIndex-%s playerId-%s", JSON.stringify(this.stateData.msg), this.atIndex(daPlayer), this.atIndex(player));
         if (daPlayer._id.toString() === player._id.toString()) {
           pushMsg.current = {
             index,
@@ -4240,6 +4241,9 @@ class TableState implements Serializable {
             index, state: 'waitAction',
             msg: actions
           }
+        } else {
+          // console.warn("room-%s action error forceDissolve", this.room._id);
+          await this.room.forceDissolve();
         }
         break
       }
@@ -4287,7 +4291,7 @@ class TableState implements Serializable {
         } else {
           pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'waitDaHaiDi'}
         }
-        break
+        break;
       }
       case stateWaitHaiDiPao: {
         const indices = this.stateData.currentIndex
@@ -4300,11 +4304,14 @@ class TableState implements Serializable {
         break
       }
       default:
+        // console.warn("room-%s is forceDissolve", this.room._id);
+        await this.room.forceDissolve();
         break
     }
 
     return pushMsg
   }
+
 
   setGameRecorder(recorder) {
     this.recorder = recorder
