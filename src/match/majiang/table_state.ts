@@ -3746,6 +3746,10 @@ class TableState implements Serializable {
       console.warn("onCompetiteHu robot msg-%s", JSON.stringify(msg));
     }
 
+    if (Object.keys(this.stateData).length === 0) {
+      console.warn("another server is running");
+    }
+
     this.stateData = {};
 
     const msgs = [];
