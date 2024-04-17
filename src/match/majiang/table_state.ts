@@ -5534,6 +5534,8 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
+    const simpleCount = this.checkPlayerSimpleCrdCount(player);
+    const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
     // 一炮多响
     if (this.room.gameState.isManyHu) {
       // 一炮多响
@@ -5547,8 +5549,18 @@ class TableState implements Serializable {
 
       // 如果机器人没有操作，则push到数组
       if (!this.manyHuPlayers.includes(player._id.toString())) {
-        this.manyHuPlayers.push(player._id.toString());
-        this.setManyAction(player, todo);
+        if (todo !== Enums.hu) {
+          this.manyHuPlayers.push(player._id.toString());
+          this.setManyAction(player, todo);
+        } else {
+          this.manyHuPlayers.push(player._id.toString());
+          if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
+            this.setManyAction(player, Enums.guo);
+          } else {
+            this.setManyAction(player, Enums.hu);
+          }
+        }
+
       }
 
       if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
@@ -5572,9 +5584,6 @@ class TableState implements Serializable {
         break;
       case Enums.hu:
         if (!this.isAllHu) {
-          const simpleCount = this.checkPlayerSimpleCrdCount(player);
-          const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
-          // console.warn("simpleCount-%s specialCardCount-%s card-%s isGameHu-%s state-%s", simpleCount, specialCardCount, this.stateData.card, player.isGameHu, this.state);
           if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(this.stateData.card) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
             if (this.state === stateWaitDa) {
               const card = this.promptWithPattern(player, this.lastTakeCard);
