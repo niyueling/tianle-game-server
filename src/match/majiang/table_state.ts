@@ -3817,7 +3817,7 @@ class TableState implements Serializable {
       this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
     }
 
-    setTimeout(nextDo, maxCardId >= 45 ? 3500 : 1500);
+    setTimeout(nextDo, maxCardId >= 45 ? 3000 : 1000);
 
 
     // console.warn("remainCards-%s isGameOver-%s", this.remainCards, this.isGameOver);
