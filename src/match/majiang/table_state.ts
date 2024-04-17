@@ -2790,7 +2790,7 @@ class TableState implements Serializable {
             player.emitter.emit(Enums.peng, this.turn, card);
           }
           if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
-            console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
+            // console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
           } else if (todo === Enums.hu) {
             // console.warn("hu index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
@@ -3803,10 +3803,10 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("playerCount-%s", this.players.length);
+    // console.warn("playerCount-%s", this.players.length);
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
-      console.warn("shortId-%s index-%s gold-%s gameGold-%s", model.shortId, this.atIndex(this.players[i]), model.gold, this.players[i].model.gold);
+      // console.warn("shortId-%s index-%s gold-%s gameGold-%s", model.shortId, this.atIndex(this.players[i]), model.gold, this.players[i].model.gold);
       changeGolds[i].currentGold = model.gold;
       changeGolds[i].isBroke = model.gold === 0;
     }
