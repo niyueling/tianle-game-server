@@ -13,44 +13,10 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
     if (this.playerState) {
       // 从牌堆中取出合适的牌
       const card = this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
-      if (this.room.gameState.isAllHu) {
-        const msg = {
-          cards: [],
-          daCards: [],
-          huCards: []
-        };
-
-        for (let i = 0; i < this.playerState.competiteCards.length; i++) {
-          if (this.playerState.competiteCards[i].hu) {
-            msg.huCards.push(this.playerState.competiteCards[i].card);
-          } else {
-            msg.daCards.push(this.playerState.competiteCards[i].card);
-          }
-
-          msg.cards.push(this.playerState.competiteCards[i].card);
-        }
-
-        this.playerState.emitter.emit(Enums.competiteHu, msg);
-      } else {
-        this.playerState.emitter.emit(Enums.da, this.room.gameState.turn, card);
-      }
-
-      this.playerState.onDeposit = true;
+      this.playerState.emitter.emit(Enums.da, this.room.gameState.turn, card);
     }
   }
 
-  checkPlayerCount(player) {
-    const cards = player.cards.slice();
-    let count = 0;
-
-    for (let i = 0; i < cards.length; i++) {
-      if (cards[i] > 0) {
-        count += cards[i];
-      }
-    }
-
-    return count;
-  }
 
   async guo() {
     if (this.playerState) {
@@ -70,8 +36,6 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   }
 
   async gang(action, index = 0) {
-    // console.warn(`${this.playerState.model.shortId}(${this.playerState.model.nickname})执行操作：${action}`)
-
     switch (action) {
       case Enums.gang:
         await this.room.gameState.promptWithOther(Enums.gang, this.playerState);

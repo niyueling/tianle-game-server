@@ -2648,7 +2648,6 @@ class TableState implements Serializable {
     if (index !== -1) {
       this.manyHuArray[index]["action"] = action;
     }
-
   }
 
   listenPlayer(player) {

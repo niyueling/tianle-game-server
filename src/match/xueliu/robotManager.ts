@@ -206,64 +206,64 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    if (!this.room.gameState && !this.isPlayed) {
+    if (!this.room.gameState || this.isPlayed || this.model.step === RobotStep.waitOherDa) {
+      // console.warn(`wait other robot playCard`, this.room._id);
       return;
     }
+
+    this.model.step = RobotStep.waitOherDa;
 
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
     let playerId;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
-      if (proxy.playerState.onDeposit) {
-        continue;
-      }
-
-      proxy.playerState.onDeposit = true;
-
       playerId = proxy.model._id.toString();
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const ziMoHu = proxy.playerState.checkZiMo();
       const jiePaoHu = proxy.playerState.checkHuState(this.room.gameState.stateData.card);
-
-      // if (!this.room.gameState.waitRecharge) {
-        if (this.isPlayerGang(playerId) && this.room.gameState.state === 2) {
-          await proxy.gang(this.isPlayerGang(playerId))
-        } else if (this.isPlayerChoice(playerId, jiePaoHu) && this.room.gameState.state === 2) {
-          await proxy.choice(this.isPlayerChoice(playerId, jiePaoHu))
-        } else if (this.isPlayerDa(playerId)) {
-          if (this.waitInterval[key] >= this.getWaitSecond()) {
-            this.waitInterval[key] = 0;
-
-            if (ziMoHu.hu && !this.room.gameState.isAllHu) {
-              await proxy.choice(Enums.hu)
-            } else if (AnGangIndex && !this.room.gameState.isAllHu) {
-              await proxy.gang(Enums.anGang, AnGangIndex)
-            } else if (buGangIndex && !this.room.gameState.isAllHu) {
-              await proxy.gang(Enums.buGang, buGangIndex)
-            } else {
-              await proxy.playCard();
-            }
-          }
-
-          break;
-        } else {
-          // 过
-          if (this.isPlayerGuo(playerId)) {
-            await proxy.guo();
-          }
-        }
-      // } else {
-      //   console.warn("await player invive game-state %s current-index %s isBroke %s gold %s", this.room.gameState.state, this.room.gameState.atIndex(proxy), proxy.isBroke, model.gold)
+      const isPlayerDa = this.isPlayerDa(playerId);
+      const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
+      const isPlayerGang = this.isPlayerGang(playerId);
+      // if (this.room.gameState.state === 2 && jiePaoHu.hu) {
+      //   console.log("playerId-%s index-%s state-%s waitInterval-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState),
+      //     this.room.gameState.state, this.waitInterval[key], isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
       // }
+
+      if (isPlayerGang && this.room.gameState.state === 2) {
+        await proxy.gang(isPlayerGang)
+      } else if (isPlayerChoice && this.room.gameState.state === 2) {
+        await proxy.choice(isPlayerChoice)
+      } else if (isPlayerDa) {
+        if (this.waitInterval[key] >= this.getWaitSecond()) {
+          if (ziMoHu.hu && !this.room.gameState.isAllHu) {
+            await proxy.choice(Enums.hu)
+          } else if (AnGangIndex && !this.room.gameState.isAllHu) {
+            await proxy.gang(Enums.anGang, AnGangIndex)
+          } else if (buGangIndex && !this.room.gameState.isAllHu) {
+            await proxy.gang(Enums.buGang, buGangIndex)
+          } else {
+            await proxy.playCard();
+          }
+
+          this.waitInterval[key] = 0;
+        }
+      } else {
+        // 过
+        if (this.isPlayerGuo(playerId)) {
+          await proxy.guo();
+        }
+      }
     }
+
+    this.model.step = RobotStep.running;
   }
 
   // 打
   isPlayerDa(playerId) {
     return this.room.gameState.stateData[Enums.da] &&
-      playerId === this.room.gameState.stateData[Enums.da]._id.toString()
+      playerId === this.room.gameState.stateData[Enums.da]._id.toString() && this.room.gameState.state === 1
   }
 
   isPlayerBuGang(player) {
@@ -318,12 +318,16 @@ export class RobotManager extends NewRobotManager {
         return action;
       }
 
-      if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
-        this.room.gameState.stateData[action].length > 0 && jiePaoHu.hu) {
-        if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
-          this.room.gameState.stateData[action][0]._id.toString()
-          : this.room.gameState.stateData[action]._id.toString())) return action;
+      if (action === Enums.hu && jiePaoHu.hu) {
+        return action;
       }
+
+      // if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
+      //   this.room.gameState.stateData[action].length > 0 && jiePaoHu.hu) {
+      //   if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
+      //     this.room.gameState.stateData[action][0]._id.toString()
+      //     : this.room.gameState.stateData[action]._id.toString())) return action;
+      // }
     }
     return false;
   }
