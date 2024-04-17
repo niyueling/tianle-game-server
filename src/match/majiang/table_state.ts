@@ -3748,6 +3748,7 @@ class TableState implements Serializable {
 
     if (Object.keys(this.stateData).length === 0) {
       console.warn("another server is running");
+      return ;
     }
 
     this.stateData = {};

@@ -3383,7 +3383,7 @@ class TableState implements Serializable {
         const i = (index + j) % this.players.length;
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(this.players[index]._id);
-        if (!p.isBroke && model.gold > 0) {
+        if (!p.isBroke && model.gold > 0 && this.checkCardIsDingQue(p, card)) {
           const r = p.markJiePao(card, result);
           if (r.hu) {
             if (!check.hu || check.hu.length === 0) {
@@ -3475,7 +3475,6 @@ class TableState implements Serializable {
       }
 
       if (check[Enums.pengGang]) {
-        // if (check[Enums.pengGang] && (!check[Enums.hu] || check[Enums.hu].length === 0)) {
         if (check[Enums.gang]) {
           const p = check[Enums.gang];
           const gangInfo = [card, p.getGangKind(card, p._id.toString() === player.model._id.toString())];
@@ -3543,6 +3542,32 @@ class TableState implements Serializable {
     }
 
     setTimeout(nextDo, 200);
+  }
+
+  // 检测用户是否含有定缺牌
+  checkCardIsDingQue(player, card) {
+    const suits = {
+      wan: { start: 1, end: 9, currentCount: 0 },
+      tiao: { start: 11, end: 19, currentCount: 0 },
+      tong: { start: 21, end: 29, currentCount: 0 }
+    };
+
+    for (let suit in suits) {
+      suits[suit].currentCount = 0;
+
+      for (let j = suits[suit].start; j <= suits[suit].end; j++) {
+        suits[suit].currentCount += this.cards[j];
+      }
+
+      if (player.mode === suit && (suits[suit].currentCount > 0 ||
+        (suit === 'wan' && card <= Enums.wanzi9) ||
+        (suit === 'tiao' && card >= Enums.shuzi1 && card <= Enums.shuzi9) ||
+        (suit === 'tong' && card >= Enums.tongzi1 && card <= Enums.tongzi9))) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   // 检测用户是否含有定缺牌

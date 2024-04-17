@@ -1,7 +1,5 @@
-import * as mongoose from 'mongoose';
 import * as config from "../config";
-import {getNewPlayerInviteCode, getNewShortPlayerId} from "../database/init";
-import ConsumeRecord from "../database/models/consumeRecord";
+import {getNewShortPlayerId} from "../database/init";
 import DiamondRecord from "../database/models/diamondRecord";
 import PlayerModel from "../database/models/player";
 import Player from "../database/models/player";
