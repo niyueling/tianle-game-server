@@ -3265,14 +3265,6 @@ class TableState implements Serializable {
                   player.isGameHu = true;
                 }
 
-                let isAllHu = false;
-
-                for (let i = 0; i < this.players.length; i++) {
-                  if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                    isAllHu = false;
-                  }
-                }
-
                 //第一次胡牌自动托管
                 if (!player.onDeposit && !this.isAllHu && player.zhuang) {
                   player.onDeposit = true
@@ -3298,6 +3290,14 @@ class TableState implements Serializable {
                 await this.gameOver(this.players[from], player);
 
                 const gameCompetite = async () => {
+                  let isAllHu = false;
+
+                  for (let i = 0; i < this.players.length; i++) {
+                    if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+                      isAllHu = false;
+                    }
+                  }
+
                   if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
                     this.isAllHu = isAllHu;
 
@@ -3486,14 +3486,6 @@ class TableState implements Serializable {
               player.isGameHu = true;
             }
 
-            let isAllHu = true;
-
-            for (let i = 0; i < this.players.length; i++) {
-              if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                isAllHu = false;
-              }
-            }
-
             // 第一次胡牌自动托管
             if (!player.onDeposit && !this.isAllHu && player.zhuang) {
               player.onDeposit = true
@@ -3515,6 +3507,14 @@ class TableState implements Serializable {
             // this.logger.info('hu  player %s zimo gameover', index)
 
             const gameCompetite = async () => {
+              let isAllHu = true;
+
+              for (let i = 0; i < this.players.length; i++) {
+                if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+                  isAllHu = false;
+                }
+              }
+
               if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
                 this.isAllHu = isAllHu;
 
