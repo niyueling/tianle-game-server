@@ -244,6 +244,9 @@ class PlayerState implements Serializable {
   @autoSerialize
   mode: string = 'unknown'
 
+  // 本局胡的turn
+  huTurnList: any[] = [];
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -288,6 +291,7 @@ class PlayerState implements Serializable {
     this.isGangHouDa = false;
     this.numberCount = 0;
     this.huTypeList = [];
+    this.huTurnList = [];
   }
 
   setGameRecorder(r) {
