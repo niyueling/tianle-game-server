@@ -4003,6 +4003,29 @@ class TableState implements Serializable {
     }
     setTimeout(nextDo1, 1500);
 
+    const gameCompetite = async () => {
+      let isAllHu = false;
+
+      for (let i = 0; i < this.players.length; i++) {
+        if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+          isAllHu = false;
+        }
+      }
+
+      if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
+        this.isAllHu = isAllHu;
+
+        this.room.broadcast('game/gameCompetite', {
+          ok: true,
+          data: {
+            roomId: this.room._id
+          }
+        });
+      }
+    }
+
+    setTimeout(gameCompetite, 3000);
+
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
