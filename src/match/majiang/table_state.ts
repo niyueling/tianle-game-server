@@ -3742,7 +3742,9 @@ class TableState implements Serializable {
   }
 
   async onCompetiteHu(player, msg) {
-    console.warn("msg-%s", JSON.stringify(msg));
+    if (!player.zhuang) {
+      console.warn("onCompetiteHu robot msg-%s", JSON.stringify(msg));
+    }
 
     this.stateData = {};
 
@@ -4383,9 +4385,6 @@ class TableState implements Serializable {
     if (this.state !== stateWaitDa) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError});
       return null;
-    } else if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
-      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound});
-      return null;
     }
 
     // 将本次要操作的牌加入到牌堆中
@@ -4410,16 +4409,16 @@ class TableState implements Serializable {
     let from;
 
     if (this.state !== stateWaitDa) {
-      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError, data: {index: this.atIndex(player), card, state: this.state}})
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError, data: {index: this.atIndex(player), daIndex: this.atIndex(this.stateData[Enums.da]), card, turn, state: this.state}})
       return
     } else if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
-      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound, data: {index: this.atIndex(player), card}})
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound, data: {index: this.atIndex(player), daIndex: this.atIndex(this.stateData[Enums.da]), card, turn, state: this.state}})
       return
     }
 
     const ok = player.daPai(card);
     if (!ok) {
-      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard, data: {index: this.atIndex(player), card}});
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaThisCard, data: {index: this.atIndex(player), daIndex: this.atIndex(this.stateData[Enums.da]), card, turn, state: this.state}});
       // return;
     }
 
@@ -5518,6 +5517,8 @@ class TableState implements Serializable {
 
             msg.cards.push(player.competiteCards[i].card);
           }
+
+          console.warn("robot promptWithOther msg-%s", JSON.stringify(msg));
 
           player.emitter.emit(Enums.competiteHu, msg)
         }
