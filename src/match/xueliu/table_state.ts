@@ -560,11 +560,6 @@ class TableState implements Serializable {
         zhuangIndex = i;
       }
 
-      if (!p.zhuang) {
-        p.onDeposit = true;
-        await p.sendMessage('game/startDepositReply', {ok: true, data: {}});
-      }
-
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, zhuangIndex)
     }
 
@@ -2300,14 +2295,6 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
-        if (!player.onDeposit) {
-          if (!player.zhuang) {
-            player.onDeposit = true;
-          } else {
-            return ;
-          }
-        }
-
         const nextDo = async () => {
           if (msg) {
             const takenCard = msg.card;
@@ -2480,7 +2467,6 @@ class TableState implements Serializable {
         const ok = player.pengPai(card, this.lastDa);
         if (ok) {
           player.lastOperateType = 2;
-          player.onDeposit = false;
           const hangUpList = this.stateData.hangUp;
           this.turn++;
           this.state = stateWaitDa;
