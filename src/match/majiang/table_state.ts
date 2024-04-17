@@ -4228,6 +4228,7 @@ class TableState implements Serializable {
 
     // 将本次要操作的牌加入到牌堆中
     this.lastTakeCard = card;
+    const oldCards = player.cards.slice();
     player.cards[card]++;
     this.cardTypes = await this.getCardTypes(player, 1);
 
@@ -4259,12 +4260,8 @@ class TableState implements Serializable {
       this.room.broadcast('game/huReply', {
         ok: false,
         info: TianleErrorCode.huInvaid,
-        data: {type: "ziMo", card, cards: this.getCardArray(player.cards), index: this.atIndex(player)}
+        data: {type: "ziMo", card, cards: this.getCardArray(player.cards), oldCards: this.getCardArray(oldCards), index: this.atIndex(player)}
       });
-
-      // const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      // const nextZhuang = this.nextZhuang()
-      // await this.gameAllOver(states, [], nextZhuang);
 
       return {};
     }

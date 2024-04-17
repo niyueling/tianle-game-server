@@ -987,7 +987,6 @@ class PlayerState implements Serializable {
       this.cards.alreadyTakenCard = this.alreadyTakenCard
 
       const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
-      // console.warn("checkResult-%s", JSON.stringify(checkResult));
       if (checkResult.hu) {
         checkResult.zhuang = this.zhuang
 
@@ -1000,10 +999,13 @@ class PlayerState implements Serializable {
 
         this.record('ziMo', card)
         return true;
+      } else {
+        console.warn("checkResult-%s", JSON.stringify(checkResult));
+        return true;
       }
     }
 
-    console.warn(`zimo error card %s cards[card] %s`, card, this.cards[card]);
+    console.warn(`zimo error card %s count %s`, card, this.cards[card]);
     return false;
   }
 
