@@ -4083,6 +4083,7 @@ class TableState implements Serializable {
     if (ok && player.daHuPai(msg.card, this.players[msg.from])) {
       player.lastOperateType = 4;
       player.isGameDa = true;
+      player.isGameHu = true;
       this.lastDa = player;
       const playersModifyGolds = await this.multipleGameOver(this.players[msg.to], this.players[msg.from]);
 
