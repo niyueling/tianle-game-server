@@ -588,7 +588,7 @@ class TableState implements Serializable {
         {
           id: this.cardTypes.cardId,
           multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-        }, true);
+        }, false, true);
 
       this.zhuangCard = nextCard;
 
@@ -2137,7 +2137,7 @@ class TableState implements Serializable {
         {
           id: this.cardTypes.cardId,
           multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-        });
+        }, false);
 
       await player.sendMessage('game/getActionsReply', {ok: true, data: msg});
     })
