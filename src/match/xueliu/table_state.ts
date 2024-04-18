@@ -612,6 +612,7 @@ class TableState implements Serializable {
     let cardType = cardTypes[0];
     cardType.multiple = 1;
     cardType.cardId = -1;
+    cardType.cardName = "平胡";
 
     for (let i = 0; i < cardTypes.length; i++) {
       // 根(胡牌时，手中含有某特定牌张的全部4张(未杠出，不计红中))
@@ -1888,9 +1889,9 @@ class TableState implements Serializable {
         cardCount += 3;
       }
 
-       // 其他用户牌堆有牌，记1张
+      // 其他用户牌堆有牌，记1张
       for (let j = 0; j < this.players[i].cards.length; j++) {
-        if ((isZiMo && this.players[i].cards[j] === this.lastTakeCard) || (isJiePao && this.players[i].cards[j] === this.lastHuCard)) {
+        if ((isZiMo && this.players[i].cards[j] > 0 && j === this.lastTakeCard) || (isJiePao && this.players[i].cards[j] > 0 && j === this.lastHuCard)) {
           cardCount++;
         }
       }

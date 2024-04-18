@@ -1004,6 +1004,7 @@ class TableState implements Serializable {
     let cardType = cardTypes[0];
     cardType.multiple = 1;
     cardType.cardId = -1;
+    cardType.cardName = "平胡";
 
     for (let i = 0; i < cardTypes.length; i++) {
       // 起手叫
@@ -2565,7 +2566,7 @@ class TableState implements Serializable {
 
       // 其他用户牌堆有牌，记1张
       for (let j = 0; j < this.players[i].cards.length; j++) {
-        if ((isZiMo && this.players[i].cards[j] === this.lastTakeCard) || (isJiePao && this.players[i].cards[j] === this.lastHuCard)) {
+        if ((isZiMo && this.players[i].cards[j] > 0 && j === this.lastTakeCard) || (isJiePao && this.players[i].cards[j] > 0 && j === this.lastHuCard)) {
           cardCount++;
         }
       }
