@@ -2437,13 +2437,13 @@ class TableState implements Serializable {
     }
 
     for (let i = 0; i < gangList.length; i++) {
-      if (gangList[i] > 40 || ![1, 11, 21, 9, 19, 29].includes(gangList[i])) {
+      if ([1, 11, 21, 9, 19, 29].includes(gangList[i])) {
         flag = false;
       }
     }
 
     for (let i = 1; i < 53; i++) {
-      if ((i > 40 || [1, 11, 21, 9, 19, 29].includes(i)) && cards[i] > 0) {
+      if ([1, 11, 21, 9, 19, 29].includes(i) && cards[i] > 0) {
         flag = false;
       }
     }
@@ -2548,17 +2548,37 @@ class TableState implements Serializable {
   }
 
   async checkJueZhang(player) {
-    let count= 0;
+    let cardCount= 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
-    for (let i = 0; i < this.cards.length; i++) {
-      if (this.cards[i] === this.lastTakeCard) {
-        count++;
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i]._id === player._id) {
+        continue;
+      }
+
+      // 其他用户碰牌，记3张
+      const peng = this.players[i].events["peng"] || [];
+      if ((isZiMo && peng.includes(this.lastTakeCard)) || (isJiePao && peng.includes(this.lastHuCard))) {
+        cardCount += 3;
+      }
+
+      // 其他用户牌堆有牌，记1张
+      for (let i = 0; i < this.players[i].cards.length; i++) {
+        if ((isZiMo && this.players[i].cards[i] === this.lastTakeCard) || (isJiePao && this.players[i].cards[i] === this.lastHuCard)) {
+          cardCount++;
+        }
       }
     }
 
-    return count === 0 && (isZiMo || isJiePao);
+    // 判断牌堆是否还有这张牌，记1张
+    for (let i = 0; i < this.cards.length; i++) {
+      if ((isZiMo && this.cards[i] === this.lastTakeCard) || (isJiePao && this.cards[i] === this.lastHuCard)) {
+        cardCount++;
+      }
+    }
+
+    return cardCount === 0 && (isZiMo || isJiePao);
   }
 
   async checkGangShangPao(player, dianPaoPlayer) {

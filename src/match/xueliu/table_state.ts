@@ -321,6 +321,9 @@ class TableState implements Serializable {
   // 是否正在执行一炮多响
   isRunMultiple: boolean = false;
 
+  // 打出的牌
+  gameDaCards: any[] = [];
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -352,6 +355,7 @@ class TableState implements Serializable {
     this.brokeList = [];
     this.waitRecharge = false;
     this.isGameDa = false;
+    this.gameDaCards = [];
   }
 
   toJSON() {
@@ -1869,17 +1873,37 @@ class TableState implements Serializable {
   }
 
   async checkJueZhang(player) {
-    let count= 0;
+    let cardCount= 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
-    for (let i = 0; i < this.cards.length; i++) {
-      if (this.cards[i] === this.lastTakeCard) {
-        count++;
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i]._id === player._id) {
+        continue;
+      }
+
+      // 其他用户碰牌，记3张
+      const peng = this.players[i].events["peng"] || [];
+      if ((isZiMo && peng.includes(this.lastTakeCard)) || (isJiePao && peng.includes(this.lastHuCard))) {
+        cardCount += 3;
+      }
+
+       // 其他用户牌堆有牌，记1张
+      for (let i = 0; i < this.players[i].cards.length; i++) {
+        if ((isZiMo && this.players[i].cards[i] === this.lastTakeCard) || (isJiePao && this.players[i].cards[i] === this.lastHuCard)) {
+          cardCount++;
+        }
       }
     }
 
-    return count === 0 && (isZiMo || isJiePao);
+    // 判断牌堆是否还有这张牌，记1张
+    for (let i = 0; i < this.cards.length; i++) {
+      if ((isZiMo && this.cards[i] === this.lastTakeCard) || (isJiePao && this.cards[i] === this.lastHuCard)) {
+        cardCount++;
+      }
+    }
+
+    return cardCount === 0 && (isZiMo || isJiePao);
   }
 
   async checkGangShangPao(player, dianPaoPlayer) {
@@ -3043,6 +3067,7 @@ class TableState implements Serializable {
       player.lastOperateType === 3 ? player.isGangHouDa = true : player.isGangHouDa = false;
       player.lastOperateType = 1;
       this.stateData = {};
+      this.gameDaCards.push(card);
 
       await player.sendMessage('game/daReply', {ok: true, data: card});
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
