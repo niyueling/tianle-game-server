@@ -1466,7 +1466,7 @@ class TableState implements Serializable {
 
   async checkGen(player) {
     const cards = player.cards.slice();
-    let flag = true;
+    let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     if (isJiePao) {
@@ -1475,7 +1475,7 @@ class TableState implements Serializable {
 
     for (let i = Enums.wanzi1; i < Enums.zhong; i++) {
       if (player.cards[i] === 4) {
-        flag = false;
+        flag = true;
       }
     }
 
@@ -1780,7 +1780,7 @@ class TableState implements Serializable {
     }
 
     for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
-      if (([1, 11, 21, 9, 19, 29].includes(i)) && cards[i] > 0) {
+      if ([1, 11, 21, 9, 19, 29].includes(i) && cards[i] > 0) {
         flag = false;
       }
     }
