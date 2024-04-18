@@ -451,7 +451,7 @@ class TableState implements Serializable {
     }
 
     // 50%概率摸到定缺牌重新摸牌
-    if (!player.checkCardIsDingQue(card) && Math.random() < 0.5) {
+    if (!player.checkCardIsDingQue(card) && Math.random() < 0.8) {
       const index = Math.floor(Math.random() * this.cards.length);
       cardIndex = index;
       card = this.cards[index];
