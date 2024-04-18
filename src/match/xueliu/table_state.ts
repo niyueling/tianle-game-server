@@ -1889,8 +1889,8 @@ class TableState implements Serializable {
       }
 
        // 其他用户牌堆有牌，记1张
-      for (let i = 0; i < this.players[i].cards.length; i++) {
-        if ((isZiMo && this.players[i].cards[i] === this.lastTakeCard) || (isJiePao && this.players[i].cards[i] === this.lastHuCard)) {
+      for (let j = 0; j < this.players[i].cards.length; j++) {
+        if ((isZiMo && this.players[i].cards[j] === this.lastTakeCard) || (isJiePao && this.players[i].cards[j] === this.lastHuCard)) {
           cardCount++;
         }
       }
