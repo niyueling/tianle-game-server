@@ -4107,7 +4107,7 @@ class TableState implements Serializable {
     const ting = player.isRobotTing(cards);
     const isDingQue = this.checkDingQueCard(player);
     if (ting.hu && isDingQue) {
-      if (player.cards[lastTakeCard] > 0 && lastTakeCard === Enums.zhong) return lastTakeCard;
+      if (player.cards[lastTakeCard] > 0 && lastTakeCard !== Enums.zhong) return lastTakeCard;
     }
 
     // 如果用户已经胡牌，则直接打摸牌
