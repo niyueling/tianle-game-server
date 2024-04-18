@@ -1099,6 +1099,10 @@ class TableState implements Serializable {
   }
 
   async checkQingYiSe(player) {
+    const anGang = player.events["anGang"] || [];
+    const buGang = player.events["buGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang];
     const cards = player.cards.slice();
     let wanCount = 0;
     let shuCount = 0;
@@ -1108,6 +1112,20 @@ class TableState implements Serializable {
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     if (isJiePao) {
       cards[this.lastHuCard]++;
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] <= Enums.wanzi9) {
+        wanCount++;
+      }
+
+      if (gangList[i] >= Enums.shuzi1 && gangList[i] <= Enums.shuzi9) {
+        shuCount++;
+      }
+
+      if (gangList[i] >= Enums.tongzi1 && gangList[i] <= Enums.tongzi9) {
+        tongCount++;
+      }
     }
 
     for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
