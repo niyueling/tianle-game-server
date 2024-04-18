@@ -1297,7 +1297,7 @@ class TableState implements Serializable {
   async checkTuiBuDao(player) {
     const cardList = [12, 14, 15, 16, 18, 19, 21, 22, 23, 24, 25, 28, 29];
     const cards = player.cards.slice();
-    let flag = false;
+    let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     if (isJiePao) {
