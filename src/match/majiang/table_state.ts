@@ -4326,7 +4326,7 @@ class TableState implements Serializable {
       this.isGameOver = true;
     }
 
-    if (waits.length > 0 && !this.isGameOver) {
+    if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
       const nextDo1 = async () => {
         this.zhuang.onDeposit = false;
@@ -4479,7 +4479,7 @@ class TableState implements Serializable {
 
     // console.warn("waits-%s playersModifyGolds-%s isGameOver-%s remainCards-%s", JSON.stringify(waits), JSON.stringify(playersModifyGolds), this.isGameOver, this.remainCards);
 
-    if (waits.length > 0 && !this.isGameOver) {
+    if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
       const nextDo1 = async () => {
         this.zhuang.onDeposit = false;
@@ -4921,7 +4921,7 @@ class TableState implements Serializable {
         await this.gameAllOver(states, [], nextZhuang);
       }
 
-      if (waits.length > 0 && !this.isGameOver) {
+      if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
         this.room.robotManager.model.step = RobotStep.waitRuby;
         const nextDo1 = async () => {
           this.zhuang.onDeposit = false;

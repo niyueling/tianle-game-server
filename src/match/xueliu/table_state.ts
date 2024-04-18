@@ -2807,7 +2807,6 @@ class TableState implements Serializable {
       // 处理胡牌
       if (this.manyHuArray[i].action === Enums.hu) {
         const huMsg = await this.onMultipleHu(this.players[this.manyHuArray[i].to], this.manyHuArray[i]);
-        // console.warn("huMsg-%s", JSON.stringify(huMsg));
 
         if (huMsg) {
           if (!huMsg.playersModifyGolds) {
@@ -3054,7 +3053,7 @@ class TableState implements Serializable {
       this.isGameOver = true;
     }
 
-    if (waits.length > 0 && !this.isGameOver) {
+    if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
       const nextDo1 = async () => {
         this.zhuang.onDeposit = false;
@@ -3531,7 +3530,7 @@ class TableState implements Serializable {
         await this.gameAllOver(states, [], nextZhuang);
       }
 
-      if (waits.length > 0 && !this.isGameOver) {
+      if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
         this.room.robotManager.model.step = RobotStep.waitRuby;
         const nextDo1 = async () => {
           this.zhuang.onDeposit = false;
