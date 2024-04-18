@@ -324,6 +324,9 @@ class TableState implements Serializable {
   // 打出的牌
   gameDaCards: any[] = [];
 
+  // 记录庄家摸的牌
+  zhuangCard: number = 0;
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -356,6 +359,7 @@ class TableState implements Serializable {
     this.waitRecharge = false;
     this.isGameDa = false;
     this.gameDaCards = [];
+    this.zhuangCard = 0;
   }
 
   toJSON() {
@@ -584,7 +588,9 @@ class TableState implements Serializable {
         {
           id: this.cardTypes.cardId,
           multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-        })
+        }, true);
+
+      this.zhuangCard = nextCard;
 
       const index = this.atIndex(this.zhuang);
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, this.zhuang.msgDispatcher)
