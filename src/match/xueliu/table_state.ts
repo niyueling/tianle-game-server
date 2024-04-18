@@ -1520,6 +1520,7 @@ class TableState implements Serializable {
 
 
   async checkSiAnKe(player) {
+    console.warn("events-%s huInfo-%s", JSON.stringify(player.events), JSON.stringify(player.huInfo));
     const anGang = player.events["anGang"] || [];
     let anGangCount = anGang.length;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
