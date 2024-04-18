@@ -1520,21 +1520,28 @@ class TableState implements Serializable {
 
 
   async checkSiAnKe(player) {
-    console.warn("events-%s huInfo-%s", JSON.stringify(player.events), JSON.stringify(player.checkZiMo()));
     const anGang = player.events["anGang"] || [];
     let anGangCount = anGang.length;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
     if (isJiePao) {
-      cards[this.lastHuCard]++;
+      player.cards[this.lastHuCard]++;
     }
 
-    for (let i = 1; i < 53; i++) {
-      if (cards[i] >= 3) {
-        anGangCount++;
-      }
+    const huResult = player.events["hu"] || [];
+
+    if (huResult.length > 0) {
+      const huInfo = huResult[0];
+      console.warn("huInfo-%s", JSON.stringify(huInfo));
+      anGangCount += huInfo.huCards.keZi.length;
     }
+
+    // for (let i = 1; i < 53; i++) {
+    //   if (cards[i] >= 3) {
+    //     anGangCount++;
+    //   }
+    // }
 
     return anGangCount >= 4 && (isZiMo || isJiePao);
   }
