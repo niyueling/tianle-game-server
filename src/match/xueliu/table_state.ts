@@ -430,6 +430,7 @@ class TableState implements Serializable {
       player.takeLastCard = true
     }
 
+    // 20%概率摸到刻牌
     const pengIndex = await this.getPlayerPengCards(player);
     if (pengIndex && Math.random() < 0.2) {
       const moIndex = this.cards.findIndex(card => card === pengIndex);
@@ -439,6 +440,7 @@ class TableState implements Serializable {
       }
     }
 
+    // 20%概率摸到对牌
     const duiIndex = await this.getPlayerDuiCards(player);
     if (duiIndex && Math.random() < 0.2) {
       const moIndex = this.cards.findIndex(card => card === duiIndex);
@@ -446,6 +448,13 @@ class TableState implements Serializable {
         cardIndex = moIndex;
         card = this.cards[moIndex];
       }
+    }
+
+    // 50%概率摸到定缺牌重新摸牌
+    if (!player.checkCardIsDingQue(card) && Math.random() < 0.5) {
+      const index = Math.floor(Math.random() * this.cards.length);
+      cardIndex = index;
+      card = this.cards[index];
     }
 
     this.cards.splice(cardIndex, 1);
