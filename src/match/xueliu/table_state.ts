@@ -950,32 +950,31 @@ class TableState implements Serializable {
     let zhongCount = cards[Enums.zhong];
 
     for (let i = 0; i < 3; i++) {
-      const cardList = [0, 0, 0, 0, 0, 0, 0];
-      let state = true;
-
       for (let j = 1; j <= 3; j++) {
+        const cardList = [0, 0, 0, 0, 0, 0, 0];
+        let state = true;
         for (let k = 0; k < cardList.length; k++) {
-          cardList[i] = cards[i * 10 + i + k];
+          cardList[k] = cards[i * 10 + j + k];
         }
-      }
 
-      // 如果牌有缺失，用红中补缺失牌
-      for (let k = 0; k < cardList.length; k++) {
-        if (cardList[k] < 2 && zhongCount >= 2 - cardList[k]) {
-          cardList[k] += (2 - cardList[k]);
-          zhongCount -= (2 - cardList[k]);
+        // 如果牌有缺失，用红中补缺失牌
+        for (let k = 0; k < cardList.length; k++) {
+          if (cardList[k] < 2 && zhongCount >= 2 - cardList[k]) {
+            cardList[k] += (2 - cardList[k]);
+            zhongCount -= (2 - cardList[k]);
+          }
         }
-      }
 
-      // 判断序数牌牌型是否符合规则
-      for (let k = 0; k < cardList.length; k++) {
-        if (cardList[k] < 2) {
-          state = false;
+        // 判断序数牌牌型是否符合规则
+        for (let k = 0; k < cardList.length; k++) {
+          if (cardList[k] < 2) {
+            state = false;
+          }
         }
-      }
 
-      if (state) {
-        flag = state;
+        if (state) {
+          flag = state;
+        }
       }
     }
 
