@@ -1628,7 +1628,8 @@ class TableState implements Serializable {
     const anGang = player.events["anGang"] || [];
     const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1656,7 +1657,8 @@ class TableState implements Serializable {
     const anGang = player.events["anGang"] || [];
     const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1686,7 +1688,8 @@ class TableState implements Serializable {
     const anGang = player.events["anGang"] || [];
     const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -3261,12 +3264,15 @@ class TableState implements Serializable {
         suits[suit].currentCount += this.cards[j];
       }
 
-      if (player.mode === suit && (suits[suit].currentCount > 0 ||
-        (suit === 'wan' && card <= Enums.wanzi9) ||
-        (suit === 'tiao' && card >= Enums.shuzi1 && card <= Enums.shuzi9) ||
-        (suit === 'tong' && card >= Enums.tongzi1 && card <= Enums.tongzi9))) {
+      if (player.mode === suit && suits[suit].currentCount > 0) {
         return false;
       }
+    }
+
+    if ((player.mode === 'wan' && card <= Enums.wanzi9) ||
+      (player.mode === 'tiao' && card >= Enums.shuzi1 && card <= Enums.shuzi9) ||
+      (player.mode === 'tong' && card >= Enums.tongzi1 && card <= Enums.tongzi9)) {
+      return false;
     }
 
     return true;
