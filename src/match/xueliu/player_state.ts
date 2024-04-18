@@ -394,11 +394,12 @@ class PlayerState implements Serializable {
 
     if (!this.hadQiaoXiang && !first) {
       for (let i = 1; i < 53; i++) {
-        if (this.gangForbid.indexOf(i) >= 0) continue
+        if (this.gangForbid.indexOf(i) >= 0) continue;
+        if (this.caiShen.includes(i)) continue;
 
-        if (this.caiShen.includes(i)) continue
+        const isDingQue = this.checkCardIsDingQue(i);
 
-        if (this.cards[i] === 4) {
+        if (this.cards[i] === 4 && isDingQue) {
           if (!msg.gang) {
             msg.gang = [[i, 'anGang']]
           } else {
@@ -467,6 +468,19 @@ class PlayerState implements Serializable {
     this.alreadyTakenCard = true
 
     return ret
+  }
+
+  // 检测用户是否含有定缺牌
+  checkCardIsDingQue(card) {
+    if (this.mode === "wan" && card >= Enums.wanzi1 && card <= Enums.wanzi9) {
+      return false;
+    }
+
+    if (this.mode === "tiao" && card >= Enums.shuzi1 && card <= Enums.shuzi9) {
+      return false;
+    }
+
+    return !(this.mode === "tong" && card >= Enums.tongzi1 && card <= Enums.tongzi9);
   }
 
   // 检测用户是否含有定缺牌

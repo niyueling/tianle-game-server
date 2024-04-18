@@ -2137,7 +2137,7 @@ class TableState implements Serializable {
         {
           id: this.cardTypes.cardId,
           multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-        }, false);
+        });
 
       await player.sendMessage('game/getActionsReply', {ok: true, data: msg});
     })
@@ -3190,7 +3190,7 @@ class TableState implements Serializable {
         const i = (index + j) % this.players.length;
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p._id);
-        if (!p.isBroke && model.gold > 0 && !p.isGameHu) {
+        if (!p.isBroke && model.gold > 0 && !p.isGameHu && p.checkCardIsDingQue(card)) {
           check = p.checkPengGang(card, check);
         }
       }
