@@ -44,6 +44,9 @@ const exportObj = {
   'game/openCard': (player, msg) => {
     player.emit('game/openCard', msg);
   },
+  'game/getActions': (player, msg) => {
+    player.emit('game/getActions', msg);
+  },
   'game/restoreGame': (player, msg) => {
     player.emit('game/restoreGame', msg);
   },

@@ -97,6 +97,7 @@ const enums = {
   topHu: 'topHu',
   topDa: 'topDa',
   topGang: 'topGang',
+  getActions: 'getActions',
 
   guo: 'guo',
   gangByOtherDa: 'gangByOtherDa',
