@@ -1339,8 +1339,6 @@ class TableState implements Serializable {
         shunZi = huInfo.huCards.shunZi;
       }
 
-
-      console.warn("huResult-%s", JSON.stringify(huResult));
     }
 
     for (let i = 0; i < 3; i++) {
@@ -1562,7 +1560,7 @@ class TableState implements Serializable {
         anGangCount += gangZi.length;
       }
 
-      console.warn("anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
+      console.warn("siAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     return anGangCount >= 4 && (isZiMo || isJiePao);
@@ -1668,7 +1666,7 @@ class TableState implements Serializable {
         anGangCount += gangZi.length;
       }
 
-      console.warn("anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
+      console.warn("SanAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     return anGangCount >= 3 && (isZiMo || isJiePao);
@@ -1805,7 +1803,7 @@ class TableState implements Serializable {
         anGangCount += gangZi.length;
       }
 
-      console.warn("anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
+      console.warn("ShuangAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     return anGangCount >= 2 && (isZiMo || isJiePao);
@@ -1890,12 +1888,6 @@ class TableState implements Serializable {
       cards[this.lastHuCard]++;
     }
 
-    for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
-      if (cards[i] >= 3) {
-        gangList.push(i);
-      }
-    }
-
     const huResult = player.events["hu"] || [];
 
     if (huResult.length > 0) {
@@ -1910,7 +1902,7 @@ class TableState implements Serializable {
         gangList = [...gangList, ...gangZi];
       }
 
-      console.warn("gangList-%s keZi-%s", JSON.stringify(gangList), JSON.stringify(keZi));
+      console.warn("ShuangTongKe gangList-%s keZi-%s", JSON.stringify(gangList), JSON.stringify(keZi));
     }
 
     for (let i = 0; i < gangList.length; i++) {
