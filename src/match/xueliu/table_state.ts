@@ -2077,8 +2077,7 @@ class TableState implements Serializable {
               const gangCard = msg.gang[0][0];
               player.emitter.emit(Enums.gangBySelf, this.turn, gangCard);
             } else if (todo === Enums.hu) {
-              const simpleCount = this.checkPlayerSimpleCrdCount(player);
-              if (([Enums.athena, Enums.poseidon, Enums.zeus].includes(takenCard) || simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
+              if (([Enums.zhong].includes(takenCard)) && !player.isGameHu) {
                 const card = this.promptWithPattern(player, this.lastTakeCard);
                 player.emitter.emit(Enums.da, this.turn, card)
               } else {
@@ -2122,14 +2121,7 @@ class TableState implements Serializable {
             console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
           } else if (todo === Enums.hu) {
-            // console.warn("hu index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
-            const simpleCount = this.checkPlayerSimpleCrdCount(player);
-
-            if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
-              player.emitter.emit(Enums.guo, this.turn, card);
-            } else {
-              return player.emitter.emit(Enums.hu, this.turn, card);
-            }
+            return player.emitter.emit(Enums.hu, this.turn, card);
           } else {
             player.emitter.emit(Enums.guo, this.turn, card)
           }
