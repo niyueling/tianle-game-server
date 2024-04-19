@@ -4194,7 +4194,16 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.gangBySelf, this.turn, card)
         break;
       case Enums.hu:
-        player.emitter.emit(Enums.hu, this.turn, this.stateData.card);
+        if ([Enums.zhong].includes(this.stateData.card) && !player.isGameHu) {
+          if (this.state === stateWaitDa) {
+            const card = this.promptWithPattern(player, this.lastTakeCard);
+            player.emitter.emit(Enums.da, this.turn, card);
+          } else {
+            player.emitter.emit(Enums.guo, this.turn, card);
+          }
+        } else {
+          player.emitter.emit(Enums.hu, this.turn, this.stateData.card);
+        }
 
         break;
     }
