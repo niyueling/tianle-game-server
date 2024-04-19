@@ -64,7 +64,7 @@ export interface IRoom extends EventEmitter {
 export interface ITable {
   destroy(): void
 
-  start(): void
+  start(payload): void
 }
 export interface IGame {
   juIndex: number

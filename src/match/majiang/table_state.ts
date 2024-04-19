@@ -897,7 +897,7 @@ class TableState implements Serializable {
     }
   }
 
-  async start() {
+  async start(payload) {
     await this.fapai();
   }
 

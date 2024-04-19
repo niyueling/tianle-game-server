@@ -351,6 +351,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   destroyOldGame() {
     if (this.gameState) {
+      this.forceDissolve();
       this.gameState.destroy()
     }
   }
@@ -359,11 +360,11 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.destroyOldGame()
     const gameState = this.game.startGame(this)
     this.gameState = gameState
-    await gameState.start()
-    await this.broadcastStartGame()
+    await gameState.start(payload)
+    await this.broadcastStartGame(payload)
   }
 
-  async broadcastStartGame() {
+  async broadcastStartGame(payload) {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
 
     this.broadcast('room/startGame', {ok: true, data: {

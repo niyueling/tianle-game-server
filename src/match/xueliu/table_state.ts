@@ -552,7 +552,7 @@ class TableState implements Serializable {
     this.room.broadcast("game/selectMode", {ok: true, data: {mode, index: this.atIndex(player)}});
   }
 
-  async start() {
+  async start(payload) {
     await this.fapai();
   }
 
