@@ -1876,8 +1876,7 @@ class TableState implements Serializable {
     const anGang = player.events["anGang"] || [];
     const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...buGang, ...jieGang];
     let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1902,7 +1901,7 @@ class TableState implements Serializable {
         gangList = [...gangList, ...gangZi];
       }
 
-      console.warn("ShuangTongKe gangList-%s keZi-%s", JSON.stringify(gangList), JSON.stringify(keZi));
+      console.warn("ShuangTongKe gangList-%s keZi-%s gangZi-%s", JSON.stringify(gangList), JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     for (let i = 0; i < gangList.length; i++) {
