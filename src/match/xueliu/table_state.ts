@@ -4244,27 +4244,331 @@ class TableState implements Serializable {
       if (tongCard.code) return tongCard.index;
     }
 
-    // 有单张打单张
-    const lonelyCard = this.getCardLonelyCard(player);
+    // 有1,9孤牌打1,9孤牌
+    const lonelyCard = this.getCardOneOrNoneLonelyCard(player);
     if (lonelyCard.code) return lonelyCard.index;
 
-    // 无单张打2张
-    const twoEightLonelyCard = this.getCardTwoCard(player);
+    // 有2,8孤牌打2,8孤牌
+    const twoEightLonelyCard = this.getCardTwoOrEightLonelyCard(player);
     if (twoEightLonelyCard.code) return twoEightLonelyCard.index;
 
-    return player.cards.findIndex(value => value > 0 && value < 3);
+    // 有普通孤牌打普通孤牌
+    const otherLonelyCard = this.getCardOtherLonelyCard(player);
+    if (otherLonelyCard.code) return otherLonelyCard.index;
+
+    // 有1,9卡张打1,9卡张
+    const oneNineCard = this.getCardOneOrNineCard(player);
+    if (oneNineCard.code) return oneNineCard.index;
+
+    // 有2,8卡张打2,8卡张
+    const twoEightCard = this.getCardTwoOrEightCard(player);
+    if (twoEightCard.code) return twoEightCard.index;
+
+    // 有普通卡张打普通卡张
+    const otherCard = this.getCardOtherCard(player);
+    if (otherCard.code) return otherCard.index;
+
+    // 有1,9多张打1,9多张
+    const oneNineManyCard = this.getCardOneOrNineManyCard(player);
+    if(oneNineManyCard.code) return oneNineManyCard.index;
+    //
+    // //有2,8多张打2,8多张
+    const twoEightManyCard = this.getCardTwoOrEightManyCard(player);
+    if(twoEightManyCard.code) return twoEightManyCard.index;
+    //
+    // //有普通多张打普通多张
+    const otherManyCard = this.getCardOtherMayCard(player);
+    if(otherManyCard.code) return otherManyCard.index;
+
+    // 从卡牌随机取一张牌
+    const randCard = this.getCardRandCard(player);
+    if (randCard.code) return randCard.index;
   }
 
-  getCardTwoCard(player) {
-    for (let i = 1; i < 53; i++) {
-      if (i === Enums.zhong) {
-        continue;
-      }
+  getCardOtherMayCard(player) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 2; j < 9; j++) {
+        const tail = j + i * 10;
+        const tailIndex = this.checkUserHasCard(player.cards, tail);
 
-      const result = this.checkUserHasCard(player.cards, i);
-      if (result.count === 2) {
-        return {code: true, index: result.index};
+        switch (j) {
+          case 3:
+          case 4:
+          case 5:
+          case 6:
+          case 7:
+            if (tailIndex.count === 2 && ((this.checkUserHasCard(player.cards, tail - 2).count === 1
+                && this.checkUserHasCard(player.cards, tail - 1).count === 1) ||
+              (this.checkUserHasCard(player.cards, tail - 1).count === 1
+                && this.checkUserHasCard(player.cards, tail + 1).count === 1) ||
+              (this.checkUserHasCard(player.cards, tail + 2).count === 1
+                && this.checkUserHasCard(player.cards, tail + 1).count === 1)))
+              return {code: true, index: tailIndex.index};
+            break;
+        }
       }
+    }
+
+    return {code: false, index: 0};
+  }
+
+  getCardTwoOrEightManyCard(player) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 2; j < 9; j++) {
+        const tail = j + i * 10;
+        const tailIndex = this.checkUserHasCard(player.cards, tail);
+        const tailllIndex = this.checkUserHasCard(player.cards, tail - 2);
+        const taillIndex = this.checkUserHasCard(player.cards, tail - 1);
+        const tailrIndex = this.checkUserHasCard(player.cards, tail + 1);
+        const tailrrIndex = this.checkUserHasCard(player.cards, tail + 2);
+
+        if (!tailIndex.count) continue;
+
+        switch (j) {
+          case 2:
+            if (tailIndex.count === 2 && (taillIndex.count === 1 &&
+                tailrIndex.count === 1) ||
+              (tailrrIndex.count === 1 &&
+                tailrIndex.count === 1))
+              return {code: true, index: tailIndex.index};
+            break;
+
+          case 8:
+            if (tailIndex.count === 2 && (tailllIndex.count === 1 &&
+                tailrIndex.count === 1) ||
+              (tailllIndex.count === 1 &&
+                taillIndex.count === 1))
+              return {code: true, index: tailIndex.index};
+            break;
+        }
+      }
+    }
+
+    return {code: false, index: 0};
+  }
+
+  getCardOneOrNineManyCard(player) {
+    for (let i = 0; i < 3; i++) {
+      const tail1 = 1 + i * 10;
+      const tail9 = 9 + i * 10;
+      const tail1Index = this.checkUserHasCard(player.cards, tail1);
+      const tail9Index = this.checkUserHasCard(player.cards, tail9);
+
+      // 判断是否有尾数为1的多牌
+      if (tail1Index.count === 2 && this.checkUserHasCard(player.cards, tail1 + 1).count === 1
+        && this.checkUserHasCard(player.cards, tail1 + 2).count === 1) return {code: true, index: tail1Index.index};
+
+      // 判断是否有尾数为9的多牌
+      if (tail9Index.count === 2 && this.checkUserHasCard(player.cards, tail9 - 1).count === 1
+        && this.checkUserHasCard(player.cards, tail9 - 2).count === 1) return {code: true, index: tail9Index.index};
+    }
+
+    return {code: false, index: 0};
+  }
+
+  getCardRandCard(player) {
+    const nextCard = [];
+
+    player.cards.forEach((value, i) => {
+      if (value > 0) {
+        nextCard.push(i);
+      }
+    });
+
+    for (let i = 0; i < nextCard.length; i++) {
+      const tailIndex = this.checkUserHasCard(player.cards, nextCard[i]);
+      const tailllIndex = this.checkUserHasCard(player.cards, nextCard[i] - 2);
+      const taillIndex = this.checkUserHasCard(player.cards, nextCard[i] - 1);
+      const tailrIndex = this.checkUserHasCard(player.cards, nextCard[i] + 1);
+      const tailrrIndex = this.checkUserHasCard(player.cards, nextCard[i] + 2);
+
+      // 如果是三连张禁止拆牌
+      if (tailIndex.count === 1 && ((taillIndex.count === 1 && tailllIndex.count === 1) ||
+        (taillIndex.count === 1 && tailrIndex.count === 1) ||
+        (tailrIndex.count === 1 && tailrrIndex.count === 1))) continue;
+
+      // 如果单张出现3张禁止拆牌
+      if (tailIndex.count > 2) continue;
+
+      // 如果2+1,则打1
+      if (tailIndex.count === 2 && taillIndex.count === 1 && tailrIndex.count === 0) return {
+        code: true,
+        index: taillIndex.index
+      };
+      if (tailIndex.count === 2 && taillIndex.count === 0 && tailrIndex.count === 1) return {
+        code: true,
+        index: tailrIndex.index
+      };
+
+      return {code: true, index: nextCard[i]};
+    }
+
+    return {code: true, index: nextCard[0]};
+  }
+
+  getCardOtherCard(player) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 2; j < 9; j++) {
+        const tail = j + i * 10;
+        const tailIndex = this.checkUserHasCard(player.cards, tail);
+
+        switch (j) {
+          case 3:
+          case 4:
+          case 5:
+          case 6:
+          case 7:
+            if (tailIndex.count === 1 &&
+              this.checkUserCardCount(player.cards, [tail - 1, tail - 2, tail + 1, tail + 2]).count === 1)
+              return {code: true, index: tailIndex.index};
+            break;
+        }
+      }
+    }
+
+    return {code: false, index: 0};
+  }
+
+  checkUserCardCount(cards, values) {
+    let count = 0;
+    let index = 0;
+    const newCards = [];
+
+    cards.forEach((max, j) => {
+      if (max > 0) {
+        for (let i = 0; i < max; i++) {
+          newCards.push({value: j, index: j});
+        }
+      }
+    });
+
+    newCards.forEach((card, i) => {
+      values.forEach((v: any) => {
+        if (card.value === v) {
+          count++;
+          index = card.index;
+        }
+      })
+    });
+
+    return {index, count};
+  }
+
+  getCardTwoOrEightCard(player) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 2; j < 9; j++) {
+        const tail = j + i * 10;
+        const tailIndex = this.checkUserHasCard(player.cards, tail);
+
+        switch (j) {
+          case 2:
+            if (tailIndex.count === 1 &&
+              this.checkUserCardCount(player.cards, [tail - 1, tail + 1, tail + 2]).count === 1)
+              return {code: true, index: tailIndex.index};
+            break;
+
+          case 8:
+            if (tailIndex.count === 1 &&
+              this.checkUserCardCount(player.cards, [tail - 1, tail + 1, tail - 2]).count === 1)
+              return {code: true, index: tailIndex.index};
+            break;
+        }
+      }
+    }
+
+    return {code: false, index: 0};
+  }
+
+  getCardOneOrNineCard(player) {
+    for (let i = 0; i < 3; i++) {
+      const tail1 = 1 + i * 10;
+      const tail9 = 9 + i * 10;
+      const tail1Index = this.checkUserHasCard(player.cards, tail1);
+      const tail9Index = this.checkUserHasCard(player.cards, tail9);
+
+      // 判断是否有尾数为1的卡张
+      if (tail1Index.count === 1 && ((this.checkUserHasCard(player.cards, tail1 + 1).count === 1
+          && this.checkUserHasCard(player.cards, tail1 + 2).count === 0) ||
+        (this.checkUserHasCard(player.cards, tail1 + 1).count === 0
+          && this.checkUserHasCard(player.cards, tail1 + 2).count === 1))) return {code: true, index: tail1Index.index};
+
+      // 判断是否有尾数为9的卡张
+      if (tail9Index.count === 1 && ((this.checkUserHasCard(player.cards, tail9 - 1).count === 1
+          && this.checkUserHasCard(player.cards, tail9 - 2).count === 0) ||
+        (this.checkUserHasCard(player.cards, tail9 - 1).count === 0
+          && this.checkUserHasCard(player.cards, tail9 - 2).count === 1))) return {code: true, index: tail9Index.index};
+    }
+
+    return {code: false, index: 0};
+  }
+
+  getCardTwoOrEightLonelyCard(player) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 2; j < 9; j++) {
+        const tail = j + i * 10;
+        const tailIndex = this.checkUserHasCard(player.cards, tail);
+
+        switch (j) {
+          case 2:
+            if (tailIndex.count === 1 && this.checkUserHasCard(player.cards, tail + 1).count === 0
+              && this.checkUserHasCard(player.cards, tail + 2).count === 0
+              && this.checkUserHasCard(player.cards, tail - 1).count === 0) return {code: true, index: tailIndex.index};
+            break;
+
+          case 8:
+            if (tailIndex.count === 1 && this.checkUserHasCard(player.cards, tail + 1).count === 0
+              && this.checkUserHasCard(player.cards, tail - 1).count === 0
+              && this.checkUserHasCard(player.cards, tail - 2).count === 0) return {code: true, index: tailIndex.index};
+            break;
+        }
+      }
+    }
+
+    return {code: false, index: 0};
+  }
+
+  getCardOtherLonelyCard(player) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 2; j < 9; j++) {
+        const tail = j + i * 10;
+        const tailIndex = this.checkUserHasCard(player.cards, tail);
+
+        switch (j) {
+          case 3:
+          case 4:
+          case 5:
+          case 6:
+          case 7:
+            if (tailIndex.count === 1 && this.checkUserHasCard(player.cards, tail + 1).count === 0
+              && this.checkUserHasCard(player.cards, tail + 2).count === 0
+              && this.checkUserHasCard(player.cards, tail - 1).count === 0
+              && this.checkUserHasCard(player.cards, tail - 2).count === 0) return {code: true, index: tailIndex.index};
+            break;
+        }
+      }
+    }
+
+    return {code: false, index: 0};
+  }
+
+  getCardOneOrNoneLonelyCard(player) {
+    for (let i = 0; i < 3; i++) {
+      const tail1 = 1 + i * 10;
+      const tail9 = 9 + i * 10;
+      const tail1Index = this.checkUserHasCard(player.cards, tail1);
+      const tail1pIndex = this.checkUserHasCard(player.cards, tail1 + 1);
+      const tail1ppIndex = this.checkUserHasCard(player.cards, tail1 + 2);
+      const tail9Index = this.checkUserHasCard(player.cards, tail9);
+      const tail9pIndex = this.checkUserHasCard(player.cards, tail9 - 1);
+      const tail9ppIndex = this.checkUserHasCard(player.cards, tail9 - 2);
+
+      // 判断是否有尾数为1的孤牌
+      if (tail1Index.count === 1 && tail1pIndex.count === 0
+        && tail1ppIndex.count === 0) return {code: true, index: tail1Index.index};
+
+      // 判断是否有尾数为9的孤牌
+      if (tail9Index.count === 1 && tail9pIndex.count === 0
+        && tail9ppIndex.count === 0) return {code: true, index: tail9Index.index};
     }
 
     return {code: false, index: 0};
@@ -4274,21 +4578,6 @@ class TableState implements Serializable {
     for (let i = start; i <= end; i++) {
       if (player.cards[i] > 0) {
         return {code: true, index: i};
-      }
-    }
-
-    return {code: false, index: 0};
-  }
-
-  getCardLonelyCard(player) {
-    for (let i = 1; i < 53; i++) {
-      if (i === Enums.zhong) {
-        continue;
-      }
-
-      const result = this.checkUserHasCard(player.cards, i);
-      if (result.count === 1) {
-        return {code: true, index: result.index};
       }
     }
 

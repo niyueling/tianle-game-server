@@ -129,6 +129,7 @@ export default class RoomProxy {
 
           if (!playerModel) {
             logger.error('the player not exists', messageBody)
+            return;
           }
 
           const newPlayer = new PlayerRmqProxy({
@@ -150,7 +151,7 @@ export default class RoomProxy {
           }
 
           if (room.canJoin(newPlayer)) {
-            newPlayer.sendMessage('room/joinReply', {ok: true, data: {_id: room._id, rule: room.rule, clubShortId: room.clubShortId}})
+            newPlayer.sendMessage('room/joinReply', {ok: true, data: {_id: room._id, rule: room.rule}})
             await room.join(newPlayer)
             await service.roomRegister.putPlayerInGameRoom(messageBody.from, gameName, room._id)
           } else {
@@ -340,9 +341,9 @@ export default class RoomProxy {
     })
       .then(({consumerTag}) => {
         // 定时设置房间号
-        rabbit.redisClient.setexAsync(`room:${room._id}`, 10, new Date().toTimeString())
+        rabbit.redisClient.setexAsync(`room:${room._id}`, 10, new Date().toTimeString());
         this.spinner = setInterval(() => {
-          rabbit.redisClient.setexAsync(`room:${room._id}`, 3, new Date().toTimeString())
+          rabbit.redisClient.setexAsync(`room:${room._id}`, 3, new Date().toTimeString());
         }, 2000)
 
         this.room.on('leave', async ({_id}) => {

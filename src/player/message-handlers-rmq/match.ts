@@ -39,39 +39,13 @@ export function createHandler(redisClient: AsyncRedisClient) {
 
     // 玩家加入房间
     'room/join-friend': async (player, message) => {
-      const roomInfo = await service.roomRegister.getRoomInfo(message._id);
-      let resp;
-      if (roomInfo.clubMode) {
-        // 战队房
-        const club = await Club.findById(roomInfo.clubId);
-        if (!club) {
-          return player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomInvalid})
-        }
-        const unionMember = await service.club.getUnionMember(club.shortId, player.model._id);
-        if (unionMember) {
-          // 联盟战队
-          const ownerClub = await service.club.getOwnerClub(player.model._id);
-          if (ownerClub && ownerClub.shortId === unionMember.clubShortId) {
-            // 战队主
-            resp = await service.club.joinNormalClubRoom(roomInfo.gameRule, club._id, player.model._id);
-          } else {
-            resp = await service.club.joinUnionClubRoom(unionMember, roomInfo.gameRule, club._id, player.model._id);
-          }
-        } else {
-          // 普通联盟战队
-          resp = await service.club.joinNormalClubRoom(roomInfo.gameRule, club._id, player.model._id);
-        }
-        if (!resp.isOk) {
-          return player.sendMessage('room/joinReply', resp.info);
-        }
-      }
       const roomExists = await service.roomRegister.isRoomExists(message._id)
       if (roomExists) {
         player.setGameName(message.gameType)
         // 加入房间
         player.requestToRoom(message._id, 'joinRoom', message)
       } else {
-        player.sendMessage('room/joinReply', {reason: '房间不存在'})
+        player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
       }
     },
 
