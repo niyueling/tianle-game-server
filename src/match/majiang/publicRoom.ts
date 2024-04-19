@@ -194,9 +194,9 @@ export class PublicRoom extends Room {
     })
   }
 
-  async shuffleDataApply() {
+  async shuffleDataApply(payload) {
     if (this.allReady && !this.gameState) {
-      return await this.startGame();
+      return await this.startGame(payload);
     }
   }
 

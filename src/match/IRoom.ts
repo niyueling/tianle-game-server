@@ -240,7 +240,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     return this.readyPlayers.length === this.capacity
   }
 
-  async startGame() {
+  async startGame(payload) {
     if (this.disconnected.length > 0 && !this.robotManager) {
       // 有人掉线了且没有机器人
       console.info(`some one offline ${JSON.stringify(this.disconnected)}`);
@@ -251,7 +251,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.snapshot = this.players.slice()
     this.isPlayAgain = false
     this.destroyOldGame()
-    await this.startNewGame()
+    await this.startNewGame(payload)
     this.isHasRedPocket = false;
     // 保存游戏开始信息
     return service.roomRegister.saveRoomInfoToRedis(this)
@@ -355,7 +355,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
   }
 
-  async startNewGame() {
+  async startNewGame(payload) {
     this.destroyOldGame()
     const gameState = this.game.startGame(this)
     this.gameState = gameState

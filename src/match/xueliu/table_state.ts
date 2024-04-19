@@ -909,11 +909,10 @@ class TableState implements Serializable {
 
   async checkQingYaoJiu(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const cardList = [1, 9, 11, 19, 21, 29];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -939,10 +938,9 @@ class TableState implements Serializable {
 
   async checkLianQiDui(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -988,10 +986,9 @@ class TableState implements Serializable {
 
   async checkYiSeShuangLongHui(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let huCard = [1, 2, 3, 5, 7, 8, 9];
     let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
@@ -1050,10 +1047,9 @@ class TableState implements Serializable {
 
   async checkJiuLianBaoDeng(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1108,11 +1104,10 @@ class TableState implements Serializable {
 
   async checkLvYiSe(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
     const cardList = [12, 13, 14, 16, 18];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1138,10 +1133,9 @@ class TableState implements Serializable {
 
   async checkBaiWanShi(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let numberCount = 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1167,10 +1161,9 @@ class TableState implements Serializable {
 
   async checkDaYuWu(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1197,10 +1190,9 @@ class TableState implements Serializable {
 
   async checkXiaoYuWu(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1226,10 +1218,9 @@ class TableState implements Serializable {
 
   async checkQingYiSe(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     const cards = player.cards.slice();
     let wanCount = 0;
     let shuCount = 0;
@@ -1304,12 +1295,22 @@ class TableState implements Serializable {
 
   async checkTuiBuDao(player) {
     const cardList = [12, 14, 15, 16, 18, 19, 21, 22, 23, 24, 25, 28, 29];
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
     const cards = player.cards.slice();
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     if (isJiePao) {
       cards[this.lastHuCard]++;
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (!cardList.includes(gangList[i])) {
+        flag = false;
+      }
     }
 
     for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
@@ -1568,9 +1569,8 @@ class TableState implements Serializable {
 
   async checkQuanShuangKe(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang];
+    let gangList = [...anGang, ...jieGang];
     let gangCount = 0;
     let duiCount = 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
@@ -1601,10 +1601,9 @@ class TableState implements Serializable {
 
   async checkSiJieGao(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     gangList.sort((a, b) => a - b);
     let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
@@ -1674,10 +1673,9 @@ class TableState implements Serializable {
 
   async checkHunDa(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1703,10 +1701,9 @@ class TableState implements Serializable {
 
   async checkHunZhong(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1734,10 +1731,9 @@ class TableState implements Serializable {
 
   async checkHunXiao(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1763,10 +1759,9 @@ class TableState implements Serializable {
 
   async checkSanJieGao(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     gangList.sort((a, b) => a - b);
     let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
@@ -1823,10 +1818,9 @@ class TableState implements Serializable {
 
   async checkDuanYaoJiu(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang, ...peng];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1852,9 +1846,8 @@ class TableState implements Serializable {
 
   async checkShiBaLuoHan(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang];
+    let gangList = [...anGang, ...jieGang];
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
@@ -1863,9 +1856,8 @@ class TableState implements Serializable {
 
   async checkShiErJinChai(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang];
+    let gangList = [...anGang, ...jieGang];
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
@@ -1874,9 +1866,8 @@ class TableState implements Serializable {
 
   async checkShuangTongKe(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...buGang, ...jieGang];
+    let gangList = [...anGang, ...jieGang];
     let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -1919,10 +1910,9 @@ class TableState implements Serializable {
 
   async checkDuiDuiHu(player) {
     const anGang = player.events["anGang"] || [];
-    const buGang = player.events["buGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
-    let gangCount = anGang.length + buGang.length + jieGang.length + peng.length;
+    let gangCount = anGang.length + jieGang.length + peng.length;
     let duiCount = 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
