@@ -1871,24 +1871,23 @@ class TableState implements Serializable {
     let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    const cards = player.cards.slice();
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
-      cards[this.lastHuCard]++;
+      player.cards[this.lastHuCard]++;
     }
 
-    const huResult = player.events["hu"] || [];
+    const huResult = player.checkZiMo();
+    player.cards[this.lastHuCard]--;
 
-    if (huResult.length > 0) {
-      const huInfo = huResult[0];
-      if (huInfo.huCards.keZi) {
-        keZi = huInfo.huCards.keZi;
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
         gangList = [...gangList, ...keZi];
       }
 
-      if (huInfo.huCards.gangZi) {
-        gangZi = huInfo.huCards.gangZi;
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
         gangList = [...gangList, ...gangZi];
       }
 
