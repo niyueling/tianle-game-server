@@ -619,8 +619,8 @@ class TableState implements Serializable {
     }
   }
 
-  async getCardTypes(player, type) {
-    return await this.getCardTypesByHu(player, type);
+  async getCardTypes(player, type, dianPaoPlayer = null) {
+    return await this.getCardTypesByHu(player, type, dianPaoPlayer);
   }
 
   async getCardTypesByHu(player, type = 1, dianPaoPlayer = null) {
@@ -2502,7 +2502,7 @@ class TableState implements Serializable {
 
           this.actionResolver.requestAction(player, 'hu', async () => {
               this.lastHuCard = card;
-              this.cardTypes = await this.getCardTypes(player, 2);
+              this.cardTypes = await this.getCardTypes(player, 2, this.lastDa);
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
               const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
               if (tIndex !== -1) {
@@ -2510,6 +2510,7 @@ class TableState implements Serializable {
               }
 
               from = this.atIndex(this.lastDa);
+              const dianPaoPlayer = this.lastDa;
               if (ok && player.daHuPai(card, this.players[from]) && tIndex === -1) {
                 player.lastOperateType = 4;
                 player.isGameDa = true;
@@ -2531,6 +2532,12 @@ class TableState implements Serializable {
                     }
                   }
                 });
+
+                // 如果是杠后炮，需把杠牌获得的收入转移给胡牌玩家
+                if (dianPaoPlayer.isGangHouDa) {
+                  console.warn("index-%s from-%s exec refundGangScore function!", index, from);
+                  await this.refundGangScore(from, index);
+                }
 
                 if (!player.isGameHu) {
                   player.isGameHu = true;
@@ -3437,6 +3444,114 @@ class TableState implements Serializable {
         state1.score = this.players[i].balance * this.rule.diFen
         await this.room.addScore(state1.model._id.toString(), state1.score, this.cardTypes)
       }
+    }
+  }
+
+  async refundGangScore(from, index) {
+    // 获取点炮用户最后一次起风数据
+    const record = await RoomGangRecord.findOne({winnerFrom: from, roomId: this.room._id}).sort({createAt: -1});
+    const dianPaoPlayer = this.players[from];
+    const huPlayer = this.players[index];
+    if (!record) {
+      console.warn("gang draw score record is exists");
+      return ;
+    }
+
+    let winModel = await service.playerService.getPlayerModel(huPlayer._id.toString());
+    let winBalance = 0;
+    this.players.map((p) => {
+      p.balance = 0;
+    })
+
+    const model = await service.playerService.getPlayerModel(dianPaoPlayer._id.toString());
+    dianPaoPlayer.balance = -Math.min(Math.abs(-record.winnerGoldReward), model.gold, winModel.gold);
+    winBalance += Math.abs(dianPaoPlayer.balance);
+    dianPaoPlayer.juScore += dianPaoPlayer.balance;
+    if (dianPaoPlayer.balance !== 0) {
+      await this.room.addScore(dianPaoPlayer.model._id.toString(), dianPaoPlayer.balance, this.cardTypes);
+      await service.playerService.logGoldConsume(dianPaoPlayer._id, ConsumeLogType.gamePayGang, dianPaoPlayer.balance,
+        model.gold + dianPaoPlayer.balance, `呼叫转移-${this.room._id}`);
+    }
+
+    //增加胡牌用户金币
+    huPlayer.balance = winBalance;
+    huPlayer.juScore += winBalance;
+    if (winBalance !== 0) {
+      await this.room.addScore(huPlayer.model._id.toString(), winBalance, this.cardTypes);
+      await service.playerService.logGoldConsume(huPlayer._id, ConsumeLogType.gameReceiveGang, huPlayer.balance,
+        huPlayer.model.gold + huPlayer.balance, `起风获得-${this.room._id}`);
+    }
+
+    // 生成起风记录
+    await RoomGangRecord.create({
+      winnerGoldReward: winBalance,
+      winnerId: huPlayer.model._id.toString(),
+      winnerFrom: this.atIndex(huPlayer),
+      failList: record.failList,
+      roomId: this.room._id,
+      multiple: record.multiple,
+      categoryId: this.room.gameRule.categoryId
+    })
+
+    // 判断是否破产，破产提醒客户端充值钻石
+    let brokePlayers = [];
+    let playersModifyGolds = [];
+    let waits = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const model = await service.playerService.getPlayerModel(p.model._id.toString());
+      let params = {
+        index: this.atIndex(p),
+        _id: p.model._id.toString(),
+        gold: p.balance,
+        currentGold: model.gold,
+        isBroke: p.isBroke
+      };
+      if (model.gold <= 0) {
+        if (params.index === 0) {
+          if (!p.isBroke) {
+            waits.push(params);
+          } else {
+            brokePlayers.push(p);
+          }
+        } else {
+          if (!p.isBroke) {
+            // 用户第一次破产
+            params.isBroke = true;
+            await this.playerGameOver(p, [], p.genGameStatus(this.atIndex(p), 1));
+          }
+
+          brokePlayers.push(p);
+        }
+      }
+
+      playersModifyGolds.push(params);
+    }
+
+    const nextDo = async () => {
+      this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+    }
+
+    setTimeout(nextDo, 1500);
+
+    const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+    const nextZhuang = this.nextZhuang()
+
+    if (this.remainCards <= 0) {
+      return await this.gameAllOver(states, [], nextZhuang);
+    }
+
+    if (this.isGameOver || brokePlayers.length >= 3) {
+      await this.gameAllOver(states, [], nextZhuang);
+    }
+
+    if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
+      this.room.robotManager.model.step = RobotStep.waitRuby;
+      const nextDo1 = async () => {
+        this.zhuang.onDeposit = false;
+        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      }
+      setTimeout(nextDo1, 2000);
     }
   }
 
