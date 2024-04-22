@@ -2433,7 +2433,7 @@ class TableState implements Serializable {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         // 暗杠，赢2倍豆
-        const multiple = 2 * conf.base * conf.Ante;
+        const multiple = (isAnGang ? 2 : 1) * conf.base * conf.Ante;
         await this.gangDrawScore(player, null, multiple);
 
         const nextDo = async () => {
@@ -3386,26 +3386,25 @@ class TableState implements Serializable {
     let tongCount = 0;
     for (let j = 1; j <= 9; j++) {
       wanCount += player.cards[j];
-      if (wanCount > 0 && player.mode === "wan") {
-        return false;
-      }
     }
+    if (wanCount > 0 && player.mode === "wan") {
+      return false;
+    }
+
 
     for (let j = 11; j <= 19; j++) {
       tiaoCount += player.cards[j];
-      if (tiaoCount > 0 && player.mode === "tiao") {
-        return false;
-      }
+    }
+    if (tiaoCount > 0 && player.mode === "tiao") {
+      return false;
     }
 
     for (let j = 21; j <= 29; j++) {
       tongCount += player.cards[j];
-      if (tongCount > 0 && player.mode === "tong") {
-        return false;
-      }
     }
+    return !(tongCount > 0 && player.mode === "tong");
 
-    return true;
+
   }
 
   nextZhuang(): PlayerState {
@@ -3458,7 +3457,7 @@ class TableState implements Serializable {
     }
   }
 
-  async checkBrokeAndWait() {
+  async checkBrokeAndWait(isWait = true) {
     // 判断是否破产，破产提醒客户端充值钻石
     let brokePlayers = [];
     let playersModifyGolds = [];
@@ -3476,7 +3475,12 @@ class TableState implements Serializable {
       if (model.gold <= 0) {
         if (params.index === 0) {
           if (!p.isBroke) {
-            waits.push(params);
+            if (isWait) {
+              waits.push(params);
+            } else {
+              brokePlayers.push(p);
+              await this.playerGameOver(p, [], p.genGameStatus(this.atIndex(p), 1));
+            }
           } else {
             brokePlayers.push(p);
           }
@@ -3518,6 +3522,61 @@ class TableState implements Serializable {
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
       setTimeout(nextDo1, 2500);
+    }
+  }
+
+  async refundShui() {
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const ting = p.isRobotTing(p.cards);
+
+      if (!ting.hu) {
+        const records = await RoomGangRecord.find({roomId: this.room._id, winnerId: p._id});
+
+
+        if (records.length > 0 && !p.isGameHu) {
+          this.room.broadcast("game/drawback", {ok: true, data: {index: i}});
+          await this.refundGangArrayScore(records);
+        }
+      }
+    }
+  }
+
+  async refundGangArrayScore(records) {
+    for (let i = 0; i < records.length; i++) {
+      const drawbackPlayer = this.players[records[i].winnerFrom];
+      const failList = records[i].failList;
+      const record = records[i];
+
+      for (let j = 0; j < failList.length; j++) {
+        const refundPlayer = this.players[failList[j].index];
+        let winModel = await service.playerService.getPlayerModel(this.players[failList[j].index]._id);
+        let winBalance = 0;
+        this.players.map((p) => {
+          p.balance = 0;
+        })
+
+        const model = await service.playerService.getPlayerModel(drawbackPlayer._id.toString());
+        drawbackPlayer.balance = -Math.min(Math.abs(-record.winnerGoldReward), model.gold, winModel.gold);
+        winBalance += Math.abs(drawbackPlayer.balance);
+        drawbackPlayer.juScore += drawbackPlayer.balance;
+        if (drawbackPlayer.balance !== 0) {
+          await this.room.addScore(drawbackPlayer.model._id.toString(), drawbackPlayer.balance, this.cardTypes);
+          await service.playerService.logGoldConsume(drawbackPlayer._id, ConsumeLogType.gamePayGang, drawbackPlayer.balance,
+            model.gold + drawbackPlayer.balance, `退税扣除-${this.room._id}`);
+        }
+
+        //增加胡牌用户金币
+        refundPlayer.balance = winBalance;
+        refundPlayer.juScore += winBalance;
+        if (winBalance !== 0) {
+          await this.room.addScore(refundPlayer.model._id.toString(), winBalance, this.cardTypes);
+          await service.playerService.logGoldConsume(refundPlayer._id, ConsumeLogType.gameReceiveGang, refundPlayer.balance,
+            refundPlayer.model.gold + refundPlayer.balance, `退税获得-${this.room._id}`);
+        }
+
+        await this.checkBrokeAndWait(false);
+      }
     }
   }
 
@@ -3580,7 +3639,7 @@ class TableState implements Serializable {
 
     if (from) {
       const model = await service.playerService.getPlayerModel(from._id.toString());
-      const balance = multiple * 10;
+      const balance = multiple;
       from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
       winBalance += Math.abs(from.balance);
       from.juScore += from.balance;
@@ -3596,7 +3655,7 @@ class TableState implements Serializable {
         // 扣除三家金币
         if (p.model._id.toString() !== me.model._id.toString() && !p.isBroke) {
           const model = await service.playerService.getPlayerModel(p._id.toString());
-          const balance = multiple * 10;
+          const balance = multiple;
           p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(p.balance);
           p.juScore += p.balance;
@@ -3903,15 +3962,6 @@ class TableState implements Serializable {
   async gameAllOver(states, niaos, nextZhuang) {
     this.state = stateGameOver;
 
-    const winner = this.players.filter(x => x.events.jiePao)[0]
-
-    // 没胡牌 也没放冲
-    if (winner) {
-      this.players.filter(x => !x.events.jiePao && !x.events.dianPao)
-        .forEach(x => {
-          x.events.hunhun = winner.events.hu
-        })
-    }
     this.players.forEach(x => x.gameOver())
     this.room.removeListener('reconnect', this.onReconnect)
     this.room.removeListener('empty', this.onRoomEmpty)
@@ -3935,6 +3985,9 @@ class TableState implements Serializable {
       await this.room.recordGameRecord(this, states);
       await this.room.recordRoomScore('dissolve', scores, players)
       await this.room.RoomScoreRecord(scores, players)
+
+      // 退税，对局结束，未听牌的玩家需返还杠牌所得
+      await this.refundShui();
     }
 
     // 更新战绩
