@@ -2345,24 +2345,28 @@ class TableState implements Serializable {
               const multiple = 3 * conf.base * conf.Ante;
               await this.gangDrawScore(player, this.lastDa, multiple);
 
-              const nextCard = await this.consumeCard(player);
-              player.cards[nextCard]++;
-              this.cardTypes = await this.getCardTypes(player, 1);
-              player.cards[nextCard]--;
+              const nextDo = async () => {
+                const nextCard = await this.consumeCard(player);
+                player.cards[nextCard]++;
+                this.cardTypes = await this.getCardTypes(player, 1);
+                player.cards[nextCard]--;
 
-              const msg = player.gangTakeCard(this.turn, nextCard,
-                {
-                  id: this.cardTypes.cardId,
-                  multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-                });
-              if (msg) {
-                this.room.broadcast('game/oppoTakeCard', {
-                  ok: true,
-                  data: {index, card: nextCard}
-                }, player.msgDispatcher);
-                this.state = stateWaitDa;
-                this.stateData = {da: player, card: nextCard, msg};
+                const msg = player.gangTakeCard(this.turn, nextCard,
+                  {
+                    id: this.cardTypes.cardId,
+                    multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
+                  });
+                if (msg) {
+                  this.room.broadcast('game/oppoTakeCard', {
+                    ok: true,
+                    data: {index, card: nextCard}
+                  }, player.msgDispatcher);
+                  this.state = stateWaitDa;
+                  this.stateData = {da: player, card: nextCard, msg};
+                }
               }
+
+              setTimeout(nextDo, 2000);
             } else {
               logger.info('gangByOtherDa player-%s card:%s GangReply error:4', index, card)
               player.sendMessage('game/gangReply', {
@@ -2419,48 +2423,52 @@ class TableState implements Serializable {
         const multiple = 2 * conf.base * conf.Ante;
         await this.gangDrawScore(player, null, multiple);
 
-        const nextCard = await this.consumeCard(player);
-        player.cards[nextCard]++;
-        this.cardTypes = await this.getCardTypes(player, 1);
-        player.cards[nextCard]--;
-        const msg = player.gangTakeCard(this.turn, nextCard,
-          {
-            id: this.cardTypes.cardId,
-            multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-          });
-        if (msg) {
-          this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, player.msgDispatcher);
-          this.state = stateWaitDa;
-          this.stateData = {msg, da: player, card: nextCard};
-        } else {
-          player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
-          return;
-        }
+        const nextDo = async () => {
+          const nextCard = await this.consumeCard(player);
+          player.cards[nextCard]++;
+          this.cardTypes = await this.getCardTypes(player, 1);
+          player.cards[nextCard]--;
+          const msg = player.gangTakeCard(this.turn, nextCard,
+            {
+              id: this.cardTypes.cardId,
+              multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
+            });
+          if (msg) {
+            this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, player.msgDispatcher);
+            this.state = stateWaitDa;
+            this.stateData = {msg, da: player, card: nextCard};
+          } else {
+            player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
+            return;
+          }
 
-        const check: IActionCheck = {card};
+          const check: IActionCheck = {card};
 
-        if (!isAnGang) {
-          const qiangGangCheck: HuCheck = {card}
-          let qiang = null
+          if (!isAnGang) {
+            const qiangGangCheck: HuCheck = {card}
+            let qiang = null
 
-          gangIndex = this.atIndex(player)
+            gangIndex = this.atIndex(player)
 
-          for (let i = 1; i < this.players.length; i++) {
-            const playerIndex = (gangIndex + i) % this.players.length
-            const otherPlayer = this.players[playerIndex]
+            for (let i = 1; i < this.players.length; i++) {
+              const playerIndex = (gangIndex + i) % this.players.length
+              const otherPlayer = this.players[playerIndex]
 
-            if (otherPlayer != player) {
-              const r = otherPlayer.markJiePao(card, qiangGangCheck, true)
-              if (r.hu) {
-                if (!check.hu) check.hu = []
-                check.hu.push(otherPlayer)
-                otherPlayer.huInfo = r.check
-                qiang = otherPlayer
-                break
+              if (otherPlayer != player) {
+                const r = otherPlayer.markJiePao(card, qiangGangCheck, true)
+                if (r.hu) {
+                  if (!check.hu) check.hu = []
+                  check.hu.push(otherPlayer)
+                  otherPlayer.huInfo = r.check
+                  qiang = otherPlayer
+                  break
+                }
               }
             }
           }
         }
+
+        setTimeout(nextDo, 2000);
       } else {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
       }
