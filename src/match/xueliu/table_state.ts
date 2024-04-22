@@ -3545,13 +3545,14 @@ class TableState implements Serializable {
       }
     }
 
-    this.room.broadcast("game/drawback", {ok: true, data: drawbackPlayers});
+    if (drawbackPlayers.length > 0) {
+      this.room.broadcast("game/drawback", {ok: true, data: drawbackPlayers});
+      for (let i = 0; i < drawbackPlayers.length; i++) {
+        await this.refundGangArrayScore(drawbackPlayers[i].records);
+      }
 
-    for (let i = 0; i < drawbackPlayers.length; i++) {
-      await this.refundGangArrayScore(drawbackPlayers[i].records);
+      await this.checkBrokeAndWait(false);
     }
-
-    await this.checkBrokeAndWait(false);
 
     return drawbackPlayers;
   }
