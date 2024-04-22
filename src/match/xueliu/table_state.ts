@@ -558,7 +558,6 @@ class TableState implements Serializable {
   }
 
   async fapai(payload) {
-    console.warn("payload-%s", JSON.stringify(payload));
     this.shuffle()
     this.sleepTime = 1500;
     this.caishen = this.rule.useCaiShen ? [Enums.zhong] : [Enums.slotNoCard]
@@ -568,7 +567,18 @@ class TableState implements Serializable {
     let zhuangIndex = 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
-      const cards13 = payload.cards ? payload.cards [i] : await this.take13Cards(p);
+      const cards13 = payload.cards ? payload.cards[i] : await this.take13Cards(p);
+
+      // 如果客户端指定发牌
+      if (payload.cards) {
+        for (let j = 0; j < payload.cards[i].length; j++) {
+          const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
+          this.remainCards--;
+          const card = this.cards[cardIndex];
+          this.cards.splice(cardIndex, 1);
+          this.lastTakeCard = card;
+        }
+      }
 
       for (let i = 0; i < cards13.length; i++) {
         // 计算序数牌相加

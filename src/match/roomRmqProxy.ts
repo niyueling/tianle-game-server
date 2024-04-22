@@ -206,7 +206,6 @@ export default class RoomProxy {
         }
 
         if (messageBody.name === 'room/shuffleDataApply') {
-          console.warn(messageBody);
           await room.shuffleDataApply(messageBody.payload)
           return
         }
