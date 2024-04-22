@@ -4108,11 +4108,13 @@ class TableState implements Serializable {
         msg = this.players[i].genSelfStates(i);
         msg.roomRubyReward = roomRubyReward;
         msg.events.huCards = msg.huCards.slice();
+        msg.onDeposit = this.players[i].onDeposit;
         pushMsg.status.push(msg);
       } else {
         msg = this.players[i].genOppoStates(i);
         msg.roomRubyReward = roomRubyReward;
         msg.events.huCards = msg.huCards.slice();
+        msg.onDeposit = this.players[i].onDeposit;
         pushMsg.status.push(msg);
       }
 
