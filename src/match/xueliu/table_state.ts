@@ -2655,6 +2655,7 @@ class TableState implements Serializable {
           if (tIndex !== -1) {
             return;
           }
+          const oldCards = player.cards.slice();
           const isDa = player.daHuPai(card, null);
           if (ok && isDa && tIndex === -1) {
             this.lastDa = player;
@@ -2756,7 +2757,7 @@ class TableState implements Serializable {
             this.room.broadcast('game/huReply', {
               ok: false,
               info: TianleErrorCode.huInvaid,
-              data: {type: "ziMo", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), tIndex, ok, isDa}
+              data: {type: "ziMo", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), oldCards: this.getCardArray(oldCards), tIndex, ok, isDa}
             });
 
             const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
