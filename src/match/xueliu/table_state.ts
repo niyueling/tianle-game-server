@@ -3545,6 +3545,8 @@ class TableState implements Serializable {
     }
 
     await this.checkBrokeAndWait(false);
+
+    return drawbackPlayers;
   }
 
   async refundGangArrayScore(records) {
