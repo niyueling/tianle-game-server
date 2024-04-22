@@ -3551,8 +3551,6 @@ class TableState implements Serializable {
 
     await this.checkBrokeAndWait(false);
 
-    console.warn("refundShui game/drawback drawbackPlayers-%s", JSON.stringify(drawbackPlayers));
-
     return drawbackPlayers;
   }
 
@@ -3982,8 +3980,7 @@ class TableState implements Serializable {
       await this.room.RoomScoreRecord(scores, players);
 
       // 退税，对局结束，未听牌的玩家需返还杠牌所得
-      const arrays = await this.refundShui();
-      console.warn("gameAllOver arrays-%s", JSON.stringify(arrays));
+      await this.refundShui();
     }
 
     // 更新战绩
