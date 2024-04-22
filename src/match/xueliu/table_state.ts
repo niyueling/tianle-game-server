@@ -2652,7 +2652,7 @@ class TableState implements Serializable {
           this.cardTypes = await this.getCardTypes(player, 1);
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
           const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
-          if (tIndex !== -1) {
+          if (tIndex !== -1 || !this.stateData[Enums.da]) {
             return;
           }
           const oldCards = player.cards.slice();
