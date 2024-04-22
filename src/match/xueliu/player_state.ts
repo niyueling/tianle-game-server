@@ -490,26 +490,25 @@ class PlayerState implements Serializable {
     let tongCount = 0;
     for (let j = 1; j <= 9; j++) {
       wanCount += this.cards[j];
-      if (wanCount > 0 && this.mode === "wan") {
-        return false;
-      }
+    }
+
+    if (wanCount > 0 && this.mode === "wan") {
+      return false;
     }
 
     for (let j = 11; j <= 19; j++) {
       tiaoCount += this.cards[j];
-      if (tiaoCount > 0 && this.mode === "tiao") {
-        return false;
-      }
+    }
+
+    if (tiaoCount > 0 && this.mode === "tiao") {
+      return false;
     }
 
     for (let j = 21; j <= 29; j++) {
       tongCount += this.cards[j];
-      if (tongCount > 0 && this.mode === "tong") {
-        return false;
-      }
     }
 
-    return true;
+    return !(tongCount > 0 && this.mode === "tong");
   }
 
   @recordChoiceAfterTakeCard
