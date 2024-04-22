@@ -197,6 +197,14 @@ export default class RoomProxy {
         }
 
         if (messageBody.name === 'room/shuffleDataApply') {
+          if (!messageBody.payload.cards) {
+            messageBody.payload.cards = [
+              [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 35],
+              [11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 35],
+              [21, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24, 35],
+              [25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 35],
+            ];
+          }
           await room.shuffleDataApply(messageBody.payload)
           return
         }

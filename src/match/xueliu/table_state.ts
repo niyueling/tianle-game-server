@@ -558,14 +558,6 @@ class TableState implements Serializable {
   }
 
   async fapai(payload) {
-    if (!payload.cards) {
-      payload.cards = [
-        [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 35],
-        [11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 35],
-        [21, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24, 35],
-        [25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 35],
-      ];
-    }
     console.warn("payload-%s", JSON.stringify(payload));
     this.shuffle()
     this.sleepTime = 1500;
@@ -3515,7 +3507,7 @@ class TableState implements Serializable {
         this.zhuang.onDeposit = false;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
-      setTimeout(nextDo1, 3000);
+      setTimeout(nextDo1, 2500);
     }
   }
 
