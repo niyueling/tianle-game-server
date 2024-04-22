@@ -2755,15 +2755,17 @@ class TableState implements Serializable {
               }
             }
           } else {
+            player.cards[card]++;
+            player.emitter.emit(Enums.da, this.turn, card);
             this.room.broadcast('game/huReply', {
               ok: false,
               info: TianleErrorCode.huInvaid,
               data: {type: "ziMo", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), oldCards: this.getCardArray(oldCards), tIndex, ok, isDa, isZiMo}
             });
 
-            const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-            const nextZhuang = this.nextZhuang()
-            await this.gameAllOver(states, [], nextZhuang);
+            // const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+            // const nextZhuang = this.nextZhuang()
+            // await this.gameAllOver(states, [], nextZhuang);
           }
         } else {
           // player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
