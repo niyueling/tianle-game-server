@@ -3522,6 +3522,8 @@ class TableState implements Serializable {
       }
       setTimeout(nextDo1, 2500);
     }
+
+    return true;
   }
 
   async refundShui() {
@@ -3582,6 +3584,8 @@ class TableState implements Serializable {
         }
       }
     }
+
+    return true;
   }
 
   async refundGangScore(from, index) {

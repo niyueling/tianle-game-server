@@ -237,7 +237,7 @@ export class RobotManager extends NewRobotManager {
         await proxy.choice(isPlayerChoice)
       } else if (isPlayerDa) {
         if (this.waitInterval[key] >= this.getWaitSecond()) {
-          if (ziMoHu.hu && !this.room.gameState.isAllHu) {
+          if (ziMoHu.hu) {
             await proxy.choice(Enums.hu)
           } else if (AnGangIndex) {
             await proxy.gang(Enums.anGang, AnGangIndex)
