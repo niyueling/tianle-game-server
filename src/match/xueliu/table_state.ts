@@ -3534,7 +3534,7 @@ class TableState implements Serializable {
     if (dianPaoPlayer.balance !== 0) {
       await this.room.addScore(dianPaoPlayer.model._id.toString(), dianPaoPlayer.balance, this.cardTypes);
       await service.playerService.logGoldConsume(dianPaoPlayer._id, ConsumeLogType.gamePayGang, dianPaoPlayer.balance,
-        model.gold + dianPaoPlayer.balance, `呼叫转移-${this.room._id}`);
+        model.gold + dianPaoPlayer.balance, `呼叫转移扣除-${this.room._id}`);
     }
 
     //增加胡牌用户金币
@@ -3543,7 +3543,7 @@ class TableState implements Serializable {
     if (winBalance !== 0) {
       await this.room.addScore(huPlayer.model._id.toString(), winBalance, this.cardTypes);
       await service.playerService.logGoldConsume(huPlayer._id, ConsumeLogType.gameReceiveGang, huPlayer.balance,
-        huPlayer.model.gold + huPlayer.balance, `起风获得-${this.room._id}`);
+        huPlayer.model.gold + huPlayer.balance, `呼叫转移获得-${this.room._id}`);
     }
 
     // 生成起风记录
