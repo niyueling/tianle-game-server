@@ -103,8 +103,8 @@ export function createHandler(redisClient: AsyncRedisClient) {
     },
 
     // 洗牌&开始游戏
-    'room/shuffleDataApply': async player => {
-      player.requestToCurrentRoom('room/shuffleDataApply', {})
+    'room/shuffleDataApply': async (player, message) => {
+      player.requestToCurrentRoom('room/shuffleDataApply', message)
     },
 
     'room/creatorStartGame': player => {
