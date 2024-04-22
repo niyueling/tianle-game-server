@@ -941,7 +941,6 @@ class PlayerState implements Serializable {
     const caiShen = this.caiShen
 
     cards.caiShen = caiShen
-    console.warn(cards.caiShen)
     cards[caiShen[0]]++
     const checkResult = HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
     cards[caiShen[0]]--

@@ -2543,7 +2543,7 @@ class TableState implements Serializable {
                 });
 
                 // 如果是杠后炮，需把杠牌获得的收入转移给胡牌玩家
-                if (dianPaoPlayer.isGangHouDa) {
+                if (dianPaoPlayer.isGangHouDa && !dianPaoPlayer.isBroke) {
                   console.warn("index-%s from-%s exec refundGangScore function!", index, from);
                   await this.refundGangScore(from, index);
                 }
@@ -3530,13 +3530,9 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       const ting = p.isRobotTing(p.cards);
-
-      if (!ting.hu) {
-        const records = await RoomGangRecord.find({roomId: this.room._id, winnerId: p._id});
-
-        if (records.length > 0 && !p.isGameHu) {
-          drawbackPlayers.push({index: i, records});
-        }
+      const records = await RoomGangRecord.find({roomId: this.room._id, winnerId: p._id});
+      if (!ting.hu && records.length > 0) {
+        drawbackPlayers.push({index: i, records});
       }
     }
 
