@@ -143,6 +143,15 @@ export default class RoomProxy {
             return
           }
 
+          const category = await GameCategory.findOne({_id: room.rule.ro.categoryId}).lean();
+          let cardTableId = -1;
+
+          // 获取用户称号
+          const playerCardTable = await PlayerCardTable.findOne({playerId: playerModel._id, isUse: true});
+          if (playerCardTable && (playerCardTable.times === -1 || playerCardTable.times > new Date().getTime())) {
+            cardTableId = playerCardTable.propId;
+          }
+
           const alreadyInRoom = await service.roomRegister.roomNumber(messageBody.from, gameName)
 
           if (alreadyInRoom && alreadyInRoom !== room._id) {
@@ -151,7 +160,7 @@ export default class RoomProxy {
           }
 
           if (room.canJoin(newPlayer)) {
-            newPlayer.sendMessage('room/join-success', {ok: true, data: {_id: room._id, rule: room.rule}})
+            newPlayer.sendMessage('room/join-success', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}})
             await room.join(newPlayer)
             await service.roomRegister.putPlayerInGameRoom(messageBody.from, gameName, room._id)
           } else {
@@ -198,14 +207,6 @@ export default class RoomProxy {
 
         if (messageBody.name === 'room/shuffleDataApply') {
           console.warn(messageBody);
-          // if (!messageBody.payload.cards) {
-          //   messageBody.payload.cards = [
-          //     [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 35],
-          //     [11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 35],
-          //     [21, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24, 35],
-          //     [25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 35],
-          //   ];
-          // }
           await room.shuffleDataApply(messageBody.payload)
           return
         }
