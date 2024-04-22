@@ -983,7 +983,7 @@ class PlayerState implements Serializable {
       this.cards.alreadyTakenCard = this.alreadyTakenCard
 
       const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
-      console.warn("check zimo card-%s, cards-%s", card, JSON.stringify(this.getCardList(this.cards)));
+      console.warn("check zimo card-%s, cards-%s checkResult-%s", card, JSON.stringify(this.getCardList(this.cards)), JSON.stringify(checkResult));
       if (checkResult.hu) {
         checkResult.zhuang = this.zhuang
 
