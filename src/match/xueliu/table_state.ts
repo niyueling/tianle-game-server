@@ -2651,6 +2651,7 @@ class TableState implements Serializable {
         } else if (isZiMo) {
           this.cardTypes = await this.getCardTypes(player, 1);
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
+          const isZiMo = player.checkZiMo();
           const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
           if (tIndex !== -1 || !this.stateData[Enums.da]) {
             return;
@@ -2757,7 +2758,7 @@ class TableState implements Serializable {
             this.room.broadcast('game/huReply', {
               ok: false,
               info: TianleErrorCode.huInvaid,
-              data: {type: "ziMo", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), oldCards: this.getCardArray(oldCards), tIndex, ok, isDa}
+              data: {type: "ziMo", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), oldCards: this.getCardArray(oldCards), tIndex, ok, isDa, isZiMo}
             });
 
             const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
