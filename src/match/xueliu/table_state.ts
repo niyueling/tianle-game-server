@@ -2611,7 +2611,7 @@ class TableState implements Serializable {
                       this.turn++;
                     }
 
-                    setTimeout(nextDo, 2500);
+                    setTimeout(nextDo, 3000);
                   } else {
                     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                     const nextZhuang = this.nextZhuang()
@@ -2735,7 +2735,7 @@ class TableState implements Serializable {
                   this.turn++;
                 }
 
-                setTimeout(nextDo, 2500);
+                setTimeout(nextDo, 3000);
               } else {
                 const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                 const nextZhuang = this.nextZhuang()
