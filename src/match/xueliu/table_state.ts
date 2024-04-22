@@ -3433,6 +3433,7 @@ class TableState implements Serializable {
   async gangDrawScore(me, from, multiple) {
     let winModel = await service.playerService.getPlayerModel(me._id.toString());
     let winBalance = 0;
+    let failList = [];
 
     if (from) {
       const model = await service.playerService.getPlayerModel(from._id.toString());
@@ -3440,6 +3441,7 @@ class TableState implements Serializable {
       from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
       winBalance += Math.abs(from.balance);
       from.juScore += from.balance;
+      failList.push({index: this.atIndex(from), score: from.balance});
       if (from.balance !== 0) {
         await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
         await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGang, from.balance,
@@ -3455,6 +3457,7 @@ class TableState implements Serializable {
           p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
           winBalance += Math.abs(p.balance);
           p.juScore += p.balance;
+          failList.push({index: this.atIndex(p), score: p.balance});
           if (p.balance !== 0) {
             await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
             await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGang, p.balance,
@@ -3478,6 +3481,7 @@ class TableState implements Serializable {
       winnerGoldReward: winBalance,
       winnerId: me.model._id.toString(),
       winnerFrom: this.atIndex(me),
+      failList,
       roomId: this.room._id,
       multiple: multiple,
       categoryId: this.room.gameRule.categoryId

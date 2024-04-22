@@ -21,6 +21,10 @@ const RoomGangRecordSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  failList: {
+    type: Array,
+    required: true,
+  },
   multiple: {
     type: Number,
     required: true,
