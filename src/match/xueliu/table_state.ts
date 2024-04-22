@@ -3191,7 +3191,9 @@ class TableState implements Serializable {
         if (!p.isBroke && model.gold > 0) {
           const r = p.markJiePao(card, result);
           const isDingQue = this.checkCardIsDingQue(p, card);
-          console.warn("isBroke-%s, gold-%s, isDingQue-%s, huResult-%s", p.isBroke, model.gold, isDingQue, JSON.stringify(r));
+          if (p.zhuang) {
+            console.warn("isBroke-%s, gold-%s, isDingQue-%s, huResult-%s", p.isBroke, model.gold, isDingQue, JSON.stringify(r));
+          }
           if (r.hu && isDingQue) {
             if (!check.hu || check.hu.length === 0) {
               check.hu = [];
@@ -3504,11 +3506,11 @@ class TableState implements Serializable {
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
 
-    if (this.remainCards <= 0) {
+    if (this.remainCards <= 0 && isWait) {
       return await this.gameAllOver(states, [], nextZhuang);
     }
 
-    if (this.isGameOver || brokePlayers.length >= 3) {
+    if (this.isGameOver || brokePlayers.length >= 3 && isWait) {
       await this.gameAllOver(states, [], nextZhuang);
     }
 
@@ -3537,8 +3539,6 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("refundShui game/drawback drawbackPlayers-%s", JSON.stringify(drawbackPlayers));
-
     this.room.broadcast("game/drawback", {ok: true, data: drawbackPlayers});
 
     for (let i = 0; i < drawbackPlayers.length; i++) {
@@ -3546,6 +3546,8 @@ class TableState implements Serializable {
     }
 
     await this.checkBrokeAndWait(false);
+
+    console.warn("refundShui game/drawback drawbackPlayers-%s", JSON.stringify(drawbackPlayers));
 
     return drawbackPlayers;
   }
