@@ -554,10 +554,11 @@ class TableState implements Serializable {
   }
 
   async start(payload) {
-    await this.fapai();
+    await this.fapai(payload);
   }
 
-  async fapai() {
+  async fapai(payload) {
+    console.warn("payload-%s", JSON.stringify(payload));
     this.shuffle()
     this.sleepTime = 1500;
     this.caishen = this.rule.useCaiShen ? [Enums.zhong] : [Enums.slotNoCard]
