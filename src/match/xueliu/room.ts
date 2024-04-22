@@ -498,11 +498,15 @@ class Room extends RoomBase {
     // await this.updateBigWinner();
   }
 
-  async addScore(playerId: string, gains: number, cardTypes) {
-    const p = PlayerManager.getInstance().getPlayer(playerId)
-    this.scoreMap[playerId] += gains
+  async shuffleDataApply(payload) {
+    if (this.allReady && !this.gameState) {
+      return await this.startGame(payload);
+    }
+  }
 
-    await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}})
+  async addScore(playerId: string, gains: number, cardTypes) {
+    this.scoreMap[playerId] += gains;
+    await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}});
   }
 
   removeDisconnected(item) {
