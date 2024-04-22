@@ -3442,6 +3442,9 @@ class TableState implements Serializable {
     let winModel = await service.playerService.getPlayerModel(me._id.toString());
     let winBalance = 0;
     let failList = [];
+    this.players.map((p) => {
+      p.balance = 0;
+    })
 
     if (from) {
       const model = await service.playerService.getPlayerModel(from._id.toString());
