@@ -1890,7 +1890,9 @@ class TableState implements Serializable {
     }
 
     const huResult = player.checkZiMo();
-    player.cards[this.lastHuCard]--;
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
 
     if (huResult.hu) {
       if (huResult.huCards.keZi) {
