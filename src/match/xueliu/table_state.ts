@@ -3525,6 +3525,7 @@ class TableState implements Serializable {
 
   async refundShui() {
     this.players.map((p) => { p.balance = 0; })
+    const drawbackPlayers = [];
 
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
@@ -3534,10 +3535,15 @@ class TableState implements Serializable {
         const records = await RoomGangRecord.find({roomId: this.room._id, winnerId: p._id});
 
         if (records.length > 0 && !p.isGameHu) {
-          this.room.broadcast("game/drawback", {ok: true, data: {index: i}});
-          await this.refundGangArrayScore(records);
+          drawbackPlayers.push({index: i, records});
         }
       }
+    }
+
+    this.room.broadcast("game/drawback", {ok: true, data: drawbackPlayers});
+
+    for (let i = 0; i < drawbackPlayers.length; i++) {
+      await this.refundGangArrayScore(drawbackPlayers[i].records);
     }
 
     await this.checkBrokeAndWait(false);
