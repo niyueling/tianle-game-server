@@ -3524,6 +3524,8 @@ class TableState implements Serializable {
   }
 
   async refundShui() {
+    this.players.map((p) => { p.balance = 0; })
+
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       const ting = p.isRobotTing(p.cards);
@@ -3531,13 +3533,14 @@ class TableState implements Serializable {
       if (!ting.hu) {
         const records = await RoomGangRecord.find({roomId: this.room._id, winnerId: p._id});
 
-
         if (records.length > 0 && !p.isGameHu) {
           this.room.broadcast("game/drawback", {ok: true, data: {index: i}});
           await this.refundGangArrayScore(records);
         }
       }
     }
+
+    await this.checkBrokeAndWait(false);
   }
 
   async refundGangArrayScore(records) {
@@ -3550,30 +3553,26 @@ class TableState implements Serializable {
         const refundPlayer = this.players[failList[j].index];
         let winModel = await service.playerService.getPlayerModel(this.players[failList[j].index]._id);
         let winBalance = 0;
-        this.players.map((p) => {
-          p.balance = 0;
-        })
 
         const model = await service.playerService.getPlayerModel(drawbackPlayer._id.toString());
-        drawbackPlayer.balance = -Math.min(Math.abs(-record.winnerGoldReward), model.gold, winModel.gold);
-        winBalance += Math.abs(drawbackPlayer.balance);
-        drawbackPlayer.juScore += drawbackPlayer.balance;
-        if (drawbackPlayer.balance !== 0) {
-          await this.room.addScore(drawbackPlayer.model._id.toString(), drawbackPlayer.balance, this.cardTypes);
-          await service.playerService.logGoldConsume(drawbackPlayer._id, ConsumeLogType.gamePayGang, drawbackPlayer.balance,
-            model.gold + drawbackPlayer.balance, `退税扣除-${this.room._id}`);
+        const balance = -Math.min(Math.abs(-record.winnerGoldReward), model.gold, winModel.gold);
+        drawbackPlayer.balance += balance;
+        winBalance += Math.abs(balance);
+        drawbackPlayer.juScore += balance;
+        if (balance !== 0) {
+          await this.room.addScore(drawbackPlayer.model._id.toString(), balance, this.cardTypes);
+          await service.playerService.logGoldConsume(drawbackPlayer._id, ConsumeLogType.gamePayGang, balance,
+            model.gold + balance, `退税扣除-${this.room._id}`);
         }
 
         //增加胡牌用户金币
-        refundPlayer.balance = winBalance;
+        refundPlayer.balance += winBalance;
         refundPlayer.juScore += winBalance;
         if (winBalance !== 0) {
           await this.room.addScore(refundPlayer.model._id.toString(), winBalance, this.cardTypes);
-          await service.playerService.logGoldConsume(refundPlayer._id, ConsumeLogType.gameReceiveGang, refundPlayer.balance,
-            refundPlayer.model.gold + refundPlayer.balance, `退税获得-${this.room._id}`);
+          await service.playerService.logGoldConsume(refundPlayer._id, ConsumeLogType.gameReceiveGang, winBalance,
+            refundPlayer.model.gold + winBalance, `退税获得-${this.room._id}`);
         }
-
-        await this.checkBrokeAndWait(false);
       }
     }
   }
