@@ -3188,9 +3188,11 @@ class TableState implements Serializable {
         const i = (index + j) % this.players.length;
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(this.players[index]._id);
-        if (!p.isBroke && model.gold > 0 && this.checkCardIsDingQue(p, card)) {
+        if (!p.isBroke && model.gold > 0) {
           const r = p.markJiePao(card, result);
-          if (r.hu) {
+          const isDingQue = this.checkCardIsDingQue(p, card);
+          console.warn("isBroke-%s, gold-%s, isDingQue-%s, huResult-%s", p.isBroke, model.gold, isDingQue, JSON.stringify(r));
+          if (r.hu && isDingQue) {
             if (!check.hu || check.hu.length === 0) {
               check.hu = [];
             }
@@ -3369,13 +3371,9 @@ class TableState implements Serializable {
       }
     }
 
-    if ((player.mode === 'wan' && card <= Enums.wanzi9) ||
+    return !((player.mode === 'wan' && card <= Enums.wanzi9) ||
       (player.mode === 'tiao' && card >= Enums.shuzi1 && card <= Enums.shuzi9) ||
-      (player.mode === 'tong' && card >= Enums.tongzi1 && card <= Enums.tongzi9)) {
-      return false;
-    }
-
-    return true;
+      (player.mode === 'tong' && card >= Enums.tongzi1 && card <= Enums.tongzi9));
   }
 
   // 检测用户是否含有定缺牌
