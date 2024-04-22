@@ -427,6 +427,7 @@ class PlayerState implements Serializable {
 
     let huResult = this.checkZiMo()
     const isDingQue = this.checkDingQueCard();
+    console.warn("card-%s, isDingQue-%s, first-%s, huResult-%s", card, isDingQue, first, JSON.stringify(huResult));
     if (huResult.hu && isDingQue && !first) {
       msg.huType = huType;
       if (this.hadQiaoXiang) {
