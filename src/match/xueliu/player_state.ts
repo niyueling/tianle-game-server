@@ -427,7 +427,7 @@ class PlayerState implements Serializable {
 
     let huResult = this.checkZiMo()
     const isDingQue = this.checkDingQueCard();
-    console.warn("card-%s, isDingQue-%s, first-%s, huResult-%s", card, isDingQue, first, JSON.stringify(huResult));
+    console.warn("card-%s, isDingQue-%s, first-%s, caiShen-%s, huResult-%s", card, isDingQue, first, JSON.stringify(this.caiShen), JSON.stringify(huResult));
     if (huResult.hu && isDingQue && !first) {
       msg.huType = huType;
       if (this.hadQiaoXiang) {
@@ -638,8 +638,6 @@ class PlayerState implements Serializable {
     }
 
     const zeusCount = this.cards[this.caiShen[0]];
-    const poseidonCount = this.cards[this.caiShen[1]];
-    const athenaCount = this.cards[this.caiShen[2]];
     const baiCount = this.cards[Enums.bai];
 
     this.caiShen.map((v) => {
@@ -661,8 +659,6 @@ class PlayerState implements Serializable {
 
     this.cards[Enums.bai] = baiCount;
     this.cards[this.caiShen[0]] = zeusCount;
-    this.cards[this.caiShen[1]] = poseidonCount;
-    this.cards[this.caiShen[2]] = athenaCount;
 
     return refMap
   }
@@ -1263,7 +1259,7 @@ class PlayerState implements Serializable {
   }
 
   checkQiaoXiang() {
-    const caiCount = this.cards[this.caiShen[0]] + this.cards[this.caiShen[1]] + this.cards[this.caiShen[2]]
+    const caiCount = this.cards[this.caiShen[0]]
     if (caiCount) {
       if (HuPaiDetect.checkQiaoXiang(this.cards)) {
         return true
