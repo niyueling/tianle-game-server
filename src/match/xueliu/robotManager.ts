@@ -238,6 +238,7 @@ export class RobotManager extends NewRobotManager {
       } else if (isPlayerDa) {
         if (this.waitInterval[key] >= this.getWaitSecond()) {
           if (ziMoHu.hu) {
+            console.warn("card-%s, huResult-%s cards-%s", this.room.gameState.stateData.card, JSON.stringify(ziMoHu), JSON.stringify(this.room.gameState.getCardArray(proxy.playerState.cards)));
             await proxy.choice(Enums.hu)
           } else if (AnGangIndex) {
             await proxy.gang(Enums.anGang, AnGangIndex)
