@@ -197,6 +197,7 @@ export default class RoomProxy {
         }
 
         if (messageBody.name === 'room/shuffleDataApply') {
+          console.warn(messageBody);
           // if (!messageBody.payload.cards) {
           //   messageBody.payload.cards = [
           //     [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 35],
