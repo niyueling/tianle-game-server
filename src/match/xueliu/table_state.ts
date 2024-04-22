@@ -1563,7 +1563,7 @@ class TableState implements Serializable {
         anGangCount += gangZi.length;
       }
 
-      console.warn("siAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
+      // console.warn("siAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     return anGangCount >= 4 && (isZiMo || isJiePao);
@@ -1667,7 +1667,7 @@ class TableState implements Serializable {
         anGangCount += gangZi.length;
       }
 
-      console.warn("SanAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
+      // console.warn("SanAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     return anGangCount >= 3 && (isZiMo || isJiePao);
@@ -1800,7 +1800,7 @@ class TableState implements Serializable {
         anGangCount += gangZi.length;
       }
 
-      console.warn("ShuangAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
+      // console.warn("ShuangAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     return anGangCount >= 2 && (isZiMo || isJiePao);
@@ -1893,7 +1893,7 @@ class TableState implements Serializable {
         gangList = [...gangList, ...gangZi];
       }
 
-      console.warn("ShuangTongKe gangList-%s keZi-%s gangZi-%s", JSON.stringify(gangList), JSON.stringify(keZi), JSON.stringify(gangZi));
+      // console.warn("ShuangTongKe gangList-%s keZi-%s gangZi-%s", JSON.stringify(gangList), JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     for (let i = 0; i < gangList.length; i++) {
@@ -2109,7 +2109,7 @@ class TableState implements Serializable {
           if (todo === Enums.peng && !player.isGameHu) {
             player.emitter.emit(Enums.peng, this.turn, card);
           } else if (todo === Enums.gang && !player.isGameHu) {
-            console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
+            // console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
           } else if (todo === Enums.hu) {
             return player.emitter.emit(Enums.hu, this.turn, card);
