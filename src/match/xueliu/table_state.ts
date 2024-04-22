@@ -2072,7 +2072,6 @@ class TableState implements Serializable {
           if (msg) {
             const takenCard = msg.card;
             const todo = player.ai.onWaitForDa(msg, player.cards);
-            const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
             if (todo === Enums.gang && !player.isGameHu) {
               const gangCard = msg.gang[0][0];
@@ -2102,7 +2101,6 @@ class TableState implements Serializable {
 
         const card = msg.data.card;
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card);
-        const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
 
 
         // 一炮多响切用户未操作
@@ -3772,23 +3770,6 @@ class TableState implements Serializable {
       await this.checkBrokeAndWait();
     }
     this.logger.close()
-  }
-
-  checkPlayerSimpleCrdCount(player) {
-    const cards = player.cards.slice();
-    let count = 0;
-
-    for (let i = 0; i < cards.length; i++) {
-      if ([Enums.athena, Enums.poseidon, Enums.zeus].includes(i)) {
-        continue;
-      }
-
-      if (cards[i] === 1) {
-        count++;
-      }
-    }
-
-    return count;
   }
 
   async getPlayerCardTypeRecord(player, typeId, taskType) {
