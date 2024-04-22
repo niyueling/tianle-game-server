@@ -2320,6 +2320,7 @@ class TableState implements Serializable {
               this.turn++;
               const from = this.atIndex(this.lastDa)
               const me = this.atIndex(player)
+              this.stateData = {}
               player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
 
               // 计算杠牌次数
@@ -2408,6 +2409,7 @@ class TableState implements Serializable {
       const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
       if (ok) {
         player.lastOperateType = 3;
+        this.stateData = {}
         player.sendMessage('game/gangReply', {
           ok: true,
           data: {card, from, gangIndex, type: isAnGang ? "anGang" : "buGang"}
