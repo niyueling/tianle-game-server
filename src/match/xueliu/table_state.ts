@@ -3969,6 +3969,7 @@ class TableState implements Serializable {
       await this.room.recordGameRecord(this, states);
       await this.room.recordRoomScore('dissolve', scores, players);
       await this.room.RoomScoreRecord(scores, players);
+      console.warn("gameAllOver");
 
       // 退税，对局结束，未听牌的玩家需返还杠牌所得
       await this.refundShui();
