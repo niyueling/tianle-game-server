@@ -151,7 +151,7 @@ export default class RoomProxy {
           }
 
           if (room.canJoin(newPlayer)) {
-            newPlayer.sendMessage('room/joinReply', {ok: true, data: {_id: room._id, rule: room.rule}})
+            // newPlayer.sendMessage('room/joinReply', {ok: true, data: {_id: room._id, rule: room.rule}})
             await room.join(newPlayer)
             await service.roomRegister.putPlayerInGameRoom(messageBody.from, gameName, room._id)
           } else {
