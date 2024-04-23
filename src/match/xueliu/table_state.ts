@@ -3483,6 +3483,9 @@ class TableState implements Serializable {
           }
 
           // 碰、杠等
+          this.state = stateWaitAction;
+          this.stateData = check;
+          this.stateData.hangUp = [];
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
           this.room.broadcast('game/oppoCanDoSomething', {ok: true, data: {...msg, ...{index: this.atIndex(p)}}}, p.msgDispatcher);
         }
@@ -3496,12 +3499,6 @@ class TableState implements Serializable {
         this.isManyHu = true;
         this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}});
         // console.warn("isManyHu-%s manyHuArray-%s", this.isManyHu, JSON.stringify(this.manyHuArray));
-      }
-
-      if (check[Enums.pengGang] || check[Enums.hu]) {
-        this.state = stateWaitAction;
-        this.stateData = check;
-        this.stateData.hangUp = [];
       }
 
       this.actionResolver.tryResolve()
