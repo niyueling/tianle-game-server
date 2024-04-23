@@ -3,7 +3,6 @@
  */
 // @ts-ignore
 import {isNaN, pick, random} from 'lodash'
-import * as moment from 'moment'
 import * as logger from "winston";
 import * as winston from "winston";
 import Player from "../../database/models/player";
@@ -20,7 +19,6 @@ import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import CombatGain from "../../database/models/combatGain";
 import GameCategory from "../../database/models/gameCategory";
-import GameCardRecord from "../../database/models/gameCardRecord";
 import PlayerMedal from "../../database/models/PlayerMedal";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import PlayerCardTable from "../../database/models/PlayerCardTable";
@@ -3799,19 +3797,25 @@ class TableState implements Serializable {
 
   async gangDrawScore(me, from, multiple) {
     let winModel = await service.playerService.getPlayerModel(me._id.toString());
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
     let winBalance = 0;
     let failList = [];
+    let failGoldList = [];
+    let failFromList = [];
+    let failIdList = [];
     this.players.map((p) => {
       p.balance = 0;
     })
 
     if (from) {
       const model = await service.playerService.getPlayerModel(from._id.toString());
-      const balance = multiple;
-      from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+      from.balance = -Math.min(Math.abs(multiple), model.gold, winModel.gold);
       winBalance += Math.abs(from.balance);
       from.juScore += from.balance;
       failList.push({index: this.atIndex(from), score: from.balance});
+      failFromList.push(this.atIndex(from));
+      failGoldList.push(from.balance);
+      failIdList.push(from._id);
       if (from.balance !== 0) {
         await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
         await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGang, from.balance,
@@ -3823,11 +3827,13 @@ class TableState implements Serializable {
         // 扣除三家金币
         if (p.model._id.toString() !== me.model._id.toString() && !p.isBroke) {
           const model = await service.playerService.getPlayerModel(p._id.toString());
-          const balance = multiple;
-          p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+          p.balance = -Math.min(Math.abs(multiple), model.gold, winModel.gold);
           winBalance += Math.abs(p.balance);
           p.juScore += p.balance;
           failList.push({index: this.atIndex(p), score: p.balance});
+          failFromList.push(this.atIndex(from));
+          failGoldList.push(from.balance);
+          failIdList.push(from._id);
           if (p.balance !== 0) {
             await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
             await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGang, p.balance,
@@ -3854,6 +3860,21 @@ class TableState implements Serializable {
       failList,
       roomId: this.room._id,
       multiple: multiple,
+      categoryId: this.room.gameRule.categoryId
+    })
+
+    // 生成金豆记录
+    await RoomGoldRecord.create({
+      winnerGoldReward: winBalance,
+      winnerId: me.model._id,
+      winnerFrom: this.atIndex(me),
+      roomId: this.room._id,
+      failList: failIdList,
+      failGoldList,
+      failFromList,
+      multiple: multiple,
+      juIndex: this.room.game.juIndex,
+      cardTypes: {cardId: -1},
       categoryId: this.room.gameRule.categoryId
     })
 
