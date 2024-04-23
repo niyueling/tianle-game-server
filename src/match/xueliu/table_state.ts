@@ -4301,7 +4301,6 @@ class TableState implements Serializable {
       await this.room.RoomScoreRecord(scores, players);
 
       const nextDo1 = async () => {
-        console.warn("refundShui");
         // 退税，对局结束，未听牌的玩家需返还杠牌所得
         await this.refundShui();
       }
@@ -4309,12 +4308,11 @@ class TableState implements Serializable {
       setTimeout(nextDo1, 500);
 
       const nextDo2 = async () => {
-        console.warn("searchFlowerPig");
         // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
         await  this.searchFlowerPig();
       }
 
-      setTimeout(nextDo2, 2000);
+      setTimeout(nextDo2, 3000);
     }
 
     // 更新战绩
