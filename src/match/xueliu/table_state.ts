@@ -2015,6 +2015,8 @@ class TableState implements Serializable {
       }
     }
 
+    console.warn("anGang-%s, jieGang-%s, gangZi-%s", JSON.stringify(anGang), JSON.stringify(jieGang), JSON.stringify(gangZi));
+
     return gangList.length >= 3 && (isZiMo || isJiePao);
   }
 
