@@ -589,6 +589,14 @@ class TableState implements Serializable {
         zhuangIndex = i;
       }
 
+      // 如果是好友房，设置金豆为金豆上限的1亿倍
+      if (!this.room.isPublic) {
+        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+        const model = await service.playerService.getPlayerModel(p._id);
+        model.gold = conf.maxGold * 100000000;
+        await model.save();
+      }
+
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, zhuangIndex)
     }
 
