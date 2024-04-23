@@ -3197,9 +3197,6 @@ class TableState implements Serializable {
         if (!p.isBroke && model.gold > 0) {
           const r = p.markJiePao(card, result);
           const isDingQue = this.checkCardIsDingQue(p, card);
-          if (p.zhuang) {
-            console.warn("isBroke-%s, gold-%s, isDingQue-%s, huResult-%s", p.isBroke, model.gold, isDingQue, r.hu);
-          }
           if (r.hu && isDingQue) {
             if (!check.hu || check.hu.length === 0) {
               check.hu = [];
