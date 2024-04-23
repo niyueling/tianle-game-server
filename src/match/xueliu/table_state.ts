@@ -3815,7 +3815,11 @@ class TableState implements Serializable {
 
       for (let j = 0; j < failList.length; j++) {
         const refundPlayer = this.players[failList[j].index];
-        let winModel = await service.playerService.getPlayerModel(this.players[failList[j].index]._id);
+        if (!refundPlayer) {
+          continue;
+        }
+
+        let winModel = await service.playerService.getPlayerModel(refundPlayer._id);
         let winBalance = 0;
 
         const model = await service.playerService.getPlayerModel(drawbackPlayer._id.toString());
@@ -4428,6 +4432,7 @@ class TableState implements Serializable {
       this.players.forEach(x => {
         x.gameOver()
       })
+      room.forceDissolve();
     })
   }
 
