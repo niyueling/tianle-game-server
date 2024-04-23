@@ -1645,7 +1645,7 @@ class TableState implements Serializable {
 
       if (huResult.huCards.gangZi) {
         gangZi = huResult.huCards.gangZi;
-        gangList.push(gangZi);
+        gangList = [...gangList, ...gangZi];
       }
 
       if (huResult.huCards.useJiang) {
@@ -1984,7 +1984,7 @@ class TableState implements Serializable {
     if (huResult.hu) {
       if (huResult.huCards.gangZi) {
         gangZi = huResult.huCards.gangZi;
-        gangList.push(gangZi);
+        gangList = [...gangList, ...gangZi];
       }
     }
 
@@ -2011,11 +2011,9 @@ class TableState implements Serializable {
     if (huResult.hu) {
       if (huResult.huCards.gangZi) {
         gangZi = huResult.huCards.gangZi;
-        gangList.push(gangZi);
+        gangList = [...gangList, ...gangZi];
       }
     }
-
-    console.warn("anGang-%s, jieGang-%s, gangZi-%s, gangList-%s, cards-%s", JSON.stringify(anGang), JSON.stringify(jieGang), JSON.stringify(gangZi), JSON.stringify(gangList), JSON.stringify(this.getCardArray(player.cards)));
 
     return gangList.length >= 3 && (isZiMo || isJiePao);
   }
