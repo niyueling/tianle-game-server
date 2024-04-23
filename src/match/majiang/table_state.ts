@@ -4542,7 +4542,7 @@ class TableState implements Serializable {
         const result = {card};
         const i = (index + j) % this.players.length;
         const p = this.players[i];
-        const model = await service.playerService.getPlayerModel(this.players[index]._id);
+        const model = await service.playerService.getPlayerModel(p._id);
         if (!p.isBroke && model.gold > 0) {
           const r = p.markJiePao(card, result);
           if (r.hu) {
