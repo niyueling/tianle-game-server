@@ -3518,7 +3518,7 @@ class TableState implements Serializable {
       return await this.gameAllOver(states, [], nextZhuang);
     }
 
-    if (this.isGameOver || brokePlayers.length >= 3 && isWait) {
+    if ((this.isGameOver || brokePlayers.length >= 3) && isWait) {
       await this.gameAllOver(states, [], nextZhuang);
     }
 
