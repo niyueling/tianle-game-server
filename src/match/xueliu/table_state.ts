@@ -3874,7 +3874,7 @@ class TableState implements Serializable {
       failFromList,
       multiple: multiple,
       juIndex: this.room.game.juIndex,
-      cardTypes: {cardId: -1, type, cardName: "下雨"},
+      cardTypes: {cardId: -1, type, cardName: ["anGang", "buGang"].includes(type) ? "下雨" : "刮风"},
       categoryId: this.room.gameRule.categoryId
     })
 
