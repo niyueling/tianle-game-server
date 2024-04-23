@@ -2509,7 +2509,7 @@ class TableState implements Serializable {
 
               // 明杠，赢3倍豆
               const multiple = 3 * conf.base * conf.Ante;
-              await this.gangDrawScore(player, this.lastDa, multiple);
+              await this.gangDrawScore(player, this.lastDa, multiple, "jieGang");
 
               const nextDo = async () => {
                 const nextCard = await this.consumeCard(player);
@@ -2588,7 +2588,7 @@ class TableState implements Serializable {
 
         // 暗杠，赢2倍豆
         const multiple = (isAnGang ? 2 : 1) * conf.base * conf.Ante;
-        await this.gangDrawScore(player, null, multiple);
+        await this.gangDrawScore(player, null, multiple, isAnGang ? "anGang" : "buGang");
 
         const nextDo = async () => {
           const nextCard = await this.consumeCard(player);
@@ -3795,7 +3795,7 @@ class TableState implements Serializable {
     await this.checkBrokeAndWait();
   }
 
-  async gangDrawScore(me, from, multiple) {
+  async gangDrawScore(me, from, multiple, type) {
     let winModel = await service.playerService.getPlayerModel(me._id.toString());
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
     let winBalance = 0;
@@ -3874,7 +3874,7 @@ class TableState implements Serializable {
       failFromList,
       multiple: multiple,
       juIndex: this.room.game.juIndex,
-      cardTypes: {cardId: -1},
+      cardTypes: {cardId: -1, type, cardName: "下雨"},
       categoryId: this.room.gameRule.categoryId
     })
 
