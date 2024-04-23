@@ -2466,7 +2466,6 @@ class TableState implements Serializable {
 
   async checkShuangTongKe(player) {
     const anGang = player.events["anGang"] || [];
-
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...jieGang];
     let flag = false;
