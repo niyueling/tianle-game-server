@@ -3685,6 +3685,94 @@ class TableState implements Serializable {
     return true;
   }
 
+  async searchFlowerPig() {
+    this.players.map((p) => { p.balance = 0; })
+    const flowerPigs = [];
+    const noFlowerPigs = [];
+    const playerIndex = [];
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+
+    // 计算定缺玩家和非定缺玩家
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const isDingQue = this.checkDingQueCard(p);
+      if (isDingQue) {
+        noFlowerPigs.push(p);
+        playerIndex.push({index: this.atIndex(p), huaZhu: false});
+      } else {
+        flowerPigs.push(p);
+        playerIndex.push({index: this.atIndex(p), huaZhu: true});
+      }
+    }
+
+    if (flowerPigs.length > 0) {
+      this.room.broadcast("game/searchFlowerPig", {ok: true, data: playerIndex});
+
+      // 定缺玩家按照场次封顶倍数给费定缺玩家赔付金豆
+      await this.flowerPigDrawScore(flowerPigs, noFlowerPigs, conf);
+
+      await this.checkBrokeAndWait(false);
+    }
+  }
+
+  async flowerPigDrawScore(flowerPigs, noFlowerPigs, conf) {
+    for (const flowerPig of flowerPigs) {
+      // 定缺玩家给非定缺玩家赔付金豆
+      await this.noFlowerPigDrawScore(flowerPig, noFlowerPigs, conf);
+    }
+  }
+
+  async noFlowerPigDrawScore(failPlayer, noFlowerPigs, conf) {
+    for (const winPlayer of noFlowerPigs) {
+      let winModel = await service.playerService.getPlayerModel(winPlayer._id.toString());
+      let winBalance = 0;
+      let failGoldList = [];
+      let failFromList = [];
+      let failIdList = [];
+
+      const model = await service.playerService.getPlayerModel(failPlayer._id.toString());
+      if (model.gold <= 0) {
+        return;
+      }
+
+      failPlayer.balance = -Math.min(Math.abs(-conf.maxGold), model.gold, winModel.gold);
+      winBalance += Math.abs(failPlayer.balance);
+      failPlayer.juScore += failPlayer.balance;
+      failFromList.push(this.atIndex(failPlayer));
+      failGoldList.push(failPlayer.balance);
+      failIdList.push(failPlayer._id);
+      if (failPlayer.balance !== 0) {
+        await this.room.addScore(failPlayer._id, failPlayer.balance, this.cardTypes);
+        await service.playerService.logGoldConsume(failPlayer._id, ConsumeLogType.gamePayGang, failPlayer.balance,
+          model.gold + failPlayer.balance, `查花猪扣除-${this.room._id}`);
+      }
+
+      //增加胡牌用户金币
+      winPlayer.balance = winBalance;
+      winPlayer.juScore += winBalance;
+      if (winBalance !== 0) {
+        await this.room.addScore(winPlayer._id, winBalance, this.cardTypes);
+        await service.playerService.logGoldConsume(winPlayer._id, ConsumeLogType.gameReceiveGang, winPlayer.balance,
+          winPlayer.model.gold + winPlayer.balance, `查花猪获得-${this.room._id}`);
+      }
+
+      // 生成金豆记录
+      await RoomGoldRecord.create({
+        winnerGoldReward: winBalance,
+        winnerId: winPlayer._id,
+        winnerFrom: this.atIndex(winPlayer),
+        roomId: this.room._id,
+        failList: failIdList,
+        failGoldList,
+        failFromList,
+        multiple: conf.maxMultiple,
+        juIndex: this.room.game.juIndex,
+        cardTypes: {cardId: -1, cardName: "查花猪", multiple: conf.maxMultiple},
+        categoryId: this.room.gameRule.categoryId
+      })
+    }
+  }
+
   async refundShui() {
     this.players.map((p) => { p.balance = 0; })
     const drawbackPlayers = [];
@@ -3711,10 +3799,14 @@ class TableState implements Serializable {
   }
 
   async refundGangArrayScore(records) {
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
     for (let i = 0; i < records.length; i++) {
       const drawbackPlayer = this.players[records[i].winnerFrom];
       const failList = records[i].failList;
       const record = records[i];
+      let failGoldList = [];
+      let failFromList = [];
+      let failIdList = [];
 
       for (let j = 0; j < failList.length; j++) {
         const refundPlayer = this.players[failList[j].index];
@@ -3726,6 +3818,9 @@ class TableState implements Serializable {
         drawbackPlayer.balance += balance;
         winBalance += Math.abs(balance);
         drawbackPlayer.juScore += balance;
+        failFromList.push(this.atIndex(drawbackPlayer));
+        failGoldList.push(drawbackPlayer.balance);
+        failIdList.push(drawbackPlayer._id);
         if (balance !== 0) {
           await this.room.addScore(drawbackPlayer.model._id.toString(), balance, this.cardTypes);
           await service.playerService.logGoldConsume(drawbackPlayer._id, ConsumeLogType.gamePayGang, balance,
@@ -3740,6 +3835,21 @@ class TableState implements Serializable {
           await service.playerService.logGoldConsume(refundPlayer._id, ConsumeLogType.gameReceiveGang, winBalance,
             refundPlayer.model.gold + winBalance, `退税获得-${this.room._id}`);
         }
+
+        // 生成金豆记录
+        await RoomGoldRecord.create({
+          winnerGoldReward: winBalance,
+          winnerId: refundPlayer._id,
+          winnerFrom: this.atIndex(refundPlayer),
+          roomId: this.room._id,
+          failList: failIdList,
+          failGoldList,
+          failFromList,
+          multiple: record.multiple,
+          juIndex: this.room.game.juIndex,
+          cardTypes: {cardId: -1, cardName: "退税", multiple: conf.maxMultiple},
+          categoryId: this.room.gameRule.categoryId
+        })
       }
     }
 
@@ -3749,8 +3859,12 @@ class TableState implements Serializable {
   async refundGangScore(from, index) {
     // 获取点炮用户最后一次起风数据
     const record = await RoomGangRecord.findOne({winnerFrom: from, roomId: this.room._id}).sort({createAt: -1});
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
     const dianPaoPlayer = this.players[from];
     const huPlayer = this.players[index];
+    let failGoldList = [];
+    let failFromList = [];
+    let failIdList = [];
     if (!record) {
       console.warn("gang draw score record is exists");
       return ;
@@ -3766,6 +3880,9 @@ class TableState implements Serializable {
     dianPaoPlayer.balance = -Math.min(Math.abs(-record.winnerGoldReward), model.gold, winModel.gold);
     winBalance += Math.abs(dianPaoPlayer.balance);
     dianPaoPlayer.juScore += dianPaoPlayer.balance;
+    failFromList.push(this.atIndex(dianPaoPlayer));
+    failGoldList.push(dianPaoPlayer.balance);
+    failIdList.push(dianPaoPlayer._id);
     if (dianPaoPlayer.balance !== 0) {
       await this.room.addScore(dianPaoPlayer.model._id.toString(), dianPaoPlayer.balance, this.cardTypes);
       await service.playerService.logGoldConsume(dianPaoPlayer._id, ConsumeLogType.gamePayGang, dianPaoPlayer.balance,
@@ -3789,6 +3906,21 @@ class TableState implements Serializable {
       failList: record.failList,
       roomId: this.room._id,
       multiple: record.multiple,
+      categoryId: this.room.gameRule.categoryId
+    })
+
+    // 生成金豆记录
+    await RoomGoldRecord.create({
+      winnerGoldReward: winBalance,
+      winnerId: huPlayer._id,
+      winnerFrom: this.atIndex(huPlayer),
+      roomId: this.room._id,
+      failList: failIdList,
+      failGoldList,
+      failFromList,
+      multiple: record.multiple,
+      juIndex: this.room.game.juIndex,
+      cardTypes: {cardId: -1, cardName: "呼叫转移", multiple: conf.maxMultiple},
       categoryId: this.room.gameRule.categoryId
     })
 
@@ -4161,6 +4293,9 @@ class TableState implements Serializable {
 
       // 退税，对局结束，未听牌的玩家需返还杠牌所得
       await this.refundShui();
+
+      // 查花猪（卫生）手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
+      await  this.searchFlowerPig();
     }
 
     // 更新战绩
