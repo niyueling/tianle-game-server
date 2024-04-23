@@ -986,8 +986,8 @@ class TableState implements Serializable {
         }
 
         if (state) {
-          console.warn("index-%s, start-%s, end-%s, cardList-%s, cards-%s, state-%s", this.atIndex(player),
-            i * 10 + j, i * 10 + j + 6, JSON.stringify(cardList), JSON.stringify(this.getCardArray(cards)), state);
+          console.warn("index-%s, start-%s, end-%s, zhongCount-%s, cardList-%s, cards-%s, state-%s", this.atIndex(player),
+            i * 10 + j, i * 10 + j + 6, zhongCount, JSON.stringify(cardList), JSON.stringify(this.getCardArray(cards)), state);
           flag = state;
           break;
         }
@@ -1584,7 +1584,6 @@ class TableState implements Serializable {
     }
     return cardCount === 1 && (isZiMo || isJiePao);
   }
-
 
   async checkSiAnKe(player) {
     const anGang = player.events["anGang"] || [];
