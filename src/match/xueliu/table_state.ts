@@ -3193,12 +3193,12 @@ class TableState implements Serializable {
         const result = {card};
         const i = (index + j) % this.players.length;
         const p = this.players[i];
-        const model = await service.playerService.getPlayerModel(this.players[index]._id);
+        const model = await service.playerService.getPlayerModel(p._id);
         if (!p.isBroke && model.gold > 0) {
           const r = p.markJiePao(card, result);
           const isDingQue = this.checkCardIsDingQue(p, card);
           if (p.zhuang) {
-            console.warn("isBroke-%s, gold-%s, isDingQue-%s, huResult-%s", p.isBroke, model.gold, isDingQue, JSON.stringify(r));
+            console.warn("isBroke-%s, gold-%s, isDingQue-%s, huResult-%s", p.isBroke, model.gold, isDingQue, r.hu);
           }
           if (r.hu && isDingQue) {
             if (!check.hu || check.hu.length === 0) {
@@ -3373,7 +3373,9 @@ class TableState implements Serializable {
       for (let j = suits[suit].start; j <= suits[suit].end; j++) {
         suits[suit].currentCount += this.cards[j];
       }
+    }
 
+    for (let suit in suits) {
       if (player.mode === suit && suits[suit].currentCount > 0) {
         return false;
       }
