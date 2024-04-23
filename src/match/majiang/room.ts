@@ -327,6 +327,12 @@ class Room extends RoomBase {
     return this.players.filter(x => x != null).length + this.disconnected.length < this.capacity
   }
 
+  async shuffleDataApply(payload) {
+    if (this.allReady && !this.gameState) {
+      return await this.startGame(payload);
+    }
+  }
+
   mergeOrder() {
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i]) {
