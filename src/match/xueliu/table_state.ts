@@ -4405,15 +4405,17 @@ class TableState implements Serializable {
       await model.save();
     }
 
-    if (gameOverMsg.states.length > 0) {
-      await this.room.gameOver(nextZhuang._id.toString(), states)
+    const nextDo3 = async () => {
+      if (gameOverMsg.states.length > 0) {
+        await this.room.gameOver(nextZhuang._id.toString(), states)
 
-      const nextDo3 = async () => {
         this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       }
-
-      setTimeout(nextDo3, 5000);
     }
+
+    setTimeout(nextDo3, 5000);
+
+
   }
 
   dissolve() {
