@@ -898,10 +898,10 @@ class TableState implements Serializable {
   }
 
   async start(payload) {
-    await this.fapai();
+    await this.fapai(payload);
   }
 
-  async fapai() {
+  async fapai(payload) {
     this.shuffle()
     this.sleepTime = 1500;
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
@@ -914,7 +914,18 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
-      const cards13 = model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p);
+      const cards13 = payload.cards ? payload.cards[i] : (model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p));
+
+      // 如果客户端指定发牌
+      if (payload.cards && payload.cards[i]) {
+        for (let j = 0; j < payload.cards[i].length; j++) {
+          const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
+          this.remainCards--;
+          const card = this.cards[cardIndex];
+          this.cards.splice(cardIndex, 1);
+          this.lastTakeCard = card;
+        }
+      }
 
       if (model.dominateCount > 0) {
         model.dominateCount--;
