@@ -2508,7 +2508,7 @@ class TableState implements Serializable {
               const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
               // 明杠，赢3倍豆
-              const multiple = 3 * conf.base * conf.Ante;
+              const multiple = 3;
               await this.gangDrawScore(player, this.lastDa, multiple, "刮风直杠");
 
               const nextDo = async () => {
@@ -2587,7 +2587,7 @@ class TableState implements Serializable {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         // 暗杠，赢2倍豆
-        const multiple = (isAnGang ? 2 : 1) * conf.base * conf.Ante;
+        const multiple = isAnGang ? 2 : 1;
         await this.gangDrawScore(player, null, multiple, isAnGang ? "下雨暗杠" : "下雨补杠");
 
         const nextDo = async () => {
@@ -3798,6 +3798,7 @@ class TableState implements Serializable {
   async gangDrawScore(me, from, multiple, type) {
     let winModel = await service.playerService.getPlayerModel(me._id.toString());
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+    const maxMultiple = multiple * conf.base * conf.Ante;
     let winBalance = 0;
     let failList = [];
     let failGoldList = [];
@@ -3809,7 +3810,7 @@ class TableState implements Serializable {
 
     if (from) {
       const model = await service.playerService.getPlayerModel(from._id.toString());
-      from.balance = -Math.min(Math.abs(multiple), model.gold, winModel.gold);
+      from.balance = -Math.min(Math.abs(maxMultiple), model.gold, winModel.gold);
       winBalance += Math.abs(from.balance);
       from.juScore += from.balance;
       failList.push({index: this.atIndex(from), score: from.balance});
@@ -3827,7 +3828,7 @@ class TableState implements Serializable {
         // 扣除三家金币
         if (p.model._id.toString() !== me.model._id.toString() && !p.isBroke) {
           const model = await service.playerService.getPlayerModel(p._id.toString());
-          p.balance = -Math.min(Math.abs(multiple), model.gold, winModel.gold);
+          p.balance = -Math.min(Math.abs(maxMultiple), model.gold, winModel.gold);
           winBalance += Math.abs(p.balance);
           p.juScore += p.balance;
           failList.push({index: this.atIndex(p), score: p.balance});
@@ -3872,9 +3873,9 @@ class TableState implements Serializable {
       failList: failIdList,
       failGoldList,
       failFromList,
-      multiple: multiple,
+      multiple: maxMultiple,
       juIndex: this.room.game.juIndex,
-      cardTypes: {cardId: -1, cardName: type, multiple: multiple / conf.base / conf.Ante},
+      cardTypes: {cardId: -1, cardName: type, multiple},
       categoryId: this.room.gameRule.categoryId
     })
 
