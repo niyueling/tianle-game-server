@@ -4410,7 +4410,7 @@ class TableState implements Serializable {
         this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       }
 
-      setTimeout(nextDo3, 3000);
+      setTimeout(nextDo3, 5000);
     }
   }
 
