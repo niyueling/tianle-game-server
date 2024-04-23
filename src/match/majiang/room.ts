@@ -595,6 +595,13 @@ class Room extends RoomBase {
 
   async announcePlayerJoin(newJoinPlayer) {
     this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
+    for (const alreadyInRoomPlayer of this.players
+      .map((p, index) => {
+        return p || this.playersOrder[index]
+      })
+      .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
+      newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
+    }
   }
 
   indexOf(player) {
