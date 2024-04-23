@@ -3874,7 +3874,7 @@ class TableState implements Serializable {
       failFromList,
       multiple: multiple,
       juIndex: this.room.game.juIndex,
-      cardTypes: {cardId: -1, cardName: type, multiple},
+      cardTypes: {cardId: -1, cardName: type, multiple: multiple / conf.base / conf.Ante},
       categoryId: this.room.gameRule.categoryId
     })
 
