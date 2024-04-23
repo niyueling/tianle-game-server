@@ -3371,7 +3371,7 @@ class TableState implements Serializable {
       suits[suit].currentCount = 0;
 
       for (let j = suits[suit].start; j <= suits[suit].end; j++) {
-        suits[suit].currentCount += this.cards[j];
+        suits[suit].currentCount += player.cards[j];
       }
     }
 
