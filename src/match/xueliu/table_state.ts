@@ -982,8 +982,13 @@ class TableState implements Serializable {
           }
         }
 
+        if (player.zhuang) {
+          console.warn("start-%s, end-%s, cardList-%s state-%s", i * 10 + j, i * 10 + j + 6, JSON.stringify(cardList), state);
+        }
+
         if (state) {
           flag = state;
+          break;
         }
       }
     }
@@ -1587,21 +1592,25 @@ class TableState implements Serializable {
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     let keZi = [];
     let gangZi = [];
-    const huResult = player.events["hu"] || [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
 
-    if (huResult.length > 0) {
-      const huInfo = huResult[0];
-      if (huInfo.huCards.keZi) {
-        keZi = huInfo.huCards.keZi;
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
         anGangCount += keZi.length;
       }
 
-      if (huInfo.huCards.gangZi) {
-        gangZi = huInfo.huCards.gangZi;
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
         anGangCount += gangZi.length;
       }
-
-      // console.warn("siAnKe anGangCount-%s keZi-%s gangZi-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi));
     }
 
     return anGangCount >= 4 && (isZiMo || isJiePao);
@@ -1615,9 +1624,32 @@ class TableState implements Serializable {
     let duiCount = 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    const cards = player.cards.slice();
+    let keZi = [];
+    let gangZi = [];
+    let duiZi = [];
     if (isJiePao) {
-      cards[this.lastHuCard]++;
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList.push(keZi);
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList.push(gangZi);
+      }
+
+      if (huResult.huCards.useJiang) {
+        duiZi = huResult.huCards.useJiang;
+      }
     }
 
     for (let i = 0; i < gangList.length; i++) {
@@ -1626,12 +1658,8 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
-      if (cards[i] >= 3 && i % 2 === 0) {
-        gangCount++;
-      }
-
-      if (cards[i] === 2 && i % 2 === 0) {
+    for (let i = 0; i < duiZi.length; i++) {
+      if (duiZi[i] <= Enums.tongzi9 && duiZi[i] % 2 === 0) {
         duiCount++;
       }
     }
@@ -1644,15 +1672,37 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
     let gangList = [...anGang, ...jieGang, ...peng];
-    gangList.sort((a, b) => a - b);
-    let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    const cards = player.cards.slice();
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList = [...gangList, ...keZi];
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    gangList.sort((a, b) => a - b);
+    let flag = false;
 
     for (let i = Enums.wanzi1; i <= Enums.tongzi6; i++) {
-      if ((gangList.includes(i) || cards[i] >= 3) && (gangList.includes(i + 1) || cards[i + 1] >= 3) &&
-        (gangList.includes(i + 2) || cards[i + 2] >= 3) && (gangList.includes(i + 3) || cards[i + 3] >= 3)) {
+      if (gangList.includes(i) && gangList.includes(i + 1) &&
+        gangList.includes(i + 2) && gangList.includes(i + 3)) {
         flag = true;
       }
     }
@@ -1806,14 +1856,36 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
     let gangList = [...anGang, ...jieGang, ...peng];
-    gangList.sort((a, b) => a - b);
-    let flag = false;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    const cards = player.cards.slice();
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList = [...gangList, ...keZi];
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    gangList.sort((a, b) => a - b);
+    let flag = false;
 
     for (let i = Enums.wanzi1; i <= Enums.tongzi7; i++) {
-      if ((gangList.includes(i) || cards[i] >= 3) && (gangList.includes(i + 1) || cards[i + 1] >= 3) && (gangList.includes(i + 2) || cards[i + 2] >= 3)) {
+      if (gangList.includes(i) && gangList.includes(i + 1) && gangList.includes(i + 2)) {
         flag = true;
       }
     }
@@ -1898,6 +1970,22 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...jieGang];
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList.push(gangZi);
+      }
+    }
 
     return gangList.length >= 4 && (isZiMo || isJiePao);
   }
@@ -1908,6 +1996,23 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...jieGang];
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList.push(gangZi);
+      }
+    }
 
     return gangList.length >= 3 && (isZiMo || isJiePao);
   }
