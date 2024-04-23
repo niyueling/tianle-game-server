@@ -3831,9 +3831,9 @@ class TableState implements Serializable {
           winBalance += Math.abs(p.balance);
           p.juScore += p.balance;
           failList.push({index: this.atIndex(p), score: p.balance});
-          failFromList.push(this.atIndex(from));
-          failGoldList.push(from.balance);
-          failIdList.push(from._id);
+          failFromList.push(this.atIndex(p));
+          failGoldList.push(p.balance);
+          failIdList.push(p._id);
           if (p.balance !== 0) {
             await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
             await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGang, p.balance,
