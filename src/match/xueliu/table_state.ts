@@ -958,6 +958,9 @@ class TableState implements Serializable {
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
     let zhongCount = cards[Enums.zhong];
+    if (isJiePao) {
+      cards[this.lastHuCard]++;
+    }
 
     for (let i = 0; i < 3; i++) {
       for (let j = 1; j <= 3; j++) {
