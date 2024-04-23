@@ -985,11 +985,9 @@ class TableState implements Serializable {
           }
         }
 
-        if (player.zhuang) {
-          console.warn("start-%s, end-%s, cardList-%s, cards-%s, state-%s", i * 10 + j, i * 10 + j + 6, JSON.stringify(cardList), JSON.stringify(this.getCardArray(cards)), state);
-        }
-
         if (state) {
+          console.warn("index-%s, start-%s, end-%s, cardList-%s, cards-%s, state-%s", this.atIndex(player),
+            i * 10 + j, i * 10 + j + 6, JSON.stringify(cardList), JSON.stringify(this.getCardArray(cards)), state);
           flag = state;
           break;
         }
