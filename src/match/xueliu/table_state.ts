@@ -4077,10 +4077,7 @@ class TableState implements Serializable {
       await this.room.gameOver(nextZhuang._id.toString(), states)
       this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
 
-      const nextDo = async () => {
-        this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
-      }
-      setTimeout(nextDo, 2000)
+      this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
     }
   }
 
