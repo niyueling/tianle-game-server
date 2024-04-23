@@ -973,8 +973,9 @@ class TableState implements Serializable {
         // 如果牌有缺失，用红中补缺失牌
         for (let k = 0; k < cardList.length; k++) {
           if (cardList[k] < 2 && zhongCount >= 2 - cardList[k]) {
-            cardList[k] += (2 - cardList[k]);
-            zhongCount -= (2 - cardList[k]);
+            const count = 2 - cardList[k];
+            cardList[k] += count;
+            zhongCount -= count;
           }
         }
 
@@ -1029,8 +1030,9 @@ class TableState implements Serializable {
       // 如果牌有缺失，用红中补缺失牌
       for (let k = 0; k < cardList.length; k++) {
         if ([0, 1, 2, 4, 5, 6].includes(k) && cardList[k] < 2 && zhongCount >= 2 - cardList[k]) {
-          cardList[k] += (2 - cardList[k]);
-          zhongCount -= (2 - cardList[k]);
+          const count = 2 - cardList[k];
+          cardList[k] += count;
+          zhongCount -= count;
         }
 
         if (k === 5 && cardList[k] === 0 && zhongCount > 0) {
@@ -1086,8 +1088,9 @@ class TableState implements Serializable {
       // 如果牌有缺失，用红中补缺失牌
       for (let k = 0; k < cardList.length; k++) {
         if ([0, cardList.length - 1].includes(k) && cardList[k] < 3 && zhongCount >= 3 - cardList[k]) {
-          cardList[k] += (3 - cardList[k]);
-          zhongCount -= (3 - cardList[k]);
+          const count = 3 - cardList[k];
+          cardList[k] += count;
+          zhongCount -= count;
         }
 
         if (k > 0 && k < cardList.length - 1 && cardList[k] === 0 && zhongCount >= 1) {
