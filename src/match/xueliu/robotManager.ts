@@ -226,10 +226,10 @@ export class RobotManager extends NewRobotManager {
       const isPlayerDa = this.isPlayerDa(playerId);
       const isPlayerChoice = this.isPlayerChoice(playerId, jiePaoHu);
       const isPlayerGang = this.isPlayerGang(playerId);
-      // if (this.room.gameState.state === 2 && jiePaoHu.hu) {
-      //   console.log("playerId-%s index-%s state-%s waitInterval-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState),
-      //     this.room.gameState.state, this.waitInterval[key], isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
-      // }
+      if (this.room.gameState.state === 2 && jiePaoHu.hu) {
+        console.log("playerId-%s index-%s state-%s waitInterval-%s isPlayerDa-%s isPlayerChoice-%s jiePaoHu-%s", playerId, this.room.gameState.atIndex(proxy.playerState),
+          this.room.gameState.state, this.waitInterval[key], isPlayerDa, isPlayerChoice, JSON.stringify(jiePaoHu));
+      }
 
       if (isPlayerGang && this.room.gameState.state === 2) {
         await proxy.gang(isPlayerGang)
@@ -238,7 +238,7 @@ export class RobotManager extends NewRobotManager {
       } else if (isPlayerDa) {
         if (this.waitInterval[key] >= this.getWaitSecond()) {
           if (ziMoHu.hu) {
-            console.warn("card-%s, huResult-%s cards-%s", this.room.gameState.stateData.card, JSON.stringify(ziMoHu), JSON.stringify(this.room.gameState.getCardArray(proxy.playerState.cards)));
+            // console.warn("card-%s, huResult-%s cards-%s", this.room.gameState.stateData.card, JSON.stringify(ziMoHu), JSON.stringify(this.room.gameState.getCardArray(proxy.playerState.cards)));
             await proxy.choice(Enums.hu)
           } else if (AnGangIndex) {
             await proxy.gang(Enums.anGang, AnGangIndex)
