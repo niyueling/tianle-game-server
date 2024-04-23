@@ -4296,11 +4296,19 @@ class TableState implements Serializable {
       await this.room.recordRoomScore('dissolve', scores, players);
       await this.room.RoomScoreRecord(scores, players);
 
-      // 退税，对局结束，未听牌的玩家需返还杠牌所得
-      await this.refundShui();
+      const nextDo1 = async () => {
+        // 退税，对局结束，未听牌的玩家需返还杠牌所得
+        await this.refundShui();
+      }
 
-      // 查花猪（卫生）手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
-      await  this.searchFlowerPig();
+      setTimeout(nextDo1, 500);
+
+      const nextDo2 = async () => {
+        // 查花猪（卫生）手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
+        await  this.searchFlowerPig();
+      }
+
+      setTimeout(nextDo2, 2000);
     }
 
     // 更新战绩
@@ -4393,9 +4401,12 @@ class TableState implements Serializable {
 
     if (gameOverMsg.states.length > 0) {
       await this.room.gameOver(nextZhuang._id.toString(), states)
-      this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
 
-      this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
+      const nextDo3 = async () => {
+        this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
+      }
+
+      setTimeout(nextDo3, 3000);
     }
   }
 

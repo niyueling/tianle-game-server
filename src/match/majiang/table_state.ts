@@ -2824,7 +2824,6 @@ class TableState implements Serializable {
         await this.gameAllOver(states, [], nextZhuang);
         return
       }
-      // logger.info('willTakeCard player-%s remainCards %s', index, this.remainCards)
     })
 
     player.on("mayQiaoXiang", () => {
