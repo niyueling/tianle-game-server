@@ -957,7 +957,6 @@ class TableState implements Serializable {
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
-    let zhongCount = cards[Enums.zhong];
     if (isJiePao) {
       cards[this.lastHuCard]++;
     }
@@ -965,6 +964,7 @@ class TableState implements Serializable {
     for (let i = 0; i < 3; i++) {
       for (let j = 1; j <= 3; j++) {
         const cardList = [0, 0, 0, 0, 0, 0, 0];
+        let zhongCount = cards[Enums.zhong];
         let state = true;
         for (let k = 0; k < cardList.length; k++) {
           cardList[k] = cards[i * 10 + j + k];
@@ -1012,10 +1012,10 @@ class TableState implements Serializable {
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
-    let zhongCount = cards[Enums.zhong];
 
     for (let i = 0; i < 3; i++) {
       const cardList = [0, 0, 0, 0, 0, 0, 0];
+      let zhongCount = cards[Enums.zhong];
       let state = true;
 
       // 计算序数牌1-9的数量
@@ -1072,10 +1072,10 @@ class TableState implements Serializable {
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
-    let zhongCount = cards[Enums.zhong];
 
     for (let i = 0; i < 3; i++) {
       const cardList = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      let zhongCount = cards[Enums.zhong];
       let state = true;
 
       // 计算序数牌1-9的数量
