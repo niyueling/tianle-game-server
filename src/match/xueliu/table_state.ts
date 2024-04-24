@@ -2708,8 +2708,13 @@ class TableState implements Serializable {
 
                 // 如果是杠后炮，需把杠牌获得的收入转移给胡牌玩家
                 if (this.cardTypes.cardId === 88 && dianPaoPlayer.isGangHouDa && !dianPaoPlayer.isBroke) {
-                  console.warn("index-%s from-%s exec refundGangScore function!", index, from);
-                  await this.refundGangScore(from, index);
+                  const callForward = async () => {
+                    console.warn("index-%s from-%s exec refundGangScore function!", index, from);
+                    this.room.broadcast("game/callForward", {index, from});
+                    await this.refundGangScore(from, index);
+                  }
+
+                  setTimeout(callForward, 2000);
                 }
 
                 if (!player.isGameHu) {
