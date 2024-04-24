@@ -666,6 +666,7 @@ class TableState implements Serializable {
       if (cardTypes[i].cardId === 88 && type === 2) {
         const status = await this.checkGangShangPao(player, dianPaoPlayer);
         if (status && cardTypes[i].multiple > cardType.multiple)
+          console.warn("index-%s, from-%s", this.atIndex(player), this.atIndex(dianPaoPlayer));
           cardType = cardTypes[i];
       }
 
