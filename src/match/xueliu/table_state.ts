@@ -2357,8 +2357,8 @@ class TableState implements Serializable {
         }
 
         const nextDo = async () => {
-          if (todo === Enums.peng && !player.isGameHu) {
-            player.emitter.emit(Enums.peng, this.turn, card);
+          if (todo === Enums.peng) {
+            player.emitter.emit(Enums.guo, this.turn, card)
           } else if (todo === Enums.gang && !player.isGameHu) {
             // console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
