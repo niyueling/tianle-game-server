@@ -3871,6 +3871,8 @@ class TableState implements Serializable {
       const cardType = await this.getCardTypes(winPlayer, 1);
       winPlayer.cards[Enums.zhong]--;
 
+      console.warn("index-%s, cards-%s, cardType-%s", this.atIndex(winPlayer), JSON.stringify(this.getCardArray(winPlayer.cards)), JSON.stringify(cardType));
+
       const model = await service.playerService.getPlayerModel(noTingPlayer._id);
       if (model.gold <= 0) {
         return;
@@ -4627,7 +4629,7 @@ class TableState implements Serializable {
       const nextDo1 = async () => {
         // 退税，对局结束，未听牌的玩家需返还杠牌所得
         const flag = await this.refundShui();
-        setTimeout(nextDo2, flag ? 1500 : 500);
+        setTimeout(nextDo2, flag ? 1000 : 500);
       }
 
       setTimeout(nextDo1, 100);
@@ -4635,14 +4637,14 @@ class TableState implements Serializable {
       // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
       const nextDo2 = async () => {
         const flag = await this.searchFlowerPig();
-        setTimeout(nextDo3, flag ? 1500 : 500);
+        setTimeout(nextDo3, flag ? 1000 : 500);
       }
 
       // 未听牌：对局结束时，未听牌玩家赔给听牌的玩家最大叫点数的金豆
       const nextDo3 = async () => {
         const flag = await this.NoTingCard();
 
-        setTimeout(nextDo4, flag ? 1500 : 500);
+        setTimeout(nextDo4, flag ? 1000 : 500);
       }
 
       const nextDo4 = async () => {
