@@ -2557,6 +2557,9 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     })
     player.on(Enums.gangByOtherDa, (turn, card) => {
+      if (!this.stateData[Enums.gang]) {
+        return ;
+      }
       if (this.state !== stateWaitAction) {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamStateInvaid});
         return;
@@ -3788,7 +3791,7 @@ class TableState implements Serializable {
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
     }
 
-    setTimeout(nextDo, 1500);
+    setTimeout(nextDo, 1000);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
@@ -3813,6 +3816,105 @@ class TableState implements Serializable {
     return true;
   }
 
+  async NoTingCard() {
+    this.players.map((p) => { p.balance = 0; })
+
+    const tingPlayers = [];
+    const noTingPlayers = [];
+    const playerIndex = [];
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+
+    // 计算听牌玩家和非听牌玩家
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const model = await service.playerService.getPlayerModel(p._id);
+      const ting = p.isRobotTing(p.cards);
+      const isDingQue = this.checkDingQueCard(p);
+      if ((!ting.hu || !isDingQue) && !p.isBroke && model.gold > 0) {
+        noTingPlayers.push(p);
+        playerIndex.push({index: this.atIndex(p), ting: false});
+      }
+      if (ting.hu && isDingQue && !p.isBroke) {
+        tingPlayers.push(p);
+        playerIndex.push({index: this.atIndex(p), ting: true});
+      }
+    }
+
+    if (noTingPlayers.length > 0 && tingPlayers.length > 0) {
+      this.room.broadcast("game/showNoTingCard", {ok: true, data: playerIndex});
+
+      // 未听牌：对局结束时，未听牌玩家赔给听牌的玩家最大叫点数的金豆
+      await this.tingCardDrawScore(noTingPlayers, tingPlayers, conf);
+
+      await this.checkBrokeAndWait(false);
+    }
+  }
+
+  async tingCardDrawScore(noTingPlayers, tingPlayers, conf) {
+    for (const noTingPlayer of noTingPlayers) {
+      // 未听牌玩家赔给听牌的玩家最大叫点数的金豆
+      await this.noTingCardDrawScore(noTingPlayer, tingPlayers, conf);
+    }
+  }
+
+  async noTingCardDrawScore(noTingPlayer, tingPlayers, conf) {
+    for (const winPlayer of tingPlayers) {
+      let winModel = await service.playerService.getPlayerModel(winPlayer._id);
+      let winBalance = 0;
+      let failGoldList = [];
+      let failFromList = [];
+      let failIdList = [];
+
+      // 判断用户可以胡的最大牌型
+      winPlayer.cards[Enums.zhong]++;
+      const cardType = await this.getCardTypes(winPlayer, 1);
+      winPlayer.cards[Enums.zhong]--;
+
+      const model = await service.playerService.getPlayerModel(noTingPlayer._id);
+      if (model.gold <= 0) {
+        return;
+      }
+
+      const failBalance = (conf.base * conf.Ante * cardType.multiple * 10 > conf.maxGold ? conf.maxGold : conf.base * cardType.multiple * conf.Ante * 10);
+      const balance = -Math.min(Math.abs(failBalance), model.gold, winModel.gold);;
+      noTingPlayer.balance += balance;
+      winBalance += Math.abs(balance);
+      noTingPlayer.juScore += balance;
+      failFromList.push(this.atIndex(noTingPlayer));
+      failGoldList.push(noTingPlayer.balance);
+      failIdList.push(noTingPlayer._id);
+      if (balance !== 0) {
+        await this.room.addScore(noTingPlayer._id, balance, cardType);
+        await service.playerService.logGoldConsume(noTingPlayer._id, ConsumeLogType.gamePayGang, balance,
+          model.gold + balance, `未听牌扣除-${this.room._id}`);
+      }
+
+      //增加胡牌用户金币
+      winPlayer.balance += winBalance;
+      winPlayer.juScore += winBalance;
+      if (winBalance !== 0) {
+        await this.room.addScore(winPlayer._id, winBalance, cardType);
+        await service.playerService.logGoldConsume(winPlayer._id, ConsumeLogType.gameReceiveGang, winBalance,
+          winPlayer.model.gold + winBalance, `未听牌获得-${this.room._id}`);
+      }
+
+      // 生成金豆记录
+      await RoomGoldRecord.create({
+        winnerGoldReward: winBalance,
+        winnerId: winPlayer._id,
+        winnerFrom: this.atIndex(winPlayer),
+        roomId: this.room._id,
+        failList: failIdList,
+        failGoldList,
+        failFromList,
+        multiple: conf.base * conf.Ante * cardType.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * conf.Ante * cardType.multiple,
+        juIndex: this.room.game.juIndex,
+        cardTypes: {cardId: cardType.cardId, cardName: "未听牌", multiple: cardType.maxMultiple},
+        categoryId: this.room.gameRule.categoryId
+      })
+    }
+  }
+
   async searchFlowerPig() {
     this.players.map((p) => { p.balance = 0; })
     const flowerPigs = [];
@@ -3823,17 +3925,22 @@ class TableState implements Serializable {
     // 计算定缺玩家和非定缺玩家
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
+      if (p.isBroke) {
+        continue;
+      }
+
       const isDingQue = this.checkDingQueCard(p);
-      if (isDingQue) {
+      if (isDingQue && !p.isBroke) {
         noFlowerPigs.push(p);
         playerIndex.push({index: this.atIndex(p), huaZhu: false});
-      } else {
+      }
+      if (!isDingQue && !p.isBroke) {
         flowerPigs.push(p);
         playerIndex.push({index: this.atIndex(p), huaZhu: true});
       }
     }
 
-    if (flowerPigs.length > 0) {
+    if (flowerPigs.length > 0 && noFlowerPigs.length > 0) {
       this.room.broadcast("game/searchFlowerPig", {ok: true, data: playerIndex});
 
       // 定缺玩家按照场次封顶倍数给费定缺玩家赔付金豆
@@ -3911,7 +4018,7 @@ class TableState implements Serializable {
       const model = await service.playerService.getPlayerModel(p._id);
       const ting = p.isRobotTing(p.cards);
       const records = await RoomGangRecord.find({roomId: this.room._id, winnerId: p._id});
-      if (!ting.hu && records.length > 0 && model.gold > 0) {
+      if (!ting.hu && records.length > 0 && !p.isBroke && model.gold > 0) {
         drawbackPlayers.push({index: i, records});
       }
     }
@@ -3940,7 +4047,7 @@ class TableState implements Serializable {
 
       for (let j = 0; j < failList.length; j++) {
         const refundPlayer = this.players[failList[j].index];
-        if (!refundPlayer) {
+        if (!refundPlayer || refundPlayer.isBroke) {
           continue;
         }
 
@@ -4428,16 +4535,21 @@ class TableState implements Serializable {
       const nextDo1 = async () => {
         // 退税，对局结束，未听牌的玩家需返还杠牌所得
         await this.refundShui();
+        setTimeout(nextDo2, 2000);
       }
 
       setTimeout(nextDo1, 500);
 
+      // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
       const nextDo2 = async () => {
-        // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
-        await  this.searchFlowerPig();
+        await this.searchFlowerPig();
+        setTimeout(nextDo3, 2000);
       }
 
-      setTimeout(nextDo2, 3000);
+      // 未听牌：对局结束时，未听牌玩家赔给听牌的玩家最大叫点数的金豆
+      const nextDo3 = async () => {
+        await this.NoTingCard();
+      }
     }
 
     // 更新战绩
