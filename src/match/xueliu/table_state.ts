@@ -665,9 +665,10 @@ class TableState implements Serializable {
       // 杠上炮(胡其他家杠牌后打出的牌)
       if (cardTypes[i].cardId === 88 && type === 2) {
         const status = await this.checkGangShangPao(player, dianPaoPlayer);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           console.warn("index-%s, from-%s", this.atIndex(player), this.atIndex(dianPaoPlayer));
           cardType = cardTypes[i];
+        }
       }
 
       // 海底捞月(剩余牌张数位0的胡其他家点炮的牌)
@@ -2146,7 +2147,7 @@ class TableState implements Serializable {
 
   async checkGangShangPao(player, dianPaoPlayer) {
     const isJiePao = dianPaoPlayer && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, dianPaoPlayer);
-    return dianPaoPlayer&& dianPaoPlayer.isGangHouDa && isJiePao;
+    return dianPaoPlayer && dianPaoPlayer.isGangHouDa && isJiePao;
   }
 
   async checkHaiDiLaoYue(player) {
@@ -3474,7 +3475,7 @@ class TableState implements Serializable {
           this.canManyHuPlayers.push(p._id.toString());
           if (msg["hu"]) {
             this.lastHuCard = card;
-            this.cardTypes = await this.getCardTypes(p, 2);
+            this.cardTypes = await this.getCardTypes(p, 2, player);
             msg["huType"] = {
               id: this.cardTypes.cardId,
               multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
