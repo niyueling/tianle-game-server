@@ -4017,8 +4017,9 @@ class TableState implements Serializable {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
       const ting = p.isRobotTing(p.cards);
+      const isDingQue = this.checkDingQueCard(p);
       const records = await RoomGangRecord.find({roomId: this.room._id, winnerId: p._id});
-      if (!ting.hu && records.length > 0 && !p.isBroke && model.gold > 0) {
+      if ((!ting.hu || (ting.hu && !isDingQue)) && records.length > 0 && !p.isBroke && model.gold > 0) {
         drawbackPlayers.push({index: i, records});
       }
     }
