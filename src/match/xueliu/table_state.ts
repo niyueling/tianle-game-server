@@ -3868,6 +3868,7 @@ class TableState implements Serializable {
 
       // 判断用户可以胡的最大牌型
       winPlayer.cards[Enums.zhong]++;
+      this.lastTakeCard = Enums.zhong;
       const cards = winPlayer.cards.slice();
       const cardType = await this.getCardTypes(winPlayer, 1);
       winPlayer.cards[Enums.zhong]--;
@@ -4653,7 +4654,7 @@ class TableState implements Serializable {
       }
 
       const nextDo4 = async () => {
-        await this.room.gameOver(nextZhuang._id, states)
+        await this.room.gameOver()
         this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       }
     }
