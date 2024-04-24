@@ -1495,9 +1495,7 @@ class PlayerState implements Serializable {
 
     this.cancelTimeout()
 
-    // console.warn("shortId-%s onDeposit-%s", this.model.shortId, this.onDeposit);
-
-    if (!this.onDeposit) {
+    if (!this.onDeposit && this.zhuang) {
       this.timeoutTask = setTimeout(() => {
         this.onDeposit = true
         this.sendMessage('game/startDepositReply', {ok: true, data: {}})
