@@ -4623,7 +4623,7 @@ class TableState implements Serializable {
       const nextDo1 = async () => {
         // 退税，对局结束，未听牌的玩家需返还杠牌所得
         await this.refundShui();
-        setTimeout(nextDo2, 2000);
+        setTimeout(nextDo2, 1000);
       }
 
       setTimeout(nextDo1, 500);
@@ -4631,14 +4631,14 @@ class TableState implements Serializable {
       // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
       const nextDo2 = async () => {
         await this.searchFlowerPig();
-        setTimeout(nextDo3, 2000);
+        setTimeout(nextDo3, 1000);
       }
 
       // 未听牌：对局结束时，未听牌玩家赔给听牌的玩家最大叫点数的金豆
       const nextDo3 = async () => {
         await this.NoTingCard();
 
-        setTimeout(nextDo4, 2000);
+        setTimeout(nextDo4, 1000);
       }
 
       const nextDo4 = async () => {
