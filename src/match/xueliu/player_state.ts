@@ -1484,7 +1484,7 @@ class PlayerState implements Serializable {
   deposit(callback) {
     let minutes = 15 * 1000;
 
-    if (!this.msgDispatcher) {
+    if (!this.msgDispatcher || !this.zhuang) {
       return ;
     }
 
@@ -1495,7 +1495,7 @@ class PlayerState implements Serializable {
 
     this.cancelTimeout()
 
-    if (!this.onDeposit && this.zhuang) {
+    if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
         this.onDeposit = true
         this.sendMessage('game/startDepositReply', {ok: true, data: {}})
