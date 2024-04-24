@@ -636,11 +636,11 @@ class TableState implements Serializable {
     }
   }
 
-  async getCardTypes(player, type, dianPaoPlayer = null) {
-    return await this.getCardTypesByHu(player, type, dianPaoPlayer);
+  async getCardTypes(player, type, dianPaoPlayer = null, isGame = true) {
+    return await this.getCardTypesByHu(player, type, dianPaoPlayer, isGame);
   }
 
-  async getCardTypesByHu(player, type = 1, dianPaoPlayer = null) {
+  async getCardTypesByHu(player, type = 1, dianPaoPlayer, isGame) {
     const cardTypes = await CardTypeModel.find({cardId: {$gt: 50}});
     let cardType = cardTypes[0];
     cardType.multiple = 1;
@@ -649,14 +649,14 @@ class TableState implements Serializable {
 
     for (let i = 0; i < cardTypes.length; i++) {
       // 根(胡牌时，手中含有某特定牌张的全部4张(未杠出，不计红中))
-      if (cardTypes[i].cardId === 91) {
+      if (cardTypes[i].cardId === 91 && isGame) {
         const status = await this.checkGen(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 绝张(牌河中已出现过多枚，胡牌时仅剩当前胡牌张的和牌)
-      if (cardTypes[i].cardId === 89) {
+      if (cardTypes[i].cardId === 89 && isGame) {
         const status = await this.checkJueZhang(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
@@ -679,21 +679,21 @@ class TableState implements Serializable {
       }
 
       // 妙手回春(剩余牌张数位0的自摸)
-      if (cardTypes[i].cardId === 86 && type === 1) {
+      if (cardTypes[i].cardId === 86 && type === 1 && isGame) {
         const status = await this.checkMiaoShouHuiChun(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 边张(胡牌时，仅能以12胡3或89胡7的特定单面听胡)
-      if (cardTypes[i].cardId === 85) {
+      if (cardTypes[i].cardId === 85 && isGame) {
         const status = await this.checkBianZhang(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 坎张(胡牌时，仅能胡一组顺子中间的一张牌)
-      if (cardTypes[i].cardId === 84) {
+      if (cardTypes[i].cardId === 84 && isGame) {
         const status = await this.checkKanZhang(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
@@ -756,7 +756,7 @@ class TableState implements Serializable {
       }
 
       // 杠上开花(用开杠后的补牌胡牌)
-      if (cardTypes[i].cardId === 75 && type === 1) {
+      if (cardTypes[i].cardId === 75 && type === 1 && isGame) {
         const status = await this.checkGangShangHua(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
@@ -889,7 +889,7 @@ class TableState implements Serializable {
       }
 
       // 天胡(庄家起手时直接胡牌)
-      if (cardTypes[i].cardId === 55) {
+      if (cardTypes[i].cardId === 55 && isGame) {
         const status = await this.checkTianHu(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
@@ -3869,15 +3869,11 @@ class TableState implements Serializable {
       // 判断用户可以胡的最大牌型
       winPlayer.cards[Enums.zhong]++;
       this.lastTakeCard = Enums.zhong;
-      const cards = winPlayer.cards.slice();
-      const cardType = await this.getCardTypes(winPlayer, 1);
+      const cardType = await this.getCardTypes(winPlayer, 1, false, false);
       winPlayer.cards[Enums.zhong]--;
 
-      const gangList = [...winPlayer.events["anGang"] || [], ...winPlayer.events["jieGang"] || []];
-      const pengList = winPlayer.events["peng"] || [];
 
-      console.warn("index-%s, cards-%s, tingCards-%s, gangList-%s, pengList-%s, cardType-%s", this.atIndex(winPlayer), JSON.stringify(this.getCardArray(cards)),
-        JSON.stringify(this.getCardArray(winPlayer.cards)), JSON.stringify(gangList), JSON.stringify(pengList), JSON.stringify(cardType));
+      console.warn("index-%s, cards-%s, cardType-%s", this.atIndex(winPlayer), JSON.stringify(this.getCardArray(winPlayer.cards)), JSON.stringify(cardType));
 
       const model = await service.playerService.getPlayerModel(noTingPlayer._id);
       if (model.gold <= 0) {
@@ -4635,7 +4631,7 @@ class TableState implements Serializable {
       const nextDo1 = async () => {
         // 退税，对局结束，未听牌的玩家需返还杠牌所得
         const flag = await this.refundShui();
-        setTimeout(nextDo2, flag ? 1000 : 500);
+        setTimeout(nextDo2, flag ? 1000 : 0);
       }
 
       setTimeout(nextDo1, 100);
@@ -4643,14 +4639,14 @@ class TableState implements Serializable {
       // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
       const nextDo2 = async () => {
         const flag = await this.searchFlowerPig();
-        setTimeout(nextDo3, flag ? 1000 : 500);
+        setTimeout(nextDo3, flag ? 1000 : 0);
       }
 
       // 未听牌：对局结束时，未听牌玩家赔给听牌的玩家最大叫点数的金豆
       const nextDo3 = async () => {
         const flag = await this.NoTingCard();
 
-        setTimeout(nextDo4, flag ? 1000 : 500);
+        setTimeout(nextDo4, flag ? 1000 : 0);
       }
 
       const nextDo4 = async () => {
