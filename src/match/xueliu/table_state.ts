@@ -2680,6 +2680,8 @@ class TableState implements Serializable {
           this.actionResolver.requestAction(player, 'hu', async () => {
               this.lastHuCard = card;
               this.cardTypes = await this.getCardTypes(player, 2, this.lastDa);
+              const cardId = this.cardTypes.cardId;
+              let sleepTime = 3000;
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
               const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
               if (tIndex !== -1) {
@@ -2711,7 +2713,8 @@ class TableState implements Serializable {
                 });
 
                 // 如果是杠后炮，需把杠牌获得的收入转移给胡牌玩家
-                if (this.cardTypes.cardId === 88 && dianPaoPlayer.isGangHouDa && !dianPaoPlayer.isBroke) {
+                if (cardId === 88 && !dianPaoPlayer.isBroke) {
+                  sleepTime += 2000;
                   const callForward = async () => {
                     console.warn("index-%s from-%s exec refundGangScore function!", index, from);
                     this.room.broadcast("game/callForward", {index, from});
@@ -2797,7 +2800,7 @@ class TableState implements Serializable {
                       this.turn++;
                     }
 
-                    setTimeout(nextDo, 3000);
+                    setTimeout(nextDo, sleepTime);
                   } else {
                     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
                     const nextZhuang = this.nextZhuang()
@@ -2805,15 +2808,7 @@ class TableState implements Serializable {
                   }
                 }
               } else {
-                this.room.broadcast('game/huReply', {
-                  ok: false,
-                  info: TianleErrorCode.huInvaid,
-                  data: {type: "jiePao", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), tIndex}
-                });
-
-                const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-                const nextZhuang = this.nextZhuang()
-                await this.gameAllOver(states, [], nextZhuang);
+                player.emitter.emit(Enums.guo, this.turn, card);
               }
             },
             () => {
@@ -2828,7 +2823,6 @@ class TableState implements Serializable {
         } else if (isZiMo) {
           this.cardTypes = await this.getCardTypes(player, 1);
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
-          const isZiMo = player.checkZiMo();
           const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
           if (tIndex !== -1 || !this.stateData[Enums.da]) {
             return;
@@ -2934,19 +2928,7 @@ class TableState implements Serializable {
           } else {
             player.cards[card]++;
             player.emitter.emit(Enums.da, this.turn, card);
-            // this.room.broadcast('game/huReply', {
-            //   ok: false,
-            //   info: TianleErrorCode.huInvaid,
-            //   data: {type: "ziMo", card, index: this.atIndex(player), cards: this.getCardArray(player.cards), oldCards: this.getCardArray(oldCards), tIndex, ok, isDa, isZiMo}
-            // });
-
-            // const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-            // const nextZhuang = this.nextZhuang()
-            // await this.gameAllOver(states, [], nextZhuang);
           }
-        } else {
-          // player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
-          // logger.info('hu  player %s stateQiangGang HuReply', index)
         }
       } catch (e) {
         console.warn(e)
