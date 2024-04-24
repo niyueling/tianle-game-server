@@ -2398,12 +2398,26 @@ class TableState implements Serializable {
         return
       }
 
-      // 一炮多响
-      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
+      // 一炮多响（金豆房）
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.peng);
 
         player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.peng, card, index: this.atIndex(player)}})
+        return ;
+      }
+
+      // 一炮多响(好友房)
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && !this.room.isPublic) {
+        this.manyHuPlayers.push(player._id.toString());
+        this.setManyAction(player, Enums.peng);
+        player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.peng, card, index: this.atIndex(player)}})
+
+        if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+          this.isRunMultiple = true;
+          player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+        }
+
         return ;
       }
 
@@ -2475,12 +2489,28 @@ class TableState implements Serializable {
         return
       }
 
-      // 一炮多响
-      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
+      // 一炮多响(金豆房)
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.gang);
+        // console.warn("player index-%s choice gang card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.gang);
 
         player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.gang, card, index: this.atIndex(player)}})
+        return ;
+      }
+
+      // 一炮多响(好友房)
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && !this.room.isPublic) {
+        this.manyHuPlayers.push(player._id.toString());
+        this.setManyAction(player, Enums.gang);
+        player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.gang, card, index: this.atIndex(player)}})
+
+        if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+          this.isRunMultiple = true;
+          player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+          // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
+        }
+
         return ;
       }
 
@@ -2669,12 +2699,28 @@ class TableState implements Serializable {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         if (isJiePao) {
-          // 一炮多响
-          if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
+          // 一炮多响(金豆房)
+          if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
             this.manyHuPlayers.push(player._id.toString());
             this.setManyAction(player, Enums.hu);
-
+            // console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.hu);
             player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.hu, card, index: this.atIndex(player)}})
+
+            return ;
+          }
+
+          // 一炮多响(好友房)
+          if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && !this.room.isPublic) {
+            this.manyHuPlayers.push(player._id.toString());
+            this.setManyAction(player, Enums.hu);
+            player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.hu, card, index: this.atIndex(player)}})
+
+            if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+              this.isRunMultiple = true;
+              player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+              // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
+            }
+
             return ;
           }
 
@@ -4627,14 +4673,25 @@ class TableState implements Serializable {
   }
 
   async onPlayerGuo(player, playTurn, playCard) {
-    // 一炮多响
-    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang) {
+    // 一炮多响(金豆房)
+    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
       this.manyHuPlayers.push(player._id.toString());
       this.setManyAction(player, Enums.guo);
-      // console.warn("player index-%s choice guo card-%s manyHuArray-%s action-%s", this.atIndex(player), playCard, JSON.stringify(this.manyHuArray), Enums.guo);
 
       player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.guo, card: playCard, index: this.atIndex(player)}})
       return ;
+    }
+
+    // 一炮多响(好友房)
+    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && !this.room.isPublic) {
+      this.manyHuPlayers.push(player._id.toString());
+      this.setManyAction(player, Enums.guo);
+      player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.guo, card: playCard, index: this.atIndex(player)}})
+
+      if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+        this.isRunMultiple = true;
+        player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+      }
     }
 
     const index = this.players.indexOf(player);
