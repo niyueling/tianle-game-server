@@ -1995,10 +1995,8 @@ class TableState implements Serializable {
 
   async checkQuanShuangKe(player) {
     const anGang = player.events["anGang"] || [];
-
     const jieGang = player.events["mingGang"] || [];
     let gangCount = 0;
-    let duiCount = 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
@@ -2022,20 +2020,15 @@ class TableState implements Serializable {
       if (cards[i] >= 3 && i % 2 === 0) {
         gangCount++;
       }
-
-      if (cards[i] === 2 && i % 2 === 0) {
-        duiCount++;
-      }
     }
 
-    return gangCount === 4 && duiCount === 1 && (isZiMo || isJiePao);
+    return gangCount === 4 && (isZiMo || isJiePao);
   }
 
   async checkQuanDanKe(player) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     let gangCount = 0;
-    let duiCount = 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
@@ -2060,12 +2053,9 @@ class TableState implements Serializable {
         gangCount++;
       }
 
-      if (cards[i] === 2 && i % 2 === 1) {
-        duiCount++;
-      }
     }
 
-    return gangCount === 4 && duiCount === 1 && (isZiMo || isJiePao);
+    return gangCount === 4 && (isZiMo || isJiePao);
   }
 
   async checkSiJieGao(player) {
