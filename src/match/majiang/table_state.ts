@@ -1722,6 +1722,8 @@ class TableState implements Serializable {
       flag = false;
     }
 
+    console.warn("flag-%s, baiYangCount-%s, moJieCount-%s, hu-%s", flag, baiYangCount, moJieCount, isZiMo || isJiePao);
+
     return flag && baiYangCount > 0 && moJieCount > 0 && (isZiMo || isJiePao);
   }
 
