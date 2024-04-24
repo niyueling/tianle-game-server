@@ -1786,13 +1786,13 @@ class TableState implements Serializable {
       if (gangList[i] === Enums.constellation9) {
         sheShouCount++;
       }
-      if ((gangList[i] < 38 && gangList[i] > 10 && gangList[i] < 20) || (gangList[i] > 40 && ![42, 49].includes(gangList[i]))) {
+      if ((gangList[i] < 38 && gangList[i] < 10) || (gangList[i] > 40 && ![42, 49].includes(gangList[i]))) {
         flag = false;
       }
     }
 
     for (let i = 1; i < 53; i++) {
-      if (player.cards[i] > 0 && ((i < 38 && i > 10 && i < 20) || (i > 40 && ![42, 49].includes(i)))) {
+      if (player.cards[i] > 0 && ((i < 38 && i < 10) || (i > 40 && ![42, 49].includes(i)))) {
         flag = false;
       }
     }
