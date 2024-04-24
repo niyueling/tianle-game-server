@@ -1997,6 +1997,7 @@ class TableState implements Serializable {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     let gangCount = 0;
+    let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
@@ -2008,27 +2009,37 @@ class TableState implements Serializable {
       if (anGang[i] < 38 && anGang[i] % 2 === 0) {
         gangCount++;
       }
+      if (anGang[i] > 40) {
+        flag = false;
+      }
     }
 
     for (let i = 0; i < jieGang.length; i++) {
       if (jieGang[i] < 38 && jieGang[i] % 2 === 0) {
         gangCount++;
       }
-    }
-
-    for (let i = 1; i < 38; i++) {
-      if (cards[i] >= 3 && i % 2 === 0) {
-        gangCount++;
+      if (jieGang[i] > 40) {
+        flag = false;
       }
     }
 
-    return gangCount === 4 && (isZiMo || isJiePao);
+    for (let i = 1; i < 53; i++) {
+      if (cards[i] >= 3 && i % 2 === 0 && i < 38) {
+        gangCount++;
+      }
+      if (cards[i] > 0 && (i > 40 || i % 2 !== 0)) {
+        flag = false;
+      }
+    }
+
+    return flag && gangCount === 4 && (isZiMo || isJiePao);
   }
 
   async checkQuanDanKe(player) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     let gangCount = 0;
+    let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
@@ -2040,22 +2051,31 @@ class TableState implements Serializable {
       if (anGang[i] < 38 && anGang[i] % 2 === 1) {
         gangCount++;
       }
+      if (anGang[i] > 40) {
+        flag = false;
+      }
     }
 
     for (let i = 0; i < jieGang.length; i++) {
       if (jieGang[i] < 38 && jieGang[i] % 2 === 1) {
         gangCount++;
       }
+      if (jieGang[i] > 40) {
+        flag = false;
+      }
     }
 
     for (let i = 1; i < 38; i++) {
-      if (cards[i] >= 3 && i % 2 === 1) {
+      if (cards[i] >= 3 && i % 2 === 1 && i < 38) {
         gangCount++;
+      }
+      if (cards[i] > 0 && (i > 40 || (i < 38 && i % 2 !== 1))) {
+        flag = false;
       }
 
     }
 
-    return gangCount === 4 && (isZiMo || isJiePao);
+    return flag && gangCount === 4 && (isZiMo || isJiePao);
   }
 
   async checkSiJieGao(player) {
