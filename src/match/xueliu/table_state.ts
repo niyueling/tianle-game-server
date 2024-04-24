@@ -1998,8 +1998,6 @@ class TableState implements Serializable {
       }
     }
 
-    // console.warn("anGangCount-%s, keZi-%s, gangZi-%s, zimo-%s, jiePao-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi), isZiMo, isJiePao);
-
     return anGangCount >= 2 && (isZiMo || isJiePao);
   }
 
@@ -3871,9 +3869,6 @@ class TableState implements Serializable {
       this.lastTakeCard = Enums.zhong;
       const cardType = await this.getCardTypes(winPlayer, 1, false, false);
       winPlayer.cards[Enums.zhong]--;
-
-
-      console.warn("index-%s, cards-%s, cardType-%s", this.atIndex(winPlayer), JSON.stringify(this.getCardArray(winPlayer.cards)), JSON.stringify(cardType));
 
       const model = await service.playerService.getPlayerModel(noTingPlayer._id);
       if (model.gold <= 0) {
