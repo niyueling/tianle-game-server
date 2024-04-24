@@ -1699,12 +1699,14 @@ class TableState implements Serializable {
         moJieCount++;
       }
       if ((gangList[i] < 38 && ![6, 7, 8, 9].includes(gangList[i] % 10)) || (gangList[i] > 40 && ![41, 50].includes(gangList[i]))) {
+        console.warn("111 gangList[i]-%s, gangList[i] % 10-%s", gangList[i], gangList[i] % 10);
         flag = false;
       }
     }
 
     for (let i = 1; i < 53; i++) {
       if (player.cards[i] > 0 && ((i < 38 && ![6, 7, 8, 9].includes(i % 10)) || (i > 40 && ![41, 50].includes(i)))) {
+        console.warn("222 player.cards[i]-%s, i-%s, i % 10-%s", player.cards[i], i, i % 10);
         flag = false;
       }
     }
@@ -1716,13 +1718,15 @@ class TableState implements Serializable {
       moJieCount++;
     }
     if (isJiePao && this.lastHuCard > 40 && ![Enums.constellation1, Enums.constellation10].includes(this.lastHuCard)) {
+      console.warn("333 this.lastHuCard-%s", this.lastHuCard);
       flag = false;
     }
     if (isJiePao && this.lastHuCard < 38 && ![6, 7, 8, 9].includes(this.lastHuCard % 10)) {
+      console.warn("444 this.lastHuCard-%s this.lastHuCard % 10-%s", this.lastHuCard, this.lastHuCard % 10);
       flag = false;
     }
 
-    console.warn("flag-%s, baiYangCount-%s, moJieCount-%s, hu-%s", flag, baiYangCount, moJieCount, isZiMo || isJiePao);
+    console.warn("flag-%s, baiYangCount-%s, moJieCount-%s, zimo-%s, jiePao-%s", flag, baiYangCount, moJieCount, isZiMo, isJiePao);
 
     return flag && baiYangCount > 0 && moJieCount > 0 && (isZiMo || isJiePao);
   }
