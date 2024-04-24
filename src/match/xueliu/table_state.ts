@@ -1998,6 +1998,8 @@ class TableState implements Serializable {
       }
     }
 
+    console.warn("anGangCount-%s, keZi-%s, gangZi-%s, zimo-%s, jiePao-%s", anGangCount, JSON.stringify(keZi), JSON.stringify(gangZi), isZiMo, isJiePao);
+
     return anGangCount >= 2 && (isZiMo || isJiePao);
   }
 
