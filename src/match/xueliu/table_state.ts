@@ -3871,7 +3871,7 @@ class TableState implements Serializable {
         let winBalance = 0;
 
         const model = await service.playerService.getPlayerModel(drawbackPlayer._id.toString());
-        const balance = -Math.min(Math.abs(-record.winnerGoldReward), model.gold, winModel.gold);
+        const balance = -Math.min(Math.abs(failList[j].score), model.gold, winModel.gold);
         drawbackPlayer.balance += balance;
         winBalance += Math.abs(balance);
         drawbackPlayer.juScore += balance;
@@ -4656,7 +4656,6 @@ class TableState implements Serializable {
         break
       }
       default:
-        // console.warn("room-%s is forceDissolve", this.room._id);
         await this.room.forceDissolve();
         break
     }
