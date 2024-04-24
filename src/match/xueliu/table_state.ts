@@ -2782,7 +2782,6 @@ class TableState implements Serializable {
           if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
             this.manyHuPlayers.push(player._id.toString());
             this.setManyAction(player, Enums.hu);
-            // console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.hu);
             player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.hu, card, index: this.atIndex(player)}})
 
             return ;
@@ -2797,7 +2796,6 @@ class TableState implements Serializable {
             if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
               this.isRunMultiple = true;
               player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
-              // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
             }
 
             return ;
@@ -2843,7 +2841,7 @@ class TableState implements Serializable {
                   sleepTime += 2000;
                   const callForward = async () => {
                     console.warn("index-%s from-%s exec refundGangScore function!", index, from);
-                    this.room.broadcast("game/callForward", {index, from});
+                    this.room.broadcast("game/callForward", {ok: true, data: {index, from}});
                     await this.refundGangScore(from, index);
                   }
 
