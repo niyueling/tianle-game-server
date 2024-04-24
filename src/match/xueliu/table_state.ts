@@ -4675,8 +4675,9 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
+    console.warn("isManyHu-%s, index-%s, card-%s, todo-%s, stateData.card-%s", this.isManyHu, this.atIndex(player), card, todo, this.stateData.card);
     // 一炮多响
-    if (this.room.gameState.isManyHu) {
+    if (this.isManyHu) {
       // 一炮多响
       if (!this.manyHuPlayers.includes(this.zhuang._id.toString()) && this.canManyHuPlayers.includes(this.zhuang._id.toString())) {
         // console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
