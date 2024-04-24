@@ -3791,7 +3791,7 @@ class TableState implements Serializable {
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
     }
 
-    setTimeout(nextDo, 1000);
+    setTimeout(nextDo, isWait ? 1500 : 500);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
