@@ -4440,7 +4440,6 @@ class TableState implements Serializable {
       this.players.forEach(x => {
         x.gameOver()
       })
-      room.forceDissolve();
     })
   }
 
