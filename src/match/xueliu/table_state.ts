@@ -1199,7 +1199,7 @@ class TableState implements Serializable {
 
     for (let i = 0; i < peng.length; i++) {
       if (peng[i] <= Enums.wanzi9) {
-        numberCount += gangList[i] * 3;
+        numberCount += peng[i] * 3;
       }
     }
 
