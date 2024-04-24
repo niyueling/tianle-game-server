@@ -987,7 +987,7 @@ class Room extends RoomBase {
     return values(this.scoreMap).some(score => score <= this.rule.lostLimit)
   }
 
-  async gameOver(nextZhuangId, states) {
+  async gameOver() {
     // 清除洗牌
     this.shuffleData = []
     this.clearReady()
@@ -995,8 +995,10 @@ class Room extends RoomBase {
     // 下一局
     // await this.robotManager.nextRound();
 
-    this.gameState.dissolve()
-    this.gameState = null
+    if (this.gameState) {
+      this.gameState.dissolve()
+      this.gameState = null
+    }
 
     if (this.isRoomAllOver()) {
       const message = this.allOverMessage()
