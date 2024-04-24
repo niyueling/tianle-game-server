@@ -2145,8 +2145,8 @@ class TableState implements Serializable {
   }
 
   async checkGangShangPao(player, dianPaoPlayer) {
-    const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    return dianPaoPlayer && this.lastDa && dianPaoPlayer.isGangHouDa && isJiePao;
+    const isJiePao = dianPaoPlayer && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, dianPaoPlayer);
+    return dianPaoPlayer&& dianPaoPlayer.isGangHouDa && isJiePao;
   }
 
   async checkHaiDiLaoYue(player) {
@@ -3306,10 +3306,14 @@ class TableState implements Serializable {
     const index = this.players.indexOf(player);
     let from;
 
+    if (!this.stateData[Enums.da]) {
+      return ;
+    }
     if (this.state !== stateWaitDa) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.cardDaError, data: {index: this.atIndex(player), card, state: this.state}})
       return
-    } else if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
+    }
+    if (this.stateData[Enums.da]._id !== player._id) {
       player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound, data: {index: this.atIndex(player), card}})
       return
     }
@@ -3337,7 +3341,7 @@ class TableState implements Serializable {
       this.gameDaCards.push(card);
 
       await player.sendMessage('game/daReply', {ok: true, data: card});
-      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
+      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card, lastOperateType: player.lastOperateType, isGangHouDa: player.isGangHouDa}}, player.msgDispatcher);
     }
 
     // 打牌后，延迟2秒给其他用户发牌
