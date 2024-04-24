@@ -3870,8 +3870,8 @@ class TableState implements Serializable {
       const cardType = await this.getCardTypes(winPlayer, 1);
       winPlayer.cards[Enums.zhong]--;
 
-      const gangList = [...winPlayer.events["anGang"], ...winPlayer.events["jieGang"]];
-      const pengList = winPlayer.events["peng"];
+      const gangList = [...winPlayer.events["anGang"] || [], ...winPlayer.events["jieGang"] || []];
+      const pengList = winPlayer.events["peng"] || [];
 
       console.warn("index-%s, cards-%s, tingCards-%s, gangList-%s, pengList-%s, cardType-%s", this.atIndex(winPlayer), JSON.stringify(this.getCardArray(cards)),
         JSON.stringify(this.getCardArray(winPlayer.cards)), JSON.stringify(gangList), JSON.stringify(pengList), JSON.stringify(cardType));
