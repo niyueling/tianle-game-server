@@ -3729,36 +3729,37 @@ class TableState implements Serializable {
 
   async noFlowerPigDrawScore(failPlayer, noFlowerPigs, conf) {
     for (const winPlayer of noFlowerPigs) {
-      let winModel = await service.playerService.getPlayerModel(winPlayer._id.toString());
+      let winModel = await service.playerService.getPlayerModel(winPlayer._id);
       let winBalance = 0;
       let failGoldList = [];
       let failFromList = [];
       let failIdList = [];
 
-      const model = await service.playerService.getPlayerModel(failPlayer._id.toString());
+      const model = await service.playerService.getPlayerModel(failPlayer._id);
       if (model.gold <= 0) {
         return;
       }
 
-      failPlayer.balance = -Math.min(Math.abs(-conf.maxGold), model.gold, winModel.gold);
-      winBalance += Math.abs(failPlayer.balance);
-      failPlayer.juScore += failPlayer.balance;
+      const balance = -Math.min(Math.abs(conf.maxGold), model.gold, winModel.gold);;
+      failPlayer.balance += balance;
+      winBalance += Math.abs(balance);
+      failPlayer.juScore += balance;
       failFromList.push(this.atIndex(failPlayer));
       failGoldList.push(failPlayer.balance);
       failIdList.push(failPlayer._id);
-      if (failPlayer.balance !== 0) {
-        await this.room.addScore(failPlayer._id, failPlayer.balance, this.cardTypes);
-        await service.playerService.logGoldConsume(failPlayer._id, ConsumeLogType.gamePayGang, failPlayer.balance,
-          model.gold + failPlayer.balance, `查花猪扣除-${this.room._id}`);
+      if (balance !== 0) {
+        await this.room.addScore(failPlayer._id, balance, this.cardTypes);
+        await service.playerService.logGoldConsume(failPlayer._id, ConsumeLogType.gamePayGang, balance,
+          model.gold + balance, `查花猪扣除-${this.room._id}`);
       }
 
       //增加胡牌用户金币
-      winPlayer.balance = winBalance;
+      winPlayer.balance += winBalance;
       winPlayer.juScore += winBalance;
       if (winBalance !== 0) {
         await this.room.addScore(winPlayer._id, winBalance, this.cardTypes);
-        await service.playerService.logGoldConsume(winPlayer._id, ConsumeLogType.gameReceiveGang, winPlayer.balance,
-          winPlayer.model.gold + winPlayer.balance, `查花猪获得-${this.room._id}`);
+        await service.playerService.logGoldConsume(winPlayer._id, ConsumeLogType.gameReceiveGang, winBalance,
+          winPlayer.model.gold + winBalance, `查花猪获得-${this.room._id}`);
       }
 
       // 生成金豆记录
