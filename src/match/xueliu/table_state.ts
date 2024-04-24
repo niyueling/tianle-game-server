@@ -2345,7 +2345,6 @@ class TableState implements Serializable {
         const card = msg.data.card;
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card);
 
-
         // 一炮多响切用户未操作
         if (this.isManyHu && !this.manyHuPlayers.includes(player._id)) {
           this.manyHuPlayers.push(player._id.toString());
@@ -3848,6 +3847,8 @@ class TableState implements Serializable {
 
       await this.checkBrokeAndWait(false);
     }
+
+    return noTingPlayers.length > 0 && tingPlayers.length > 0;
   }
 
   async tingCardDrawScore(noTingPlayers, tingPlayers, conf) {
@@ -3948,6 +3949,8 @@ class TableState implements Serializable {
 
       await this.checkBrokeAndWait(false);
     }
+
+    return flowerPigs.length > 0 && noFlowerPigs.length > 0;
   }
 
   async flowerPigDrawScore(flowerPigs, noFlowerPigs, conf) {
@@ -4033,7 +4036,7 @@ class TableState implements Serializable {
       await this.checkBrokeAndWait(false);
     }
 
-    return drawbackPlayers;
+    return drawbackPlayers.length > 0;
   }
 
   async refundGangArrayScore(records) {
@@ -4623,23 +4626,23 @@ class TableState implements Serializable {
 
       const nextDo1 = async () => {
         // 退税，对局结束，未听牌的玩家需返还杠牌所得
-        await this.refundShui();
-        setTimeout(nextDo2, 1500);
+        const flag = await this.refundShui();
+        setTimeout(nextDo2, flag ? 1500 : 500);
       }
 
       setTimeout(nextDo1, 100);
 
       // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
       const nextDo2 = async () => {
-        await this.searchFlowerPig();
-        setTimeout(nextDo3, 1500);
+        const flag = await this.searchFlowerPig();
+        setTimeout(nextDo3, flag ? 1500 : 500);
       }
 
       // 未听牌：对局结束时，未听牌玩家赔给听牌的玩家最大叫点数的金豆
       const nextDo3 = async () => {
-        await this.NoTingCard();
+        const flag = await this.NoTingCard();
 
-        setTimeout(nextDo4, 1500);
+        setTimeout(nextDo4, flag ? 1500 : 500);
       }
 
       const nextDo4 = async () => {
