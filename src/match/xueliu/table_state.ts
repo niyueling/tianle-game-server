@@ -3868,10 +3868,15 @@ class TableState implements Serializable {
 
       // 判断用户可以胡的最大牌型
       winPlayer.cards[Enums.zhong]++;
+      const cards = winPlayer.cards.slice();
       const cardType = await this.getCardTypes(winPlayer, 1);
       winPlayer.cards[Enums.zhong]--;
 
-      console.warn("index-%s, cards-%s, cardType-%s", this.atIndex(winPlayer), JSON.stringify(this.getCardArray(winPlayer.cards)), JSON.stringify(cardType));
+      const gangList = [...winPlayer.events["anGang"], ...winPlayer.events["jieGang"]];
+      const pengList = winPlayer.events["peng"];
+
+      console.warn("index-%s, cards-%s, tingCards-%s, gangList-%s, pengList-%s, cardType-%s", this.atIndex(winPlayer), JSON.stringify(this.getCardArray(cards)),
+        JSON.stringify(this.getCardArray(winPlayer.cards)), JSON.stringify(gangList), JSON.stringify(pengList), JSON.stringify(cardType));
 
       const model = await service.playerService.getPlayerModel(noTingPlayer._id);
       if (model.gold <= 0) {
