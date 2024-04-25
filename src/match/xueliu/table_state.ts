@@ -1314,8 +1314,6 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("flag-%s, cards-%s, zimo-%s, jiepao-%s", flag, JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao);
-
     return flag && (isZiMo || isJiePao);
   }
 
@@ -1859,6 +1857,8 @@ class TableState implements Serializable {
         break;
       }
     }
+
+    console.warn("duiCount-%s, cards-%s, zimo-%s, jiepao-%s", duiCount, JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao);
 
     return duiCount === 7 && (isZiMo || isJiePao);
   }
