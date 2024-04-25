@@ -1854,7 +1854,6 @@ class TableState implements Serializable {
       }
       if (cards[i] === 2 || cards[i] === 4) {
         duiCount += cards[i] / 2;
-        break;
       }
     }
 
