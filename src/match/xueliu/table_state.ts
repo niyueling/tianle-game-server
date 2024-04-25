@@ -2893,7 +2893,7 @@ class TableState implements Serializable {
                 }
 
                 //第一次胡牌自动托管
-                if (!player.onDeposit && player.zhuang) {
+                if (!player.onDeposit && player.zhuang && this.room.isPublic) {
                   player.onDeposit = true
                   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                 }
@@ -2991,7 +2991,6 @@ class TableState implements Serializable {
           if (tIndex !== -1 || !this.stateData[Enums.da]) {
             return;
           }
-          const oldCards = player.cards.slice();
           const isDa = player.daHuPai(card, null);
           if (ok && isDa && tIndex === -1) {
             this.lastDa = player;
@@ -3020,7 +3019,7 @@ class TableState implements Serializable {
             }
 
             // 第一次胡牌自动托管
-            if (!player.onDeposit && player.zhuang) {
+            if (!player.onDeposit && player.zhuang && this.room.isPublic) {
               player.onDeposit = true
               await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
             }
