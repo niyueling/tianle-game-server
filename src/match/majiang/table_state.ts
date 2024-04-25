@@ -3415,8 +3415,9 @@ class TableState implements Serializable {
         if (this.isAllHu) {
           // 摸三张删除杠牌
           const index = player.competiteCards.findIndex(c => c.card === card);
+          console.warn("index-%s", index);
           if (index !== -1) {
-            player.competiteCards.slice(index, 1);
+            player.competiteCards.splice(index, 1);
           }
 
           // 从手牌先删除其他两张牌
