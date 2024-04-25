@@ -587,6 +587,7 @@ class TableState implements Serializable {
 
       if (p.zhuang) {
         zhuangIndex = i;
+        p.isDiHu = false;
       }
 
       // 如果是好友房，设置金豆为金豆上限的1亿倍
@@ -914,6 +915,14 @@ class TableState implements Serializable {
         }
       }
 
+      // 地胡(非庄家摸到的第一张牌胡牌(每一家的碰·杠·胡等操作均会使地胡不成立))
+      if (cardTypes[i].cardId === 57 && !player.zhuang) {
+        const status = await this.checkDiHu(player);
+        if (status && cardTypes[i].multiple > cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
       // 绿一色(仅由23468条组成的和牌，不计清一色)
       if (cardTypes[i].cardId === 56) {
         const status = await this.checkLvYiSe(player);
@@ -1205,10 +1214,6 @@ class TableState implements Serializable {
       if (cards[i] > 0 && !cardList.includes(i)) {
         flag = false;
       }
-    }
-
-    if (player.zhuang) {
-      console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, cards-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(this.getCardArray(cards)));
     }
 
     return flag && (isZiMo || isJiePao);
@@ -1661,6 +1666,11 @@ class TableState implements Serializable {
     }
 
     return flag && (isZiMo || isJiePao);
+  }
+
+  async checkDiHu(player) {
+    const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    return !player.isGameDa && !player.zhuang && player.isDiHu && isZiMo;
   }
 
   async checkTianHu(player) {
@@ -2541,6 +2551,8 @@ class TableState implements Serializable {
         if (ok) {
           player.lastOperateType = 2;
           const hangUpList = this.stateData.hangUp;
+          // 设置所有用户地胡状态为false
+          this.players.map((p) => p.isDiHu = false)
           this.turn++;
           this.state = stateWaitDa;
           const nextStateData = {da: player};
@@ -2641,6 +2653,8 @@ class TableState implements Serializable {
             if (ok) {
               player.lastOperateType = 3;
               this.turn++;
+              // 设置所有用户地胡状态为false
+              this.players.map((p) => p.isDiHu = false)
               const from = this.atIndex(this.lastDa)
               const me = this.atIndex(player)
               this.stateData = {}
@@ -2736,6 +2750,8 @@ class TableState implements Serializable {
       if (ok) {
         player.lastOperateType = 3;
         this.stateData = {}
+        // 设置所有用户地胡状态为false
+        this.players.map((p) => p.isDiHu = false)
         player.sendMessage('game/gangReply', {
           ok: true,
           data: {card, from, gangIndex, type: isAnGang ? "anGang" : "buGang"}
@@ -2856,6 +2872,8 @@ class TableState implements Serializable {
               if (ok && player.daHuPai(card, this.players[from]) && tIndex === -1) {
                 player.lastOperateType = 4;
                 player.isGameDa = true;
+                // 设置所有用户地胡状态为false
+                this.players.map((p) => p.isDiHu = false)
                 this.lastDa = player;
                 this.stateData = {};
                 player.huTurnList.push({card, turn});
@@ -2997,6 +3015,8 @@ class TableState implements Serializable {
             player.isGameDa = true;
             player.huTurnList.push({card, turn});
             this.stateData = {};
+            // 设置所有用户地胡状态为false
+            this.players.map((p) => p.isDiHu = false)
             from = this.atIndex(this.lastDa);
             await player.sendMessage('game/huReply', {
               ok: true,
@@ -3499,6 +3519,7 @@ class TableState implements Serializable {
 
       player.lastOperateType === 3 ? player.isGangHouDa = true : player.isGangHouDa = false;
       player.lastOperateType = 1;
+      player.isDiHu = false;
       this.stateData = {};
       this.gameDaCards.push(card);
 
