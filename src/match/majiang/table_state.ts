@@ -915,10 +915,10 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
-      const cards13 = payload.cards && payload.cards[i] ? payload.cards[i] : (model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p));
+      const cards13 = payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : (model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p));
 
       // 如果客户端指定发牌
-      if (payload.cards && payload.cards[i]) {
+      if (payload.cards && payload.cards[i].length === 13) {
         for (let j = 0; j < payload.cards[i].length; j++) {
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
           this.remainCards--;

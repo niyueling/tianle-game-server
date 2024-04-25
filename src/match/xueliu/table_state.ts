@@ -565,10 +565,10 @@ class TableState implements Serializable {
     let zhuangIndex = 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
-      const cards13 = payload.cards && payload.cards[i] ? payload.cards[i] : await this.take13Cards(p);
+      const cards13 = payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : await this.take13Cards(p);
 
       // 如果客户端指定发牌
-      if (payload.cards && payload.cards[i]) {
+      if (payload.cards && payload.cards[i].length === 13) {
         for (let j = 0; j < payload.cards[i].length; j++) {
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
           this.remainCards--;
