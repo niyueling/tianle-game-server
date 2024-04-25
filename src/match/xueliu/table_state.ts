@@ -1505,27 +1505,30 @@ class TableState implements Serializable {
     return flag && (isZiMo || isJiePao);
   }
 
-  splitIntoShunzi(shunZi) {
+  splitIntoShunzi(numbers) {
     let result = [];
     let currentShunzi = [];
 
-    shunZi.forEach((card, index) => {
-      // 如果当前顺子数组为空，或者当前卡片与前一个卡片的差不超过2，则添加到当前顺子
-      if (currentShunzi.length < 3 && (currentShunzi.length === 0 || card - currentShunzi[currentShunzi.length - 1] <= 2)) {
-        currentShunzi.push(card);
-      } else {
-        // 当前顺子已满3张，或者当前卡片与前一个卡片的差超过2，开始新顺子
-        if (currentShunzi.length > 0) {
+    for (let i = 0; i < numbers.length; i++) {
+      if (currentShunzi.length < 2) {
+        // 如果当前顺子长度小于2，直接添加
+        currentShunzi.push(numbers[i]);
+      } else if (currentShunzi.length === 2) {
+        // 当前顺子已有2项，判断是否满足相连条件
+        if (numbers[i] === currentShunzi[1] + 1) {
+          // 第三个数字与前两个数字相连，可以添加到顺子中
+          currentShunzi.push(numbers[i]);
+        } else {
+          // 不相连，则将当前顺子添加到结果中，并开始新的顺子
           result.push(currentShunzi);
-          currentShunzi = []; // 重置当前顺子
+          currentShunzi = [numbers[i]];
         }
-        // 再次检查当前卡片是否可以添加到新的顺子中
-        // （如果是数组的第一张卡片，或者与前一张卡片的差不超过2）
-        if (index === 0 || card - shunZi[index - 1] <= 2) {
-          currentShunzi.push(card);
-        }
+      } else {
+        // 当前顺子已满（3项），开始新的顺子
+        result.push(currentShunzi);
+        currentShunzi = [numbers[i]];
       }
-    });
+    }
 
     // 如果遍历结束后，当前顺子还有元素，则添加到结果中
     if (currentShunzi.length > 0) {
@@ -1558,6 +1561,26 @@ class TableState implements Serializable {
 
     // 组装顺子
     const currentShunZi = this.splitIntoShunzi(shunZi);
+
+    for (let i = 0; i < currentShunZi.length; i++) {
+      if (currentShunZi[i].length === 3 && ((isZiMo && this.lastTakeCard === currentShunZi[i][1]) || (isJiePao && this.lastHuCard === currentShunZi[i][1]))) {
+        flag = true;
+      }
+
+      if (currentShunZi[i].length === 2) {
+        if (currentShunZi[i][1] - currentShunZi[i][0] === 2) {
+          const middle = currentShunZi[i][0] + 1;
+          if ((isZiMo && this.lastTakeCard === middle) || (isJiePao && this.lastHuCard === middle)) {
+            flag = true;
+          }
+        }
+        if (currentShunZi[i][1] - currentShunZi[i][0] === 1) {
+          if ((isZiMo && currentShunZi[i].includes(this.lastTakeCard)) || (isJiePao && currentShunZi[i].includes(this.lastHuCard))) {
+            flag = true;
+          }
+        }
+      }
+    }
 
     // // 如果自摸，先将摸到的牌移除
     // if (isZiMo) {
@@ -1866,10 +1889,8 @@ class TableState implements Serializable {
   async checkQiDui(player) {
     let duiCount = 0;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    let isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isZiMo && isJiePao) {
-      isJiePao = false;
-    }
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
     const cards = player.cards.slice();
     let zhongCount = cards[Enums.zhong];
     if (isJiePao) {
@@ -1877,7 +1898,7 @@ class TableState implements Serializable {
     }
 
     for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
-      if (cards[i] % 2 !== 0 && zhongCount > 0) {
+      if (cards[i] > 0 && cards[i] % 2 !== 0 && zhongCount > 0) {
         cards[i]++;
         zhongCount--;
       }

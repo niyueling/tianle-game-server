@@ -2197,7 +2197,7 @@ class TableState implements Serializable {
     }
 
     for (let i = Enums.wanzi1; i <= Enums.constellation12; i++) {
-      if (cards[i] % 2 !== 0 && zhongCount > 0) {
+      if (cards[i] > 0 && cards[i] % 2 !== 0 && zhongCount > 0) {
         cards[i]++;
         zhongCount--;
       }
