@@ -4148,8 +4148,6 @@ class TableState implements Serializable {
 
     setTimeout(nextDo, maxCardId >= 45 ? 3000 : 1000);
 
-
-    // console.warn("remainCards-%s isGameOver-%s", this.remainCards, this.isGameOver);
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
@@ -5551,12 +5549,8 @@ class TableState implements Serializable {
 
     if (gameOverMsg.states.length > 0) {
       await this.room.gameOver(nextZhuang._id.toString(), states)
-      // this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
 
-      const nextDo = async () => {
-        this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
-      }
-      setTimeout(nextDo, 2000)
+      this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
     }
   }
 
