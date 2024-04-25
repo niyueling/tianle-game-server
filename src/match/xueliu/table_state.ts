@@ -1509,11 +1509,7 @@ class TableState implements Serializable {
     const canHuCards = [];
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-
-    // 如果没有胡牌，直接false
-    if (!isZiMo || !isJiePao) {
-      return false;
-    }
+    let flag = false;
 
     // 如果自摸，先将摸到的牌移除
     if (isZiMo) {
@@ -1521,7 +1517,7 @@ class TableState implements Serializable {
     }
 
     // 检测用户可以胡牌的列表
-    for (let i = Enums.wanzi1; i < Enums.tongzi9; i++) {
+    for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
       if (![1, 9].includes(i % 10)) {
         player.cards[i]++;
         const huResult = player.checkZiMo();
@@ -1534,15 +1530,15 @@ class TableState implements Serializable {
     }
 
     if (isZiMo) {
-      let num_1_l = player.cards[canHuCards[0] - 1];
-      let num_1_r = player.cards[canHuCards[0] + 1];
+      let num_1_l = player.cards[this.lastTakeCard - 1];
+      let num_1_r = player.cards[this.lastTakeCard + 1];
 
       if (num_1_l !== num_1_r && player.cards[Enums.zhong] > 0) {
         num_1_l < num_1_r ? num_1_l++ : num_1_r++;
       }
 
       if (num_1_l > 0 && num_1_r > 0 && num_1_l === num_1_r) {
-        return true;
+        flag = true;
       }
     }
 
@@ -1556,7 +1552,7 @@ class TableState implements Serializable {
       }
 
       if (num_1_l > 0 && num_1_r > 0 && num_1_l === num_1_r) {
-        return true;
+        flag = true;
       }
     }
 
@@ -1565,7 +1561,9 @@ class TableState implements Serializable {
       player.cards[this.lastTakeCard]++;
     }
 
-    return false;
+    console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, canHuCards-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(canHuCards));
+
+    return flag;
   }
 
   async checkBianZhang(player) {
