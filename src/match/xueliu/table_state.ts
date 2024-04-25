@@ -1508,19 +1508,21 @@ class TableState implements Serializable {
   async checkKanZhang(player) {
     const canHuCards = [];
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    let isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isZiMo && isJiePao) {
-      isJiePao = false;
-    }
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
     // 如果没有胡牌，直接false
     if (!isZiMo || !isJiePao) {
       return false;
     }
 
+    // 如果自摸，先将摸到的牌移除
+    if (isZiMo) {
+      player.cards[this.lastTakeCard]--;
+    }
+
     // 检测用户可以胡牌的列表
-    for (let i = Enums.wanzi2; i < Enums.tongzi9; i++) {
-      if ([1, 9].includes(i % 10)) {
+    for (let i = Enums.wanzi1; i < Enums.tongzi9; i++) {
+      if (![1, 9].includes(i % 10)) {
         player.cards[i]++;
         const huResult = player.checkZiMo();
         player.cards[i]--;
@@ -1531,16 +1533,11 @@ class TableState implements Serializable {
       }
     }
 
-    // 判断胡牌数超过一张，直接false
-    if (canHuCards.length !== 1) {
-      return false;
-    }
-
     if (isZiMo) {
       let num_1_l = player.cards[canHuCards[0] - 1];
       let num_1_r = player.cards[canHuCards[0] + 1];
 
-      if (num_1_l !== num_1_r && player.cards[Enums.zhong] === 1) {
+      if (num_1_l !== num_1_r && player.cards[Enums.zhong] > 0) {
         num_1_l < num_1_r ? num_1_l++ : num_1_r++;
       }
 
@@ -1554,13 +1551,18 @@ class TableState implements Serializable {
       let num_1_l = player.cards[this.lastHuCard - 1];
       let num_1_r = player.cards[this.lastHuCard + 1];
 
-      if (num_1_l !== num_1_r && player.cards[Enums.zhong] === 1) {
+      if (num_1_l !== num_1_r && player.cards[Enums.zhong] > 0) {
         num_1_l < num_1_r ? num_1_l++ : num_1_r++;
       }
 
-      if (num_1_l > 0 && num_1_r > 0  && num_1_l === num_1_r) {
+      if (num_1_l > 0 && num_1_r > 0 && num_1_l === num_1_r) {
         return true;
       }
+    }
+
+    // 如果自摸，将摸到的牌重新放入牌堆
+    if (isZiMo) {
+      player.cards[this.lastTakeCard]++;
     }
 
     return false;
