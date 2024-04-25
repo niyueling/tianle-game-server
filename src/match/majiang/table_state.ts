@@ -3584,7 +3584,7 @@ class TableState implements Serializable {
                 }
 
                 //第一次胡牌自动托管
-                if (!player.onDeposit && !this.isAllHu && player.zhuang) {
+                if (!player.onDeposit && !this.isAllHu && player.zhuang && this.room.isPublic) {
                   player.onDeposit = true
                   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                 }
@@ -3807,7 +3807,7 @@ class TableState implements Serializable {
             }
 
             // 第一次胡牌自动托管
-            if (!player.onDeposit && !this.isAllHu && player.zhuang) {
+            if (!player.onDeposit && !this.isAllHu && player.zhuang && this.room.isPublic) {
               player.onDeposit = true
               await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
             }
