@@ -648,7 +648,7 @@ class TableState implements Serializable {
     cardType.cardName = "平胡";
 
     for (let i = 0; i < cardTypes.length; i++) {
-      console.warn("cardId-%s, cardName-%s, multiple-%s", cardTypes[i].cardId, cardTypes[i].cardName, cardTypes[i].multiple);
+      console.warn("cardId-%s, cardName-%s, multiple-%s, type-%s, isGame-%s", cardTypes[i].cardId, cardTypes[i].cardName, cardTypes[i].multiple, type, isGame);
       // 根(胡牌时，手中含有某特定牌张的全部4张(未杠出，不计红中))
       if (cardTypes[i].cardId === 91 && isGame) {
         const status = await this.checkGen(player);
