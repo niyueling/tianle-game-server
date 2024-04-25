@@ -1703,7 +1703,7 @@ class TableState implements Serializable {
     if (huResult.hu) {
       if (huResult.huCards.keZi) {
         keZi = huResult.huCards.keZi;
-        gangList.push(keZi);
+        gangList = [...gangList, ...keZi];
       }
 
       if (huResult.huCards.gangZi) {
