@@ -249,6 +249,9 @@ class PlayerState implements Serializable {
   huTurnList: any[] = [];
   competiteTurnList: any[] = [];
 
+  // 是否地胡
+  isDiHu: boolean = true;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -296,6 +299,7 @@ class PlayerState implements Serializable {
     this.huTypeList = [];
     this.huTurnList = [];
     this.competiteTurnList = [];
+    this.isDiHu = true;
   }
 
   setGameRecorder(r) {

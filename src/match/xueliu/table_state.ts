@@ -916,7 +916,7 @@ class TableState implements Serializable {
       }
 
       // 地胡(非庄家摸到的第一张牌胡牌(每一家的碰·杠·胡等操作均会使地胡不成立))
-      if (cardTypes[i].cardId === 57 && !player.zhuang) {
+      if (cardTypes[i].cardId === 57 && !player.zhuang && type === 1) {
         const status = await this.checkDiHu(player, type);
         if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
@@ -1856,8 +1856,6 @@ class TableState implements Serializable {
         duiCount += cards[i] / 2;
       }
     }
-
-    console.warn("duiCount-%s, cards-%s, zimo-%s, jiepao-%s", duiCount, JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao);
 
     return duiCount === 7 && (isZiMo || isJiePao);
   }
