@@ -1510,24 +1510,24 @@ class TableState implements Serializable {
     let currentShunzi = [];
 
     shunZi.forEach((card, index) => {
-      if (index === 0 || card - shunZi[index - 1] > 2) {
-        // 当前卡片与前一个卡片的差值大于2，说明不是同一个顺子
+      // 如果当前顺子数组为空，或者当前卡片与前一个卡片的差不超过2，则添加到当前顺子
+      if (currentShunzi.length < 3 && (currentShunzi.length === 0 || card - currentShunzi[currentShunzi.length - 1] <= 2)) {
+        currentShunzi.push(card);
+      } else {
+        // 当前顺子已满3张，或者当前卡片与前一个卡片的差超过2，开始新顺子
         if (currentShunzi.length > 0) {
-          // 如果当前顺子数组有元素，则将其添加到结果数组中
           result.push(currentShunzi);
-          currentShunzi = []; // 重置当前顺子数组
+          currentShunzi = []; // 重置当前顺子
         }
-      }
-      currentShunzi.push(card); // 将当前卡片添加到当前顺子中
-
-      // 如果当前顺子长度超过3，则拆分顺子
-      if (currentShunzi.length === 3) {
-        result.push(currentShunzi);
-        currentShunzi = [currentShunzi[2]]; // 保留当前顺子的最后一张牌作为新顺子的起始
+        // 再次检查当前卡片是否可以添加到新的顺子中
+        // （如果是数组的第一张卡片，或者与前一张卡片的差不超过2）
+        if (index === 0 || card - shunZi[index - 1] <= 2) {
+          currentShunzi.push(card);
+        }
       }
     });
 
-    // 添加最后一个顺子到结果中
+    // 如果遍历结束后，当前顺子还有元素，则添加到结果中
     if (currentShunzi.length > 0) {
       result.push(currentShunzi);
     }
