@@ -641,8 +641,7 @@ class TableState implements Serializable {
   }
 
   async getCardTypesByHu(player, type = 1, dianPaoPlayer, isGame) {
-    const cardTypes = await CardTypeModel.find({cardId: {$gt: 50}});
-    console.warn(cardTypes)
+    const cardTypes = await CardTypeModel.find({cardId: {$gt: 50}}).sort({cardId: 1});
     let cardType = cardTypes[0];
     cardType.multiple = 1;
     cardType.cardId = -1;
@@ -673,7 +672,7 @@ class TableState implements Serializable {
       }
 
       // 海底捞月(剩余牌张数位0的胡其他家点炮的牌)
-      if (cardTypes[i].cardId === 87 && type === 2) {
+      if (cardTypes[i].cardId === 87 && type === 2 && isGame) {
         const status = await this.checkHaiDiLaoYue(player);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
