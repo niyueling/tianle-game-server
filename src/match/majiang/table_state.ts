@@ -3411,6 +3411,19 @@ class TableState implements Serializable {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
 
         const nextCard = await this.consumeCard(player);
+
+        if (this.isAllHu) {
+          // 摸三张删除杠牌
+          const index = player.competiteCards.findIndex(c => c.card === card);
+          if (index !== -1) {
+            player.competiteCards.slice(index, 1);
+          }
+
+          // 从手牌先删除其他两张牌
+          for (let i = 0; i < player.competiteCards.length; i++) {
+            player.cards[player.competiteCards[i].card]--;
+          }
+        }
         player.cards[nextCard]++;
         this.cardTypes = await this.getCardTypes(player, 1);
         player.cards[nextCard]--;
@@ -3420,6 +3433,13 @@ class TableState implements Serializable {
             multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
           });
         if (msg) {
+          // 从手牌恢复其他两张牌
+          for (let i = 0; i < player.competiteCards.length; i++) {
+            player.cards[player.competiteCards[i].card]++;
+          }
+          // 将摸牌加入摸三张
+          player.competiteCards.push(msg);
+
           this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, player.msgDispatcher);
           this.state = stateWaitDa;
           this.stateData = {msg, da: player, card: nextCard};
