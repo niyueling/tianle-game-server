@@ -2473,9 +2473,7 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...jieGang, ...peng];
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
+
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
@@ -2516,9 +2514,7 @@ class TableState implements Serializable {
     let anGangCount = anGang.length;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
+
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
@@ -2621,9 +2617,6 @@ class TableState implements Serializable {
     let flag = true;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
     const cards = player.cards.slice();
     if (isJiePao) {
       cards[this.lastHuCard]++;
@@ -2650,9 +2643,6 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...jieGang];
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
@@ -2679,10 +2669,6 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...jieGang];
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
-
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
@@ -2710,9 +2696,6 @@ class TableState implements Serializable {
     let flag = false;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
@@ -2781,9 +2764,6 @@ class TableState implements Serializable {
     let gangCount = anGang.length + jieGang.length + peng.length;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
@@ -2814,9 +2794,6 @@ class TableState implements Serializable {
     let cardCount= 0;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
 
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i]._id === player._id) {
@@ -2890,9 +2867,6 @@ class TableState implements Serializable {
     let gangCount = 0;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isJiePao) {
-      isJiePao = false;
-    }
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
