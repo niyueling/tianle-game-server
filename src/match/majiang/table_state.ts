@@ -4147,7 +4147,6 @@ class TableState implements Serializable {
 
     setTimeout(nextDo, maxCardId >= 45 ? 3000 : 1000);
 
-    console.warn("remainCards-%s, isGameOver-%s", this.remainCards, this.isGameOver);
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()

@@ -1349,7 +1349,7 @@ class PlayerState implements Serializable {
       fangGangCount: this.fangGangCount,
       // 金豆房奖励
       rubyReward: 0,
-      events: this.events,
+      events: {chiPengGang: this.events.chiPengGang},
       model: this.model,
       isBroke: false,
       mvpTimes: 0,
