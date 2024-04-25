@@ -571,7 +571,6 @@ class TableState implements Serializable {
       if (payload.cards && payload.cards[i].length === 13) {
         for (let j = 0; j < payload.cards[i].length; j++) {
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
-          this.remainCards--;
           const card = this.cards[cardIndex];
           this.cards.splice(cardIndex, 1);
           this.lastTakeCard = card;
