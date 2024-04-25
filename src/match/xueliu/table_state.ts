@@ -930,9 +930,9 @@ class TableState implements Serializable {
   async checkQingYaoJiu(player) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    const cardList = [1, 9, 11, 19, 21, 29];
     const peng = player.events["peng"] || [];
     let gangList = [...anGang, ...jieGang, ...peng];
+    const cardList = [1, 9, 11, 19, 21, 29];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -954,6 +954,8 @@ class TableState implements Serializable {
         flag = false;
       }
     }
+
+    console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, cards-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(this.getCardArray(cards)));
 
     return flag && (isZiMo || isJiePao);
   }
