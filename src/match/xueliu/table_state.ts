@@ -1510,58 +1510,73 @@ class TableState implements Serializable {
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     let flag = false;
-
-    // 如果自摸，先将摸到的牌移除
-    if (isZiMo) {
-      player.cards[this.lastTakeCard]--;
-    }
-
-    // 检测用户可以胡牌的列表
-    for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
-      if (![1, 9].includes(i % 10)) {
-        player.cards[i]++;
-        const huResult = player.checkZiMo();
-        player.cards[i]--;
-
-        if (huResult.hu) {
-          canHuCards.push(i);
-        }
-      }
-    }
-
-    if (isZiMo) {
-      let num_1_l = player.cards[this.lastTakeCard - 1];
-      let num_1_r = player.cards[this.lastTakeCard + 1];
-
-      if (num_1_l !== num_1_r && player.cards[Enums.zhong] > 0) {
-        num_1_l < num_1_r ? num_1_l++ : num_1_r++;
-      }
-
-      if (num_1_l > 0 && num_1_r > 0 && num_1_l === num_1_r) {
-        flag = true;
-      }
-    }
-
-    // 如果是接炮
+    let shunZi = [];
     if (isJiePao) {
-      let num_1_l = player.cards[this.lastHuCard - 1];
-      let num_1_r = player.cards[this.lastHuCard + 1];
+      player.cards[this.lastHuCard]++;
+    }
 
-      if (num_1_l !== num_1_r && player.cards[Enums.zhong] > 0) {
-        num_1_l < num_1_r ? num_1_l++ : num_1_r++;
-      }
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
 
-      if (num_1_l > 0 && num_1_r > 0 && num_1_l === num_1_r) {
-        flag = true;
+    if (huResult.hu) {
+      if (huResult.huCards.shunZi) {
+        shunZi = huResult.huCards.shunZi;
       }
     }
 
-    // 如果自摸，将摸到的牌重新放入牌堆
-    if (isZiMo) {
-      player.cards[this.lastTakeCard]++;
-    }
+    // // 如果自摸，先将摸到的牌移除
+    // if (isZiMo) {
+    //   player.cards[this.lastTakeCard]--;
+    // }
+    //
+    // // 检测用户可以胡牌的列表
+    // for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
+    //   if (![1, 9].includes(i % 10)) {
+    //     player.cards[i]++;
+    //     const huResult = player.checkZiMo();
+    //     player.cards[i]--;
+    //
+    //     if (huResult.hu) {
+    //       canHuCards.push(i);
+    //     }
+    //   }
+    // }
+    //
+    // if (isZiMo) {
+    //   let num_1_l = player.cards[this.lastTakeCard - 1];
+    //   let num_1_r = player.cards[this.lastTakeCard + 1];
+    //
+    //   if (num_1_l !== num_1_r && player.cards[Enums.zhong] > 0) {
+    //     num_1_l < num_1_r ? num_1_l++ : num_1_r++;
+    //   }
+    //
+    //   if (num_1_l > 0 && num_1_r > 0 && num_1_l === num_1_r) {
+    //     flag = true;
+    //   }
+    // }
+    //
+    // // 如果是接炮
+    // if (isJiePao) {
+    //   let num_1_l = player.cards[this.lastHuCard - 1];
+    //   let num_1_r = player.cards[this.lastHuCard + 1];
+    //
+    //   if (num_1_l !== num_1_r && player.cards[Enums.zhong] > 0) {
+    //     num_1_l < num_1_r ? num_1_l++ : num_1_r++;
+    //   }
+    //
+    //   if (num_1_l > 0 && num_1_r > 0 && num_1_l === num_1_r) {
+    //     flag = true;
+    //   }
+    // }
+    //
+    // // 如果自摸，将摸到的牌重新放入牌堆
+    // if (isZiMo) {
+    //   player.cards[this.lastTakeCard]++;
+    // }
 
-    console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, canHuCards-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(canHuCards));
+    console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, shunZi-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(shunZi));
 
     return flag;
   }
