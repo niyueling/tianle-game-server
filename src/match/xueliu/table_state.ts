@@ -1505,6 +1505,36 @@ class TableState implements Serializable {
     return flag && (isZiMo || isJiePao);
   }
 
+  splitIntoShunzi(shunZi) {
+    let result = [];
+    let currentShunzi = [];
+
+    shunZi.forEach((card, index) => {
+      if (index === 0 || card - shunZi[index - 1] > 2) {
+        // 当前卡片与前一个卡片的差值大于2，说明不是同一个顺子
+        if (currentShunzi.length > 0) {
+          // 如果当前顺子数组有元素，则将其添加到结果数组中
+          result.push(currentShunzi);
+          currentShunzi = []; // 重置当前顺子数组
+        }
+      }
+      currentShunzi.push(card); // 将当前卡片添加到当前顺子中
+
+      // 如果当前顺子长度超过3，则拆分顺子
+      if (currentShunzi.length === 3) {
+        result.push(currentShunzi);
+        currentShunzi = [currentShunzi[2]]; // 保留当前顺子的最后一张牌作为新顺子的起始
+      }
+    });
+
+    // 添加最后一个顺子到结果中
+    if (currentShunzi.length > 0) {
+      result.push(currentShunzi);
+    }
+
+    return result;
+  }
+
   async checkKanZhang(player) {
     const canHuCards = [];
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
@@ -1525,6 +1555,9 @@ class TableState implements Serializable {
         shunZi = huResult.huCards.shunZi;
       }
     }
+
+    // 组装顺子
+    const currentShunZi = this.splitIntoShunzi(shunZi);
 
     // // 如果自摸，先将摸到的牌移除
     // if (isZiMo) {
@@ -1576,7 +1609,7 @@ class TableState implements Serializable {
     //   player.cards[this.lastTakeCard]++;
     // }
 
-    console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, shunZi-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(shunZi));
+    console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, shunZi-%s, currentShunZi-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(shunZi), JSON.stringify(currentShunZi));
 
     return flag;
   }
