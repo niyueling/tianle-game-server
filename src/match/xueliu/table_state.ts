@@ -989,12 +989,9 @@ class TableState implements Serializable {
 
     for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
       if (cards[i] > 0 && !cardList.includes(i)) {
-        console.warn("i-%s, count-%s, flag-%s", i, cards[i], !cardList.includes(i));
         flag = false;
       }
     }
-
-    console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, cards-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(this.getCardArray(cards)));
 
     return flag && (isZiMo || isJiePao);
   }
@@ -1191,10 +1188,8 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    let isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isZiMo && isJiePao) {
-      isJiePao = false;
-    }
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
     const cards = player.cards.slice();
     if (isJiePao) {
       cards[this.lastHuCard]++;
@@ -1210,6 +1205,10 @@ class TableState implements Serializable {
       if (cards[i] > 0 && !cardList.includes(i)) {
         flag = false;
       }
+    }
+
+    if (player.zhuang) {
+      console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, cards-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(this.getCardArray(cards)));
     }
 
     return flag && (isZiMo || isJiePao);
