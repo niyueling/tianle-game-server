@@ -642,6 +642,7 @@ class TableState implements Serializable {
 
   async getCardTypesByHu(player, type = 1, dianPaoPlayer, isGame) {
     const cardTypes = await CardTypeModel.find({cardId: {$gt: 50}});
+    console.warn(cardTypes)
     let cardType = cardTypes[0];
     cardType.multiple = 1;
     cardType.cardId = -1;
