@@ -3424,6 +3424,7 @@ class TableState implements Serializable {
             player.cards[player.competiteCards[i].card]--;
           }
         }
+
         player.cards[nextCard]++;
         this.cardTypes = await this.getCardTypes(player, 1);
         player.cards[nextCard]--;
@@ -3432,6 +3433,7 @@ class TableState implements Serializable {
             id: this.cardTypes.cardId,
             multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
           });
+        console.warn("card-%s, nextCard-%s, competiteCards-%s, msg-%s, cardTypes-%s", card, nextCard, JSON.stringify(player.competiteCards), JSON.stringify(msg), JSON.stringify(this.cardTypes));
         if (msg) {
           if (this.isAllHu) {
             // 从手牌恢复其他两张牌
