@@ -651,15 +651,17 @@ class TableState implements Serializable {
       // 根(胡牌时，手中含有某特定牌张的全部4张(未杠出，不计红中))
       if (cardTypes[i].cardId === 91 && isGame) {
         const status = await this.checkGen(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 绝张(牌河中已出现过多枚，胡牌时仅剩当前胡牌张的和牌)
       if (cardTypes[i].cardId === 89 && isGame) {
         const status = await this.checkJueZhang(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 杠上炮(胡其他家杠牌后打出的牌)
@@ -674,253 +676,289 @@ class TableState implements Serializable {
       // 海底捞月(剩余牌张数位0的胡其他家点炮的牌)
       if (cardTypes[i].cardId === 87 && type === 2 && isGame) {
         const status = await this.checkHaiDiLaoYue(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 妙手回春(剩余牌张数位0的自摸)
       if (cardTypes[i].cardId === 86 && type === 1 && isGame) {
         const status = await this.checkMiaoShouHuiChun(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 边张(胡牌时，仅能以12胡3或89胡7的特定单面听胡)
       if (cardTypes[i].cardId === 85 && isGame) {
         const status = await this.checkBianZhang(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 坎张(胡牌时，仅能胡一组顺子中间的一张牌)
       if (cardTypes[i].cardId === 84 && isGame) {
         const status = await this.checkKanZhang(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 双同刻(含有两种花色的同一序数牌刻(杠)的和牌)
       if (cardTypes[i].cardId === 83) {
         const status = await this.checkShuangTongKe(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 双暗刻(含有2组暗刻(暗杠)的和牌)
       if (cardTypes[i].cardId === 82) {
         const status = await this.checkShuangAnKe(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 断么九(仅由序数牌2到8组成的和牌)
       if (cardTypes[i].cardId === 81) {
         const status = await this.checkDuanYaoJiu(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 门清(没有碰和明杠的情况下，胡其他家点炮的牌)
       if (cardTypes[i].cardId === 80 && type === 2) {
         const status = await this.checkMenQing(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 老少副(同一花色的两组顺子123和789)
       if (cardTypes[i].cardId === 79) {
         const status = await this.checkLaoShaoFu(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 对对胡(由4组刻(杠)加一对将组成的和牌)
       if (cardTypes[i].cardId === 78) {
         const status = await this.checkDuiDuiHu(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 不求人(没有碰和明杠的自摸胡)
       if (cardTypes[i].cardId === 77 && type === 1) {
         const status = await this.checkBuQiuRen(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 推不倒(仅由1234589筒和245689条组成的和牌)
       if (cardTypes[i].cardId === 76) {
         const status = await this.checkTuiBuDao(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 杠上开花(用开杠后的补牌胡牌)
       if (cardTypes[i].cardId === 75 && type === 1 && isGame) {
         const status = await this.checkGangShangHua(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 清龙(含有同一花色123、456、789三组顺子的和牌)
       if (cardTypes[i].cardId === 74) {
         const status = await this.checkQingLong(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 清一色(仅由同一种花色序数牌组成的和牌)
       if (cardTypes[i].cardId === 73) {
         const status = await this.checkQingYiSe(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 七对(由7个对子组成的特殊和牌型)
       if (cardTypes[i].cardId === 72) {
         const status = await this.checkQiDui(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 三暗刻(含有3组暗刻(暗杠)的和牌)
       if (cardTypes[i].cardId === 71) {
         const status = await this.checkSanAnKe(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 小于五(仅由序数牌12345组成的和牌)
       if (cardTypes[i].cardId === 70) {
         const status = await this.checkXiaoYuWu(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 大于五(仅由序数牌6789组成的和牌)
       if (cardTypes[i].cardId === 69) {
         const status = await this.checkDaYuWu(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 百万石(胡牌时，手中的万字牌序数相加大于等于100)
       if (cardTypes[i].cardId === 68) {
         const status = await this.checkBaiWanShi(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 金钩钩(胡牌时，手上只有1张牌，其余牌均被碰·杠出。不计对对胡)
       if (cardTypes[i].cardId === 67) {
         const status = await this.checkJinGouGou(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 三节高(含有同一花色中3组序数相连刻(杠)的和牌)
       if (cardTypes[i].cardId === 66) {
         const status = await this.checkSanJieGao(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 全双刻(仅由序数牌2468组成的对对胡)
       if (cardTypes[i].cardId === 65) {
         const status = await this.checkQuanShuangKe(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 十二金钗(含有3组杠的和牌)
       if (cardTypes[i].cardId === 64) {
         const status = await this.checkShiErJinChai(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 四暗刻(含有4组暗刻(暗杠)的和牌，不计对对胡)
       if (cardTypes[i].cardId === 63) {
         const status = await this.checkSiAnKe(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 四节高(含有同一花色中4组序数相连刻(杠)的和牌)
       if (cardTypes[i].cardId === 62) {
         const status = await this.checkSiJieGao(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 全小(仅由序数牌123组成的和牌)
       if (cardTypes[i].cardId === 61) {
         const status = await this.checkHunXiao(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 全中(仅由序数牌456组成的和牌)
       if (cardTypes[i].cardId === 60) {
         const status = await this.checkHunZhong(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 全大(仅由序数牌789组成的和牌)
       if (cardTypes[i].cardId === 59) {
         const status = await this.checkHunDa(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 十八罗汉(含有4组杠的和牌)
       if (cardTypes[i].cardId === 58) {
         const status = await this.checkShiBaLuoHan(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 绿一色(仅由23468条组成的和牌，不计清一色)
       if (cardTypes[i].cardId === 56) {
         const status = await this.checkLvYiSe(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 天胡(庄家起手时直接胡牌)
       if (cardTypes[i].cardId === 55 && isGame) {
         const status = await this.checkTianHu(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 九莲宝灯(由同一花色的序数牌1112345678999组成特定听牌型后的和牌)
       if (cardTypes[i].cardId === 54) {
         const status = await this.checkJiuLianBaoDeng(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 一色双龙会(含同一花色的两组老少副(123+789),且由该花色的序数牌5做将的特定和牌型，不计7对)
       if (cardTypes[i].cardId === 53) {
         const status = await this.checkYiSeShuangLongHui(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 连七对(由同一花色的序数牌组成序数相连的7个对子的和牌)
       if (cardTypes[i].cardId === 52) {
         const status = await this.checkLianQiDui(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
       // 清幺九(仅由序数牌1和9组成的和牌)
       if (cardTypes[i].cardId === 51) {
         const status = await this.checkQingYaoJiu(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
     }
 
