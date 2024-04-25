@@ -4135,6 +4135,7 @@ class TableState implements Serializable {
     // console.warn("playerCount-%s", this.players.length);
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
+      // console.warn("shortId-%s index-%s gold-%s gameGold-%s", model.shortId, this.atIndex(this.players[i]), model.gold, this.players[i].model.gold);
       changeGolds[i].currentGold = model.gold;
       changeGolds[i].isBroke = model.gold === 0;
     }
@@ -4151,7 +4152,6 @@ class TableState implements Serializable {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
-      return ;
     }
 
     if (player.zhuang) {
@@ -5549,7 +5549,12 @@ class TableState implements Serializable {
 
     if (gameOverMsg.states.length > 0) {
       await this.room.gameOver(nextZhuang._id.toString(), states)
-      this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
+      // this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
+
+      const nextDo = async () => {
+        this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
+      }
+      setTimeout(nextDo, 2000)
     }
   }
 
