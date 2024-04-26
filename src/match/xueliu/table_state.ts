@@ -1642,10 +1642,8 @@ class TableState implements Serializable {
     const cards = player.cards.slice();
     let flag = false;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    let isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isZiMo && isJiePao) {
-      isJiePao = false;
-    }
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
     if (isJiePao) {
       cards[this.lastHuCard]++;
     }
@@ -3677,7 +3675,6 @@ class TableState implements Serializable {
       } else {
         this.isManyHu = true;
         this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}});
-        // console.warn("isManyHu-%s manyHuArray-%s", this.isManyHu, JSON.stringify(this.manyHuArray));
       }
 
       this.actionResolver.tryResolve()
@@ -4929,20 +4926,10 @@ class TableState implements Serializable {
     }
 
     const index = this.players.indexOf(player);
-    // const from = this.atIndex(this.lastDa)
     if (this.turn !== playTurn) {
       player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceAction});
     } else if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
       player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceState});
-    } else if (this.state === stateQiangGang && this.stateData.who == player) {
-      console.log('stateQiangGang player-%s ', index)
-
-      player.sendMessage('game/guoReply', {ok: true, data: {}})
-
-      const {whom, card, turn} = this.stateData
-      this.state = stateWaitDa
-      this.stateData = {[Enums.da]: whom, cancelQiang: true}
-      whom.emitter.emit(Enums.gangBySelf, turn, card)
     } else {
       player.sendMessage('game/guoReply', {ok: true, data: {}});
       player.guoOption(playCard)

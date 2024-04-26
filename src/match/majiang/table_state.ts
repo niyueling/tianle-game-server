@@ -6005,15 +6005,6 @@ class TableState implements Serializable {
       player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceAction});
     } else if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
       player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceState});
-    } else if (this.state === stateQiangGang && this.stateData.who == player) {
-      console.log('stateQiangGang player-%s ', index)
-
-      player.sendMessage('game/guoReply', {ok: true, data: {}})
-
-      const {whom, card, turn} = this.stateData
-      this.state = stateWaitDa
-      this.stateData = {[Enums.da]: whom, cancelQiang: true}
-      whom.emitter.emit(Enums.gangBySelf, turn, card)
     } else {
       player.sendMessage('game/guoReply', {ok: true, data: {}});
       player.guoOption(playCard)
