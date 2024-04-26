@@ -2195,6 +2195,8 @@ class TableState implements Serializable {
       player.cards[this.lastHuCard]--;
     }
 
+    console.warn("huResult-%s", JSON.stringify(huResult));
+
     if (huResult.hu) {
       if (huResult.huCards.keZi) {
         keZi = huResult.huCards.keZi;
