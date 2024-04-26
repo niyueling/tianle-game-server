@@ -3545,6 +3545,7 @@ class TableState implements Serializable {
       }
 
       const env = {card, from, turn: this.turn}
+      console.warn("card-%s, index-%s, env-%s, actions-%s, check-%s", card, this.atIndex(player), JSON.stringify(env), JSON.stringify(this.actionResolver.allOptions(player)), JSON.stringify(check));
       this.actionResolver = new ActionResolver(env, async () => {
         if (!xiajia) {
           const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
@@ -3593,6 +3594,8 @@ class TableState implements Serializable {
           this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
         }
       });
+
+      this.actionResolver.tryResolve()
 
       for (let j = 1; j < this.players.length; j++) {
         const i = (index + j) % this.players.length;
@@ -3668,8 +3671,6 @@ class TableState implements Serializable {
         this.isManyHu = true;
         this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}});
       }
-
-      this.actionResolver.tryResolve()
     }
 
     setTimeout(nextDo, 200);
