@@ -2964,8 +2964,13 @@ class TableState implements Serializable {
         if (!player.zhuang) {
           return ;
         }
+        if (this.room.robotManager.model.step === RobotStep.waitRuby) {
+          player.onDeposit = false;
+          player.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}});
+          return ;
+        }
 
-        const nextDo = async () => {
+          const nextDo = async () => {
           if (msg) {
             const takenCard = msg.card;
             const todo = player.ai.onWaitForDa(msg, player.cards);
