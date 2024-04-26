@@ -2225,7 +2225,7 @@ class TableState implements Serializable {
   async checkSanSeXingChen(player, type) {
     const blackArrs = [41, 42, 44, 48];
     const blueArrs = [43, 46, 49, 51];
-    const redArrs = [45, 47, 50, 50];
+    const redArrs = [45, 47, 50, 52];
     let blackCount = 0;
     let blueCount = 0;
     let redCount = 0;
@@ -2273,7 +2273,9 @@ class TableState implements Serializable {
       }
     }
 
-    return blackCount + blueCount + redCount >= 3 && (isZiMo || isJiePao);
+    const flag = blackCount > 0 && blueCount > 0 && redCount > 0;
+
+    return flag && (isZiMo || isJiePao);
   }
 
   async checkSanAnKe(player, type) {
