@@ -53,6 +53,8 @@ export class RobotManager extends NewRobotManager {
           if (this.selectModeTimes >= config.game.selectModeTimes) {
             this.selectModeTimes = 0;
             await this.selectOnlineMode();
+            this.model.step = RobotStep.running;
+            await this.save();
           }
           return;
         }
