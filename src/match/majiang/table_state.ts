@@ -1015,7 +1015,7 @@ class TableState implements Serializable {
   }
 
   async getCardTypesByHu(player, type = 1, dianPaoPlayer) {
-    const cardTypes = await CardTypeModel.find();
+    const cardTypes = await CardTypeModel.find({cardId: {$lt: 50}});
     let cardType = {...cardTypes[0]}; // 创建一个新的对象，其属性与cardTypes[0]相同
     cardType.multiple = 1;
     cardType.cardId = -1;
