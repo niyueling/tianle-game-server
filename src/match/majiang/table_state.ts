@@ -2414,7 +2414,7 @@ class TableState implements Serializable {
   async checkShuangSeXingChen(player, type) {
     const blackArrs = [41, 42, 44, 48];
     const blueArrs = [43, 46, 49, 51];
-    const redArrs = [45, 47, 50, 50];
+    const redArrs = [45, 47, 50, 52];
     let blackCount = 0;
     let blueCount = 0;
     let redCount = 0;
@@ -2444,25 +2444,24 @@ class TableState implements Serializable {
     for (let i = 0; i < blackArrs.length; i++) {
       if (cards[blackArrs[i]] > 0) {
         blackCount++;
-        break;
       }
     }
 
     for (let i = 0; i < blueArrs.length; i++) {
       if (cards[blueArrs[i]] > 0) {
         blueCount++;
-        break;
       }
     }
 
     for (let i = 0; i < redArrs.length; i++) {
       if (cards[redArrs[i]] > 0) {
         redCount++;
-        break;
       }
     }
 
-    return blackCount + blueCount + redCount >= 2 && (isZiMo || isJiePao);
+    const flag = (blackCount > 0 && blueCount > 0) || (blackCount > 0 && redCount > 0) || (redCount > 0 && blueCount > 0);
+
+    return flag && (isZiMo || isJiePao);
   }
 
   async checkSanJieGao(player, type) {
