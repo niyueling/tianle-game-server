@@ -658,6 +658,13 @@ class TableState implements Serializable {
         }
       }
 
+      if (cardTypes[i].cardId === 90 && isGame) {
+        const status = await this.checkQiangGangHu(player, type);
+        if (status && cardTypes[i].multiple > cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
       // 绝张(牌河中已出现过多枚，胡牌时仅剩当前胡牌张的和牌)
       if (cardTypes[i].cardId === 89 && isGame) {
         const status = await this.checkJueZhang(player, type);
@@ -1674,6 +1681,12 @@ class TableState implements Serializable {
     return cardCount === 1 && (isZiMo || isJiePao);
   }
 
+  async checkQiangGangHu(player, type) {
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    const huResult = player.checkZiMo();
+    return huResult.huCards.huType === Enums.qiangGang && isZiMo;
+  }
+
   async checkSiAnKe(player, type) {
     const anGang = player.events["anGang"] || [];
     let anGangCount = anGang.length;
@@ -2194,8 +2207,6 @@ class TableState implements Serializable {
     if (isJiePao) {
       player.cards[this.lastHuCard]--;
     }
-
-    console.warn("huResult-%s", JSON.stringify(huResult));
 
     if (huResult.hu) {
       if (huResult.huCards.keZi) {
