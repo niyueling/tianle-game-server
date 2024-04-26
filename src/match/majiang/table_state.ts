@@ -2864,8 +2864,7 @@ class TableState implements Serializable {
   async checkMenQing(player) {
     const peng = player.events["peng"];
     const jieGang = player.events["mingGang"];
-    const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    const isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    const isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
     if (peng || jieGang) {
       return false;
