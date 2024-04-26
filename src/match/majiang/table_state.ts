@@ -2573,8 +2573,6 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("gangList-%s, cards-%s, zimo-%s, jiepao-%s, flag-%s, constellationCount-%s", JSON.stringify(gangList), JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao, flag, constellationCount);
-
     return flag && constellationCount > 0 && (isZiMo || isJiePao);
   }
 
