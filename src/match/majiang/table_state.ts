@@ -5079,8 +5079,6 @@ class TableState implements Serializable {
         }
       });
 
-      this.actionResolver.tryResolve()
-
       for (let j = 1; j < this.players.length; j++) {
         const i = (index + j) % this.players.length;
         const p = this.players[i];
@@ -5166,6 +5164,8 @@ class TableState implements Serializable {
         this.stateData = check;
         this.stateData.hangUp = [];
       }
+
+      this.actionResolver.tryResolve()
     }
 
     setTimeout(nextDo, 200);

@@ -3595,8 +3595,6 @@ class TableState implements Serializable {
         }
       });
 
-      this.actionResolver.tryResolve()
-
       for (let j = 1; j < this.players.length; j++) {
         const i = (index + j) % this.players.length;
         const p = this.players[i];
@@ -3671,6 +3669,8 @@ class TableState implements Serializable {
         this.isManyHu = true;
         this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}});
       }
+
+      this.actionResolver.tryResolve()
     }
 
     setTimeout(nextDo, 200);
