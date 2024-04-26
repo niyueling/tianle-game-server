@@ -1025,231 +1025,231 @@ class TableState implements Serializable {
       // 起手叫
       if (cardTypes[i].cardId === 1 && type === 1) {
         const status = await this.checkQiShouJiao(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 双星辰，含有两种星座牌组成的刻(杠的和牌)
       if (cardTypes[i].cardId === 2) {
         const status = await this.checkShuangXingChen(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 门清，没有碰和明杠的情况下，胡其他家点炮的牌
       if (cardTypes[i].cardId === 3 && type === 2) {
         const status = await this.checkMenQing(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 杠上开花
       if (cardTypes[i].cardId === 4 && type === 1) {
         const status = await this.checkGangShangHua(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 妙手回春
       if (cardTypes[i].cardId === 5 && type === 1) {
         const status = await this.checkMiaoShouHuiChun(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 海底捞月
       if (cardTypes[i].cardId === 6 && type === 2) {
         const status = await this.checkHaiDiLaoYue(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 杠上炮
       if (cardTypes[i].cardId === 7 && type === 2) {
         const status = await this.checkGangShangPao(player, dianPaoPlayer);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 绝张
       if (cardTypes[i].cardId === 9) {
         const status = await this.checkJueZhang(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 对对胡
       if (cardTypes[i].cardId === 10) {
         const status = await this.checkDuiDuiHu(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 单色星辰
       if (cardTypes[i].cardId === 11) {
         const status = await this.checkDanSeXingChen(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 双同刻
       if (cardTypes[i].cardId === 12) {
         const status = await this.checkShuangTongKe(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 十二行星
       if (cardTypes[i].cardId === 13) {
         const status = await this.checkShiErXingXing(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 十二行星
       if (cardTypes[i].cardId === 14) {
         const status = await this.checkShiBaXingXing(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 混双
-      if (cardTypes[i].cardId === 17) {
-        const status = await this.checkHunShuang(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 断么九
       if (cardTypes[i].cardId === 15) {
         const status = await this.checkDuanYaoJiu(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 不求人
       if (cardTypes[i].cardId === 16 && type === 1) {
         const status = await this.checkBuQiuRen(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
+      // 混双
+      if (cardTypes[i].cardId === 17) {
+        const status = await this.checkHunShuang(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 混单
       if (cardTypes[i].cardId === 18) {
         const status = await this.checkHunDan(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 双暗刻
       if (cardTypes[i].cardId === 19) {
         const status = await this.checkShuangAnKe(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 三节高
       if (cardTypes[i].cardId === 20) {
         const status = await this.checkSanJieGao(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 双色星辰
       if (cardTypes[i].cardId === 21) {
         const status = await this.checkShuangSeXingChen(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 混小
       if (cardTypes[i].cardId === 22) {
         const status = await this.checkHunXiao(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 混中
       if (cardTypes[i].cardId === 23) {
         const status = await this.checkHunZhong(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 混大
       if (cardTypes[i].cardId === 24) {
         const status = await this.checkHunDa(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 星灭光离
       if (cardTypes[i].cardId === 25) {
         const status = await this.checkXingMieGuangLi(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 三暗刻
       if (cardTypes[i].cardId === 26) {
         const status = await this.checkSanAnKe(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 三色星辰
       if (cardTypes[i].cardId === 27) {
         const status = await this.checkSanSeXingChen(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 七对
       if (cardTypes[i].cardId === 28) {
         const status = await this.checkQiDui(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 四节高
       if (cardTypes[i].cardId === 29) {
         const status = await this.checkSiJieGao(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 全单刻
       if (cardTypes[i].cardId === 30) {
         const status = await this.checkQuanDanKe(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 全双刻
       if (cardTypes[i].cardId === 31) {
         const status = await this.checkQuanShuangKe(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 四暗刻
       if (cardTypes[i].cardId === 32) {
         const status = await this.checkSiAnKe(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 十二星座
       if (cardTypes[i].cardId === 33) {
         const status = await this.checkErXingZuo(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 地胡(非庄家摸到的第一张牌胡牌(每一家的碰·杠·胡等操作均会使地胡不成立))
       if (cardTypes[i].cardId === 34 && !player.zhuang && type === 1) {
         const status = await this.checkDiHu(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple) {
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
         }
       }
@@ -1257,112 +1257,112 @@ class TableState implements Serializable {
       // 景星麟凤
       if (cardTypes[i].cardId === 35) {
         const status = await this.checkJingXingLinFeng(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 天胡
       if (cardTypes[i].cardId === 36 && type === 1) {
         const status = await this.checkTianHu(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 一路福星
       if (cardTypes[i].cardId === 37) {
         const status = await this.checkYiLuFuXing(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 三星高照
       if (cardTypes[i].cardId === 38) {
         const status = await this.checkSanXingGaoZhao(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 星流电击
       if (cardTypes[i].cardId === 39) {
         const status = await this.checkXingLiuDianJi(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 流星望电
       if (cardTypes[i].cardId === 40) {
         const status = await this.checkWuLiuXingDian(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 星离月会
       if (cardTypes[i].cardId === 41) {
         const status = await this.checkXingLiYueHui(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 棋布星陈
       if (cardTypes[i].cardId === 42) {
         const status = await this.checkQiBuXingChen(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 一天星斗
       if (cardTypes[i].cardId === 43) {
         const status = await this.checkYiTianXingDou(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 移星换斗
       if (cardTypes[i].cardId === 44) {
         const status = await this.checkYiXingHuanDou(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 星流影集
       if (cardTypes[i].cardId === 45) {
         const status = await this.checkXingLiuYingJi(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 大步流星
       if (cardTypes[i].cardId === 46) {
         const status = await this.checkDaBuLiuXing(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 月落星沉
       if (cardTypes[i].cardId === 47) {
         const status = await this.checkYueLuoXingChen(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 众星捧月
       if (cardTypes[i].cardId === 48) {
         const status = await this.checkZhongXingPengYue(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 摩羯之吻
       if (cardTypes[i].cardId === 49) {
         const status = await this.checkMoJieZhiWen(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
       // 星蝎交辉
       if (cardTypes[i].cardId === 50) {
         const status = await this.checkXingHeJiaoHui(player, type);
-        if (status && cardTypes[i].multiple > cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
     }
