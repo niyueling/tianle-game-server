@@ -1491,10 +1491,11 @@ class PlayerState implements Serializable {
     console.warn("111", this.timeoutTask);
 
     if (!this.msgDispatcher || !this.zhuang) {
+      this.cancelTimeout()
       return ;
     }
 
-    if (this.room.robotManager.model.step === RobotStep.selectMode || !this.mode) {
+    if (this.room.robotManager.model.step === RobotStep.selectMode || this.mode === 'unknown') {
       this.cancelTimeout()
       console.warn("wait player select mode");
       return;

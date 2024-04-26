@@ -50,7 +50,7 @@ export class RobotManager extends NewRobotManager {
           this.selectModeTimes++;
           console.log(`human player not select mode roomId %s selectModeTimes %s`, this.room._id, this.selectModeTimes);
 
-          if (this.selectModeTimes >= config.game.selectModeTimes) {
+          if (this.selectModeTimes > config.game.selectModeTimes) {
             this.selectModeTimes = 0;
             await this.selectOnlineMode();
             this.model.step = RobotStep.running;
