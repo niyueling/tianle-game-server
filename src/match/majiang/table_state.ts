@@ -4096,6 +4096,11 @@ class TableState implements Serializable {
       return ;
     }
 
+    if (this.stateData[Enums.da] && this.stateData[Enums.da]._id !== player._id) {
+      console.warn("another player da");
+      return ;
+    }
+
     this.stateData = {};
 
     const msgs = [];
@@ -4248,9 +4253,6 @@ class TableState implements Serializable {
             if (msg.hu || huCards.findIndex(c => c.card === msg.card) !== -1) {
               huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
             }
-
-            this.state = stateWaitDa;
-            this.stateData = {da: xiajia, card: newCard, msg};
           }
         }
 
@@ -4267,6 +4269,9 @@ class TableState implements Serializable {
           ok: true,
           data: sendMsg
         }, xiajia.msgDispatcher)
+
+        this.state = stateWaitDa;
+        this.stateData = {da: xiajia, card: moCards[moCards.length - 1], msg: xiajia.competiteCards[xiajia.competiteCards.length - 1]};
       }
 
       setTimeout(nextDo, 2500);
