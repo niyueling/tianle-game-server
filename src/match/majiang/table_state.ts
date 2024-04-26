@@ -2546,6 +2546,7 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
     let gangList = [...anGang, ...jieGang, ...peng];
+    let constellationCount = 0;
     let flag = true;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -2558,15 +2559,23 @@ class TableState implements Serializable {
       if (gangList[i] < 38 && gangList[i] % 2 === 0) {
         flag = false;
       }
-    }
-
-    for (let i = 1; i < 38; i++) {
-      if (cards[i] > 0 && i % 2 === 0) {
-        flag = false;
+      if (gangList[i] >= Enums.constellation1) {
+        constellationCount++
       }
     }
 
-    return flag && (isZiMo || isJiePao);
+    for (let i = Enums.wanzi1; i <= Enums.constellation12; i++) {
+      if (cards[i] > 0 && i < Enums.zeus && i % 2 === 0) {
+        flag = false;
+      }
+      if (cards[i] > 0 && i >= Enums.constellation1) {
+        constellationCount++
+      }
+    }
+
+    console.warn("gangList-%s, cards-%s, zimo-%s, jiepao-%s, flag-%s, constellationCount-%s", JSON.stringify(gangList), JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao, flag, constellationCount);
+
+    return flag && constellationCount > 0 && (isZiMo || isJiePao);
   }
 
   async checkHunShuang(player, type) {
@@ -2574,6 +2583,7 @@ class TableState implements Serializable {
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
     let gangList = [...anGang, ...jieGang, ...peng];
+    let constellationCount = 0;
     let flag = true;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
@@ -2583,20 +2593,26 @@ class TableState implements Serializable {
     }
 
     for (let i = 0; i < gangList.length; i++) {
-      if (gangList[i] < 38 && gangList[i] % 2 !== 0) {
+      if (gangList[i] < Enums.zeus && gangList[i] % 2 !== 0) {
         flag = false;
+      }
+      if (gangList[i] >= Enums.constellation1) {
+        constellationCount++
       }
     }
 
-    for (let i = 1; i < 38; i++) {
-      if (cards[i] > 0 && i % 2 !== 0) {
+    for (let i = Enums.wanzi1; i <= Enums.constellation12; i++) {
+      if (cards[i] > 0 && i < Enums.zeus && i % 2 !== 0) {
         flag = false;
+      }
+      if (cards[i] > 0 && i >= Enums.constellation1) {
+        constellationCount++
       }
     }
 
-    console.warn("gangList-%s, cards-%s, zimo-%s, jiepao-%s, flag-%s", JSON.stringify(gangList), JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao, flag);
+    console.warn("gangList-%s, cards-%s, zimo-%s, jiepao-%s, flag-%s, constellationCount-%s", JSON.stringify(gangList), JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao, flag, constellationCount);
 
-    return flag && (isZiMo || isJiePao);
+    return flag && constellationCount > 0 && (isZiMo || isJiePao);
   }
 
   async checkBuQiuRen(player) {
