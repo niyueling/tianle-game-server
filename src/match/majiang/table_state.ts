@@ -1113,6 +1113,13 @@ class TableState implements Serializable {
           cardType = cardTypes[i];
       }
 
+      // 混双
+      if (cardTypes[i].cardId === 17) {
+        const status = await this.checkHunShuang(player, type);
+        if (status && cardTypes[i].multiple > cardType.multiple)
+          cardType = cardTypes[i];
+      }
+
       // 断么九
       if (cardTypes[i].cardId === 15) {
         const status = await this.checkDuanYaoJiu(player, type);
@@ -1123,13 +1130,6 @@ class TableState implements Serializable {
       // 不求人
       if (cardTypes[i].cardId === 16 && type === 1) {
         const status = await this.checkBuQiuRen(player);
-        if (status && cardTypes[i].multiple > cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 混双
-      if (cardTypes[i].cardId === 17) {
-        const status = await this.checkHunShuang(player, type);
         if (status && cardTypes[i].multiple > cardType.multiple)
           cardType = cardTypes[i];
       }
