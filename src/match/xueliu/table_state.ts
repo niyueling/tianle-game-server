@@ -1537,7 +1537,6 @@ class TableState implements Serializable {
   }
 
   async checkKanZhang(player, type) {
-    const canHuCards = [];
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     let flag = false;
@@ -1581,91 +1580,62 @@ class TableState implements Serializable {
     }
 
     if (flag) {
-      console.warn("lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, shunZi-%s, currentShunZi-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(shunZi), JSON.stringify(currentShunZi));
+      console.warn("坎张 lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, shunZi-%s, currentShunZi-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(shunZi), JSON.stringify(currentShunZi));
     }
 
     return flag;
   }
 
   async checkBianZhang(player, type) {
-    const huCards = [Enums.wanzi3, Enums.wanzi7, Enums.shuzi3, Enums.shuzi7, Enums.tongzi3, Enums.tongzi7, Enums.zhong];
-    const canHuCards = [];
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    let isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isZiMo && isJiePao) {
-      isJiePao = false;
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    let flag = false;
+    let shunZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
     }
 
-    // 如果没有胡牌,或者接炮不是边张，直接false
-    if (!isZiMo || !isJiePao || (isJiePao && !huCards.includes(this.lastHuCard))) {
-      return false;
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
     }
 
-    // 检测用户可以胡牌的列表
-    for (let i = Enums.wanzi1; i < Enums.zhong; i++) {
-      player.cards[i]++;
-      const huResult = player.checkZiMo();
-      player.cards[i]--;
+    if (huResult.hu) {
+      if (huResult.huCards.shunZi) {
+        shunZi = huResult.huCards.shunZi;
+      }
+    }
 
-      if (huResult.hu) {
-        canHuCards.push(i);
+    // 组装顺子
+    const currentShunZi = this.splitIntoShunzi(shunZi);
 
-        // 如果胡牌不是序数3或7，直接false
-        if (!huCards.includes(i)) {
-          return false;
+    for (let i = 0; i < currentShunZi.length; i++) {
+      if (currentShunZi[i].length === 3) {
+        if ((isZiMo && this.lastTakeCard === currentShunZi[i][2] && this.lastTakeCard % 10 === 3) || (isJiePao && this.lastHuCard === currentShunZi[i][2] && this.lastHuCard % 10 === 3)) {
+          flag = true;
+        }
+        if ((isZiMo && this.lastTakeCard === currentShunZi[i][0] && this.lastTakeCard % 10 === 7) || (isJiePao && this.lastHuCard === currentShunZi[i][0] && this.lastHuCard % 10 === 7)) {
+          flag = true;
+        }
+      }
+
+      if (currentShunZi[i].length === 2 && currentShunZi[i][1] - currentShunZi[i][0] === 1) {
+        const third = currentShunZi[i][1] + 1;
+        const seven = currentShunZi[i][0] - 1;
+        if ((isZiMo && this.lastTakeCard % 10 === 3 && this.lastTakeCard === third) || (isJiePao && this.lastHuCard === third && this.lastHuCard % 10 === 3)) {
+          flag = true;
+        }
+        if ((isZiMo && this.lastTakeCard % 10 === 7 && this.lastTakeCard === seven) || (isJiePao && this.lastHuCard === seven && this.lastHuCard % 10 === 7)) {
+          flag = true;
         }
       }
     }
 
-    // 判断胡牌数超过一张，直接false
-    if (canHuCards.length !== 1) {
-      return false;
+    if (flag) {
+      console.warn("边张 lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, shunZi-%s, currentShunZi-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(shunZi), JSON.stringify(currentShunZi));
     }
 
-    if (isZiMo) {
-      const number = canHuCards[0] % 10;
-      let num_1_l = player.cards[canHuCards[0] - 1];
-      let num_2_l = player.cards[canHuCards[0] - 2];
-      let num_1_r = player.cards[canHuCards[0] + 1];
-      let num_2_r = player.cards[canHuCards[0] + 2];
-
-      if (num_1_l !== num_2_l && player.cards[Enums.zhong] === 1) {
-        num_1_l < num_2_l ? num_1_l++ : num_2_l++;
-      }
-
-      if (num_1_r !== num_2_r && player.cards[Enums.zhong] === 1) {
-        num_1_r < num_2_r ? num_1_r++ : num_2_r++;
-      }
-
-      if ((number === 3 && num_1_l > 0 && num_2_l > 0 && num_1_l === num_2_l)
-        || (number === 7 && num_1_r > 0 && num_2_r > 0 && num_1_r === num_2_r)) {
-        return true;
-      }
-    }
-
-    // 如果是接炮
-    if (isJiePao) {
-      const number = this.lastHuCard % 10;
-      let num_1_l = player.cards[this.lastHuCard - 1];
-      let num_2_l = player.cards[this.lastHuCard - 2];
-      let num_1_r = player.cards[this.lastHuCard + 1];
-      let num_2_r = player.cards[this.lastHuCard + 2];
-
-      if (num_1_l !== num_2_l && player.cards[Enums.zhong] === 1) {
-        num_1_l < num_2_l ? num_1_l++ : num_2_l++;
-      }
-
-      if (num_1_r !== num_2_r && player.cards[Enums.zhong] === 1) {
-        num_1_r < num_2_r ? num_1_r++ : num_2_r++;
-      }
-
-      if ((number === 3 && num_1_l > 0 && num_2_l > 0  && num_1_l === num_2_l)
-        || (number === 7 && num_1_r > 0 && num_2_r > 0 && num_1_r === num_2_r)) {
-        return true;
-      }
-    }
-
-    return false;
+    return flag;
   }
 
   async checkGen(player, type) {
