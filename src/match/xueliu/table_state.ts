@@ -2468,6 +2468,9 @@ class TableState implements Serializable {
           multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
         }, false);
 
+      this.state = stateWaitDa;
+      this.stateData = {da: player, card: this.zhuangCard, msg};
+
       await player.sendMessage('game/getActionsReply', {ok: true, data: msg});
     })
 
