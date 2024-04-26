@@ -1684,7 +1684,7 @@ class TableState implements Serializable {
   async checkQiangGangHu(player, type) {
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     const huResult = player.checkZiMo();
-    return huResult.huCards.huType === Enums.qiangGang && isZiMo;
+    return huResult.hu && huResult.huCards.huType === Enums.qiangGang && isZiMo;
   }
 
   async checkSiAnKe(player, type) {
