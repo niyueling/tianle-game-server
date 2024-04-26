@@ -1010,11 +1010,11 @@ class TableState implements Serializable {
     }
   }
 
-  async getCardTypes(player, type) {
-    return await this.getCardTypesByHu(player, type);
+  async getCardTypes(player, type, dianPaoPlayer = null) {
+    return await this.getCardTypesByHu(player, type, dianPaoPlayer);
   }
 
-  async getCardTypesByHu(player, type = 1, dianPaoPlayer = null) {
+  async getCardTypesByHu(player, type = 1, dianPaoPlayer) {
     const cardTypes = await CardTypeModel.find();
     let cardType = {...cardTypes[0]}; // 创建一个新的对象，其属性与cardTypes[0]相同
     cardType.multiple = 1;
@@ -2841,9 +2841,8 @@ class TableState implements Serializable {
   }
 
   async checkGangShangPao(player, dianPaoPlayer) {
-    const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    const isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    return dianPaoPlayer && this.lastDa && dianPaoPlayer.isGangHouDa && isJiePao;
+    const isJiePao = dianPaoPlayer && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, dianPaoPlayer);
+    return dianPaoPlayer && dianPaoPlayer.isGangHouDa && isJiePao;
   }
 
   async checkHaiDiLaoYue(player) {
@@ -3608,7 +3607,7 @@ class TableState implements Serializable {
 
           this.actionResolver.requestAction(player, 'hu', async () => {
               this.lastHuCard = card;
-              this.cardTypes = await this.getCardTypes(player, 2);
+              this.cardTypes = await this.getCardTypes(player, 2, this.lastDa);
               const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
               const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
               if (tIndex !== -1) {
@@ -3619,6 +3618,7 @@ class TableState implements Serializable {
               // logger.info('hu player %s jiepao %s tIndex %s', index, ok, tIndex)
 
               from = this.atIndex(this.lastDa);
+              const dianPaoPlayer = this.lastDa;
               if (ok && player.daHuPai(card, this.players[from]) && tIndex === -1) {
                 player.lastOperateType = 4;
                 player.isGameDa = true;
