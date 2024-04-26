@@ -2463,6 +2463,8 @@ class TableState implements Serializable {
 
     const flag = (blackCount > 0 && blueCount > 0) || (blackCount > 0 && redCount > 0) || (redCount > 0 && blueCount > 0);
 
+    console.warn("blackCount-%s, blueCount-%s, redCount-%s, flag-%s, zimo-%s, jiepao-%s", blackCount, blueCount, redCount, flag, isZiMo, isJiePao);
+
     return flag && (isZiMo || isJiePao);
   }
 
