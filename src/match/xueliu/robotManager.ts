@@ -110,8 +110,6 @@ export class RobotManager extends NewRobotManager {
             mode = "tong";
           }
 
-          playerState.cancelTimeout();
-
           await this.room.gameState.onSelectMode(playerState, mode);
         }
       }

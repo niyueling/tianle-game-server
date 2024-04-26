@@ -1494,7 +1494,7 @@ class PlayerState implements Serializable {
       return ;
     }
 
-    if (this.room.robotManager.model.step === RobotStep.selectMode || !this.mode) {
+    if (!this.mode) {
       console.warn("wait player select mode");
       return;
     }
@@ -1508,13 +1508,6 @@ class PlayerState implements Serializable {
         callback()
         this.timeoutTask = null
       }, minutes)
-    } else {
-      const isRobot = this.msgDispatcher.isRobot()
-
-      this.timeoutTask = setTimeout(() => {
-        callback()
-        this.timeoutTask = null
-      }, isRobot ? random(500, 1500) : 1000)
     }
   }
 
