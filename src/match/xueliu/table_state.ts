@@ -670,7 +670,7 @@ class TableState implements Serializable {
       if (cardTypes[i].cardId === 88 && type === 2) {
         const status = await this.checkGangShangPao(player, dianPaoPlayer);
         if (status && cardTypes[i].multiple > cardType.multiple) {
-          console.warn("index-%s, from-%s", this.atIndex(player), this.atIndex(dianPaoPlayer));
+          // console.warn("index-%s, from-%s", this.atIndex(player), this.atIndex(dianPaoPlayer));
           cardType = cardTypes[i];
         }
       }
@@ -1047,8 +1047,8 @@ class TableState implements Serializable {
         }
 
         if (state) {
-          console.warn("index-%s, start-%s, end-%s, zhongCount-%s, cardList-%s, cards-%s, state-%s", this.atIndex(player),
-            i * 10 + j, i * 10 + j + 6, zhongCount, JSON.stringify(cardList), JSON.stringify(this.getCardArray(cards)), state);
+          // console.warn("index-%s, start-%s, end-%s, zhongCount-%s, cardList-%s, cards-%s, state-%s", this.atIndex(player),
+          //   i * 10 + j, i * 10 + j + 6, zhongCount, JSON.stringify(cardList), JSON.stringify(this.getCardArray(cards)), state);
           flag = state;
           break;
         }
@@ -1579,10 +1579,6 @@ class TableState implements Serializable {
       }
     }
 
-    if (flag) {
-      console.warn("坎张 lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, shunZi-%s, currentShunZi-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(shunZi), JSON.stringify(currentShunZi));
-    }
-
     return flag;
   }
 
@@ -1629,10 +1625,6 @@ class TableState implements Serializable {
           flag = true;
         }
       }
-    }
-
-    if (flag) {
-      console.warn("边张 lastTakeCard-%s, lastHuCard-%s, zimo-%s, jiepao-%s, flag-%s, shunZi-%s, currentShunZi-%s", this.lastTakeCard, this.lastHuCard, isZiMo, isJiePao, flag, JSON.stringify(shunZi), JSON.stringify(currentShunZi));
     }
 
     return flag;
@@ -2884,7 +2876,7 @@ class TableState implements Serializable {
                 if (cardId === 88 && !dianPaoPlayer.isBroke) {
                   sleepTime += 2000;
                   const callForward = async () => {
-                    console.warn("index-%s from-%s exec refundGangScore function!", index, from);
+                    // console.warn("index-%s from-%s exec refundGangScore function!", index, from);
                     this.room.broadcast("game/callForward", {ok: true, data: {index, from}});
                     await this.refundGangScore(from, index);
                   }
@@ -4940,7 +4932,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    console.warn("isManyHu-%s, index-%s, card-%s, todo-%s, stateData.card-%s", this.isManyHu, this.atIndex(player), card, todo, this.stateData.card);
+    // console.warn("isManyHu-%s, index-%s, card-%s, todo-%s, stateData.card-%s", this.isManyHu, this.atIndex(player), card, todo, this.stateData.card);
     // 一炮多响
     if (this.isManyHu) {
       // 一炮多响

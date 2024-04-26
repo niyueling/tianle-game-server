@@ -1488,8 +1488,6 @@ class PlayerState implements Serializable {
   deposit(callback) {
     let minutes = 15 * 1000;
 
-    console.warn("111", this.timeoutTask);
-
     if (!this.msgDispatcher || !this.zhuang) {
       this.cancelTimeout()
       return ;

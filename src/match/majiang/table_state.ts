@@ -2608,7 +2608,7 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("gangList-%s, cards-%s, zimo-%s, jiepao-%s, flag-%s, constellationCount-%s", JSON.stringify(gangList), JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao, flag, constellationCount);
+    // console.warn("gangList-%s, cards-%s, zimo-%s, jiepao-%s, flag-%s, constellationCount-%s", JSON.stringify(gangList), JSON.stringify(this.getCardArray(cards)), isZiMo, isJiePao, flag, constellationCount);
 
     return flag && constellationCount > 0 && (isZiMo || isJiePao);
   }
@@ -3454,7 +3454,7 @@ class TableState implements Serializable {
         if (this.isAllHu) {
           // 摸三张删除杠牌
           const index = player.competiteCards.findIndex(c => c.card === card);
-          console.warn("index-%s", index);
+          // console.warn("index-%s", index);
           if (index !== -1) {
             player.competiteCards.splice(index, 1);
           }
@@ -3473,7 +3473,7 @@ class TableState implements Serializable {
             id: this.cardTypes.cardId,
             multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
           });
-        console.warn("card-%s, nextCard-%s, competiteCards-%s, msg-%s, cardTypes-%s", card, nextCard, JSON.stringify(player.competiteCards), JSON.stringify(msg), JSON.stringify(this.cardTypes));
+        // console.warn("card-%s, nextCard-%s, competiteCards-%s, msg-%s, cardTypes-%s", card, nextCard, JSON.stringify(player.competiteCards), JSON.stringify(msg), JSON.stringify(this.cardTypes));
         if (msg) {
           if (this.isAllHu) {
             // 从手牌恢复其他两张牌
@@ -4149,7 +4149,7 @@ class TableState implements Serializable {
 
   async onCompetiteHu(player, msg) {
     if (!player.zhuang) {
-      console.warn("onCompetiteHu robot index-%s msg-%s", this.atIndex(player), JSON.stringify(msg));
+      // console.warn("onCompetiteHu robot index-%s msg-%s", this.atIndex(player), JSON.stringify(msg));
     }
 
     if (Object.keys(this.stateData).length === 0) {
@@ -5031,6 +5031,7 @@ class TableState implements Serializable {
       }
 
       const env = {card, from, turn: this.turn}
+      console.warn("card-%s, index-%s, actions-%s, check-%s", card, this.atIndex(player), JSON.stringify(this.actionResolver.allOptions(player)), JSON.stringify(check));
       this.actionResolver = new ActionResolver(env, async () => {
         if (!xiajia) {
           const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
@@ -5077,6 +5078,8 @@ class TableState implements Serializable {
           this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher);
         }
       });
+
+      this.actionResolver.tryResolve()
 
       for (let j = 1; j < this.players.length; j++) {
         const i = (index + j) % this.players.length;
@@ -5163,8 +5166,6 @@ class TableState implements Serializable {
         this.stateData = check;
         this.stateData.hangUp = [];
       }
-
-      this.actionResolver.tryResolve()
     }
 
     setTimeout(nextDo, 200);
@@ -6093,7 +6094,7 @@ class TableState implements Serializable {
             msg.cards.push(player.competiteCards[i].card);
           }
 
-          console.warn("robot promptWithOther msg-%s", JSON.stringify(msg));
+          // console.warn("robot promptWithOther msg-%s", JSON.stringify(msg));
 
           player.emitter.emit(Enums.competiteHu, msg)
         }
