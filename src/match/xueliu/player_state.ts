@@ -1503,15 +1503,19 @@ class PlayerState implements Serializable {
     this.cancelTimeout()
 
     if (!this.onDeposit) {
-      let times = 0;
       this.timeoutTask = setTimeout(() => {
-        this.onDeposit = true;
-        times++;
-        console.warn("deposit times-%s", times);
+        this.onDeposit = true
         this.sendMessage('game/startDepositReply', {ok: true, data: {}})
         callback()
         this.timeoutTask = null
       }, minutes)
+    } else {
+      const isRobot = this.msgDispatcher.isRobot()
+
+      this.timeoutTask = setTimeout(() => {
+        callback()
+        this.timeoutTask = null
+      }, isRobot ? random(500, 1500) : 1000)
     }
   }
 
