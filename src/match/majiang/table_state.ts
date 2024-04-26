@@ -4088,7 +4088,7 @@ class TableState implements Serializable {
 
   async onCompetiteHu(player, msg) {
     if (!player.zhuang) {
-      console.warn("onCompetiteHu robot msg-%s", JSON.stringify(msg));
+      console.warn("onCompetiteHu robot index-%s msg-%s", this.atIndex(player), JSON.stringify(msg));
     }
 
     if (Object.keys(this.stateData).length === 0) {
