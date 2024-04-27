@@ -2880,7 +2880,6 @@ class TableState implements Serializable {
                 });
 
                 const huReply = async () => {
-                  sleepTime += 1000;
                   await player.sendMessage('game/huReply', {
                     ok: true,
                     data: {
@@ -2896,17 +2895,17 @@ class TableState implements Serializable {
                     }
                   });
 
-                  this.room.broadcast('game/oppoHu', {
-                    ok: true,
-                    data: {
-                      turn,
-                      card,
-                      from,
-                      index,
-                      constellationCards: player.constellationCards,
-                      huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                  // 如果是杠后炮，需把杠牌获得的收入转移给胡牌玩家
+                  if (cardId === 88 && !dianPaoPlayer.isBroke) {
+                    sleepTime += 2000;
+                    const callForward = async () => {
+                      // console.warn("index-%s from-%s exec refundGangScore function!", index, from);
+                      this.room.broadcast("game/callForward", {ok: true, data: {index, from}});
+                      await this.refundGangScore(from, index);
                     }
-                  }, player.msgDispatcher);
+
+                    setTimeout(callForward, 2000);
+                  }
 
                   if (!player.isGameHu) {
                     player.isGameHu = true;
@@ -2919,6 +2918,20 @@ class TableState implements Serializable {
                   }
 
                   this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
+                  if (chengbaoStarted) {
+                    this.lastDa.recordGameEvent(Enums.chengBao, {});
+                  }
+                  this.room.broadcast('game/oppoHu', {
+                    ok: true,
+                    data: {
+                      turn,
+                      card,
+                      from,
+                      index,
+                      constellationCards: player.constellationCards,
+                      huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                    }
+                  }, player.msgDispatcher);
                   await this.gameOver(this.players[from], player);
 
                   if (this.state !== stateGameOver) {
