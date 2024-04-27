@@ -2982,7 +2982,7 @@ class TableState implements Serializable {
                   }
 
                   // 如果下家存在，则给下家发牌
-                  if (xiajia && this.state !== stateGameOver) {
+                  if (xiajia && !xiajia.isBroke && this.state !== stateGameOver) {
                     setTimeout(nextDo, sleepTime);
                   }
                 }
