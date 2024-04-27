@@ -2881,19 +2881,17 @@ class TableState implements Serializable {
 
                 let xiajia = null;
 
-                if (this.state !== stateGameOver) {
-                  if (!this.players[from].isBroke) {
-                    xiajia = this.players[from];
-                  } else {
-                    let startIndex = (from + 1) % this.players.length;
+                if (!this.players[from].isBroke) {
+                  xiajia = this.players[from];
+                } else {
+                  let startIndex = (from + 1) % this.players.length;
 
-                    // 从 startIndex 开始查找未破产的玩家
-                    for (let i = startIndex; i < startIndex + this.players.length; i++) {
-                      let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-                      if (!this.players[index].isBroke) {
-                        xiajia = this.players[index];
-                        break;
-                      }
+                  // 从 startIndex 开始查找未破产的玩家
+                  for (let i = startIndex; i < startIndex + this.players.length; i++) {
+                    let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+                    if (!this.players[index].isBroke) {
+                      xiajia = this.players[index];
+                      break;
                     }
                   }
                 }
@@ -2984,7 +2982,7 @@ class TableState implements Serializable {
                   }
 
                   // 如果下家存在，则给下家发牌
-                  if (xiajia) {
+                  if (xiajia && this.state !== stateGameOver) {
                     setTimeout(nextDo, sleepTime);
                   }
                 }
