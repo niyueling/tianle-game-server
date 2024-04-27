@@ -2879,54 +2879,6 @@ class TableState implements Serializable {
                   }
                 });
 
-                let xiajia = null;
-
-                if (!this.players[from].isBroke) {
-                  xiajia = this.players[from];
-                } else {
-                  let startIndex = (from + 1) % this.players.length;
-
-                  // 从 startIndex 开始查找未破产的玩家
-                  for (let i = startIndex; i < startIndex + this.players.length; i++) {
-                    let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-                    if (!this.players[index].isBroke) {
-                      xiajia = this.players[index];
-                      break;
-                    }
-                  }
-                }
-
-                const nextDo = async () => {
-                  const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-
-                  const newCard = await this.consumeCard(xiajia);
-                  if (newCard) {
-                    xiajia.cards[newCard]++;
-                    this.cardTypes = await this.getCardTypes(xiajia, 1);
-                    xiajia.cards[newCard]--;
-                    const msg = xiajia.takeCard(this.turn, newCard, false, false,
-                      {
-                        id: this.cardTypes.cardId,
-                        multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-                      })
-
-                    if (!msg) {
-                      console.error("consume card error msg ", msg);
-                      return;
-                    }
-
-                    this.state = stateWaitDa;
-                    this.stateData = {da: xiajia, card: newCard, msg};
-                    const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
-                    this.room.broadcast('game/oppoTakeCard', {
-                      ok: true,
-                      data: sendMsg
-                    }, xiajia.msgDispatcher)
-                  }
-
-                  this.turn++;
-                }
-
                 const huReply = async () => {
                   sleepTime += 1000;
                   await player.sendMessage('game/huReply', {
@@ -2968,26 +2920,66 @@ class TableState implements Serializable {
 
                   this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
                   await this.gameOver(this.players[from], player);
-
-                  // 如果是杠后炮，需把杠牌获得的收入转移给胡牌玩家
-                  if (cardId === 88 && !dianPaoPlayer.isBroke) {
-                    sleepTime += 2000;
-                    const callForward = async () => {
-                      // console.warn("index-%s from-%s exec refundGangScore function!", index, from);
-                      this.room.broadcast("game/callForward", {ok: true, data: {index, from}});
-                      await this.refundGangScore(from, index);
-                    }
-
-                    setTimeout(callForward, 3000);
-                  }
-
-                  // 如果下家存在，则给下家发牌
-                  if (xiajia && !xiajia.isBroke && this.state !== stateGameOver) {
-                    setTimeout(nextDo, sleepTime);
-                  }
                 }
 
                 setTimeout(huReply, 1000);
+
+                if (this.state !== stateGameOver) {
+                  let xiajia = null;
+                  if (!this.players[from].isBroke) {
+                    xiajia = this.players[from];
+                  } else {
+                    let startIndex = (from + 1) % this.players.length;
+
+                    // 从 startIndex 开始查找未破产的玩家
+                    for (let i = startIndex; i < startIndex + this.players.length; i++) {
+                      let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+                      if (!this.players[index].isBroke) {
+                        xiajia = this.players[index];
+                        break;
+                      }
+                    }
+                  }
+
+                  if (xiajia) {
+                    const nextDo = async () => {
+                      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+
+                      const newCard = await this.consumeCard(xiajia);
+                      if (newCard) {
+                        xiajia.cards[newCard]++;
+                        this.cardTypes = await this.getCardTypes(xiajia, 1);
+                        xiajia.cards[newCard]--;
+                        const msg = xiajia.takeCard(this.turn, newCard, false, false,
+                          {
+                            id: this.cardTypes.cardId,
+                            multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
+                          })
+
+                        if (!msg) {
+                          console.error("consume card error msg ", msg);
+                          return;
+                        }
+
+                        this.state = stateWaitDa;
+                        this.stateData = {da: xiajia, card: newCard, msg};
+                        const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
+                        this.room.broadcast('game/oppoTakeCard', {
+                          ok: true,
+                          data: sendMsg
+                        }, xiajia.msgDispatcher)
+                      }
+
+                      this.turn++;
+                    }
+
+                    setTimeout(nextDo, sleepTime);
+                  } else {
+                    const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+                    const nextZhuang = this.nextZhuang()
+                    await this.gameAllOver(states, [], nextZhuang);
+                  }
+                }
               } else {
                 player.emitter.emit(Enums.guo, this.turn, card);
               }
