@@ -4240,124 +4240,139 @@ class TableState implements Serializable {
       changeGolds[i].isBroke = model.gold === 0;
     }
 
-    this.room.broadcast("game/competiteHuReply", {
+    this.room.broadcast('game/showHuType', {
       ok: true,
-      data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs}
+      data: {
+        index,
+        cards: msg.cards,
+        daCards: msg.daCards,
+        huCards: msg.huCards,
+        type: "zimo",
+      }
     });
 
-    const nextDo = async () => {
-      this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
-    }
+    const huReply = async () => {
+      this.room.broadcast("game/competiteHuReply", {
+        ok: true,
+        data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs}
+      });
 
-    setTimeout(nextDo, maxCardId >= 45 ? 3000 : 1000);
-
-    if (this.remainCards <= 0 || this.isGameOver) {
-      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
-    }
-
-    if (player.zhuang) {
-      player.onDeposit = true;
-    }
-
-    // 给下家摸牌
-    let xiajia = null;
-    let xiajiaIndex = null;
-    let startIndex = (this.atIndex(player) + 1) % this.players.length;
-
-    // 从 startIndex 开始查找未破产的玩家
-    for (let i = startIndex; i < startIndex + this.players.length; i++) {
-      let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-      if (!this.players[index].isBroke) {
-        xiajia = this.players[index];
-        xiajiaIndex = index;
-        break;
-      }
-    }
-
-    if (!xiajia) {
-      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
-    } else {
       const nextDo = async () => {
-        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-        const takeCards = [];
-        let gangCards = [];
-        let gangCardIndexs = [];
-        const huCards = [];
-        const moCards = [];
-        xiajia.oldCards = await this.deepCopyMixedArray(xiajia.cards);
-        xiajia.competiteCards = [];
-
-        for (let i = 0; i < 3; i++) {
-          if (this.remainCards === 0) {
-            break;
-          }
-
-          const newCard = await this.consumeCard(xiajia);
-          if (newCard) {
-            xiajia.cards[newCard]++;
-            this.cardTypes = await this.getCardTypes(xiajia, 1);
-            xiajia.cards[newCard]--;
-            const msg = await xiajia.takeCompetiteCard(this.turn, newCard, {
-              id: this.cardTypes.cardId,
-              multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore
-            }, xiajia.cards);
-
-            if (!msg) {
-              console.error("consume card error msg ", msg)
-              continue;
-            }
-
-            // 如果用户可以杠，并且胡牌已托管，则取消托管
-            if (msg.gang && xiajia.isGameHu && xiajia.onDeposit) {
-              xiajia.onDeposit = false;
-              xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {card: newCard}})
-            }
-
-            takeCards.push(msg.card);
-            moCards.push(msg.card);
-            xiajia.competiteCards.push(msg);
-            if (msg.gang) {
-              msg.gang.map(gang => {
-                if (!gangCardIndexs.includes(gang[0])) {
-                  gangCards.push(gang);
-                  gangCardIndexs.push(gang[0]);
-                }
-              })
-            }
-            if (msg.hu || huCards.findIndex(c => c.card === msg.card) !== -1) {
-              huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
-            }
-          }
-        }
-
-        for (let i = 0; i < moCards.length; i++) {
-          xiajia.cards[moCards[i]]++;
-        }
-
-        xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
-
-        const playerIds = [];
-        this.players.map((v) => playerIds.push(v._id));
-        const sendMsg = {index: xiajiaIndex, cards: takeCards, gangCards, huCards}
-        this.room.broadcast('game/oppoTakeThreeCard', {
-          ok: true,
-          data: sendMsg
-        }, xiajia.msgDispatcher)
-
-        this.state = stateWaitDa;
-        this.stateData = {
-          da: xiajia,
-          card: moCards[moCards.length - 1],
-          msg: xiajia.competiteCards[xiajia.competiteCards.length - 1]
-        };
+        this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
       }
 
-      setTimeout(nextDo, 2500);
+      setTimeout(nextDo, maxCardId >= 45 ? 3000 : 1000);
+
+      if (this.remainCards <= 0 || this.isGameOver) {
+        const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+        const nextZhuang = this.nextZhuang()
+        await this.gameAllOver(states, [], nextZhuang);
+      }
+
+      if (player.zhuang) {
+        player.onDeposit = true;
+      }
+
+      // 给下家摸牌
+      let xiajia = null;
+      let xiajiaIndex = null;
+      let startIndex = (this.atIndex(player) + 1) % this.players.length;
+
+      // 从 startIndex 开始查找未破产的玩家
+      for (let i = startIndex; i < startIndex + this.players.length; i++) {
+        let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+        if (!this.players[index].isBroke) {
+          xiajia = this.players[index];
+          xiajiaIndex = index;
+          break;
+        }
+      }
+
+      if (!xiajia) {
+        const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+        const nextZhuang = this.nextZhuang()
+        await this.gameAllOver(states, [], nextZhuang);
+      } else {
+        const nextDo = async () => {
+          const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+          const takeCards = [];
+          let gangCards = [];
+          let gangCardIndexs = [];
+          const huCards = [];
+          const moCards = [];
+          xiajia.oldCards = await this.deepCopyMixedArray(xiajia.cards);
+          xiajia.competiteCards = [];
+
+          for (let i = 0; i < 3; i++) {
+            if (this.remainCards === 0) {
+              break;
+            }
+
+            const newCard = await this.consumeCard(xiajia);
+            if (newCard) {
+              xiajia.cards[newCard]++;
+              this.cardTypes = await this.getCardTypes(xiajia, 1);
+              xiajia.cards[newCard]--;
+              const msg = await xiajia.takeCompetiteCard(this.turn, newCard, {
+                id: this.cardTypes.cardId,
+                multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.constellationScore
+              }, xiajia.cards);
+
+              if (!msg) {
+                console.error("consume card error msg ", msg)
+                continue;
+              }
+
+              // 如果用户可以杠，并且胡牌已托管，则取消托管
+              if (msg.gang && xiajia.isGameHu && xiajia.onDeposit) {
+                xiajia.onDeposit = false;
+                xiajia.sendMessage('game/cancelDepositReply', {ok: true, data: {card: newCard}})
+              }
+
+              takeCards.push(msg.card);
+              moCards.push(msg.card);
+              xiajia.competiteCards.push(msg);
+              if (msg.gang) {
+                msg.gang.map(gang => {
+                  if (!gangCardIndexs.includes(gang[0])) {
+                    gangCards.push(gang);
+                    gangCardIndexs.push(gang[0]);
+                  }
+                })
+              }
+              if (msg.hu || huCards.findIndex(c => c.card === msg.card) !== -1) {
+                huCards.push({card: msg.card, huInfo: msg.huInfo, huType: msg.huType});
+              }
+            }
+          }
+
+          for (let i = 0; i < moCards.length; i++) {
+            xiajia.cards[moCards[i]]++;
+          }
+
+          xiajia.sendMessage('game/TakeThreeCard', {ok: true, data: {cards: takeCards, gangCards, huCards}})
+
+          const playerIds = [];
+          this.players.map((v) => playerIds.push(v._id));
+          const sendMsg = {index: xiajiaIndex, cards: takeCards, gangCards, huCards}
+          this.room.broadcast('game/oppoTakeThreeCard', {
+            ok: true,
+            data: sendMsg
+          }, xiajia.msgDispatcher)
+
+          this.state = stateWaitDa;
+          this.stateData = {
+            da: xiajia,
+            card: moCards[moCards.length - 1],
+            msg: xiajia.competiteCards[xiajia.competiteCards.length - 1]
+          };
+        }
+
+        setTimeout(nextDo, 2500);
+      }
     }
+
+    setTimeout(huReply, 1500);
   }
 
   async onPlayerMultipleHu() {
