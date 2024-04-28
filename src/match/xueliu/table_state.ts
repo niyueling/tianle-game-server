@@ -3697,7 +3697,7 @@ class TableState implements Serializable {
             this.cardTypes = await this.getCardTypes(p, 2, player);
             msg["huType"] = {
               id: this.cardTypes.cardId,
-              multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple
+              multiple: this.cardTypes.multiple * conf.base * conf.Ante * p.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * p.mingMultiple
             }
           }
 
