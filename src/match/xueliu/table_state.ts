@@ -4438,10 +4438,6 @@ class TableState implements Serializable {
     p.gameOver();
     this.room.removeReadyPlayer(p._id.toString());
 
-    if (this.atIndex(p) === 0) {
-      this.room.robotManager.model.step = RobotStep.running;
-    }
-
     if (!this.brokeList.includes(p._id.toString())) {
       p.isBroke = true;
       p.isGameOver = true;
@@ -4577,6 +4573,10 @@ class TableState implements Serializable {
               data: sendMsg
             }, xiajia.msgDispatcher)
           }
+
+          if (p.zhuang) {
+            this.room.robotManager.model.step = RobotStep.running;
+          }
         }
 
         setTimeout(nextDo, 200);
@@ -4584,6 +4584,10 @@ class TableState implements Serializable {
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
         await this.gameAllOver(states, [], nextZhuang);
+      }
+    } else {
+      if (p.zhuang) {
+        this.room.robotManager.model.step = RobotStep.running;
       }
     }
   }
