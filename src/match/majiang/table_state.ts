@@ -3230,7 +3230,7 @@ class TableState implements Serializable {
         const ok = player.pengPai(card, this.lastDa);
         if (ok) {
           player.lastOperateType = 2;
-          player.onDeposit = false;
+
           const hangUpList = this.stateData.hangUp;
           this.turn++;
           this.state = stateWaitDa;
@@ -3341,6 +3341,7 @@ class TableState implements Serializable {
             if (ok) {
               player.lastOperateType = 3;
               this.turn++;
+              player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
               const from = this.atIndex(this.lastDa)
               const me = this.atIndex(player)
               // 设置所有用户地胡状态为false
@@ -3434,6 +3435,7 @@ class TableState implements Serializable {
       const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
       if (ok) {
         player.lastOperateType = 3;
+        player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
         // 设置所有用户地胡状态为false
         this.players.map((p) => p.isDiHu = false)
         player.sendMessage('game/gangReply', {

@@ -2651,6 +2651,7 @@ class TableState implements Serializable {
             if (ok) {
               player.lastOperateType = 3;
               this.turn++;
+              player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
               // 设置所有用户地胡状态为false
               this.players.map((p) => p.isDiHu = false)
               const from = this.atIndex(this.lastDa)
@@ -2748,6 +2749,7 @@ class TableState implements Serializable {
       if (ok) {
         player.lastOperateType = 3;
         this.stateData = {}
+        player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
         // 设置所有用户地胡状态为false
         this.players.map((p) => p.isDiHu = false)
         player.sendMessage('game/gangReply', {
