@@ -3589,9 +3589,9 @@ class TableState implements Serializable {
       }
 
       const env = {card, from, turn: this.turn}
-      console.warn("onPlayerDa begin card-%s, index-%s, env-%s, actions-%s, check-%s", card, this.atIndex(player), JSON.stringify(env), this.actionResolver && JSON.stringify(this.actionResolver.allOptions(player)), JSON.stringify(check));
+      console.warn("onPlayerDa begin card-%s, index-%s, env-%s, actions-%s, check-%s", card, this.atIndex(player), JSON.stringify(env), this.actionResolver && JSON.stringify(this.actionResolver.allOptions(player)), check.hu);
       this.actionResolver = new ActionResolver(env, async () => {
-        console.warn("onPlayerDa end card-%s, index-%s, env-%s, actions-%s, check-%s", card, this.atIndex(player), JSON.stringify(env), this.actionResolver && JSON.stringify(this.actionResolver.allOptions(player)), JSON.stringify(check));
+        console.warn("onPlayerDa end card-%s, index-%s, env-%s, actions-%s, check-%s", card, this.atIndex(player), JSON.stringify(env), this.actionResolver && JSON.stringify(this.actionResolver.allOptions(player)), check.hu);
         if (!xiajia) {
           const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
           const nextZhuang = this.nextZhuang()
@@ -3603,7 +3603,7 @@ class TableState implements Serializable {
         if (xiajia.huTurnList) {
           const tIndex = xiajia.huTurnList.findIndex(t => t.card === card && t.turn === turn);
           if (tIndex !== -1) {
-            // console.warn("多次摸牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+            console.warn("多次摸牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
             return;
           }
 
