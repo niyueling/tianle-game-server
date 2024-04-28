@@ -3838,9 +3838,9 @@ class TableState implements Serializable {
                       await this.gameAllOver(states, [], nextZhuang);
                     }
                   }
-
-                  setTimeout(huReply, 2000);
                 }
+
+                setTimeout(huReply, 2000);
               } else {
                 player.emitter.emit(Enums.guo, this.turn, card);
               }
@@ -3859,7 +3859,6 @@ class TableState implements Serializable {
           const ok = player.zimo(card, turn === 1, this.remainCards === 0);
           const tIndex = player.huTurnList.findIndex(t => t.card === card && t.turn === turn);
           if (tIndex !== -1) {
-            // console.warn("多次胡牌自摸操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
             return;
           }
           if (ok && player.daHuPai(card, null) && tIndex === -1) {
