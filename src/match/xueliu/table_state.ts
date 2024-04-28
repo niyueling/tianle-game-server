@@ -3604,15 +3604,15 @@ class TableState implements Serializable {
           return;
         }
 
-        if (xiajia.huTurnList) {
-          const tIndex = xiajia.huTurnList.findIndex(t => t.card === card && t.turn === turn);
-          if (tIndex !== -1) {
-            console.warn("多次摸牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
-            return;
-          }
-
-          xiajia.huTurnList.push({card, turn});
-        }
+        // if (xiajia.huTurnList) {
+        //   const tIndex = xiajia.huTurnList.findIndex(t => t.card === card && t.turn === turn);
+        //   if (tIndex !== -1) {
+        //     console.warn("多次摸牌操作 index-%s card-%s turn-%s", this.atIndex(player), card, turn);
+        //     return;
+        //   }
+        //
+        //   xiajia.huTurnList.push({card, turn});
+        // }
 
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const newCard = await this.consumeCard(xiajia);
