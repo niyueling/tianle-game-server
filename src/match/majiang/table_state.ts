@@ -5023,6 +5023,9 @@ class TableState implements Serializable {
       if (player.isDiHu) {
         player.isDiHu = false;
       }
+      if (player.isGameHu && !player.onDeposit) {
+        player.onDeposit = true;
+      }
 
       player.lastOperateType === 3 ? player.isGangHouDa = true : player.isGangHouDa = false;
       player.lastOperateType = 1;

@@ -133,23 +133,25 @@ export class GameApi extends BaseApi {
   async restoreOrDoubleRuby(msg) {
     const record = await service.playerService.getLastRoomRuby(this.player.model._id, msg.roomId);
     const player = await service.playerService.getPlayerModel(this.player.model._id);
+    const random = Math.random();
+    const score = record.score * random;
     if (record && record.roomNum === msg.roomNum) {
       if (record.score < 0) {
         // 免输
-        player.gold -= record.score;
+        player.gold -= score;
         // 记录金豆日志
-        await service.playerService.logGoldConsume(player._id, ConsumeLogType.doubleWinOrFail, -record.score,
+        await service.playerService.logGoldConsume(player._id, ConsumeLogType.doubleWinOrFail, -score,
           player.gold, `结算免输:${msg.roomId}`);
       } else {
         // 翻倍
-        player.gold += record.score;
+        player.gold += score;
         // 记录金豆日志
-        await service.playerService.logGoldConsume(player._id, ConsumeLogType.doubleWinOrFail, record.score,
+        await service.playerService.logGoldConsume(player._id, ConsumeLogType.doubleWinOrFail, score,
           player.gold, `结算双倍奖励:${msg.roomId}`);
       }
       await player.save();
       await this.player.updateResource2Client();
-      this.replySuccess({scoreChange: Math.abs(record.score)})
+      this.replySuccess({scoreChange: Math.abs(score)})
     } else {
       this.replyFail(TianleErrorCode.configNotFound);
     }
