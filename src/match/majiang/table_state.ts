@@ -5835,7 +5835,7 @@ class TableState implements Serializable {
             await this.room.forceDissolve();
           } else {
             const index = this.atIndex(daPlayer);
-            if (!daPlayer || index === -1) {
+            if (index === -1) {
               await this.room.forceDissolve();
             } else {
               pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'};
