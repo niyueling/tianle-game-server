@@ -3507,7 +3507,7 @@ class TableState implements Serializable {
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
       const nextDo1 = async () => {
-        this.zhuang.onDeposit = false;
+        // this.zhuang.onDeposit = false;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
       setTimeout(nextDo1, 2000);
@@ -3902,7 +3902,7 @@ class TableState implements Serializable {
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
       const nextDo1 = async () => {
-        this.zhuang.onDeposit = false;
+        // this.zhuang.onDeposit = false;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
       setTimeout(nextDo1, 2500);
