@@ -34,7 +34,7 @@ const stateQiangHaiDi = 6
 const stateWaitDaHaiDi = 7
 const stateWaitHaiDiPao = 8
 const stateQiangGang = 9
-const stateWaitRecharge = 10
+const stateWaitFinish = 10// 等待操作完成
 
 class HuCheck {
   hu?: any[]
@@ -3556,6 +3556,7 @@ class TableState implements Serializable {
       player.lastOperateType === 3 ? player.isGangHouDa = true : player.isGangHouDa = false;
       player.lastOperateType = 1;
       player.isDiHu = false;
+      this.state = stateWaitFinish;
       this.stateData = {};
       this.gameDaCards.push(card);
 
@@ -3602,9 +3603,7 @@ class TableState implements Serializable {
       }
 
       const env = {card, from, turn: this.turn}
-      // console.warn("onPlayerDa begin card-%s, index-%s, env-%s", card, this.atIndex(player), JSON.stringify(env));
       this.actionResolver = new ActionResolver(env, async () => {
-        // console.warn("onPlayerDa end card-%s, index-%s, env-%s", card, this.atIndex(player), JSON.stringify(env));
         if (!xiajia) {
           const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
           const nextZhuang = this.nextZhuang()
@@ -3711,7 +3710,7 @@ class TableState implements Serializable {
           }
 
           // 碰、杠等
-          this.state = stateWaitAction;
+          // this.state = stateWaitAction;
           this.stateData = check;
           this.stateData.hangUp = [];
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
@@ -3727,6 +3726,8 @@ class TableState implements Serializable {
         this.isManyHu = true;
         this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}});
       }
+
+      this.state = stateWaitAction;
 
       this.actionResolver.tryResolve()
     }
