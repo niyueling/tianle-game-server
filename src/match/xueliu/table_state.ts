@@ -3602,9 +3602,9 @@ class TableState implements Serializable {
       }
 
       const env = {card, from, turn: this.turn}
-      console.warn("onPlayerDa begin card-%s, index-%s, env-%s", card, this.atIndex(player), JSON.stringify(env));
+      // console.warn("onPlayerDa begin card-%s, index-%s, env-%s", card, this.atIndex(player), JSON.stringify(env));
       this.actionResolver = new ActionResolver(env, async () => {
-        console.warn("onPlayerDa end card-%s, index-%s, env-%s", card, this.atIndex(player), JSON.stringify(env));
+        // console.warn("onPlayerDa end card-%s, index-%s, env-%s", card, this.atIndex(player), JSON.stringify(env));
         if (!xiajia) {
           const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
           const nextZhuang = this.nextZhuang()
