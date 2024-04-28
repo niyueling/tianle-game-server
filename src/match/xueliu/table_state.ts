@@ -3556,7 +3556,6 @@ class TableState implements Serializable {
       player.lastOperateType === 3 ? player.isGangHouDa = true : player.isGangHouDa = false;
       player.lastOperateType = 1;
       player.isDiHu = false;
-      this.state = stateWaitFinish;
       this.stateData = {};
       this.gameDaCards.push(card);
 
@@ -3710,9 +3709,6 @@ class TableState implements Serializable {
           }
 
           // 碰、杠等
-          // this.state = stateWaitAction;
-          this.stateData = check;
-          this.stateData.hangUp = [];
           p.sendMessage('game/canDoSomething', {ok: true, data: msg});
           this.room.broadcast('game/oppoCanDoSomething', {ok: true, data: {...msg, ...{index: this.atIndex(p)}}}, p.msgDispatcher);
         }
@@ -3727,7 +3723,11 @@ class TableState implements Serializable {
         this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}});
       }
 
-      this.state = stateWaitAction;
+      if (check[Enums.pengGang] || check[Enums.hu]) {
+        this.state = stateWaitAction;
+        this.stateData = check;
+        this.stateData.hangUp = [];
+      }
 
       this.actionResolver.tryResolve()
     }

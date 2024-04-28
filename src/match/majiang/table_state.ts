@@ -37,7 +37,7 @@ const stateQiangHaiDi = 6
 const stateWaitDaHaiDi = 7
 const stateWaitHaiDiPao = 8
 const stateQiangGang = 9
-const stateWaitRecharge = 10
+const stateWaitFinish = 10
 
 class HuCheck {
   hu?: any[]
