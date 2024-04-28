@@ -3521,6 +3521,7 @@ class TableState implements Serializable {
     let from;
 
     if (!this.stateData[Enums.da]) {
+      player.sendMessage('game/daReply', {ok: false, info: TianleErrorCode.notDaRound, data: {index: this.atIndex(player), card}})
       return ;
     }
     if (this.state !== stateWaitDa) {
