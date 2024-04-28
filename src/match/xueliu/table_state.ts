@@ -2875,6 +2875,7 @@ class TableState implements Serializable {
                   data: {
                     index,
                     from,
+                    card,
                     type: "jiepao",
                   }
                 });
@@ -3028,6 +3029,7 @@ class TableState implements Serializable {
               ok: true,
               data: {
                 index,
+                card,
                 type: "zimo",
               }
             });
