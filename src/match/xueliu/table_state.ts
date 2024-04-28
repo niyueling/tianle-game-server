@@ -2877,6 +2877,8 @@ class TableState implements Serializable {
                     index,
                     from,
                     cards: [card],
+                    daCards: [],
+                    huCards: [],
                     card,
                     type: "jiepao",
                   }
@@ -3032,6 +3034,8 @@ class TableState implements Serializable {
               data: {
                 index,
                 cards: [card],
+                daCards: [],
+                huCards: [],
                 card,
                 type: "zimo",
               }
