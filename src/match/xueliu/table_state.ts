@@ -2460,20 +2460,20 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.getActions, async () => {
-      if (!this.zhuangCard) {
+      if (!this.lastTakeCard) {
         return await player.sendMessage('game/getActionsReply', {ok: false, info: TianleErrorCode.zhuangCardInvalid});
       }
 
       const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
       player.cards[this.zhuangCard]--;
-      const msg = this.zhuang.takeCard(this.turn, this.zhuangCard, false, false,
+      const msg = this.zhuang.takeCard(this.turn, this.lastTakeCard, false, false,
         {
           id: this.cardTypes.cardId,
-          multiple: this.cardTypes.multiple * conf.base * conf.Ante * this.zhuang.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * this.zhuang.mingMultiple
+          multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple
         }, false);
 
       this.state = stateWaitDa;
-      this.stateData = {da: player, card: this.zhuangCard, msg};
+      this.stateData = {da: player, card: this.lastTakeCard, msg};
 
       await player.sendMessage('game/getActionsReply', {ok: true, data: msg});
     })
