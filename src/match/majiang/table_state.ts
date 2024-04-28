@@ -3623,7 +3623,7 @@ class TableState implements Serializable {
                 this.players.map((p) => p.isDiHu = false)
                 player.huTurnList.push({card, turn});
 
-                await player.sendMessage('game/showHuType', {
+                this.room.broadcast('game/showHuType', {
                   ok: true,
                   data: {
                     index,
@@ -3871,7 +3871,7 @@ class TableState implements Serializable {
             this.players.map((p) => p.isDiHu = false)
             from = this.atIndex(this.lastDa);
 
-            await player.sendMessage('game/showHuType', {
+            this.room.broadcast('game/showHuType', {
               ok: true,
               data: {
                 index,
