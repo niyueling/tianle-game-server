@@ -3993,7 +3993,6 @@ class TableState implements Serializable {
                           return;
                         }
 
-                        // console.warn("msg-%s isGameHu-%s onDeposit-%s", JSON.stringify(msg), xiajia.isGameHu, xiajia.onDeposit);
                         this.state = stateWaitDa;
                         this.stateData = {da: xiajia, card: newCard, msg};
                         const sendMsg = {index: this.players.indexOf(xiajia), card: newCard};

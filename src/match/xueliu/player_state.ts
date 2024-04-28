@@ -250,6 +250,9 @@ class PlayerState implements Serializable {
   // 是否地胡
   isDiHu: boolean = true;
 
+  // 明牌倍数
+  mingMultiple: number = 1;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -296,6 +299,7 @@ class PlayerState implements Serializable {
     this.huTypeList = [];
     this.huTurnList = [];
     this.isDiHu = true;
+    this.mingMultiple = 1;
   }
 
   setGameRecorder(r) {
