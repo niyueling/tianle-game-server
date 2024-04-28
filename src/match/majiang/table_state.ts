@@ -3577,7 +3577,6 @@ class TableState implements Serializable {
           if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
             this.manyHuPlayers.push(player._id.toString());
             this.setManyAction(player, Enums.hu);
-            // console.warn("player index-%s choice jiePao card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.hu);
             player.sendMessage("game/chooseMultiple", {
               ok: true,
               data: {action: Enums.hu, card, index: this.atIndex(player)}
@@ -3840,7 +3839,7 @@ class TableState implements Serializable {
                   }
                 }
 
-                setTimeout(huReply, 2000);
+                setTimeout(huReply, 1500);
               } else {
                 player.emitter.emit(Enums.guo, this.turn, card);
               }
@@ -4067,7 +4066,7 @@ class TableState implements Serializable {
               }
             }
 
-            setTimeout(huReply, 2000);
+            setTimeout(huReply, 1500);
           } else {
             player.cards[card]++;
             player.emitter.emit(Enums.da, this.turn, card);
