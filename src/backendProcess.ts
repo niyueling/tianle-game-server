@@ -232,12 +232,12 @@ export class BackendProcess {
     rule.juShu = 99;
     // 检查金豆
     const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule.categoryId);
-    if (resp.isMoreRuby) {
-      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldInsufficient}, playerRouteKey);
-    }
-    if (resp.isUpper) {
-      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldIsHigh}, playerRouteKey);
-    }
+    // if (resp.isMoreRuby) {
+    //   return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldInsufficient}, playerRouteKey);
+    // }
+    // if (resp.isUpper) {
+    //   return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldIsHigh}, playerRouteKey);
+    // }
 
     const roomId = await this.redisClient.lpopAsync('roomIds')
     if (!roomId) {
