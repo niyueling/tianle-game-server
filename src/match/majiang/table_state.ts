@@ -3616,21 +3616,6 @@ class TableState implements Serializable {
                     constellationCards: player.constellationCards,
                     huType: {
                       id: this.cardTypes.cardId,
-                      multiple: this.cardTypes.multiple * conf.base * conf.Ante > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante
-                    }
-                  }
-                });
-
-                await player.sendMessage('game/huReply', {
-                  ok: true,
-                  data: {
-                    card,
-                    from,
-                    turn,
-                    type: "jiepao",
-                    constellationCards: player.constellationCards,
-                    huType: {
-                      id: this.cardTypes.cardId,
                       multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
                     }
                   }
