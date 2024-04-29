@@ -4404,6 +4404,17 @@ class TableState implements Serializable {
             await huPlayer.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
 
+          this.room.broadcast('game/showHuType', {
+            ok: true,
+            data: {
+              index: huMsg.from,
+              cards: [this.manyHuArray[i].card],
+              daCards: [],
+              huCards: [],
+              type: "jiepao",
+            }
+          });
+
           msgs.push({
             type: "hu",
             card: this.manyHuArray[i].card,
@@ -4427,19 +4438,6 @@ class TableState implements Serializable {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
       changeGolds[i].currentGold = model.gold;
       changeGolds[i].isBroke = this.players[i].isBroke;
-    }
-
-    if (huCount === 1) {
-      this.room.broadcast('game/showHuType', {
-        ok: true,
-        data: {
-          index: msgs[0].index,
-          cards: [msgs[0].card],
-          daCards: [],
-          huCards: [],
-          type: "jiepao",
-        }
-      });
     }
 
     const huReply = async () => {
