@@ -700,17 +700,13 @@ class Room extends RoomBase {
       if (this.players[i]) {
         const model = await Player.findOne({_id: this.players[i]._id});
         model.isGame = false;
+        this.players[i].sendMessage('room/dissolve', {ok: true, data: allOverMessage})
+        this.players[i].room = null
 
         await model.save();
       }
     }
 
-    this.players
-      .filter(p => p)
-      .forEach(player => {
-        player.sendMessage('room/dissolve', {ok: true, data: allOverMessage})
-        player.room = null
-      })
     // await this.refundClubOwner();
     this.players.fill(null)
     this.emit('empty', this.disconnected.map(x => x[0]))

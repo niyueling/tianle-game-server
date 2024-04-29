@@ -64,48 +64,6 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       return null;
     }
 
-    async getClubOwner(clubId) {
-      const club = await Club.findOne({_id: clubId}).populate('owner')
-      if (!club) {
-        return
-      }
-      return club.owner;
-    }
-
-    async getClubRooms(clubId) {
-      let clubRooms = [];
-      const roomNumbers = await redisClient.smembersAsync('clubRoom:' + clubId)
-
-      const roomInfoKeys = roomNumbers.map(num => 'room:info:' + num)
-
-      let roomDatas = []
-      if (roomInfoKeys.length > 0) {
-        roomDatas = await redisClient.mgetAsync(roomInfoKeys)
-      }
-
-      for (const roomData of roomDatas) {
-        const roomInfo = JSON.parse(roomData)
-        if (roomInfo) {
-          const rule = roomInfo.gameRule || 'err';
-          const roomNum = roomInfo._id || 'err';
-          const roomCreator = roomInfo.creatorName || 'err';
-          const playerOnline = roomInfo.players.filter(x => x).length + roomInfo.disconnected.length
-          const juIndex = roomInfo.game.juIndex
-
-          clubRooms.push({roomNum, roomCreator, rule, playerOnline, juIndex});
-        }
-      }
-
-      return clubRooms.sort((x, y) => {
-        if (Math.max(x.playerOnline, y.playerOnline) < 4) {
-          return y.playerOnline - x.playerOnline
-        } else {
-          return x.playerOnline - y.playerOnline
-        }
-
-      })
-    }
-
     /**
      * @param roomNumber
      * @returns {Promise<{}>}
@@ -125,48 +83,6 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       this.listenRoom(room)
       redisClient.sadd('room', roomId)
       return room;
-    }
-
-    async createClubRoom(isPublic = false, roomId, rule = {}, clubId, clubOwnerPlayer) {
-      let newRule = Object.assign({}, rule, {isPublic})
-      const room = roomFactory(roomId, newRule);
-      await room.init();
-      await room.setClub(clubId, clubOwnerPlayer);
-      this.listenRoom(room)
-      this.listenClubRoom(room)
-      redisClient.sadd('clubRoom:' + clubId, roomId)
-      return room;
-    }
-
-    listenClubRoom(room) {
-      room.on('empty', async () => {
-        const clubId = room.clubId
-        await redisClient.sremAsync('clubRoom:' + clubId, room._id)
-        this.clubBroadcaster && this.clubBroadcaster.broadcast(clubId)
-        if (room.robotManager) {
-          // 删除机器人
-          await room.robotManager.gameOver();
-          room.robotManager = null;
-        }
-      })
-
-      room.on('join', async () => {
-        const clubId = room.clubId
-        const current = room.players.filter(x => x).length + room.disconnected.length
-        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {
-          roomNum: room._id,
-          capacity: room.capacity, current
-        })
-      })
-
-      room.on('leave', async () => {
-        const clubId = room.clubId
-        const current = room.players.filter(x => x).length + room.disconnected.length
-        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {
-          roomNum: room._id,
-          capacity: room.capacity, current
-        })
-      })
     }
 
     listenRoom(room) {
