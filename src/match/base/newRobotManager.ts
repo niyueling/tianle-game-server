@@ -301,7 +301,6 @@ export class NewRobotManager {
     clearInterval(this.watchTimer);
     if (this.disconnectPlayers) {
       console.log('destroy robot', this.room._id);
-      console.warn(JSON.stringify(this.room.gameState.players))
 
       // 扣除房间数
       this.disconnectPlayers = null;
