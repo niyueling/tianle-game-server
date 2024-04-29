@@ -628,6 +628,10 @@ class TableState implements Serializable {
 
     // 生肖图-大世界
     if (cardCount === 12) {
+      player.sendMessage("game/showConstellationType", {ok: true, data: {type: 7, cards: [
+            Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4, Enums.constellation5, Enums.constellation6,
+            Enums.constellation7, Enums.constellation8, Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12
+          ]}});
       score += 24;
     }
 
@@ -641,6 +645,7 @@ class TableState implements Serializable {
     }
 
     if (check) {
+      player.sendMessage("game/showConstellationType", {ok: true, data: {type: 1, cards: sixArrs}});
       score += 16;
     }
 
@@ -664,6 +669,7 @@ class TableState implements Serializable {
       }
 
       if (checked) {
+        player.sendMessage("game/showConstellationType", {ok: true, data: {type: 2, cards: minWorldArrs[i]}});
         check1 = true;
       }
     }
@@ -690,6 +696,7 @@ class TableState implements Serializable {
       }
 
       if (checked) {
+        player.sendMessage("game/showConstellationType", {ok: true, data: {type: 3, cards: oneSkyArrs[i]}});
         check2 = true;
       }
     }
@@ -715,6 +722,7 @@ class TableState implements Serializable {
       }
 
       if (checked) {
+        player.sendMessage("game/showConstellationType", {ok: true, data: {type: 4, cards: oneWordArrs[i]}});
         check3 = true;
       }
     }
@@ -743,6 +751,7 @@ class TableState implements Serializable {
       }
 
       if (checked) {
+        player.sendMessage("game/showConstellationType", {ok: true, data: {type: 5, cards: IronCalliArrs[i]}});
         check4 = true;
       }
     }
@@ -761,6 +770,7 @@ class TableState implements Serializable {
     }
 
     if (check5) {
+      player.sendMessage("game/showConstellationType", {ok: true, data: {type: 6, cards: squareArrs}});
       score += 10;
     }
 
