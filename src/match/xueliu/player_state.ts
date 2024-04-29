@@ -759,6 +759,11 @@ class PlayerState implements Serializable {
     const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
     this.cards[card]--
 
+    const isDingQue = this.checkDingQueCard();
+    if (!isDingQue) {
+      checkResult.hu = false;
+    }
+
     return checkResult
   }
 
@@ -773,7 +778,13 @@ class PlayerState implements Serializable {
     this.cards.takeSelfCard = true
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
-    return HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
+    const huResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
+    const isDingQue = this.checkDingQueCard();
+    if (!isDingQue) {
+      huResult.hu = false;
+    }
+
+    return huResult;
   }
 
   checkCompetiteZiMo(cards) {
