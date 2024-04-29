@@ -4390,12 +4390,18 @@ class TableState implements Serializable {
 
       // 处理胡牌
       if (this.manyHuArray[i].action === Enums.hu) {
-        const huMsg = await this.onMultipleHu(this.players[this.manyHuArray[i].to], this.manyHuArray[i]);
-        // console.warn("huMsg-%s", JSON.stringify(huMsg));
+        const huPlayer = this.players[this.manyHuArray[i].to];
+        const huMsg = await this.onMultipleHu(huPlayer, this.manyHuArray[i]);
 
         if (huMsg) {
           if (!huMsg.playersModifyGolds) {
             huMsg.playersModifyGolds = [];
+          }
+
+          //第一次胡牌自动托管
+          if (!huPlayer.onDeposit && huPlayer.zhuang && this.room.isPublic) {
+            huPlayer.onDeposit = true;
+            await huPlayer.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
 
           msgs.push({
