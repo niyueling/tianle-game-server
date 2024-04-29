@@ -5434,7 +5434,7 @@ class TableState implements Serializable {
     p.gameOver();
     this.room.removeReadyPlayer(p._id.toString());
 
-    if (this.atIndex(p) === 0) {
+    if (p.zhuang) {
       this.room.robotManager.model.step = RobotStep.running;
     }
 

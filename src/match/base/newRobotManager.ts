@@ -500,7 +500,8 @@ export class NewRobotManager {
         // 等待 30s 充值时间
         if (this.noRubyInterval[p.model._id.toString()] > config.game.waitForRuby) {
           // 30s 过了，金豆还是不够，用户破产
-          p.emitter.emit(Enums.broke);
+          console.warn("index-%s is already broke", i);
+          // p.emitter.emit(Enums.broke);
         } else {
           waitRuby = true;
         }
