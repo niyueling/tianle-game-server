@@ -3259,11 +3259,18 @@ class TableState implements Serializable {
 
       // 处理胡牌
       if (this.manyHuArray[i].action === Enums.hu) {
-        const huMsg = await this.onMultipleHu(this.players[this.manyHuArray[i].to], this.manyHuArray[i]);
+        const huPlayer = this.players[this.manyHuArray[i].to];
+        const huMsg = await this.onMultipleHu(huPlayer, this.manyHuArray[i]);
 
         if (huMsg) {
           if (!huMsg.playersModifyGolds) {
             huMsg.playersModifyGolds = [];
+          }
+
+          //第一次胡牌自动托管
+          if (!huPlayer.onDeposit && huPlayer.zhuang && this.room.isPublic) {
+            huPlayer.onDeposit = true;
+            await huPlayer.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
 
           msgs.push({
@@ -3291,81 +3298,98 @@ class TableState implements Serializable {
       changeGolds[i].isBroke = this.players[i].isBroke;
     }
 
-    this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs, huCount}});
-
-    const nextDo1 = async () => {
-      this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
-    }
-    setTimeout(nextDo1, 1500);
-
-    if (this.remainCards <= 0 || this.isGameOver) {
-      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
-    }
-
-    if (huCount > 0) {
-      // 给下家摸牌
-      let xiajia = null;
-      let startIndex = (this.manyHuArray[0].from + 1) % this.players.length;
-
-      // 从 startIndex 开始查找未破产的玩家
-      for (let i = startIndex; i < startIndex + this.players.length; i++) {
-        let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-        if (!this.players[index].isBroke) {
-          xiajia = this.players[index];
-          break;
+    if (huCount === 1) {
+      this.room.broadcast('game/showHuType', {
+        ok: true,
+        data: {
+          index: msgs[0].index,
+          cards: [msgs[0].card],
+          daCards: [],
+          huCards: [],
+          type: "jiepao",
         }
-      }
+      });
+    }
 
-      if (!xiajia) {
+    const huReply = async () => {
+      this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs, huCount}});
+
+      const nextDo1 = async () => {
+        this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
+      }
+      setTimeout(nextDo1, 1500);
+
+      if (this.remainCards <= 0 || this.isGameOver) {
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
         await this.gameAllOver(states, [], nextZhuang);
-      } else {
-        const nextDo = async () => {
-          const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-          const newCard = await this.consumeCard(xiajia);
-          if (newCard) {
-            xiajia.cards[newCard]++;
-            this.cardTypes = await this.getCardTypes(xiajia, 1);
-            xiajia.cards[newCard]--;
-            const msg = xiajia.takeCard(this.turn, newCard, false, false,
-              {
-                id: this.cardTypes.cardId,
-                multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.mingMultiple
-              })
+      }
 
-            if (!msg) {
-              console.error("consume card error msg ", msg);
-              return;
-            }
+      if (huCount > 0) {
+        // 给下家摸牌
+        let xiajia = null;
+        let startIndex = (this.manyHuArray[0].from + 1) % this.players.length;
 
-            this.state = stateWaitDa;
-            this.stateData = {da: xiajia, card: newCard, msg};
-            const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
-            this.room.broadcast('game/oppoTakeCard', {
-              ok: true,
-              data: sendMsg
-            }, xiajia.msgDispatcher);
+        // 从 startIndex 开始查找未破产的玩家
+        for (let i = startIndex; i < startIndex + this.players.length; i++) {
+          let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+          if (!this.players[index].isBroke) {
+            xiajia = this.players[index];
+            break;
           }
-
-          this.isManyHu = false;
-          this.isRunMultiple = false;
-          this.manyHuArray = [];
-          this.manyHuPlayers = [];
-          this.canManyHuPlayers = [];
         }
 
-        setTimeout(nextDo, 1500);
+        if (!xiajia) {
+          const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+          const nextZhuang = this.nextZhuang()
+          await this.gameAllOver(states, [], nextZhuang);
+        } else {
+          const nextDo = async () => {
+            const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+            const newCard = await this.consumeCard(xiajia);
+            if (newCard) {
+              xiajia.cards[newCard]++;
+              this.cardTypes = await this.getCardTypes(xiajia, 1);
+              xiajia.cards[newCard]--;
+              const msg = xiajia.takeCard(this.turn, newCard, false, false,
+                {
+                  id: this.cardTypes.cardId,
+                  multiple: this.cardTypes.multiple * conf.base * conf.Ante * xiajia.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * xiajia.mingMultiple
+                })
+
+              if (!msg) {
+                console.error("consume card error msg ", msg);
+                return;
+              }
+
+              this.state = stateWaitDa;
+              this.stateData = {da: xiajia, card: newCard, msg};
+              const sendMsg = {index: this.players.indexOf(xiajia), card: newCard}
+              this.room.broadcast('game/oppoTakeCard', {
+                ok: true,
+                data: sendMsg
+              }, xiajia.msgDispatcher);
+            }
+
+            this.isManyHu = false;
+            this.isRunMultiple = false;
+            this.manyHuArray = [];
+            this.manyHuPlayers = [];
+            this.canManyHuPlayers = [];
+          }
+
+          setTimeout(nextDo, 1500);
+        }
+      } else {
+        this.isManyHu = false;
+        this.isRunMultiple = false;
+        this.manyHuArray = [];
+        this.manyHuPlayers = [];
+        this.canManyHuPlayers = [];
       }
-    } else {
-      this.isManyHu = false;
-      this.isRunMultiple = false;
-      this.manyHuArray = [];
-      this.manyHuPlayers = [];
-      this.canManyHuPlayers = [];
     }
+
+    setTimeout(huReply, huCount > 1 ? 1000 : 0);
   }
 
   async onMultipleHu(player, msg) {
