@@ -3676,7 +3676,7 @@ class TableState implements Serializable {
                     }
                   }
 
-                  if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
+                  if (!this.isAllHu && isAllHu && !this.isGameOver) {
                     this.isAllHu = isAllHu;
 
                     this.room.broadcast('game/gameCompetite', {
@@ -3907,7 +3907,7 @@ class TableState implements Serializable {
                 }
               }
 
-              if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
+              if (!this.isAllHu && isAllHu && !this.isGameOver) {
                 this.isAllHu = isAllHu;
 
                 this.room.broadcast('game/gameCompetite', {
