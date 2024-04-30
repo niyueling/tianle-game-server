@@ -3276,8 +3276,8 @@ class TableState implements Serializable {
           this.room.broadcast('game/showHuType', {
             ok: true,
             data: {
-              index: msgs[0].index,
-              cards: [msgs[0].card],
+              index: huMsg.from,
+              cards: [this.manyHuArray[i].card],
               daCards: [],
               huCards: [],
               type: "jiepao",
