@@ -3273,6 +3273,17 @@ class TableState implements Serializable {
             await huPlayer.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
 
+          this.room.broadcast('game/showHuType', {
+            ok: true,
+            data: {
+              index: msgs[0].index,
+              cards: [msgs[0].card],
+              daCards: [],
+              huCards: [],
+              type: "jiepao",
+            }
+          });
+
           msgs.push({
             type: "hu",
             card: this.manyHuArray[i].card,
@@ -3299,16 +3310,7 @@ class TableState implements Serializable {
     }
 
     if (huCount === 1) {
-      this.room.broadcast('game/showHuType', {
-        ok: true,
-        data: {
-          index: msgs[0].index,
-          cards: [msgs[0].card],
-          daCards: [],
-          huCards: [],
-          type: "jiepao",
-        }
-      });
+
     }
 
     const huReply = async () => {
@@ -3389,7 +3391,7 @@ class TableState implements Serializable {
       }
     }
 
-    setTimeout(huReply, huCount > 1 ? 1000 : 0);
+    setTimeout(huReply, 1000);
   }
 
   async onMultipleHu(player, msg) {
