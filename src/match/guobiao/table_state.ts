@@ -120,14 +120,15 @@ const generateCards = function () {
 
   const addSpan1 = function (start, end) {
     for (let c = start; c <= end; c += 1) {
+      cards.push(c)
     }
   }
 
   addSpan(Enums.wanzi1, Enums.wanzi9)
   addSpan(Enums.shuzi1, Enums.shuzi9)
-  addSpan(Enums.shuzi1, Enums.shuzi9)
-  addSpan(Enums.dong, Enums.bai)
-  addSpan(Enums.spring, Enums.ju)
+  addSpan(Enums.tongzi1, Enums.tongzi9)
+  addSpan1(Enums.dong, Enums.bai)
+  addSpan1(Enums.spring, Enums.ju)
 
   return cards
 }
@@ -522,7 +523,6 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
     const count = --this.remainCards;
-    // console.warn("remainCards-%s", count);
 
     if (this.remainCards < 0) {
       this.remainCards = 0;
@@ -559,35 +559,6 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
-    if (card > Enums.athena && !playerState.constellationCards.includes(card) && !playerState.isGameHu) {
-      playerState.constellationCards.push(card);
-
-      if (playerState.constellationCards.length >= 6) {
-        const model = await service.playerService.getPlayerModel(playerState._id);
-
-        model.triumphantCount++;
-        await model.save();
-      }
-
-      let constellationCardLists = [];
-
-      for (let i = 0; i < this.players.length; i++) {
-        const p = this.players[i];
-        constellationCardLists.push({
-          index: i,
-          _id: p._id,
-          roomId: this.room._id,
-          constellationCards: p.constellationCards,
-          multiple: await this.calcConstellationCardScore(p)
-        })
-      }
-
-      for (let i = 0; i < this.players.length; i++) {
-        const p = this.players[i];
-        p.sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
-      }
-    }
-
     return card;
   }
 
@@ -613,185 +584,6 @@ class TableState implements Serializable {
     return false;
   }
 
-  async calcConstellationCardScore(player) {
-    const constellationCards = player.constellationCards;
-    const cardCount = constellationCards.length;
-    let score = 1;
-
-    if (cardCount <= 3) {
-      score = 2 * cardCount;
-    }
-    if (cardCount > 3 && cardCount <= 6) {
-      score = 4 * cardCount;
-    }
-    if (cardCount > 6 && cardCount <= 9) {
-      score = 6 * cardCount;
-    }
-
-    if (cardCount > 9 && cardCount <= 12) {
-      score = 8 * cardCount;
-    }
-
-    // 生肖图-大世界
-    if (cardCount === 12) {
-      player.sendMessage("game/showConstellationType", {ok: true, data: {type: 7, cards: [
-            Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4, Enums.constellation5, Enums.constellation6,
-            Enums.constellation7, Enums.constellation8, Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12
-          ]}});
-      score += 24;
-    }
-
-    // 生肖图-圆六角
-    const sixArrs = [Enums.constellation2, Enums.constellation3, Enums.constellation5, Enums.constellation8, Enums.constellation10, Enums.constellation11];
-    let check = true;
-    for (let i = 0; i < sixArrs.length; i++) {
-      if (!constellationCards.includes(sixArrs[i])) {
-        check = false;
-      }
-    }
-
-    if (check) {
-      player.sendMessage("game/showConstellationType", {ok: true, data: {type: 1, cards: sixArrs}});
-      score += 16;
-    }
-
-    // 生肖图-小世界
-    const minWorldArrs = [
-      [Enums.constellation1, Enums.constellation2, Enums.constellation5, Enums.constellation6],
-      [Enums.constellation2, Enums.constellation3, Enums.constellation6, Enums.constellation7],
-      [Enums.constellation3, Enums.constellation4, Enums.constellation7, Enums.constellation8],
-      [Enums.constellation5, Enums.constellation6, Enums.constellation9, Enums.constellation10],
-      [Enums.constellation6, Enums.constellation7, Enums.constellation10, Enums.constellation11],
-      [Enums.constellation7, Enums.constellation8, Enums.constellation11, Enums.constellation12],
-    ];
-
-    let check1 = false;
-    for (let i = 0; i < minWorldArrs.length; i++) {
-      let checked = true;
-      for (let j = 0; j < minWorldArrs[i].length; j++) {
-        if (!constellationCards.includes(minWorldArrs[i][j])) {
-          checked = false;
-        }
-      }
-
-      if (checked) {
-        player.sendMessage("game/showConstellationType", {ok: true, data: {type: 2, cards: minWorldArrs[i]}});
-        check1 = true;
-      }
-    }
-
-    if (check1) {
-      score += 4;
-    }
-
-    // 生肖图-一线天
-    const oneSkyArrs = [
-      [Enums.constellation1, Enums.constellation5, Enums.constellation9],
-      [Enums.constellation2, Enums.constellation6, Enums.constellation10],
-      [Enums.constellation3, Enums.constellation7, Enums.constellation11],
-      [Enums.constellation4, Enums.constellation8, Enums.constellation12],
-    ];
-
-    let check2 = false;
-    for (let i = 0; i < oneSkyArrs.length; i++) {
-      let checked = true;
-      for (let j = 0; j < oneSkyArrs[i].length; j++) {
-        if (!constellationCards.includes(oneSkyArrs[i][j])) {
-          checked = false;
-        }
-      }
-
-      if (checked) {
-        player.sendMessage("game/showConstellationType", {ok: true, data: {type: 3, cards: oneSkyArrs[i]}});
-        check2 = true;
-      }
-    }
-
-    if (check2) {
-      score += 6;
-    }
-
-    // 生肖图-一字禅
-    const oneWordArrs = [
-      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4],
-      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8],
-      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12],
-    ];
-
-    let check3 = false;
-    for (let i = 0; i < oneWordArrs.length; i++) {
-      let checked = true;
-      for (let j = 0; j < oneWordArrs[i].length; j++) {
-        if (!constellationCards.includes(oneWordArrs[i][j])) {
-          checked = false;
-        }
-      }
-
-      if (checked) {
-        player.sendMessage("game/showConstellationType", {ok: true, data: {type: 4, cards: oneWordArrs[i]}});
-        check3 = true;
-      }
-    }
-
-    if (check3) {
-      score += 8;
-    }
-
-    // 生肖图-铁拐李
-    const IronCalliArrs = [
-      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4, Enums.constellation5, Enums.constellation9],
-      [Enums.constellation1, Enums.constellation2, Enums.constellation3, Enums.constellation4, Enums.constellation8, Enums.constellation12],
-      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8, Enums.constellation1, Enums.constellation9],
-      [Enums.constellation5, Enums.constellation6, Enums.constellation7, Enums.constellation8, Enums.constellation4, Enums.constellation12],
-      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12, Enums.constellation1, Enums.constellation5],
-      [Enums.constellation9, Enums.constellation10, Enums.constellation11, Enums.constellation12, Enums.constellation4, Enums.constellation8],
-    ];
-
-    let check4 = false;
-    for (let i = 0; i < IronCalliArrs.length; i++) {
-      let checked = true;
-      for (let j = 0; j < IronCalliArrs[i].length; j++) {
-        if (!constellationCards.includes(IronCalliArrs[i][j])) {
-          checked = false;
-        }
-      }
-
-      if (checked) {
-        player.sendMessage("game/showConstellationType", {ok: true, data: {type: 5, cards: IronCalliArrs[i]}});
-        check4 = true;
-      }
-    }
-
-    if (check4) {
-      score += 16;
-    }
-
-    // 生肖图-四方阵
-    const squareArrs = [Enums.constellation1, Enums.constellation4, Enums.constellation9, Enums.constellation12];
-    let check5 = true;
-    for (let i = 0; i < squareArrs.length; i++) {
-      if (!constellationCards.includes(squareArrs[i])) {
-        check5 = false;
-      }
-    }
-
-    if (check5) {
-      player.sendMessage("game/showConstellationType", {ok: true, data: {type: 6, cards: squareArrs}});
-      score += 10;
-    }
-
-    if (score <= 0) {
-      score = 1;
-    }
-    player.constellationScore = score;
-
-    if (player.isMingCard) {
-      player.constellationScore *= 6;
-    }
-
-    return score;
-  }
-
   async consumeSimpleCard(p: PlayerState) {
     const cardIndex = --this.remainCards;
     const card = this.cards[cardIndex];
@@ -803,7 +595,7 @@ class TableState implements Serializable {
 
   async consumeSpecialCard(p: PlayerState) {
     this.remainCards--;
-    const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
+    const index = this.cards.findIndex(c => c >= Enums.spring);
     if (index !== -1) {
       const card = this.cards[index]
       this.lastTakeCard = card;
@@ -832,7 +624,7 @@ class TableState implements Serializable {
       }
     }
 
-    const result = Object.keys(counter).filter(num => counter[num] >= cardNumber && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(Number(num)));
+    const result = Object.keys(counter).filter(num => counter[num] >= cardNumber && Number(num) <= Enums.constellation12);
     const randomNumber = Math.floor(Math.random() * result.length);
 
     for (let i = 0; i < cardNumber; i++) {
@@ -901,7 +693,7 @@ class TableState implements Serializable {
 
       while (13 - cards.length > 0) {
         this.remainCards--;
-        const index = this.cards.findIndex(c => [Enums.athena, Enums.poseidon, Enums.zeus].includes(c));
+        const index = this.cards.findIndex(c => c >= Enums.spring);
         if (index !== -1) {
           cards.push(this.cards[index]);
           this.lastTakeCard = this.cards[index];
@@ -914,15 +706,13 @@ class TableState implements Serializable {
   }
 
   async start(payload) {
-    console.warn(222)
     await this.fapai(payload);
   }
 
   async fapai(payload) {
     this.shuffle()
     this.sleepTime = 1500;
-    this.caishen = [Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju]
-
+    this.caishen = [Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju];
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
     const needShuffle = this.room.shuffleData.length > 0;
@@ -943,12 +733,12 @@ class TableState implements Serializable {
         }
       }
 
+      console.warn("index-%s, cards-%s", this.atIndex(p), cards13);
+
       if (model.dominateCount > 0) {
         model.dominateCount--;
         await model.save();
       }
-
-      const constellationCards = [];
 
       if (p.zhuang) {
         zhuangIndex = i;
@@ -963,7 +753,7 @@ class TableState implements Serializable {
         await model.save();
       }
 
-      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards, zhuangIndex)
+      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, zhuangIndex)
     }
 
     // 金豆房扣除开局金豆
@@ -4999,58 +4789,7 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     }
 
-    const nextDo2 = async () => {
-      const newCard = await this.consumeCard(player);
-      if (newCard) {
-        player.cards[newCard]++;
-        this.cardTypes = await this.getCardTypes(player, 1);
-        player.cards[newCard]--;
-        const msg = player.takeCard(this.turn, newCard, false, false,
-          {
-            id: this.cardTypes.cardId,
-            multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
-          });
-
-        if (!msg) {
-          return;
-        }
-
-        // 如果用户可以杠，并且胡牌已托管，则取消托管
-        if (msg.gang && player.isGameHu && player.onDeposit) {
-          player.onDeposit = false;
-          player.sendMessage('game/cancelDepositReply', {ok: true, data: {card: newCard}})
-        }
-
-        this.state = stateWaitDa;
-        this.stateData = {da: player, card: newCard, msg};
-        const sendMsg = {index: this.players.indexOf(player), card: newCard};
-        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, player.msgDispatcher);
-      }
-    }
-
-    const nextDo1 = async () => {
-      let constellationArrs = [];
-
-      for (let i = Enums.constellation1; i <= Enums.constellation12; i++) {
-        if (!player.constellationCards.includes(i)) {
-          constellationArrs.push(i);
-        }
-      }
-
-      // 获取本次抽中的星座牌
-      const random = Math.floor(Math.random() * constellationArrs.length);
-      player.constellationCards.push(constellationArrs[random]);
-      this.room.broadcast("game/openConstellation", {ok: true, data: {card, newCard: constellationArrs[random], index: this.atIndex(player), multiple: await this.calcConstellationCardScore(player)}})
-
-      setTimeout(nextDo2, 1500);
-    }
-
-    if ([Enums.poseidon, Enums.zeus, Enums.athena].includes(card)) {
-      setTimeout(nextDo1, 200);
-    } else {
-      setTimeout(nextDo, 200);
-    }
-
+    setTimeout(nextDo, 200);
   }
 
   nextZhuang(): PlayerState {
@@ -5669,15 +5408,11 @@ class TableState implements Serializable {
       if (i === index) {
         msg = this.players[i].genSelfStates(i);
         msg.roomRubyReward = roomRubyReward;
-        msg.constellationCards = this.players[i].constellationCards;
-        msg.constellationCardLevel = await this.calcConstellationCardScore(this.players[i]);
         msg.events.huCards = msg.huCards.slice();
         pushMsg.status.push(msg);
       } else {
         msg = this.players[i].genOppoStates(i);
         msg.roomRubyReward = roomRubyReward;
-        msg.constellationCards = this.players[i].constellationCards;
-        msg.constellationCardLevel = await this.calcConstellationCardScore(this.players[i]);
         msg.events.huCards = msg.huCards.slice();
         pushMsg.status.push(msg);
       }
