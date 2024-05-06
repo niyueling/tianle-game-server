@@ -727,7 +727,9 @@ class PlayerState implements Serializable {
     this.cards.takeSelfCard = true
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
-    return HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
+    const huResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
+    console.warn("index-%s, caiShen-%s, huResult-%s", this.seatIndex, JSON.stringify(this.caiShen), JSON.stringify(huResult));
+    return huResult;
   }
 
   checkCompetiteZiMo(cards) {
