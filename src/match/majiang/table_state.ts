@@ -3679,6 +3679,8 @@ class TableState implements Serializable {
                   }
                 });
               }
+
+              player.emitter.emit(Enums.huTakeCard, {from});
             } else {
               player.emitter.emit(Enums.guo, this.turn, card);
             }
@@ -3786,6 +3788,8 @@ class TableState implements Serializable {
               }
             });
           }
+
+          player.emitter.emit(Enums.huTakeCard, {from});
         } else {
           player.cards[card]++;
           player.emitter.emit(Enums.da, this.turn, card);
