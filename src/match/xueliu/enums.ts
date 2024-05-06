@@ -96,6 +96,7 @@ const enums = {
   competiteHu: 'competiteHu',
   topHu: 'topHu',
   topDa: 'topDa',
+  huTakeCard: 'huTakeCard',
   topGang: 'topGang',
   getActions: 'getActions',
 

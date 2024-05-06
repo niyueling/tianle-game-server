@@ -47,6 +47,9 @@ const exportObj = {
   'game/getActions': (player, msg) => {
     player.emit('game/getActions', msg);
   },
+  'game/huTakeCard': (player, msg) => {
+    player.emit('game/huTakeCard', msg);
+  },
   'game/restoreGame': (player, msg) => {
     player.emit('game/restoreGame', msg);
   },
