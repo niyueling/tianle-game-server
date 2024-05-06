@@ -5071,7 +5071,7 @@ class TableState implements Serializable {
       // 获取本次抽中的星座牌
       const random = Math.floor(Math.random() * constellationArrs.length);
       player.constellationCards.push(constellationArrs[random]);
-      this.room.broadcast("game/openConstellation", {ok: true, data: {card: constellationArrs[random], index: this.atIndex(player), multiple: await this.calcConstellationCardScore(player)}})
+      this.room.broadcast("game/openConstellation", {ok: true, data: {card, newCard: constellationArrs[random], index: this.atIndex(player), multiple: await this.calcConstellationCardScore(player)}})
 
       setTimeout(nextDo2, 1500);
     }
