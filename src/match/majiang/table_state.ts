@@ -411,6 +411,8 @@ class TableState implements Serializable {
     multiple: number;
   }
 
+  testMoCards: any[] = [];
+
   // 判断是否打牌
   isGameDa: boolean = false;
 
@@ -461,6 +463,7 @@ class TableState implements Serializable {
     this.manyHuPlayers = [];
     this.canManyHuPlayers = [];
     this.isRunMultiple = false;
+    this.testMoCards = [];
   }
 
   toJSON() {
@@ -516,14 +519,13 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState) {
     const player = playerState;
     const count = --this.remainCards;
-    // console.warn("remainCards-%s", count);
 
     if (this.remainCards < 0) {
       this.remainCards = 0;
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
       await this.gameAllOver(states, [], nextZhuang);
-      return
+      return ;
     }
 
     let cardIndex = count;
@@ -547,6 +549,15 @@ class TableState implements Serializable {
       if (moIndex !== -1) {
         cardIndex = moIndex;
         card = this.cards[moIndex];
+      }
+    }
+
+    if (this.testMoCards.length > 0) {
+      const moIndex = this.cards.findIndex(card => card === this.testMoCards[0]);
+      if (moIndex !== -1) {
+        cardIndex = moIndex;
+        card = this.cards[moIndex];
+        this.testMoCards.splice(0, 1);
       }
     }
 
@@ -915,8 +926,10 @@ class TableState implements Serializable {
     this.shuffle()
     this.sleepTime = 1500;
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
-
     const restCards = this.remainCards - (this.rule.playerCount * 13);
+    if (payload.test && payload.moCards && payload.moCards.length > 0) {
+      this.testMoCards = payload.moCards;
+    }
 
     const needShuffle = this.room.shuffleData.length > 0;
     const constellationCardLists = [];
@@ -975,8 +988,8 @@ class TableState implements Serializable {
         p.isDiHu = false;
       }
 
-      // 如果是好友房，设置金豆为金豆上限的1亿倍
-      if (!this.room.isPublic) {
+      // 如果是好友房并且传参test=true，设置金豆为金豆上限的1亿倍
+      if (!this.room.isPublic && payload.test) {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const model = await service.playerService.getPlayerModel(p._id);
         model.gold = conf.maxGold * 100000000;
