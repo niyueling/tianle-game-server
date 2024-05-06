@@ -216,11 +216,8 @@ class PlayerState implements Serializable {
   // 是否计算对局
   isCalcJu = false
 
-  // 星座牌
-  constellationCards: any[] = []
-
   // 星座加分
-  constellationScore: number = 1
+  openCardScore: number = 1
 
   isMingCard = false
 
@@ -295,7 +292,7 @@ class PlayerState implements Serializable {
     this.isGameDa = false;
     this.isGangHouDa = false;
     this.numberCount = 0;
-    this.constellationScore = 1;
+    this.openCardScore = 1;
     this.huTypeList = [];
     this.huTurnList = [];
     this.competiteTurnList = [];
