@@ -5012,6 +5012,8 @@ class TableState implements Serializable {
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
     }
 
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+
     // 打牌后，延迟2秒给其他用户发牌
     const nextDo = async () => {
       from = this.atIndex(this.lastDa);
@@ -5069,7 +5071,6 @@ class TableState implements Serializable {
           xiajia.huTurnList.push({card, turn});
         }
 
-        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const newCard = await this.consumeCard(xiajia);
         if (newCard) {
           xiajia.cards[newCard]++;
@@ -5187,7 +5188,58 @@ class TableState implements Serializable {
       this.actionResolver.tryResolve()
     }
 
-    setTimeout(nextDo, 200);
+    const nextDo2 = async () => {
+      const newCard = await this.consumeCard(player);
+      if (newCard) {
+        player.cards[newCard]++;
+        this.cardTypes = await this.getCardTypes(player, 1);
+        player.cards[newCard]--;
+        const msg = player.takeCard(this.turn, newCard, false, false,
+          {
+            id: this.cardTypes.cardId,
+            multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore
+          });
+
+        if (!msg) {
+          return;
+        }
+
+        // 如果用户可以杠，并且胡牌已托管，则取消托管
+        if (msg.gang && player.isGameHu && player.onDeposit) {
+          player.onDeposit = false;
+          player.sendMessage('game/cancelDepositReply', {ok: true, data: {card: newCard}})
+        }
+
+        this.state = stateWaitDa;
+        this.stateData = {da: player, card: newCard, msg};
+        const sendMsg = {index: this.players.indexOf(player), card: newCard};
+        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, player.msgDispatcher);
+      }
+    }
+
+    const nextDo1 = async () => {
+      let constellationArrs = [];
+
+      for (let i = Enums.constellation1; i <= Enums.constellation12; i++) {
+        if (!player.constellationCards.includes(i)) {
+          constellationArrs.push(i);
+        }
+      }
+
+      // 获取本次抽中的星座牌
+      const random = Math.floor(Math.random() * constellationArrs.length);
+      player.constellationCards.push(constellationArrs[random]);
+      this.room.broadcast("game/openConstellation", {ok: true, data: {card: constellationArrs[random], index: this.atIndex(player), multiple: await this.calcConstellationCardScore(player)}})
+
+      setTimeout(nextDo2, 1500);
+    }
+
+    if ([Enums.poseidon, Enums.zeus, Enums.athena].includes(card)) {
+      setTimeout(nextDo1, 200);
+    } else {
+      setTimeout(nextDo, 200);
+    }
+
   }
 
   nextZhuang(): PlayerState {

@@ -2058,10 +2058,7 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    let isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isZiMo && isJiePao) {
-      isJiePao = false;
-    }
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
     const cards = player.cards.slice();
     if (isJiePao) {
       cards[this.lastHuCard]++;
