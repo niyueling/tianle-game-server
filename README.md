@@ -3,10 +3,11 @@
 ### 介绍
 Raingad-IM是一个开源的即时通信demo，需要前后端配合使用，主要用于学习交流，为大家提供即时通讯的开发思路，许多功能需要自行开发，开发的初衷旨在快速建立企业内部通讯系统、内网交流、社区交流。
 
-| 类型      | 链接                                                  |
-|---------|-----------------------------------------------------|
-| 游戏服源码   | https://gitee.com/cyntc_1061451899/poker-majiang.git |
-| web端演示  | https://admin.hfdsdas.cn/majiang                    |
+| 类型      | 链接                                                          |
+|---------|-------------------------------------------------------------|
+| 大厅服源码   | https://gitee.com/cyntc_1061451899/poker-majiang-dating.git |
+| 游戏服源码   | https://gitee.com/cyntc_1061451899/poker-majiang.git        |
+| web端演示  | https://admin.hfdsdas.cn/majiang                            |
 | 移动端H5演示 | https://admin.hfdsdas.cn/majiang                            |
 
 ### 支持功能

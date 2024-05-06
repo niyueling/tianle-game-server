@@ -2938,6 +2938,8 @@ class TableState implements Serializable {
                   }
                 }, player.msgDispatcher);
                 await this.gameOver(this.players[from], player);
+
+                player.emitter.emit(Enums.huTakeCard, {from});
               } else {
                 player.emitter.emit(Enums.guo, this.turn, card);
               }
@@ -3019,6 +3021,8 @@ class TableState implements Serializable {
               }
             }, player.msgDispatcher);
             await this.gameOver(null, player);
+
+            player.emitter.emit(Enums.huTakeCard, {from});
           } else {
             player.cards[card]++;
             player.emitter.emit(Enums.da, this.turn, card);
