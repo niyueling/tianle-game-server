@@ -2939,7 +2939,7 @@ class TableState implements Serializable {
                 }, player.msgDispatcher);
                 await this.gameOver(this.players[from], player);
 
-                player.emitter.emit(Enums.huTakeCard, {from});
+                // player.emitter.emit(Enums.huTakeCard, {from});
               } else {
                 player.emitter.emit(Enums.guo, this.turn, card);
               }
@@ -3022,7 +3022,7 @@ class TableState implements Serializable {
             }, player.msgDispatcher);
             await this.gameOver(null, player);
 
-            player.emitter.emit(Enums.huTakeCard, {from});
+            // player.emitter.emit(Enums.huTakeCard, {from});
           } else {
             player.cards[card]++;
             player.emitter.emit(Enums.da, this.turn, card);
@@ -3317,7 +3317,7 @@ class TableState implements Serializable {
     }
 
     if (huCount > 0) {
-      player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+      // player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
     } else {
       this.isManyHu = false;
       this.isRunMultiple = false;

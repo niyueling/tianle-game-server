@@ -3673,7 +3673,7 @@ class TableState implements Serializable {
                 });
               }
 
-              player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+              // player.emitter.emit(Enums.huTakeCard, {from, type: 1});
             } else {
               player.emitter.emit(Enums.guo, this.turn, card);
             }
@@ -3782,7 +3782,7 @@ class TableState implements Serializable {
             });
           }
 
-          player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+          // player.emitter.emit(Enums.huTakeCard, {from, type: 1});
         } else {
           player.cards[card]++;
           player.emitter.emit(Enums.da, this.turn, card);
@@ -4307,7 +4307,7 @@ class TableState implements Serializable {
       player.onDeposit = true;
     }
 
-    player.emitter.emit(Enums.huTakeCard, {from: this.atIndex(player), type: 3});
+    // player.emitter.emit(Enums.huTakeCard, {from: this.atIndex(player), type: 3});
   }
 
   async onPlayerMultipleHu(player) {
@@ -4438,7 +4438,7 @@ class TableState implements Serializable {
         });
       }
 
-      player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+      // player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
     } else {
       this.isManyHu = false;
       this.isRunMultiple = false;

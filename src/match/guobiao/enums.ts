@@ -81,6 +81,18 @@ const enums = {
   poseidon: 39,// 波塞冬(癞子牌)
   athena: 40,// 雅典娜(癞子牌)
 
+  // 花牌
+  // 春夏秋冬
+  spring: 53,
+  summer: 54,
+  autumn: 55,
+  winter: 56,
+  // 梅兰竹菊
+  mei: 57,
+  lan: 58,
+  zhu: 59,
+  ju: 60,
+
   chi: 'chi',
   peng: 'peng',
   gang: 'gang',

@@ -118,10 +118,16 @@ const generateCards = function () {
     }
   }
 
+  const addSpan1 = function (start, end) {
+    for (let c = start; c <= end; c += 1) {
+    }
+  }
+
   addSpan(Enums.wanzi1, Enums.wanzi9)
   addSpan(Enums.shuzi1, Enums.shuzi9)
-  addSpan(Enums.constellation1, Enums.constellation12)
-  addSpan(Enums.zeus, Enums.athena);
+  addSpan(Enums.shuzi1, Enums.shuzi9)
+  addSpan(Enums.dong, Enums.bai)
+  addSpan(Enums.spring, Enums.ju)
 
   return cards
 }
@@ -919,7 +925,6 @@ class TableState implements Serializable {
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
     const needShuffle = this.room.shuffleData.length > 0;
-    const constellationCardLists = [];
     let zhuangIndex = 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
@@ -943,32 +948,6 @@ class TableState implements Serializable {
       }
 
       const constellationCards = [];
-      for (let i = 0; i < cards13.length; i++) {
-        if (cards13[i] > Enums.athena && !constellationCards.includes(cards13[i])) {
-          constellationCards.push(cards13[i]);
-        }
-
-        // 计算序数牌相加
-        if (cards13[i] < Enums.zeus) {
-          p.numberCount += cards13[i] % 10;
-        }
-        if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(cards13[i])) {
-          p.numberCount += 10;
-        }
-      }
-      p.constellationCards = constellationCards;
-
-      if (p.constellationCards.length >= 6) {
-        model.triumphantCount++;
-        await model.save();
-      }
-
-      constellationCardLists.push({
-        index: i,
-        _id: p._id,
-        constellationCards,
-        multiple: await this.calcConstellationCardScore(p)
-      })
 
       if (p.zhuang) {
         zhuangIndex = i;
@@ -984,10 +963,6 @@ class TableState implements Serializable {
       }
 
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards, zhuangIndex)
-    }
-
-    for (let i = 0, iMax = this.players.length; i < iMax; i++) {
-      this.players[i].sendMessage("game/specialCardReply", {ok: true, data: constellationCardLists});
     }
 
     // 金豆房扣除开局金豆
