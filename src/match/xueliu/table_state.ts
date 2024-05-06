@@ -3682,7 +3682,7 @@ class TableState implements Serializable {
         this.canManyHuPlayers = [];
       } else {
         this.isManyHu = true;
-        this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}});
+        this.room.broadcast('game/beginChoiceMultiple', {ok: true, data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray, from: this.atIndex(player)}});
       }
 
       if (check[Enums.pengGang] || check[Enums.hu]) {

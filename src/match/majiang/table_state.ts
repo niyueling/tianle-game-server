@@ -5016,7 +5016,7 @@ class TableState implements Serializable {
         this.isManyHu = true;
         this.room.broadcast('game/beginChoiceMultiple', {
           ok: true,
-          data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray}
+          data: {isManyHu: this.isManyHu, manyHuArray: this.manyHuArray, from: this.atIndex(player)}
         });
         // console.warn("isManyHu-%s manyHuArray-%s", this.isManyHu, JSON.stringify(this.manyHuArray));
       }
