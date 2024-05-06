@@ -4299,7 +4299,7 @@ class TableState implements Serializable {
 
     this.room.broadcast("game/competiteHuReply", {
       ok: true,
-      data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs}
+      data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs, from: this.atIndex(player)}
     });
 
     this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
