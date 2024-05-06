@@ -241,6 +241,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   async startGame(payload) {
+    console.warn(333)
     if (this.disconnected.length > 0 && !this.robotManager) {
       // 有人掉线了且没有机器人
       console.info(`some one offline ${JSON.stringify(this.disconnected)}`);
@@ -357,6 +358,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   async startNewGame(payload) {
+    console.warn(444)
     this.destroyOldGame()
     const gameState = this.game.startGame(this)
     this.gameState = gameState
@@ -365,6 +367,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   async broadcastStartGame(payload) {
+    console.warn(666)
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
 
     this.broadcast('room/startGame', {ok: true, data: {

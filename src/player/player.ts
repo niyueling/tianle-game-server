@@ -321,7 +321,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
   }
 
   async connectToBackend(gameName: GameTypes) {
-
+    console.warn(gameName)
     rediClient.incrAsync(`gameCounter.${this.gameName}`)
       .then()
 

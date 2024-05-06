@@ -914,19 +914,20 @@ class TableState implements Serializable {
   }
 
   async start(payload) {
+    console.warn(222)
     await this.fapai(payload);
   }
 
   async fapai(payload) {
     this.shuffle()
     this.sleepTime = 1500;
-    this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
+    this.caishen = [Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju]
 
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
     const needShuffle = this.room.shuffleData.length > 0;
     let zhuangIndex = 0;
-    for (let i = 0, iMax = this.players.length; i < iMax; i++) {
+    for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
       const cards13 = payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : (model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p));
