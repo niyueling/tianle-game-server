@@ -5008,8 +5008,10 @@ class TableState implements Serializable {
       player.lastOperateType = 1;
       this.stateData = {};
 
-      await player.sendMessage('game/daReply', {ok: true, data: card});
-      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
+      if (![Enums.athena, Enums.zeus, Enums.poseidon].includes(card)) {
+        await player.sendMessage('game/daReply', {ok: true, data: card});
+        this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
+      }
     }
 
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
