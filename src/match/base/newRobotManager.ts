@@ -118,14 +118,7 @@ export class NewRobotManager {
 
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby) {
-      isOk = await this.updateNoRuby();
-      if (isOk) {
-        // 继续等
-        // console.log('wait for ruby', this.room._id)
-        return;
-      }
-      this.model.step = RobotStep.start;
-      await this.save();
+      return ;
     }
 
     isOk = await this.isNoPlayerAbsent();
@@ -492,7 +485,6 @@ export class NewRobotManager {
         p.model._id.toString(),
         this.room.gameRule.categoryId);
       if (resp.isResurrection) {
-        // console.warn(`${p.model.shortId}金豆数量：${p.model.gold},场次最低需要：${resp.minAmount}，waitTimes: ${this.noRubyInterval[p.model._id.toString()]}`)
         if (!this.noRubyInterval[p.model._id.toString()]) {
           this.noRubyInterval[p.model._id.toString()] = 0;
         }

@@ -2989,8 +2989,6 @@ class TableState implements Serializable {
           return;
         }
         if (this.room.robotManager.model.step === RobotStep.waitRuby) {
-          // player.onDeposit = false;
-          // player.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}});
           return;
         }
 
@@ -3067,8 +3065,6 @@ class TableState implements Serializable {
           return;
         }
         if (this.room.robotManager.model.step === RobotStep.waitRuby) {
-          // player.onDeposit = false;
-          // player.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}});
           return ;
         }
 
@@ -4299,7 +4295,7 @@ class TableState implements Serializable {
 
     this.room.broadcast("game/competiteHuReply", {
       ok: true,
-      data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs, from: this.atIndex(player)}
+      data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs}
     });
 
     this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
