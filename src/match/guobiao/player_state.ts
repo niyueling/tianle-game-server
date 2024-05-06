@@ -11,7 +11,6 @@ import {DummyRecorder, IGameRecorder} from './GameRecorder'
 import HuPaiDetect from './HuPaiDetect'
 import Room from './room'
 import Rule from './Rule'
-import CardTypeModel from "../../database/models/CardType";
 
 export class SourceCardMap extends Array<number> {
   first: boolean
@@ -726,8 +725,7 @@ class PlayerState implements Serializable {
     this.cards.takeSelfCard = true
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
-    const huResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
-    return huResult;
+    return HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
   }
 
   checkCompetiteZiMo(cards) {
