@@ -3841,11 +3841,7 @@ class TableState implements Serializable {
       playersModifyGolds.push(params);
     }
 
-    const nextDo = async () => {
-      this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
-    }
-
-    setTimeout(nextDo, isWait ? 1500 : 1000);
+    this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
@@ -3860,11 +3856,7 @@ class TableState implements Serializable {
 
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
-      const nextDo1 = async () => {
-        // this.zhuang.onDeposit = false;
-        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
-      }
-      setTimeout(nextDo1, 2500);
+      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
     }
 
     return true;
@@ -4316,85 +4308,78 @@ class TableState implements Serializable {
   }
 
   async gameOver(from, to) {
-    if (this.state !== stateGameOver) {
-      if (this.cardTypes.multiple) {
-        // 将分数 * 倍率
-        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+    this.players.map((p) => {
+      p.balance = 0;
+    })
+    let failList = [];
+    let failGoldList = [];
+    let failFromList = [];
+    let winBalance = 0;
+    let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
-        this.players.map((p) => {
-          p.balance = 0;
-        })
-        let failList = [];
-        let failGoldList = [];
-        let failFromList = [];
-        let winBalance = 0;
-        let winModel = await service.playerService.getPlayerModel(to._id.toString());
-
-        // 点炮胡
-        if (from) {
-          failList.push(from._id);
-          failFromList.push(this.atIndex(from));
-          const model = await service.playerService.getPlayerModel(from._id.toString());
-          const balance = (conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * to.mingMultiple * 10);
-          from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
-          winBalance += Math.abs(from.balance);
-          from.juScore += from.balance;
-          failGoldList.push(from.balance);
-          if (from.balance !== 0) {
-            await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
-            await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
-              model.gold + from.balance, `对局扣除${this.room._id}`);
-          }
-        } else {
-          // 自摸胡
-          for (const p of this.players) {
-            // 扣除三家金币
-            if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
-              const model = await service.playerService.getPlayerModel(p._id.toString());
-              const balance = (conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * to.mingMultiple * 10);
-              p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
-              winBalance += Math.abs(p.balance);
-              p.juScore += p.balance;
-              if (p.balance !== 0) {
-                await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
-                await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
-                  model.gold + p.balance, `对局扣除-${this.room._id}`);
-                failList.push(p._id);
-                failGoldList.push(p.balance);
-                failFromList.push(this.atIndex(p));
-              }
-            }
-          }
-        }
-
-        //增加胡牌用户金币
-        to.balance = winBalance;
-        to.juScore += winBalance;
-        if (winBalance !== 0) {
-          await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
-          await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
-            to.model.gold + to.balance, `对局获得-${this.room._id}`);
-        }
-
-        // 生成金豆记录
-        await RoomGoldRecord.create({
-          winnerGoldReward: winBalance,
-          winnerId: to.model._id.toString(),
-          winnerFrom: this.atIndex(to),
-          roomId: this.room._id,
-          failList,
-          failFromList,
-          failGoldList,
-          multiple: conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple,
-          juIndex: this.room.game.juIndex,
-          cardTypes: this.cardTypes,
-          categoryId: this.room.gameRule.categoryId
-        })
+    // 点炮胡
+    if (from) {
+      failList.push(from._id);
+      failFromList.push(this.atIndex(from));
+      const model = await service.playerService.getPlayerModel(from._id.toString());
+      const balance = (conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * to.mingMultiple * 10);
+      from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+      winBalance += Math.abs(from.balance);
+      from.juScore += from.balance;
+      failGoldList.push(from.balance);
+      if (from.balance !== 0) {
+        await this.room.addScore(from.model._id.toString(), from.balance, this.cardTypes);
+        await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
+          model.gold + from.balance, `对局扣除${this.room._id}`);
       }
-
-      await this.checkBrokeAndWait();
+    } else {
+      // 自摸胡
+      for (const p of this.players) {
+        // 扣除三家金币
+        if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
+          const model = await service.playerService.getPlayerModel(p._id.toString());
+          const balance = (conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * to.mingMultiple * 10);
+          p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+          winBalance += Math.abs(p.balance);
+          p.juScore += p.balance;
+          if (p.balance !== 0) {
+            await this.room.addScore(p.model._id.toString(), p.balance, this.cardTypes);
+            await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
+              model.gold + p.balance, `对局扣除-${this.room._id}`);
+            failList.push(p._id);
+            failGoldList.push(p.balance);
+            failFromList.push(this.atIndex(p));
+          }
+        }
+      }
     }
-    this.logger.close()
+
+    //增加胡牌用户金币
+    to.balance = winBalance;
+    to.juScore += winBalance;
+    if (winBalance !== 0) {
+      await this.room.addScore(to.model._id.toString(), winBalance, this.cardTypes);
+      await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
+        to.model.gold + to.balance, `对局获得-${this.room._id}`);
+    }
+
+    // 生成金豆记录
+    await RoomGoldRecord.create({
+      winnerGoldReward: winBalance,
+      winnerId: to.model._id.toString(),
+      winnerFrom: this.atIndex(to),
+      roomId: this.room._id,
+      failList,
+      failFromList,
+      failGoldList,
+      multiple: conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple,
+      juIndex: this.room.game.juIndex,
+      cardTypes: this.cardTypes,
+      categoryId: this.room.gameRule.categoryId
+    })
+
+    await this.checkBrokeAndWait();
   }
 
   async getPlayerCardTypeRecord(player, typeId, taskType) {
