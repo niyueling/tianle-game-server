@@ -3142,7 +3142,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.huTakeCard, async (msg) => {
-      await this.onPlayerHuTakeCard(msg);
+      await this.onPlayerHuTakeCard(player, msg);
     })
 
     player.on(Enums.competiteHu, async (msg) => {
@@ -3678,7 +3678,17 @@ class TableState implements Serializable {
                 });
               }
 
-              player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+              // 设置用户的状态为待摸牌
+              player.waitMo = true;
+
+              const huTakeCard = async () => {
+                if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+                  player.waitMo = false;
+                  player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+                }
+              }
+
+              setTimeout(huTakeCard, 5000);
             } else {
               player.emitter.emit(Enums.guo, this.turn, card);
             }
@@ -3791,7 +3801,17 @@ class TableState implements Serializable {
             });
           }
 
-          player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+          // 设置用户的状态为待摸牌
+          player.waitMo = true;
+
+          const huTakeCard = async () => {
+            if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+              player.waitMo = false;
+              player.emitter.emit(Enums.huTakeCard, {from, type: 4});
+            }
+          }
+
+          setTimeout(huTakeCard, 5000);
         } else {
           player.cards[card]++;
           player.emitter.emit(Enums.da, this.turn, card);
@@ -3881,7 +3901,11 @@ class TableState implements Serializable {
     return true;
   }
 
-  async onPlayerHuTakeCard(message) {
+  async onPlayerHuTakeCard(player, message) {
+    if (player.waitMo) {
+      player.waitMo = false;
+    }
+
     if ([1, 4].includes(message.type)) {
       await this.onPlayerCommonHuTakeCard(message);
     }
@@ -4313,7 +4337,17 @@ class TableState implements Serializable {
       player.onDeposit = true;
     }
 
-    player.emitter.emit(Enums.huTakeCard, {from: this.atIndex(player), type: 3});
+    // 设置用户的状态为待摸牌
+    player.waitMo = true;
+
+    const huTakeCard = async () => {
+      if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+        player.waitMo = false;
+        player.emitter.emit(Enums.huTakeCard, {from: this.atIndex(player), type: 3});
+      }
+    }
+
+    setTimeout(huTakeCard, 5000);
   }
 
   async onPlayerMultipleHu(player) {
@@ -4440,7 +4474,17 @@ class TableState implements Serializable {
         });
       }
 
-      player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+      // 设置用户的状态为待摸牌
+      player.waitMo = true;
+
+      const huTakeCard = async () => {
+        if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+          player.waitMo = false;
+          player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+        }
+      }
+
+      setTimeout(huTakeCard, 5000);
     } else {
       this.isManyHu = false;
       this.isRunMultiple = false;

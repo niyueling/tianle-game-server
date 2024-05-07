@@ -3359,7 +3359,17 @@ class TableState implements Serializable {
     }
 
     if (huCount > 0) {
-      // player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+      // 设置用户的状态为待摸牌
+      player.waitMo = true;
+
+      const huTakeCard = async () => {
+        if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+          player.waitMo = false;
+          player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+        }
+      }
+
+      setTimeout(huTakeCard, 5000);
     } else {
       this.isManyHu = false;
       this.isRunMultiple = false;
