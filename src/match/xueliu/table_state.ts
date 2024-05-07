@@ -3063,7 +3063,7 @@ class TableState implements Serializable {
               this.gameMoStatus = {
                 state: true,
                 from,
-                type: 1
+                type: 4
               }
             }
 
@@ -3422,8 +3422,17 @@ class TableState implements Serializable {
       changeGolds[i].isBroke = this.players[i].isBroke;
     }
 
-    this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs, huCount}});
-    this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
+    const changeGold = async () => {
+      this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
+    }
+
+    const huReply = async () => {
+      this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs, huCount}});
+
+      setTimeout(changeGold, 1000);
+    }
+
+    setTimeout(huReply, 1000);
 
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
@@ -3438,11 +3447,18 @@ class TableState implements Serializable {
       const huTakeCard = async () => {
         if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
           player.waitMo = false;
-          player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+          return player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+        }
+
+        // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
+        this.gameMoStatus = {
+          state: true,
+          from: this.manyHuArray[0].from,
+          type: 2
         }
       }
 
-      setTimeout(huTakeCard, 5000);
+      setTimeout(huTakeCard, 3000);
     } else {
       this.isManyHu = false;
       this.isRunMultiple = false;
