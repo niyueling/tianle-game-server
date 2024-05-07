@@ -1022,7 +1022,7 @@ class TableState implements Serializable {
     }
 
     if (this.sleepTime === 0) {
-      nextDo()
+      await nextDo()
     } else {
       setTimeout(nextDo, this.sleepTime)
     }
