@@ -689,7 +689,7 @@ class TableState implements Serializable {
 
   async takeDominateCards() {
     {
-      let cards = []
+      let cards = [];
 
       for (let i = 0; i < 3; i++) {
         const consumeCards = await this.consumeGangOrKeCard(3);
