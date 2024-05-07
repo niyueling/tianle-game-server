@@ -2450,7 +2450,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.huTakeCard, async (msg) => {
-      await this.onPlayerHuTakeCard(msg);
+      await this.onPlayerHuTakeCard(player, msg);
     })
 
     player.on(Enums.broke, async () => {
@@ -2953,7 +2953,17 @@ class TableState implements Serializable {
                 }, player.msgDispatcher);
                 await this.gameOver(this.players[from], player);
 
-                // player.emitter.emit(Enums.huTakeCard, {from});
+                // 设置用户的状态为待摸牌
+                player.waitMo = true;
+
+                const huTakeCard = async () => {
+                  if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+                    player.waitMo = false;
+                    player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+                  }
+                }
+
+                setTimeout(huTakeCard, 5000);
               } else {
                 player.emitter.emit(Enums.guo, this.turn, card);
               }
@@ -3036,7 +3046,17 @@ class TableState implements Serializable {
             }, player.msgDispatcher);
             await this.gameOver(null, player);
 
-            // player.emitter.emit(Enums.huTakeCard, {from});
+            // 设置用户的状态为待摸牌
+            player.waitMo = true;
+
+            const huTakeCard = async () => {
+              if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+                player.waitMo = false;
+                player.emitter.emit(Enums.huTakeCard, {from, type: 4});
+              }
+            }
+
+            setTimeout(huTakeCard, 5000);
           } else {
             player.cards[card]++;
             player.emitter.emit(Enums.da, this.turn, card);
@@ -3117,7 +3137,11 @@ class TableState implements Serializable {
     await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
 
-  async onPlayerHuTakeCard(message) {
+  async onPlayerHuTakeCard(player, message) {
+    if (player.waitMo) {
+      player.waitMo = false;
+    }
+
     if (message.type === 1) {
       await this.onPlayerCommonTakeCard(message, "jiepao");
     }

@@ -253,6 +253,9 @@ class PlayerState implements Serializable {
   // 明牌倍数
   mingMultiple: number = 1;
 
+  // 是否等待摸牌
+  waitMo: boolean = false;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -300,6 +303,7 @@ class PlayerState implements Serializable {
     this.huTurnList = [];
     this.isDiHu = true;
     this.mingMultiple = 1;
+    this.waitMo = false;
   }
 
   setGameRecorder(r) {
