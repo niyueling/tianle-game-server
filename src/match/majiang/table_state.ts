@@ -1034,7 +1034,7 @@ class TableState implements Serializable {
       return this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.constellationScore;
     }
 
-    return this.cardTypes.multiple * player.constellationScore;
+    return this.cardTypes.multiple;
   }
 
   async getRoomMultipleScore(player) {
@@ -1043,7 +1043,7 @@ class TableState implements Serializable {
       return conf.base * conf.Ante * this.cardTypes.multiple * player.constellationScore * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * player.constellationScore * 10;
     }
 
-    return this.cardTypes.multiple * player.constellationScore;
+    return this.cardTypes.multiple;
   }
 
   async getCardTypes(player, type, dianPaoPlayer = null) {
