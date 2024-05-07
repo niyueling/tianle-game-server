@@ -16,8 +16,8 @@ apt-get install -y git nginx
 curl -LO https://npm.taobao.org/mirrors/node/v8.11.1/node-v8.11.1-linux-x64.tar.gz
 sudo tar -C /usr/local --strip-components 1 -xzf node-v8.11.1-linux-x64.tar.gz
 
-curl https://gist.githubusercontent.com/stormslowly/f030bd49608e7ab5196e6565a9f5c002/raw/97dc1d531d365c0f87282d21fe4fcf29dab995a8/gitconfig -o /root/.gitconfig
-curl https://gist.githubusercontent.com/stormslowly/f030bd49608e7ab5196e6565a9f5c002/raw/97dc1d531d365c0f87282d21fe4fcf29dab995a8/npmrc -o /root/.npmrc
+curl https://gist.githubusercontent.com/stormslowly/f030bd49608e7ab5196e6565a9f5c002/raw/97dc1d611d365c0f87282d21fe4fcf29dab995a8/gitconfig -o /root/.gitconfig
+curl https://gist.githubusercontent.com/stormslowly/f030bd49608e7ab5196e6565a9f5c002/raw/97dc1d611d365c0f87282d21fe4fcf29dab995a8/npmrc -o /root/.npmrc
 
 
 npm i npm -g

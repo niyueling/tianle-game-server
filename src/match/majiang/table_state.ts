@@ -159,7 +159,7 @@ export function cardChangeDebugger<T extends new(...args: any[]) => {
     }
 
     changePlayerCards(player, cards) {
-      for (let i = 0; i < 53; i++) {
+      for (let i = 0; i < 61; i++) {
         player.cards[i] = 0
       }
       cards.forEach(c => {
@@ -1425,7 +1425,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 41; i < 53; i++) {
+    for (let i = 41; i < 61; i++) {
       if (player.cards[i] > 0 && ![48].includes(i)) {
         flag = false;
       }
@@ -1464,7 +1464,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && ((i < 38 && ![6, 7, 8, 9].includes(i % 10)) || (i > 40 && ![50].includes(i)))) {
         flag = false;
       }
@@ -1509,7 +1509,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && ((i < 38 && i % 2 === 0) || (i > 40 && ![45, 51].includes(i)))) {
         flag = false;
       }
@@ -1554,7 +1554,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && (i < 10 || (i > 40 && i !== 51))) {
         flag = false;
       }
@@ -1593,7 +1593,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && ((i < 38 && i > 10) || (i > 40 && i !== 41))) {
         flag = false;
       }
@@ -1637,7 +1637,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if ([Enums.constellation1, Enums.constellation2, Enums.constellation4, Enums.constellation8].includes(i) && player.cards[i] > 0) {
         blackCount++;
       }
@@ -1689,7 +1689,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && ((i < 38 && ![4, 5, 6].includes(i % 10)) || (i > 40 && ![42, 44].includes(i)))) {
         flag = false;
       }
@@ -1734,7 +1734,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && ((i < 38 && ![6, 7, 8, 9].includes(i % 10)) || (i > 40 && ![41, 50].includes(i)))) {
         flag = false;
       }
@@ -1779,7 +1779,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && ((i < 38 && ![1, 2, 3, 4].includes(i % 10)) || (i > 40 && ![Enums.constellation3, Enums.constellation5].includes(i)))) {
         flag = false;
       }
@@ -1824,7 +1824,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && (i < 10 || (i > 40 && ![42, 49].includes(i)))) {
         flag = false;
       }
@@ -1869,7 +1869,7 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (player.cards[i] > 0 && ((i < 38 && i % 2 !== 0) || (i > 40 && ![48, 51].includes(i)))) {
         flag = false;
       }
@@ -6279,7 +6279,7 @@ class TableState implements Serializable {
   }
 
   getCardTwoCard(player) {
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(i)) {
         continue;
       }
@@ -6294,7 +6294,7 @@ class TableState implements Serializable {
   }
 
   getCardLonelyCard(player) {
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if ([Enums.zeus, Enums.poseidon, Enums.athena].includes(i)) {
         continue;
       }

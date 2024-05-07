@@ -969,7 +969,7 @@ class TableState implements Serializable {
       }
 
       // 一色双龙会(含同一花色的两组老少副(123+789),且由该花色的序数牌5做将的特定和牌型，不计7对)
-      if (cardTypes[i].cardId === 53) {
+      if (cardTypes[i].cardId === 61) {
         const status = await this.checkYiSeShuangLongHui(player, type);
         if (status && cardTypes[i].multiple > cardType.multiple) {
           cardType = cardTypes[i];

@@ -68,7 +68,7 @@ function spreadCardAndCaiShen(countMap) {
 const CAISHEN_HOLDER = -999
 
 const HuPaiDetect = {
-  backup: (new Array(53)).fill(0),
+  backup: (new Array(61)).fill(0),
   check(originCountMap, events, rule, seatIndex) {
     return this.checkHuType(originCountMap, events, seatIndex, rule)
   },
@@ -381,7 +381,7 @@ const HuPaiDetect = {
       return exit        //   递归退出条件：如果没有剩牌，则和牌返回。
     }
     let i = 1;
-    for (; !countMap[i] && i < 53; i++);    //   找到有牌的地方，i就是当前牌,   PAI[i]是个数
+    for (; !countMap[i] && i < 61; i++);    //   找到有牌的地方，i就是当前牌,   PAI[i]是个数
 
     //   4张组合(杠子)
     if (countMap[i] === 4) {                               //   如果当前牌数等于4张
@@ -639,7 +639,7 @@ const HuPaiDetect = {
   ,
   remain(PAI) {
     let sum = 0;
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       sum += PAI[i];
     }
     return sum;
@@ -647,7 +647,7 @@ const HuPaiDetect = {
   ,
 
   checkDaSiXi(countMap) {
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (countMap[i] === 4) {
         return true;
       }
@@ -657,7 +657,7 @@ const HuPaiDetect = {
   ,
 
   checkBanBanHu(countMap) {
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (countMap[i] > 0 && is258(i)) {
         return false;
       }
@@ -670,7 +670,7 @@ const HuPaiDetect = {
     let type0 = false;
     let type1 = false;
     let type2 = false;
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       const c = countMap[i];
       if (c > 0) {
         switch (getType(i)) {
@@ -693,7 +693,7 @@ const HuPaiDetect = {
 
   checkLiuLiuShun(countMap) {
     let kezi = 0;
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (countMap[i] === 3) {
         kezi++;
       }
@@ -716,7 +716,7 @@ const HuPaiDetect = {
           cards[v] = 0
       })
 
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (cards[i] === 3) {
         keZi.push(i)
       } else if (cards[i] === 2) {
@@ -760,7 +760,7 @@ const HuPaiDetect = {
 
   checkJiangJiangHu(countMap, events, resMap) {
     let card258 = 0;
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       if (countMap[i] > 0) {
         if (!is258(i)) {
           return;
@@ -1084,7 +1084,7 @@ const HuPaiDetect = {
 
   checkQuanQiuRen(countMap, events, result) {
     let cardsInHand = 0;
-    for (let i = 1; i < 53; i++) {
+    for (let i = 1; i < 61; i++) {
       cardsInHand += countMap[i]
       if (cardsInHand > 2)
         return
@@ -1138,7 +1138,7 @@ const HuPaiDetect = {
   checkYiTiaoLong(result) {
     const cards = result.huCards.shunZi
     let long = [], found = false
-    for (let card = 0; card < 53; card++) {
+    for (let card = 0; card < 61; card++) {
       if (cards.indexOf(card) > -1) {
         long.push(card)
       }

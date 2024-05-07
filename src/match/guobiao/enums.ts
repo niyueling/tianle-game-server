@@ -83,7 +83,7 @@ const enums = {
 
   // 花牌
   // 春夏秋冬
-  spring: 53,
+  spring: 61,
   summer: 54,
   autumn: 55,
   winter: 56,

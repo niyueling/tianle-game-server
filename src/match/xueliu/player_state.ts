@@ -263,7 +263,7 @@ class PlayerState implements Serializable {
     this.ip = userSocket && userSocket.getIpAddress()
     this.model = userSocket.model
     this.emitter = new EventEmitter()
-    this.cards = new SourceCardMap(53).fill(0)
+    this.cards = new SourceCardMap(61).fill(0)
     this.balance = 0
     this.score = room.getScore(userSocket)
     this.disconnectCallBack = player => {
@@ -405,7 +405,7 @@ class PlayerState implements Serializable {
     this.recorder.recordUserEvent(this, 'moPai', card)
 
     if (!this.hadQiaoXiang && !first) {
-      for (let i = 1; i < 53; i++) {
+      for (let i = 1; i < 61; i++) {
         if (this.gangForbid.indexOf(i) >= 0) continue;
         if (this.caiShen.includes(i)) continue;
 
@@ -542,7 +542,7 @@ class PlayerState implements Serializable {
     this.recorder.recordUserEvent(this, 'moPai', card);
 
     if (!this.hadQiaoXiang) {
-      for (let i = 1; i < 53; i++) {
+      for (let i = 1; i < 61; i++) {
         if (this.gangForbid.indexOf(i) >= 0) continue;
 
         if (this.caiShen.includes(i)) continue;
@@ -968,7 +968,7 @@ class PlayerState implements Serializable {
     const checkResult = HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
     cards[caiShen[0]]--
 
-    return checkResult
+    return checkResult;
   }
 
   jiePao(card, first, haiDi, dianPaoPlayer) {
