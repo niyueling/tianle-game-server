@@ -2835,7 +2835,6 @@ class TableState implements Serializable {
 
     player.on(Enums.hu, async (turn, card) => {
       let from;
-      const chengbaoStarted = this.remainCards <= 3;
       const recordCard = this.stateData.card;
       let sleepTime = 0;
 
@@ -3002,7 +3001,12 @@ class TableState implements Serializable {
             player.lastOperateType = 4;
             player.isGameDa = true;
             player.huTurnList.push({card, turn});
+            // 设置用户的状态为待摸牌
+            player.waitMo = true;
             this.stateData = {};
+            if (!player.isGameHu) {
+              player.isGameHu = true;
+            }
             // 设置所有用户地胡状态为false
             this.players.map((p) => p.isDiHu = false)
             from = this.atIndex(this.lastDa);
@@ -3020,47 +3024,6 @@ class TableState implements Serializable {
               }
             });
 
-            await player.sendMessage('game/huReply', {
-              ok: true,
-              data: {
-                card,
-                from: this.atIndex(player),
-                type: "zimo",
-                turn,
-                constellationCards: player.constellationCards,
-                huType: {
-                  id: this.cardTypes.cardId,
-                  multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple
-                }
-              }
-            });
-
-            if (!player.isGameHu) {
-              player.isGameHu = true;
-            }
-
-            // 第一次胡牌自动托管
-            if (!player.onDeposit && player.zhuang && this.room.isPublic) {
-              player.onDeposit = true
-              await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-            }
-
-            this.room.broadcast('game/oppoZiMo', {
-              ok: true,
-              data: {
-                turn,
-                card,
-                from,
-                index,
-                constellationCards: player.constellationCards,
-                huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
-              }
-            }, player.msgDispatcher);
-            await this.gameOver(null, player);
-
-            // 设置用户的状态为待摸牌
-            player.waitMo = true;
-
             const huTakeCard = async () => {
               if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
                 player.waitMo = false;
@@ -3068,7 +3031,52 @@ class TableState implements Serializable {
               }
             }
 
-            setTimeout(huTakeCard, 5000);
+            const gameOverFunc = async () => {
+              await this.gameOver(null, player);
+
+              // 给下家摸牌
+              setTimeout(huTakeCard, 500);
+            }
+
+            const huReply = async () => {
+              await player.sendMessage('game/huReply', {
+                ok: true,
+                data: {
+                  card,
+                  from: this.atIndex(player),
+                  type: "zimo",
+                  turn,
+                  constellationCards: player.constellationCards,
+                  huType: {
+                    id: this.cardTypes.cardId,
+                    multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple
+                  }
+                }
+              });
+
+              this.room.broadcast('game/oppoZiMo', {
+                ok: true,
+                data: {
+                  turn,
+                  card,
+                  from,
+                  index,
+                  constellationCards: player.constellationCards,
+                  huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                }
+              }, player.msgDispatcher);
+
+              // 第一次胡牌自动托管
+              if (!player.onDeposit && player.zhuang && this.room.isPublic) {
+                player.onDeposit = true
+                await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+              }
+
+              // 执行胡牌结算
+              setTimeout(gameOverFunc, 200);
+            }
+
+            setTimeout(huReply, 1000);
           } else {
             player.cards[card]++;
             player.emitter.emit(Enums.da, this.turn, card);
