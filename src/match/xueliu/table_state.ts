@@ -2837,6 +2837,7 @@ class TableState implements Serializable {
       let from;
       const chengbaoStarted = this.remainCards <= 3;
       const recordCard = this.stateData.card;
+      let sleepTime = 0;
 
       try {
         const isJiePao = this.state === stateWaitAction &&
@@ -2890,7 +2891,13 @@ class TableState implements Serializable {
                 this.players.map((p) => p.isDiHu = false)
                 this.lastDa = player;
                 this.stateData = {};
+                this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
                 player.huTurnList.push({card, turn});
+                if (!player.isGameHu) {
+                  player.isGameHu = true;
+                }
+                // 设置用户的状态为待摸牌
+                player.waitMo = true;
 
                 this.room.broadcast('game/showHuType', {
                   ok: true,
@@ -2905,56 +2912,10 @@ class TableState implements Serializable {
                   }
                 });
 
-                await player.sendMessage('game/huReply', {
-                  ok: true,
-                  data: {
-                    card,
-                    from,
-                    turn,
-                    type: "jiepao",
-                    constellationCards: player.constellationCards,
-                    huType: {
-                      id: this.cardTypes.cardId,
-                      multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple
-                    }
-                  }
-                });
-
                 // 如果是杠后炮，需把杠牌获得的收入转移给胡牌玩家
                 if (cardId === 88 && !dianPaoPlayer.isBroke) {
-                  this.room.broadcast("game/callForward", {ok: true, data: {index, from}});
-                  await this.refundGangScore(from, index);
+                  sleepTime += 1000;
                 }
-
-                if (!player.isGameHu) {
-                  player.isGameHu = true;
-                }
-
-                //第一次胡牌自动托管
-                if (!player.onDeposit && player.zhuang && this.room.isPublic) {
-                  player.onDeposit = true
-                  await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-                }
-
-                this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-                if (chengbaoStarted) {
-                  this.lastDa.recordGameEvent(Enums.chengBao, {});
-                }
-                this.room.broadcast('game/oppoHu', {
-                  ok: true,
-                  data: {
-                    turn,
-                    card,
-                    from,
-                    index,
-                    constellationCards: player.constellationCards,
-                    huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
-                  }
-                }, player.msgDispatcher);
-                await this.gameOver(this.players[from], player);
-
-                // 设置用户的状态为待摸牌
-                player.waitMo = true;
 
                 const huTakeCard = async () => {
                   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
@@ -2963,7 +2924,63 @@ class TableState implements Serializable {
                   }
                 }
 
-                setTimeout(huTakeCard, 5000);
+                const callForward = async () => {
+                  if (cardId === 88 && !dianPaoPlayer.isBroke) {
+                    this.room.broadcast("game/callForward", {ok: true, data: {index, from}});
+                    await this.refundGangScore(from, index);
+                  }
+
+                  // 给下家摸牌
+                  setTimeout(huTakeCard, 1000);
+                }
+
+                const gameOverFunc = async () => {
+                  sleepTime += 2000;
+                  await this.gameOver(this.players[from], player);
+
+                  // 执行杠后炮-呼叫转移
+                  setTimeout(callForward, sleepTime);
+                }
+
+                const huReply = async () => {
+                  await player.sendMessage('game/huReply', {
+                    ok: true,
+                    data: {
+                      card,
+                      from,
+                      turn,
+                      type: "jiepao",
+                      constellationCards: player.constellationCards,
+                      huType: {
+                        id: this.cardTypes.cardId,
+                        multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple
+                      }
+                    }
+                  });
+
+                  this.room.broadcast('game/oppoHu', {
+                    ok: true,
+                    data: {
+                      turn,
+                      card,
+                      from,
+                      index,
+                      constellationCards: player.constellationCards,
+                      huType: {id: this.cardTypes.cardId, multiple: this.cardTypes.multiple}
+                    }
+                  }, player.msgDispatcher);
+
+                  //第一次胡牌自动托管
+                  if (!player.onDeposit && player.zhuang && this.room.isPublic) {
+                    player.onDeposit = true
+                    await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+                  }
+
+                  // 执行胡牌结算
+                  setTimeout(gameOverFunc, 1000);
+                }
+
+                setTimeout(huReply, 1000);
               } else {
                 player.emitter.emit(Enums.guo, this.turn, card);
               }
