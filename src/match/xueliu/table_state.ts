@@ -3434,6 +3434,7 @@ class TableState implements Serializable {
       multiple: conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple,
       juIndex: this.room.game.juIndex,
       cardTypes: this.cardTypes,
+      isPublic: this.room.isPublic,
       categoryId: this.room.gameRule.categoryId
     })
 
@@ -3975,6 +3976,7 @@ class TableState implements Serializable {
         multiple: conf.base * conf.Ante * winPlayer.mingMultiple * cardType.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * conf.Ante * winPlayer.mingMultiple * cardType.multiple,
         juIndex: this.room.game.juIndex,
         cardTypes: {cardId: cardType.cardId, cardName: "未听牌", multiple: cardType.maxMultiple},
+        isPublic: this.room.isPublic,
         categoryId: this.room.gameRule.categoryId
       })
     }
@@ -4071,6 +4073,7 @@ class TableState implements Serializable {
         multiple: conf.maxMultiple,
         juIndex: this.room.game.juIndex,
         cardTypes: {cardId: -1, cardName: "查花猪", multiple: conf.maxMultiple},
+        isPublic: this.room.isPublic,
         categoryId: this.room.gameRule.categoryId
       })
     }
@@ -4157,6 +4160,7 @@ class TableState implements Serializable {
           multiple: record.multiple,
           juIndex: this.room.game.juIndex,
           cardTypes: {cardId: -1, cardName: "退税", multiple: conf.maxMultiple},
+          isPublic: this.room.isPublic,
           categoryId: this.room.gameRule.categoryId
         })
       }
@@ -4230,6 +4234,7 @@ class TableState implements Serializable {
       multiple: record.multiple,
       juIndex: this.room.game.juIndex,
       cardTypes: {cardId: -1, cardName: "呼叫转移", multiple: conf.maxMultiple},
+      isPublic: this.room.isPublic,
       categoryId: this.room.gameRule.categoryId
     })
 
@@ -4317,6 +4322,7 @@ class TableState implements Serializable {
       multiple: maxMultiple,
       juIndex: this.room.game.juIndex,
       cardTypes: {cardId: -1, cardName: type, multiple},
+      isPublic: this.room.isPublic,
       categoryId: this.room.gameRule.categoryId
     })
 
@@ -4392,6 +4398,7 @@ class TableState implements Serializable {
       multiple: conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple > conf.maxMultiple ? conf.maxMultiple : conf.base * conf.Ante * to.mingMultiple * this.cardTypes.multiple,
       juIndex: this.room.game.juIndex,
       cardTypes: this.cardTypes,
+      isPublic: this.room.isPublic,
       categoryId: this.room.gameRule.categoryId
     })
 

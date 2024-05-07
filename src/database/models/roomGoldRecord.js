@@ -51,7 +51,11 @@ const RoomGoldRecordSchema = new mongoose.Schema({
   },
   categoryId: {
     type: String,
-    required: true,
+    required: false,
+  },
+  isPublic: {
+    type: Boolean,
+    required: false,
   },
   createAt: {type: Date, default: Date.now},
 })
