@@ -4486,7 +4486,7 @@ class TableState implements Serializable {
       if (this.room.isPublic) {
         playersModifyGolds = await this.multipleGameOver(this.players[msg.to], this.players[msg.from]);
       } else {
-        await this.multipleGameOverNormal(this.players[msg.to], this.players[msg.from]);
+        playersModifyGolds = await this.multipleGameOverNormal(this.players[msg.to], this.players[msg.from]);
       }
 
       // 记录胡牌次数
@@ -4686,7 +4686,13 @@ class TableState implements Serializable {
     const ok = player.competiteZimo(card, false, this.remainCards === 0);
     if (ok && player.daHuPai(card, null)) {
       this.lastDa = player;
-      const playersModifyGolds = await this.competiteGameOver(player);
+      let playersModifyGolds = [];
+
+      if (this.room.isPublic) {
+        playersModifyGolds = await this.competiteGameOver(player);
+      } else {
+        playersModifyGolds = await this.competiteGameOverNormal(player);
+      }
 
       // 记录胡牌次数
       if (!player.huTypeList.includes(this.cardTypes.cardId)) {
@@ -4729,6 +4735,7 @@ class TableState implements Serializable {
     })
     let failList = [];
     let failFromList = [];
+    let failGoldList = [];
     let winBalance = 0;
     let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
@@ -4747,6 +4754,7 @@ class TableState implements Serializable {
             model.gold + p.balance, `对局扣除-${this.room._id}`);
           failList.push(p._id);
           failFromList.push(this.atIndex(p));
+          failGoldList.push(p.balance);
         }
       }
     }
@@ -4768,6 +4776,7 @@ class TableState implements Serializable {
       roomId: this.room._id,
       failList,
       failFromList,
+      failGoldList,
       multiple: await this.getRoomMultiple(to),
       juIndex: this.room.game.juIndex,
       cardTypes: this.cardTypes,
@@ -4820,6 +4829,69 @@ class TableState implements Serializable {
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
       this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+    }
+
+    return playersModifyGolds;
+  }
+
+  async competiteGameOverNormal(to) {
+    this.players.map((p) => {
+      p.balance = 0;
+    })
+    let failList = [];
+    let failFromList = [];
+    let failGoldList = [];
+    let winBalance = 0;
+
+    // 自摸胡
+    for (const p of this.players) {
+      // 扣除三家金币
+      if (p.model._id.toString() !== to.model._id.toString()) {
+        const balance = await this.getRoomMultipleScore(to);
+        p.balance = -balance;
+        winBalance += balance;
+        p.juScore -= balance;
+        failList.push(p._id);
+        failFromList.push(this.atIndex(p));
+        failGoldList.push(p.balance);
+      }
+    }
+
+    //增加胡牌用户金币
+    to.balance = winBalance;
+    to.juScore += winBalance;
+
+    // 生成金豆记录
+    await RoomGoldRecord.create({
+      winnerGoldReward: winBalance,
+      winnerId: to.model._id.toString(),
+      winnerFrom: this.atIndex(to),
+      roomId: this.room._id,
+      failList,
+      failFromList,
+      failGoldList,
+      multiple: await this.getRoomMultiple(to),
+      juIndex: this.room.game.juIndex,
+      cardTypes: this.cardTypes,
+      isPublic: this.room.isPublic,
+      categoryId: this.room.gameRule.categoryId
+    })
+
+    let playersModifyGolds = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const model = await service.playerService.getPlayerModel(p.model._id.toString());
+      let params = {
+        index: this.atIndex(p),
+        _id: p.model._id.toString(),
+        shortId: p.model.shortId,
+        gold: p.balance,
+        currentGold: model.gold,
+        isBroke: p.isBroke,
+        huType: this.cardTypes
+      };
+
+      playersModifyGolds.push(params);
     }
 
     return playersModifyGolds;
