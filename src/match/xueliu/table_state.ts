@@ -2912,11 +2912,6 @@ class TableState implements Serializable {
                   }
                 });
 
-                // 如果是杠后炮，需把杠牌获得的收入转移给胡牌玩家
-                if (cardId === 88 && !dianPaoPlayer.isBroke) {
-                  sleepTime += 1000;
-                }
-
                 const huTakeCard = async () => {
                   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
                     player.waitMo = false;
@@ -2926,20 +2921,20 @@ class TableState implements Serializable {
 
                 const callForward = async () => {
                   if (cardId === 88 && !dianPaoPlayer.isBroke) {
+                    sleepTime += 1000;
                     this.room.broadcast("game/callForward", {ok: true, data: {index, from}});
                     await this.refundGangScore(from, index);
                   }
 
                   // 给下家摸牌
-                  setTimeout(huTakeCard, 1000);
+                  setTimeout(huTakeCard, sleepTime);
                 }
 
                 const gameOverFunc = async () => {
-                  sleepTime += 2000;
                   await this.gameOver(this.players[from], player);
 
                   // 执行杠后炮-呼叫转移
-                  setTimeout(callForward, sleepTime);
+                  setTimeout(callForward, 2000);
                 }
 
                 const huReply = async () => {
