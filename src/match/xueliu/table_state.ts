@@ -34,7 +34,6 @@ const stateQiangHaiDi = 6
 const stateWaitDaHaiDi = 7
 const stateWaitHaiDiPao = 8
 const stateQiangGang = 9
-const stateWaitFinish = 10// 等待操作完成
 
 class HuCheck {
   hu?: any[]
@@ -329,6 +328,13 @@ class TableState implements Serializable {
   // 摸牌9张牌
   testMoCards: any[] = [];
 
+  // 牌局摸牌状态
+  gameMoStatus: {
+    state: boolean;
+    from: number;
+    type: number;
+  }
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -362,6 +368,11 @@ class TableState implements Serializable {
     this.isGameDa = false;
     this.gameDaCards = [];
     this.zhuangCard = 0;
+    this.gameMoStatus = {
+      state: false,
+      from: 0,
+      type: 1
+    }
   }
 
   toJSON() {
@@ -2914,7 +2925,14 @@ class TableState implements Serializable {
                 const huTakeCard = async () => {
                   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
                     player.waitMo = false;
-                    player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+                    return player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+                  }
+
+                  // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
+                  this.gameMoStatus = {
+                    state: true,
+                    from,
+                    type: 1
                   }
                 }
 
@@ -3027,7 +3045,14 @@ class TableState implements Serializable {
             const huTakeCard = async () => {
               if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
                 player.waitMo = false;
-                player.emitter.emit(Enums.huTakeCard, {from, type: 4});
+                return player.emitter.emit(Enums.huTakeCard, {from, type: 4});
+              }
+
+              // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
+              this.gameMoStatus = {
+                state: true,
+                from,
+                type: 1
               }
             }
 
