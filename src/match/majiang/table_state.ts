@@ -506,7 +506,6 @@ class TableState implements Serializable {
           }
         }
       }
-
     }
   }
 

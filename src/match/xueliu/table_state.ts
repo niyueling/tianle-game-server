@@ -326,6 +326,9 @@ class TableState implements Serializable {
   // 记录庄家摸的牌
   zhuangCard: number = 0;
 
+  // 摸牌9张牌
+  testMoCards: any[] = [];
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -456,6 +459,15 @@ class TableState implements Serializable {
       card = this.cards[index];
     }
 
+    if (this.testMoCards.length > 0) {
+      const moIndex = this.cards.findIndex(card => card === this.testMoCards[0]);
+      if (moIndex !== -1) {
+        cardIndex = moIndex;
+        card = this.cards[moIndex];
+        this.testMoCards.splice(0, 1);
+      }
+    }
+
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
@@ -560,7 +572,9 @@ class TableState implements Serializable {
     this.sleepTime = 1500;
     this.caishen = this.rule.useCaiShen ? [Enums.zhong] : [Enums.slotNoCard]
     const restCards = this.remainCards - (this.rule.playerCount * 13);
-
+    if (payload.test && payload.moCards && payload.moCards.length > 0) {
+      this.testMoCards = payload.moCards;
+    }
     const needShuffle = this.room.shuffleData.length > 0;
     let zhuangIndex = 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
@@ -591,7 +605,7 @@ class TableState implements Serializable {
       }
 
       // 如果是好友房，设置金豆为金豆上限的1亿倍
-      if (!this.room.isPublic) {
+      if (!this.room.isPublic && payload.test) {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const model = await service.playerService.getPlayerModel(p._id);
         model.gold = conf.maxGold * 100000000;
