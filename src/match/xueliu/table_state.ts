@@ -3437,7 +3437,12 @@ class TableState implements Serializable {
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
+
+      const gameAllOver = async () => {
+        await this.gameAllOver(states, [], nextZhuang);
+      }
+
+      setTimeout(gameAllOver, 3000);
     }
 
     if (huCount > 0) {
@@ -3458,7 +3463,7 @@ class TableState implements Serializable {
         }
       }
 
-      setTimeout(huTakeCard, 3000);
+      setTimeout(huTakeCard, 3500);
     } else {
       this.isManyHu = false;
       this.isRunMultiple = false;
