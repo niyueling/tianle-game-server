@@ -1043,7 +1043,7 @@ class TableState implements Serializable {
       return conf.base * conf.Ante * this.cardTypes.multiple * player.constellationScore * 10 > conf.maxGold ? conf.maxGold : conf.base * this.cardTypes.multiple * conf.Ante * player.constellationScore * 10;
     }
 
-    return this.cardTypes.multiple * player.constellationScore * 10;
+    return this.cardTypes.multiple * player.constellationScore;
   }
 
   async getCardTypes(player, type, dianPaoPlayer = null) {
