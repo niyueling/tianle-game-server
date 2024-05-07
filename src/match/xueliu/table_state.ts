@@ -2507,6 +2507,8 @@ class TableState implements Serializable {
     player.on(Enums.restoreGame, async () => {
       if (this.room.robotManager.model.step === RobotStep.waitRuby) {
         this.room.robotManager.model.step = RobotStep.running;
+
+        // 如果当前是复活用户打牌，则重新设置stateData,以激活托管机器人
         if (this.stateData[Enums.da] && this.stateData[Enums.da]._id === player._id) {
           this.state = stateWaitDa;
           this.stateData = {da: player, card: this.lastTakeCard};
@@ -2516,6 +2518,15 @@ class TableState implements Serializable {
           ok: true,
           data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
         });
+
+        // 如果当前是摸牌状态，则给下家摸牌
+        if (this.gameMoStatus.state) {
+          const huTakeCard = async () => {
+            player.emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
+          }
+
+          setTimeout(huTakeCard, 1000);
+        }
       } else {
         await player.sendMessage('game/restoreGameReply', {ok: false, data: {}});
       }
@@ -3179,12 +3190,29 @@ class TableState implements Serializable {
   }
 
   async onPlayerBroke(player) {
+    // 如果当前是摸牌状态，则给下家摸牌
+    if (this.gameMoStatus.state) {
+      const huTakeCard = async () => {
+        player.emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
+      }
+
+      setTimeout(huTakeCard, 1000);
+    }
+
     await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
 
   async onPlayerHuTakeCard(player, message) {
+    // if (!player.waitMo || !this.gameMoStatus.state) {
+    //   return ;
+    // }
+
     if (player.waitMo) {
       player.waitMo = false;
+    }
+
+    if (this.gameMoStatus.state) {
+      this.gameMoStatus.state = false;
     }
 
     if (message.type === 1) {
@@ -4516,6 +4544,7 @@ class TableState implements Serializable {
     p.gameOver();
     this.room.removeReadyPlayer(p._id.toString());
 
+    // 记录破产人数
     if (!this.brokeList.includes(p._id.toString())) {
       p.isBroke = true;
       p.isGameOver = true;
@@ -4544,8 +4573,8 @@ class TableState implements Serializable {
       records
     }
 
+    // 更新用户对局属性
     const model = await Player.findOne({_id: p._id});
-
     model.isGame = false;
     model.juCount++;
     if (p.juScore > 0) {
@@ -4577,8 +4606,8 @@ class TableState implements Serializable {
     await model.save();
     p.isCalcJu = true;
 
+    // 记录战绩
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
-
     await CombatGain.create({
       uid: this.room._id,
       room: this.room.uid,
@@ -4594,7 +4623,6 @@ class TableState implements Serializable {
 
     // 如果目前打牌的是破产用户，找到下一个正常用户
     if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
-      // await this.onPlayerGuo(p, this.turn, this.lastTakeCard);
 
       // 去除摸牌
       if (p.cards[this.lastTakeCard] > 0) {
