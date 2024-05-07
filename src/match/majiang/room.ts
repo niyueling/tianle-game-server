@@ -660,7 +660,6 @@ class Room extends RoomBase {
     thePlayer.sendMessage("room/nextGameReply", {ok: true, data: {roomId: this._id, juIndex: this.game.juIndex}})
 
     await this.announcePlayerJoin(thePlayer)
-    await this.ready(thePlayer)
     return true
   }
 
