@@ -1486,28 +1486,6 @@ class TableState implements Serializable {
     return flag && moJieCount > 0 && (isZiMo || isJiePao);
   }
 
-  async deepCopyMixedArray(arr) {
-    // 创建一个新数组来存储复制的元素
-    const newArr = [];
-
-    // 遍历原始数组的每个元素
-    for (let i = 0; i < arr.length; i++) {
-      const element = arr[i];
-
-      // 检查元素是否是对象
-      if (typeof element === 'object' && element !== null) {
-        // 如果是对象，则进行深拷贝
-        newArr.push(JSON.parse(JSON.stringify(element)));
-      } else {
-        // 如果不是对象，则直接添加到新数组
-        newArr.push(element);
-      }
-    }
-
-    // 返回复制后的新数组
-    return newArr;
-  }
-
   async checkZhongXingPengYue(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
@@ -3904,7 +3882,7 @@ class TableState implements Serializable {
   }
 
   async onPlayerHuTakeCard(message) {
-    if (message.type === 1) {
+    if ([1, 4].includes(message.type)) {
       await this.onPlayerCommonHuTakeCard(message);
     }
 

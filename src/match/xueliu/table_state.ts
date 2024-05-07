@@ -3119,7 +3119,11 @@ class TableState implements Serializable {
 
   async onPlayerHuTakeCard(message) {
     if (message.type === 1) {
-      await this.onPlayerCommonTakeCard(message);
+      await this.onPlayerCommonTakeCard(message, "jiepao");
+    }
+
+    if (message.type === 4) {
+      await this.onPlayerCommonTakeCard(message, "zimo");
     }
 
     if (message.type === 2) {
@@ -3127,9 +3131,9 @@ class TableState implements Serializable {
     }
   }
 
-  async onPlayerCommonTakeCard(message) {
+  async onPlayerCommonTakeCard(message, huType) {
     let xiajia = null;
-    if (!this.players[message.from].isBroke) {
+    if (!this.players[message.from].isBroke && huType === "jiepao") {
       xiajia = this.players[message.from];
     } else {
       let startIndex = (message.from + 1) % this.players.length;
