@@ -252,6 +252,9 @@ class PlayerState implements Serializable {
   // 是否地胡
   isDiHu: boolean = true;
 
+  // 是否待摸牌状态
+  waitMo: boolean = false;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -300,6 +303,7 @@ class PlayerState implements Serializable {
     this.huTurnList = [];
     this.competiteTurnList = [];
     this.isDiHu = true;
+    this.waitMo = false;
   }
 
   setGameRecorder(r) {
