@@ -3562,7 +3562,6 @@ class TableState implements Serializable {
 
     player.on(Enums.hu, async (turn, card) => {
       let from;
-      let sleepTime = 0;
       const recordCard = this.stateData.card;
       const isJiePao = this.state === stateWaitAction &&
         recordCard === card && this.stateData[Enums.hu] &&
@@ -3665,6 +3664,7 @@ class TableState implements Serializable {
               const gameCompetite = async () => {
                 let isAllHu = true;
                 let brokes = [];
+                let sleepTime = 0;
 
                 for (let i = 0; i < this.players.length; i++) {
                   brokes.push({isBroke: this.players[i].isBroke, isGameHu: this.players[i].isGameHu})
@@ -3672,8 +3672,6 @@ class TableState implements Serializable {
                     isAllHu = false;
                   }
                 }
-
-                console.warn("this.isAllHu-%s, isAllHu-%s, isGameOver-%s, brokes-%s", this.isAllHu, isAllHu, this.isGameOver, JSON.stringify(brokes));
 
                 if (!this.isAllHu && isAllHu && !this.isGameOver) {
                   this.isAllHu = isAllHu;
@@ -3692,7 +3690,6 @@ class TableState implements Serializable {
               }
 
               const gameOverFunc = async () => {
-                sleepTime += 1000;
                 if (this.room.isPublic) {
                   await this.gameOver(this.players[from], player);
                 } else {
@@ -3700,7 +3697,7 @@ class TableState implements Serializable {
                 }
 
                 // 执行巅峰对决
-                setTimeout(gameCompetite, 2000);
+                setTimeout(gameCompetite, 1500);
               }
 
               const huReply = async () => {
@@ -3738,7 +3735,7 @@ class TableState implements Serializable {
                 }
 
                 // 执行胡牌结算
-                setTimeout(gameOverFunc, 200);
+                setTimeout(gameOverFunc, this.cardTypes.cardId >= 45 ? 4000 : 1000);
               }
 
               setTimeout(huReply, 1000);
@@ -3817,16 +3814,13 @@ class TableState implements Serializable {
 
           const gameCompetite = async () => {
             let isAllHu = true;
-            let brokes = [];
+            let sleepTime = 0;
 
             for (let i = 0; i < this.players.length; i++) {
-              brokes.push({isBroke: this.players[i].isBroke, isGameHu: this.players[i].isGameHu})
               if (!this.players[i].isBroke && !this.players[i].isGameHu) {
                 isAllHu = false;
               }
             }
-
-            console.warn("this.isAllHu-%s, isAllHu-%s, isGameOver-%s, brokes-%s", this.isAllHu, isAllHu, this.isGameOver, JSON.stringify(brokes));
 
             if (!this.isAllHu && isAllHu && !this.isGameOver) {
               this.isAllHu = isAllHu;
@@ -3852,7 +3846,7 @@ class TableState implements Serializable {
             }
 
             // 执行巅峰对决
-            setTimeout(gameCompetite, 2000);
+            setTimeout(gameCompetite, 1500);
           }
 
           const huReply = async () => {
@@ -3890,7 +3884,7 @@ class TableState implements Serializable {
             }
 
             // 执行胡牌结算
-            setTimeout(gameOverFunc, 200);
+            setTimeout(gameOverFunc, this.cardTypes.cardId >= 45 ? 4000 : 1000);
           }
 
           setTimeout(huReply, 1000);
@@ -5573,7 +5567,7 @@ class TableState implements Serializable {
       setTimeout(waitRecharge, 1000);
     }
 
-    setTimeout(changeGold, this.cardTypes.cardId >= 45 ? 4500 : 1500);
+    setTimeout(changeGold, 200);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
