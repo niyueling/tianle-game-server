@@ -3662,12 +3662,16 @@ class TableState implements Serializable {
 
               const gameCompetite = async () => {
                 let isAllHu = false;
+                let brokes = [];
 
                 for (let i = 0; i < this.players.length; i++) {
+                  brokes.push({isBroke: this.players[i].isBroke, isGameHu: this.players[i].isGameHu})
                   if (!this.players[i].isBroke && !this.players[i].isGameHu) {
                     isAllHu = false;
                   }
                 }
+
+                console.warn("this.isAllHu-%s, isAllHu-%s, isGameOver-%s, brokes-%s", this.isAllHu, isAllHu, this.isGameOver, JSON.stringify(brokes));
 
                 if (!this.isAllHu && isAllHu && !this.isGameOver) {
                   this.isAllHu = isAllHu;
@@ -3811,12 +3815,16 @@ class TableState implements Serializable {
 
           const gameCompetite = async () => {
             let isAllHu = false;
+            let brokes = [];
 
             for (let i = 0; i < this.players.length; i++) {
+              brokes.push({isBroke: this.players[i].isBroke, isGameHu: this.players[i].isGameHu})
               if (!this.players[i].isBroke && !this.players[i].isGameHu) {
                 isAllHu = false;
               }
             }
+
+            console.warn("this.isAllHu-%s, isAllHu-%s, isGameOver-%s, brokes-%s", this.isAllHu, isAllHu, this.isGameOver, JSON.stringify(brokes));
 
             if (!this.isAllHu && isAllHu && !this.isGameOver) {
               this.isAllHu = isAllHu;
@@ -4507,6 +4515,10 @@ class TableState implements Serializable {
           if (!huPlayer.onDeposit && huPlayer.zhuang && this.room.isPublic) {
             huPlayer.onDeposit = true;
             await huPlayer.sendMessage('game/startDepositReply', {ok: true, data: {}})
+          }
+
+          if (!huPlayer.isGameHu) {
+            huPlayer.isGameHu = true;
           }
 
           this.room.broadcast('game/showHuType', {
@@ -5513,7 +5525,7 @@ class TableState implements Serializable {
         isBroke: p.isBroke
       };
       if (model.gold <= 0) {
-        if (params.index === 0) {
+        if (p.zhuang) {
           if (!p.isBroke) {
             if (isWait) {
               waits.push(params);
