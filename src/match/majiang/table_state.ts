@@ -3990,6 +3990,7 @@ class TableState implements Serializable {
 
   async onPlayerHuTakeCard(player, message) {
     if (!player.waitMo || !this.gameMoStatus.state) {
+      console.warn("waitMo-%s, gameMoStatus-%s", player.waitMo, JSON.stringify(this.gameMoStatus));
       return ;
     }
 
@@ -4449,7 +4450,6 @@ class TableState implements Serializable {
 
     const huTakeCard = async () => {
       if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-        player.waitMo = false;
         return player.emitter.emit(Enums.huTakeCard, {from: this.atIndex(player), type: 3});
       }
 
@@ -4616,7 +4616,6 @@ class TableState implements Serializable {
 
       const huTakeCard = async () => {
         if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-          player.waitMo = false;
           return player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
         }
 
@@ -4781,7 +4780,10 @@ class TableState implements Serializable {
 
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
-      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      const waitRecharge = async () => {
+        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      }
+      setTimeout(waitRecharge, 3000);
     }
 
     return playersModifyGolds;
@@ -4994,7 +4996,10 @@ class TableState implements Serializable {
 
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
-      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      const waitRecharge = async () => {
+        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      }
+      setTimeout(waitRecharge, 3000);
     }
 
     return playersModifyGolds;
