@@ -215,7 +215,7 @@ class PlayerState implements Serializable {
   // 是否计算对局
   isCalcJu = false
 
-  // 星座加分
+  // 明牌加分
   openCardScore: number = 1
 
   isMingCard = false

@@ -430,7 +430,7 @@ const HuPaiDetect = {
 
 
     // 使用 2财神组成刻字
-    if (countMap[i] == 1 && caiCount >= 2) {                              //   如果当前牌不少于3张
+    if (countMap[i] === 1 && caiCount >= 2) {                              //   如果当前牌不少于3张
       countMap[i] -= 1;
       keZi.push(i)
       result.wuCai = false
@@ -499,7 +499,7 @@ const HuPaiDetect = {
       countMap[i]--;
       useJiang.push(i)
       result.wuCai = false
-      if (lastTakeCardAndCaiShen.lastTakeCard == i) {
+      if (lastTakeCardAndCaiShen.lastTakeCard === i) {
         result.baoTou = true
       }
 
@@ -1188,7 +1188,7 @@ const HuPaiDetect = {
     const qiDuiQiaoXiangCards = Object.assign([], sourceCards)
     let canAddCard = -1
     for (let i = 1; i < Enums.bai; i++) {
-      if (qiDuiQiaoXiangCards[i] == 0 && !caiShen.includes(i)) {
+      if (qiDuiQiaoXiangCards[i] === 0 && !caiShen.includes(i)) {
         canAddCard = i
         break
       }
