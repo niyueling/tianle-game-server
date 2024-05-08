@@ -121,13 +121,15 @@ const generateCards = function () {
     }
   }
 
-  addSpan(Enums.wanzi1, Enums.wanzi9)
-  addSpan(Enums.shuzi1, Enums.shuzi9)
-  addSpan(Enums.tongzi1, Enums.tongzi9)
-  addSpan1(Enums.dong, Enums.bai)
-  addSpan1(Enums.spring, Enums.ju)
+  addSpan(Enums.wanzi1, Enums.wanzi9);
+  addSpan(Enums.shuzi1, Enums.shuzi9);
+  addSpan(Enums.tongzi1, Enums.tongzi9);
+  addSpan(Enums.dong, Enums.bai);
+  addSpan1(Enums.spring, Enums.ju);
 
-  return cards
+  console.warn("cards-%s", JSON.stringify(cards));
+
+  return cards;
 }
 
 
@@ -617,9 +619,9 @@ class TableState implements Serializable {
   }
 
   async consumeSpecialCard(p: PlayerState) {
-    this.remainCards--;
     const index = this.cards.findIndex(c => [Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju].includes(c));
     if (index !== -1) {
+      this.remainCards--;
       const card = this.cards[index]
       this.lastTakeCard = card;
       this.cards.splice(index, 1);
@@ -690,6 +692,8 @@ class TableState implements Serializable {
         if (card) {
           specialCount++;
           cards.push(card);
+        }  else {
+          cards.push(await this.consumeSimpleCard(player));
         }
       } else {
         cards.push(await this.consumeSimpleCard(player));
