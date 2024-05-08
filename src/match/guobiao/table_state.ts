@@ -4980,7 +4980,6 @@ class TableState implements Serializable {
       }
 
       const env = {card, from, turn: this.turn}
-      // console.warn("card-%s, index-%s, env-%s, actions-%s, check-%s", card, this.atIndex(player), JSON.stringify(env), this.actionResolver && JSON.stringify(this.actionResolver.allOptions(player)), JSON.stringify(check));
       this.actionResolver = new ActionResolver(env, async () => {
         if (!xiajia) {
           const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
@@ -4988,15 +4987,6 @@ class TableState implements Serializable {
           await this.gameAllOver(states, [], nextZhuang);
 
           return;
-        }
-
-        if (xiajia.huTurnList) {
-          const tIndex = xiajia.huTurnList.findIndex(t => t.card === card && t.turn === turn);
-          if (tIndex !== -1) {
-            // return;
-          }
-
-          xiajia.huTurnList.push({card, turn});
         }
 
         const newCard = await this.consumeCard(xiajia);
