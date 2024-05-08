@@ -34,12 +34,10 @@ const stateQiangHaiDi = 6
 const stateWaitDaHaiDi = 7
 const stateWaitHaiDiPao = 8
 const stateQiangGang = 9
-const stateWaitFinish = 10
 
 class HuCheck {
   hu?: any[]
   card: number
-  chiCombol?: any[]
   bu?: any
   huInfo?: any
 }
@@ -622,7 +620,7 @@ class TableState implements Serializable {
     const index = this.cards.findIndex(c => [Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju].includes(c));
     if (index !== -1) {
       this.remainCards--;
-      const card = this.cards[index]
+      const card = this.cards[index];
       this.lastTakeCard = card;
       this.cards.splice(index, 1);
 
@@ -704,32 +702,30 @@ class TableState implements Serializable {
   }
 
   async takeDominateCards() {
-    {
-      let cards = []
+    let cards = []
 
-      for (let i = 0; i < 3; i++) {
-        const consumeCards = await this.consumeGangOrKeCard(3);
-        cards = [...cards, ...consumeCards];
-      }
-
-      const residueCards = 13 - cards.length;
-      if (residueCards > 3) {
-        const consumeCards = await this.consumeGangOrKeCard(3);
-        cards = [...cards, ...consumeCards];
-      }
-
-      while (13 - cards.length > 0) {
-        this.remainCards--;
-        const index = this.cards.findIndex(c => [Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju].includes(c));
-        if (index !== -1) {
-          cards.push(this.cards[index]);
-          this.lastTakeCard = this.cards[index];
-          this.cards.splice(index, 1);
-        }
-      }
-
-      return cards;
+    for (let i = 0; i < 3; i++) {
+      const consumeCards = await this.consumeGangOrKeCard(3);
+      cards = [...cards, ...consumeCards];
     }
+
+    const residueCards = 13 - cards.length;
+    if (residueCards > 3) {
+      const consumeCards = await this.consumeGangOrKeCard(3);
+      cards = [...cards, ...consumeCards];
+    }
+
+    while (13 - cards.length > 0) {
+      this.remainCards--;
+      const index = this.cards.findIndex(c => [Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju].includes(c));
+      if (index !== -1) {
+        cards.push(this.cards[index]);
+        this.lastTakeCard = this.cards[index];
+        this.cards.splice(index, 1);
+      }
+    }
+
+    return cards;
   }
 
   async start(payload) {
