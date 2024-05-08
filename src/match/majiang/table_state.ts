@@ -5527,7 +5527,6 @@ class TableState implements Serializable {
   }
 
   async checkBrokeAndWait(isWait = true) {
-    let sleepTime = 1000;
     // 判断是否破产，破产提醒客户端充值钻石
     let brokePlayers = [];
     let playersModifyGolds = [];
@@ -5569,8 +5568,9 @@ class TableState implements Serializable {
     }
 
     const changeGold = async () => {
-      sleepTime += (this.cardTypes.cardId >= 45 ? 4500 : 1500);
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+
+      setTimeout(waitRecharge, 1000);
     }
 
     setTimeout(changeGold, this.cardTypes.cardId >= 45 ? 4500 : 1500);
@@ -5586,14 +5586,11 @@ class TableState implements Serializable {
       await this.gameAllOver(states, [], nextZhuang);
     }
 
-    if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
-      this.room.robotManager.model.step = RobotStep.waitRuby;
-
-      const waitRecharge = async () => {
+    const waitRecharge = async () => {
+      if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
+        this.room.robotManager.model.step = RobotStep.waitRuby;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
-
-      setTimeout(waitRecharge, sleepTime);
     }
 
     return true;
