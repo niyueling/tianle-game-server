@@ -3203,9 +3203,9 @@ class TableState implements Serializable {
   }
 
   async onPlayerHuTakeCard(player, message) {
-    // if (!player.waitMo || !this.gameMoStatus.state) {
-    //   return ;
-    // }
+    if (!player.waitMo || !this.gameMoStatus.state) {
+      return ;
+    }
 
     if (player.waitMo) {
       player.waitMo = false;
