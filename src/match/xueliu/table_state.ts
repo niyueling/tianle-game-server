@@ -3002,7 +3002,7 @@ class TableState implements Serializable {
                   }
 
                   // 执行胡牌结算
-                  setTimeout(gameOverFunc, 1000);
+                  setTimeout(gameOverFunc, 200);
                 }
 
                 setTimeout(huReply, 1000);
@@ -3111,7 +3111,7 @@ class TableState implements Serializable {
               }
 
               // 执行胡牌结算
-              setTimeout(gameOverFunc, 1000);
+              setTimeout(gameOverFunc, 200);
             }
 
             setTimeout(huReply, 1000);
@@ -3999,7 +3999,7 @@ class TableState implements Serializable {
       setTimeout(waitRecharge, 1000);
     }
 
-    setTimeout(changeGold, 200);
+    setTimeout(changeGold, 1000);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
