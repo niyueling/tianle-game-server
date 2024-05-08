@@ -2964,7 +2964,7 @@ class TableState implements Serializable {
                   await this.gameOver(this.players[from], player);
 
                   // 执行杠后炮-呼叫转移
-                  setTimeout(callForward, 1500);
+                  setTimeout(callForward, 2200);
                 }
 
                 const huReply = async () => {
@@ -3073,7 +3073,7 @@ class TableState implements Serializable {
               await this.gameOver(null, player);
 
               // 给下家摸牌
-              setTimeout(huTakeCard, 1500);
+              setTimeout(huTakeCard, 2200);
             }
 
             const huReply = async () => {
