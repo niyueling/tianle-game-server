@@ -333,6 +333,7 @@ class TableState implements Serializable {
     state: boolean;
     from: number;
     type: number;
+    index: number;
   }
 
   constructor(room: Room, rule: Rule, restJushu: number) {
@@ -371,7 +372,8 @@ class TableState implements Serializable {
     this.gameMoStatus = {
       state: false,
       from: 0,
-      type: 1
+      type: 1,
+      index: 0
     }
   }
 
@@ -2522,7 +2524,7 @@ class TableState implements Serializable {
         // 如果当前是摸牌状态，则给下家摸牌
         if (this.gameMoStatus.state) {
           const huTakeCard = async () => {
-            player.emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
+            this.players[this.gameMoStatus.index].emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
           }
 
           setTimeout(huTakeCard, 1000);
@@ -2942,7 +2944,8 @@ class TableState implements Serializable {
                   this.gameMoStatus = {
                     state: true,
                     from,
-                    type: 1
+                    type: 1,
+                    index: this.atIndex(player)
                   }
                 }
 
@@ -3061,7 +3064,8 @@ class TableState implements Serializable {
               this.gameMoStatus = {
                 state: true,
                 from,
-                type: 4
+                type: 4,
+                index: this.atIndex(player)
               }
             }
 
@@ -3191,7 +3195,7 @@ class TableState implements Serializable {
     // 如果当前是摸牌状态，则给下家摸牌
     if (this.gameMoStatus.state) {
       const huTakeCard = async () => {
-        player.emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
+        this.players[this.gameMoStatus.index].emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
       }
 
       setTimeout(huTakeCard, 1000);
@@ -3201,7 +3205,7 @@ class TableState implements Serializable {
   }
 
   async onPlayerHuTakeCard(player, message) {
-    if (!player.waitMo || !this.gameMoStatus.state) {
+    if (!player.waitMo) {
       return ;
     }
 
@@ -3456,7 +3460,8 @@ class TableState implements Serializable {
         this.gameMoStatus = {
           state: true,
           from: this.manyHuArray[0].from,
-          type: 2
+          type: 2,
+          index: this.atIndex(player)
         }
       }
 
