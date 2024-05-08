@@ -593,11 +593,6 @@ class PlayerState implements Serializable {
       return map
     }
 
-    const zeusCount = this.cards[this.caiShen[0]];
-    const poseidonCount = this.cards[this.caiShen[1]];
-    const athenaCount = this.cards[this.caiShen[2]];
-    const baiCount = this.cards[Enums.bai];
-
     this.caiShen.map((v) => {
       this.cards[v] = 0;
       this.cards[v] = this.cards[Enums.bai];
@@ -614,11 +609,6 @@ class PlayerState implements Serializable {
         refMap.gang = this
       }
     }
-
-    this.cards[Enums.bai] = baiCount;
-    this.cards[this.caiShen[0]] = zeusCount;
-    this.cards[this.caiShen[1]] = poseidonCount;
-    this.cards[this.caiShen[2]] = athenaCount;
 
     return refMap
   }
