@@ -3697,7 +3697,7 @@ class TableState implements Serializable {
                 }
 
                 // 执行巅峰对决
-                setTimeout(gameCompetite, 1500);
+                setTimeout(gameCompetite, 2200);
               }
 
               const huReply = async () => {
@@ -3846,7 +3846,7 @@ class TableState implements Serializable {
             }
 
             // 执行巅峰对决
-            setTimeout(gameCompetite, 1500);
+            setTimeout(gameCompetite, 2200);
           }
 
           const huReply = async () => {
