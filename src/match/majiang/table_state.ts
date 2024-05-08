@@ -3661,7 +3661,7 @@ class TableState implements Serializable {
               }
 
               const gameCompetite = async () => {
-                let isAllHu = false;
+                let isAllHu = true;
                 let brokes = [];
 
                 for (let i = 0; i < this.players.length; i++) {
@@ -3814,7 +3814,7 @@ class TableState implements Serializable {
           }
 
           const gameCompetite = async () => {
-            let isAllHu = false;
+            let isAllHu = true;
             let brokes = [];
 
             for (let i = 0; i < this.players.length; i++) {
@@ -4581,7 +4581,7 @@ class TableState implements Serializable {
 
     if (huCount > 0) {
       // 判断巅峰对决
-      let isAllHu = false;
+      let isAllHu = true;
 
       for (let i = 0; i < this.players.length; i++) {
         if (!this.players[i].isBroke && !this.players[i].isGameHu) {
