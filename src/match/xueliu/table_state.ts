@@ -2860,7 +2860,6 @@ class TableState implements Serializable {
     player.on(Enums.hu, async (turn, card) => {
       let from;
       const recordCard = this.stateData.card;
-      let sleepTime = 0;
 
       try {
         const isJiePao = this.state === stateWaitAction &&
@@ -2950,6 +2949,7 @@ class TableState implements Serializable {
                 }
 
                 const callForward = async () => {
+                  let sleepTime = 0;
                   if (cardId === 88 && !dianPaoPlayer.isBroke) {
                     sleepTime += 1000;
                     this.room.broadcast("game/callForward", {ok: true, data: {index, from}});
@@ -2964,7 +2964,7 @@ class TableState implements Serializable {
                   await this.gameOver(this.players[from], player);
 
                   // 执行杠后炮-呼叫转移
-                  setTimeout(callForward, 2000);
+                  setTimeout(callForward, 1500);
                 }
 
                 const huReply = async () => {
@@ -3002,7 +3002,7 @@ class TableState implements Serializable {
                   }
 
                   // 执行胡牌结算
-                  setTimeout(gameOverFunc, 200);
+                  setTimeout(gameOverFunc, 1000);
                 }
 
                 setTimeout(huReply, 1000);
@@ -3073,7 +3073,7 @@ class TableState implements Serializable {
               await this.gameOver(null, player);
 
               // 给下家摸牌
-              setTimeout(huTakeCard, 500);
+              setTimeout(huTakeCard, 1500);
             }
 
             const huReply = async () => {
@@ -3111,7 +3111,7 @@ class TableState implements Serializable {
               }
 
               // 执行胡牌结算
-              setTimeout(gameOverFunc, 200);
+              setTimeout(gameOverFunc, 1000);
             }
 
             setTimeout(huReply, 1000);
@@ -3995,9 +3995,11 @@ class TableState implements Serializable {
 
     const changeGold = async () => {
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+
+      setTimeout(waitRecharge, 1000);
     }
 
-    setTimeout(changeGold, 1000);
+    setTimeout(changeGold, 200);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
@@ -4010,14 +4012,11 @@ class TableState implements Serializable {
       await this.gameAllOver(states, [], nextZhuang);
     }
 
-    if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
-      this.room.robotManager.model.step = RobotStep.waitRuby;
-
-      const waitRecharge = async () => {
+    const waitRecharge = async () => {
+      if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
+        this.room.robotManager.model.step = RobotStep.waitRuby;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
-
-      setTimeout(waitRecharge, 1500);
     }
 
     return true;
