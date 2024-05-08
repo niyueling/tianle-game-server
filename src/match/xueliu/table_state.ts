@@ -2742,7 +2742,7 @@ class TableState implements Serializable {
                 }
               }
 
-              setTimeout(nextDo, 2000);
+              setTimeout(nextDo, 2200);
             } else {
               logger.info('gangByOtherDa player-%s card:%s GangReply error:4', index, card)
               player.sendMessage('game/gangReply', {
@@ -2851,7 +2851,7 @@ class TableState implements Serializable {
           }
         }
 
-        setTimeout(nextDo, 2000);
+        setTimeout(nextDo, 2200);
       } else {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangPriorityInsufficient});
       }
