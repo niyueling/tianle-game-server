@@ -5510,6 +5510,7 @@ class TableState implements Serializable {
   }
 
   async checkBrokeAndWait(isWait = true) {
+    let sleepTime = 1000;
     // 判断是否破产，破产提醒客户端充值钻石
     let brokePlayers = [];
     let playersModifyGolds = [];
@@ -5551,6 +5552,7 @@ class TableState implements Serializable {
     }
 
     const changeGold = async () => {
+      sleepTime += (this.cardTypes.cardId >= 45 ? 4500 : 1500);
       this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
     }
 
@@ -5574,7 +5576,7 @@ class TableState implements Serializable {
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
 
-      setTimeout(waitRecharge, 1500);
+      setTimeout(waitRecharge, sleepTime);
     }
 
     return true;
