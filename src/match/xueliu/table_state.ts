@@ -2949,7 +2949,7 @@ class TableState implements Serializable {
                 }
 
                 const callForward = async () => {
-                  let sleepTime = 0;
+                  let sleepTime = 500;
                   if (cardId === 88 && !dianPaoPlayer.isBroke) {
                     sleepTime += 1000;
                     this.room.broadcast("game/callForward", {ok: true, data: {index, from}});

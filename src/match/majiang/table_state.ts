@@ -3664,7 +3664,7 @@ class TableState implements Serializable {
               const gameCompetite = async () => {
                 let isAllHu = true;
                 let brokes = [];
-                let sleepTime = 0;
+                let sleepTime = 500;
 
                 for (let i = 0; i < this.players.length; i++) {
                   brokes.push({isBroke: this.players[i].isBroke, isGameHu: this.players[i].isGameHu})
@@ -3814,7 +3814,7 @@ class TableState implements Serializable {
 
           const gameCompetite = async () => {
             let isAllHu = true;
-            let sleepTime = 0;
+            let sleepTime = 500;
 
             for (let i = 0; i < this.players.length; i++) {
               if (!this.players[i].isBroke && !this.players[i].isGameHu) {
