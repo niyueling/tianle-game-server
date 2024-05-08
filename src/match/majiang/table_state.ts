@@ -3686,6 +3686,7 @@ class TableState implements Serializable {
               }
 
               const gameOverFunc = async () => {
+                sleepTime += 1000;
                 if (this.room.isPublic) {
                   await this.gameOver(this.players[from], player);
                 } else {
