@@ -424,6 +424,13 @@ class TableState implements Serializable {
   // 是否正在执行一炮多响
   isRunMultiple: boolean = false;
 
+  // 牌局摸牌状态
+  gameMoStatus: {
+    state: boolean;
+    from: number;
+    type: number;
+  }
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -461,6 +468,11 @@ class TableState implements Serializable {
     this.canManyHuPlayers = [];
     this.isRunMultiple = false;
     this.testMoCards = [];
+    this.gameMoStatus = {
+      state: false,
+      from: 0,
+      type: 1
+    }
   }
 
   toJSON() {
@@ -3181,6 +3193,15 @@ class TableState implements Serializable {
           ok: true,
           data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
         });
+
+        // 如果当前是摸牌状态，则给下家摸牌
+        if (this.gameMoStatus.state) {
+          const huTakeCard = async () => {
+            player.emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
+          }
+
+          setTimeout(huTakeCard, 1000);
+        }
       } else {
         await player.sendMessage('game/restoreGameReply', {ok: false, data: {}});
       }
@@ -3539,6 +3560,7 @@ class TableState implements Serializable {
 
     player.on(Enums.hu, async (turn, card) => {
       let from;
+      let sleepTime = 0;
       const recordCard = this.stateData.card;
       const isJiePao = this.state === stateWaitAction &&
         recordCard === card && this.stateData[Enums.hu] &&
@@ -3594,33 +3616,8 @@ class TableState implements Serializable {
               this.players.map((p) => p.isDiHu = false)
               player.huTurnList.push({card, turn});
 
-              this.room.broadcast('game/showHuType', {
-                ok: true,
-                data: {
-                  index,
-                  from,
-                  cards: [card],
-                  daCards: [],
-                  huCards: [],
-                  card,
-                  type: "jiepao",
-                }
-              });
-
-              await player.sendMessage('game/huReply', {
-                ok: true,
-                data: {
-                  card,
-                  from,
-                  turn,
-                  type: "jiepao",
-                  constellationCards: player.constellationCards,
-                  huType: {
-                    id: this.cardTypes.cardId,
-                    multiple: await this.getRoomMultiple(player)
-                  }
-                }
-              });
+              // 设置用户的状态为待摸牌
+              player.waitMo = true;
 
               // 记录胡牌次数
               if (!player.huTypeList.includes(this.cardTypes.cardId)) {
@@ -3634,61 +3631,110 @@ class TableState implements Serializable {
                 player.isGameHu = true;
               }
 
-              //第一次胡牌自动托管
-              if (!player.onDeposit && !this.isAllHu && player.zhuang && this.room.isPublic) {
-                player.onDeposit = true
-                await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-              }
-
               this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-              this.room.broadcast('game/oppoHu', {
+
+              this.room.broadcast('game/showHuType', {
                 ok: true,
                 data: {
-                  turn,
-                  card,
-                  from,
                   index,
-                  constellationCards: player.constellationCards,
-                  huType: {id: this.cardTypes.cardId, multiple: await this.getRoomMultiple(player)}
+                  from,
+                  cards: [card],
+                  daCards: [],
+                  huCards: [],
+                  card,
+                  type: "jiepao",
                 }
-              }, player.msgDispatcher);
-              if (this.room.isPublic) {
-                await this.gameOver(this.players[from], player);
-              } else {
-                await this.gameOverNormal(this.players[from], player);
+              });
+
+              const huTakeCard = async () => {
+                if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+                  player.waitMo = false;
+                  return player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+                }
+
+                // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
+                this.gameMoStatus = {
+                  state: true,
+                  from,
+                  type: 1
+                }
               }
 
+              const gameCompetite = async () => {
+                let isAllHu = false;
 
-              let isAllHu = false;
-
-              for (let i = 0; i < this.players.length; i++) {
-                if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                  isAllHu = false;
+                for (let i = 0; i < this.players.length; i++) {
+                  if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+                    isAllHu = false;
+                  }
                 }
+
+                if (!this.isAllHu && isAllHu && !this.isGameOver) {
+                  this.isAllHu = isAllHu;
+                  sleepTime += 3000;
+
+                  this.room.broadcast('game/gameCompetite', {
+                    ok: true,
+                    data: {
+                      roomId: this.room._id
+                    }
+                  });
+                }
+
+                // 给下家摸牌
+                setTimeout(huTakeCard, sleepTime);
               }
 
-              if (!this.isAllHu && isAllHu && !this.isGameOver) {
-                this.isAllHu = isAllHu;
+              const gameOverFunc = async () => {
+                if (this.room.isPublic) {
+                  await this.gameOver(this.players[from], player);
+                } else {
+                  await this.gameOverNormal(this.players[from], player);
+                }
 
-                this.room.broadcast('game/gameCompetite', {
+                // 执行巅峰对决
+                setTimeout(gameCompetite, 2000);
+              }
+
+              const huReply = async () => {
+                await player.sendMessage('game/huReply', {
                   ok: true,
                   data: {
-                    roomId: this.room._id
+                    card,
+                    from,
+                    turn,
+                    type: "jiepao",
+                    constellationCards: player.constellationCards,
+                    huType: {
+                      id: this.cardTypes.cardId,
+                      multiple: await this.getRoomMultiple(player)
+                    }
                   }
                 });
+
+                this.room.broadcast('game/oppoHu', {
+                  ok: true,
+                  data: {
+                    turn,
+                    card,
+                    from,
+                    index,
+                    constellationCards: player.constellationCards,
+                    huType: {id: this.cardTypes.cardId, multiple: await this.getRoomMultiple(player)}
+                  }
+                }, player.msgDispatcher);
+
+                //第一次胡牌自动托管
+                if (!player.onDeposit && !this.isAllHu && player.zhuang && this.room.isPublic) {
+                  player.onDeposit = true
+                  await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+                }
+
+                // 执行胡牌结算
+                setTimeout(gameOverFunc, 200);
               }
 
-              // 设置用户的状态为待摸牌
-              player.waitMo = true;
-
-              // const huTakeCard = async () => {
-              //   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-              //     player.waitMo = false;
-              //     player.emitter.emit(Enums.huTakeCard, {from, type: 1});
-              //   }
-              // }
-              //
-              // setTimeout(huTakeCard, 5000);
+              setTimeout(huReply, 1000);
             } else {
               player.emitter.emit(Enums.guo, this.turn, card);
             }
@@ -3715,9 +3761,25 @@ class TableState implements Serializable {
           player.isGameDa = true;
           player.huTurnList.push({card, turn});
           this.stateData = {};
+
+          // 记录胡牌次数
+          if (!player.huTypeList.includes(this.cardTypes.cardId)) {
+            const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
+            cardTypeRecord.count++;
+            await cardTypeRecord.save();
+            player.huTypeList.push(this.cardTypes.cardId);
+          }
+
+          if (!player.isGameHu) {
+            player.isGameHu = true;
+          }
+
           // 设置所有用户地胡状态为false
           this.players.map((p) => p.isDiHu = false)
           from = this.atIndex(this.lastDa);
+
+          // 设置用户的状态为待摸牌
+          player.waitMo = true;
 
           this.room.broadcast('game/showHuType', {
             ok: true,
@@ -3732,86 +3794,95 @@ class TableState implements Serializable {
             }
           });
 
-          await player.sendMessage('game/huReply', {
-            ok: true,
-            data: {
-              card,
-              from: this.atIndex(player),
-              type: "zimo",
-              turn,
-              constellationCards: player.constellationCards,
-              huType: {
-                id: this.cardTypes.cardId,
-                multiple: await this.getRoomMultiple(player)
+          const huTakeCard = async () => {
+            if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+              player.waitMo = false;
+              return player.emitter.emit(Enums.huTakeCard, {from, type: 4});
+            }
+
+            // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
+            this.gameMoStatus = {
+              state: true,
+              from,
+              type: 4
+            }
+          }
+
+          const gameCompetite = async () => {
+            let isAllHu = false;
+
+            for (let i = 0; i < this.players.length; i++) {
+              if (!this.players[i].isBroke && !this.players[i].isGameHu) {
+                isAllHu = false;
               }
             }
-          });
 
-          // 记录胡牌次数
-          if (!player.huTypeList.includes(this.cardTypes.cardId)) {
-            const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
-            cardTypeRecord.count++;
-            await cardTypeRecord.save();
-            player.huTypeList.push(this.cardTypes.cardId);
-          }
+            if (!this.isAllHu && isAllHu && !this.isGameOver) {
+              this.isAllHu = isAllHu;
+              sleepTime += 3000;
 
-          if (!player.isGameHu) {
-            player.isGameHu = true;
-          }
-
-          // 第一次胡牌自动托管
-          if (!player.onDeposit && !this.isAllHu && player.zhuang && this.room.isPublic) {
-            player.onDeposit = true
-            await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
-          }
-
-          this.room.broadcast('game/oppoZiMo', {
-            ok: true,
-            data: {
-              turn,
-              card,
-              from,
-              index,
-              constellationCards: player.constellationCards,
-              huType: {id: this.cardTypes.cardId, multiple: await this.getRoomMultiple(player)}
+              this.room.broadcast('game/gameCompetite', {
+                ok: true,
+                data: {
+                  roomId: this.room._id
+                }
+              });
             }
-          }, player.msgDispatcher);
-          if (this.room.isPublic) {
-            await this.gameOver(null, player);
-          } else {
-            await this.gameOverNormal(null, player);
+
+            // 给下家摸牌
+            setTimeout(huTakeCard, sleepTime);
           }
 
-          let isAllHu = true;
-
-          for (let i = 0; i < this.players.length; i++) {
-            if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-              isAllHu = false;
+          const gameOverFunc = async () => {
+            if (this.room.isPublic) {
+              await this.gameOver(null, player);
+            } else {
+              await this.gameOverNormal(null, player);
             }
+
+            // 执行巅峰对决
+            setTimeout(gameCompetite, 2000);
           }
 
-          if (!this.isAllHu && isAllHu && !this.isGameOver) {
-            this.isAllHu = isAllHu;
-
-            this.room.broadcast('game/gameCompetite', {
+          const huReply = async () => {
+            await player.sendMessage('game/huReply', {
               ok: true,
               data: {
-                roomId: this.room._id
+                card,
+                from: this.atIndex(player),
+                type: "zimo",
+                turn,
+                constellationCards: player.constellationCards,
+                huType: {
+                  id: this.cardTypes.cardId,
+                  multiple: await this.getRoomMultiple(player)
+                }
               }
             });
+
+            this.room.broadcast('game/oppoZiMo', {
+              ok: true,
+              data: {
+                turn,
+                card,
+                from,
+                index,
+                constellationCards: player.constellationCards,
+                huType: {id: this.cardTypes.cardId, multiple: await this.getRoomMultiple(player)}
+              }
+            }, player.msgDispatcher);
+
+            // 第一次胡牌自动托管
+            if (!player.onDeposit && !this.isAllHu && player.zhuang && this.room.isPublic) {
+              player.onDeposit = true
+              await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
+            }
+
+            // 执行胡牌结算
+            setTimeout(gameOverFunc, 200);
           }
 
-          // 设置用户的状态为待摸牌
-          player.waitMo = true;
-
-          // const huTakeCard = async () => {
-          //   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-          //     player.waitMo = false;
-          //     player.emitter.emit(Enums.huTakeCard, {from, type: 4});
-          //   }
-          // }
-          //
-          // setTimeout(huTakeCard, 5000);
+          setTimeout(huReply, 1000);
         } else {
           player.cards[card]++;
           player.emitter.emit(Enums.da, this.turn, card);
@@ -3886,6 +3957,15 @@ class TableState implements Serializable {
   }
 
   async onPlayerBroke(player) {
+    // 如果当前是摸牌状态，则给下家摸牌
+    if (this.gameMoStatus.state) {
+      const huTakeCard = async () => {
+        player.emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
+      }
+
+      setTimeout(huTakeCard, 1000);
+    }
+
     await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
   }
 
@@ -4320,17 +4400,29 @@ class TableState implements Serializable {
       }
     });
 
-    this.room.broadcast("game/competiteHuReply", {
-      ok: true,
-      data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs}
-    });
+    const changeGold = async () => {
+      this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
+    }
 
-    this.room.broadcast("game/competiteChangeGoldReply", {ok: true, data: changeGolds});
+    const huReply = async () => {
+      this.room.broadcast("game/competiteHuReply", {
+        ok: true,
+        data: {index: msgs.length > 0 ? msgs[0].index : -1, msg: msgs}
+      });
+
+      setTimeout(changeGold, 200);
+    }
+
+    setTimeout(huReply, 1000);
 
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
+      const gameAllOver = async () => {
+        await this.gameAllOver(states, [], nextZhuang);
+      }
+
+      setTimeout(gameAllOver, 2200);
     }
 
     if (player.zhuang) {
@@ -4340,18 +4432,26 @@ class TableState implements Serializable {
     // 设置用户的状态为待摸牌
     player.waitMo = true;
 
-    // const huTakeCard = async () => {
-    //   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-    //     player.waitMo = false;
-    //     player.emitter.emit(Enums.huTakeCard, {from: this.atIndex(player), type: 3});
-    //   }
-    // }
-    //
-    // setTimeout(huTakeCard, 5000);
+    const huTakeCard = async () => {
+      if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+        player.waitMo = false;
+        return player.emitter.emit(Enums.huTakeCard, {from: this.atIndex(player), type: 3});
+      }
+
+      // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
+      this.gameMoStatus = {
+        state: true,
+        from: this.atIndex(player),
+        type: 3
+      }
+    }
+
+    setTimeout(huTakeCard, 2500);
   }
 
   async onPlayerMultipleHu(player) {
     const msgs = [];
+    let sleepTime = 2000;
     const changeGolds = [
       {index: 0, changeGold: [], isBroke: false, currentGold: 0},
       {index: 1, changeGold: [], isBroke: false, currentGold: 0},
@@ -4444,13 +4544,26 @@ class TableState implements Serializable {
       changeGolds[i].isBroke = this.players[i].isBroke;
     }
 
-    this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs, huCount}});
-    this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
+    const changeGold = async () => {
+      this.room.broadcast("game/multipleChangeGoldReply", {ok: true, data: changeGolds});
+    }
+
+    const huReply = async () => {
+      this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs, huCount}});
+
+      setTimeout(changeGold, 1000);
+    }
+
+    setTimeout(huReply, 1000);
 
     if (this.remainCards <= 0 || this.isGameOver) {
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
+      const gameAllOver = async () => {
+        await this.gameAllOver(states, [], nextZhuang);
+      }
+
+      setTimeout(gameAllOver, sleepTime + 1000);
     }
 
     if (huCount > 0) {
@@ -4465,26 +4578,38 @@ class TableState implements Serializable {
 
       if (!this.isAllHu && isAllHu && this.state !== stateGameOver) {
         this.isAllHu = isAllHu;
+        sleepTime += 3000;
 
-        this.room.broadcast('game/gameCompetite', {
-          ok: true,
-          data: {
-            roomId: this.room._id
-          }
-        });
+        const gameCompetite = async () => {
+          this.room.broadcast('game/gameCompetite', {
+            ok: true,
+            data: {
+              roomId: this.room._id
+            }
+          });
+        }
+
+        setTimeout(gameCompetite, sleepTime + 1000);
       }
 
       // 设置用户的状态为待摸牌
       player.waitMo = true;
 
-      // const huTakeCard = async () => {
-      //   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-      //     player.waitMo = false;
-      //     player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
-      //   }
-      // }
-      //
-      // setTimeout(huTakeCard, 5000);
+      const huTakeCard = async () => {
+        if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+          player.waitMo = false;
+          return player.emitter.emit(Enums.huTakeCard, {from: this.manyHuArray[0].from, type: 2});
+        }
+
+        // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
+        this.gameMoStatus = {
+          state: true,
+          from: this.manyHuArray[0].from,
+          type: 2
+        }
+      }
+
+      setTimeout(huTakeCard, sleepTime);
     } else {
       this.isManyHu = false;
       this.isRunMultiple = false;
@@ -5368,6 +5493,10 @@ class TableState implements Serializable {
       categoryId: this.room.gameRule.categoryId
     })
 
+    await this.checkBrokeAndWait();
+  }
+
+  async checkBrokeAndWait(isWait = true) {
     // 判断是否破产，破产提醒客户端充值钻石
     let brokePlayers = [];
     let playersModifyGolds = [];
@@ -5378,16 +5507,19 @@ class TableState implements Serializable {
       let params = {
         index: this.atIndex(p),
         _id: p.model._id.toString(),
-        shortId: p.model.shortId,
         gold: p.balance,
         currentGold: model.gold,
-        isBroke: p.isBroke,
-        huType: this.cardTypes
+        isBroke: p.isBroke
       };
       if (model.gold <= 0) {
         if (params.index === 0) {
           if (!p.isBroke) {
-            waits.push(params);
+            if (isWait) {
+              waits.push(params);
+            } else {
+              brokePlayers.push(p);
+              await this.playerGameOver(p, [], p.genGameStatus(this.atIndex(p), 1));
+            }
           } else {
             brokePlayers.push(p);
           }
@@ -5405,39 +5537,35 @@ class TableState implements Serializable {
       playersModifyGolds.push(params);
     }
 
-    this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+
+    const changeGold = async () => {
+      this.room.broadcast("game/playerChangeGold", {ok: true, data: playersModifyGolds});
+    }
+
+    setTimeout(changeGold, 1000);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
 
-    const huPlayers = this.players
-      .filter(p => p.huPai())
-
-    huPlayers
-      .forEach(huPlayer => {
-        const losers = this.players.filter(p => p.events[Enums.dianPao] || p.events[Enums.taJiaZiMo])
-        for (const loser of losers) {
-          const wins = huPlayer.winScore()
-          huPlayer.winFrom(loser, wins)
-        }
-      })
-
-    if (huPlayers.length > 0) {
-      this.calcGangScore();
-    }
-
-    if (this.remainCards <= 0) {
+    if (this.remainCards <= 0 && isWait) {
       return await this.gameAllOver(states, [], nextZhuang);
     }
 
-    if (this.isGameOver || brokePlayers.length >= 3) {
+    if ((this.isGameOver || brokePlayers.length >= 3) && isWait) {
       await this.gameAllOver(states, [], nextZhuang);
     }
 
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
-      this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+
+      const waitRecharge = async () => {
+        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      }
+
+      setTimeout(waitRecharge, 1500);
     }
+
+    return true;
   }
 
   async gameOverNormal(from, to) {
