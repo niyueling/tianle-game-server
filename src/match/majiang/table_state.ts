@@ -3989,7 +3989,7 @@ class TableState implements Serializable {
   }
 
   async onPlayerHuTakeCard(player, message) {
-    if (!player.waitMo || !this.gameMoStatus.state) {
+    if (!player.waitMo) {
       console.warn("waitMo-%s, gameMoStatus-%s", player.waitMo, JSON.stringify(this.gameMoStatus));
       return ;
     }
