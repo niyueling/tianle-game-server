@@ -2935,7 +2935,6 @@ class TableState implements Serializable {
 
                 const huTakeCard = async () => {
                   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-                    player.waitMo = false;
                     return player.emitter.emit(Enums.huTakeCard, {from, type: 1});
                   }
 
@@ -3055,7 +3054,6 @@ class TableState implements Serializable {
 
             const huTakeCard = async () => {
               if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-                player.waitMo = false;
                 return player.emitter.emit(Enums.huTakeCard, {from, type: 4});
               }
 
