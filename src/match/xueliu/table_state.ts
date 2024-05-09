@@ -14,7 +14,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {ConsumeLogType, RobotStep, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import CombatGain from "../../database/models/combatGain";
@@ -669,7 +669,7 @@ class TableState implements Serializable {
   }
 
   async getCardTypesByHu(player, type = 1, dianPaoPlayer, isGame) {
-    const cardTypes = await CardTypeModel.find({cardId: {$gt: 50}}).sort({cardId: 1});
+    const cardTypes = await CardTypeModel.find({gameType: GameType.xueliu}).sort({cardId: 1});
     let cardType = { ...cardTypes[0] }; // 创建一个新的对象，其属性与cardTypes[0]相同
     cardType.multiple = 1;
     cardType.cardId = -1;
