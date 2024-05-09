@@ -567,6 +567,8 @@ class Room extends RoomBase {
 
     const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
 
+    console.warn(newJoinPlayer.juScore);
+
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
@@ -578,7 +580,7 @@ class Room extends RoomBase {
       location: newJoinPlayer.location,
       owner: this.ownerId,
       zhuangJia: newJoinPlayer.zhuang,
-      score: newJoinPlayer.juScore,
+      score: newJoinPlayer.juScore || 0,
       base: this.currentBase,
       zhuangCounter: this.zhuangCounter,
       juIndex: this.game.juIndex,
