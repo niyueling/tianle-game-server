@@ -4803,10 +4803,12 @@ class TableState implements Serializable {
     failGoldList.push(from.balance);
     failList.push(from._id);
     failFromList.push(this.atIndex(from));
+    from.sendMessage("resource/updateScore", {ok: true, data: {score: from.juScore}});
 
     //增加胡牌用户金币
     to.balance = winBalance;
     to.juScore += winBalance;
+    to.sendMessage("resource/updateScore", {ok: true, data: {score: to.juScore}});
 
     // 生成金豆记录
     await RoomGoldRecord.create({
@@ -5025,12 +5027,14 @@ class TableState implements Serializable {
         failList.push(p._id);
         failFromList.push(this.atIndex(p));
         failGoldList.push(p.balance);
+        p.sendMessage("resource/updateScore", {ok: true, data: {score: p.juScore}});
       }
     }
 
     //增加胡牌用户金币
     to.balance = winBalance;
     to.juScore += winBalance;
+    to.sendMessage("resource/updateScore", {ok: true, data: {score: to.juScore}});
 
     // 生成金豆记录
     await RoomGoldRecord.create({
@@ -5608,6 +5612,8 @@ class TableState implements Serializable {
       failList.push(from._id);
       failFromList.push(this.atIndex(from));
       failGoldList.push(from.balance);
+
+      from.sendMessage("resource/updateScore", {ok: true, data: {score: from.juScore}});
     } else {
       // 自摸胡
       for (const p of this.players) {
@@ -5620,6 +5626,8 @@ class TableState implements Serializable {
           failList.push(p._id);
           failGoldList.push(p.balance);
           failFromList.push(this.atIndex(p));
+
+          p.sendMessage("resource/updateScore", {ok: true, data: {score: p.juScore}});
         }
       }
     }
@@ -5627,6 +5635,7 @@ class TableState implements Serializable {
     //增加胡牌用户金币
     to.balance = winBalance;
     to.juScore += winBalance;
+    to.sendMessage("resource/updateScore", {ok: true, data: {score: to.juScore}});
 
     // 生成金豆记录
     await RoomGoldRecord.create({
