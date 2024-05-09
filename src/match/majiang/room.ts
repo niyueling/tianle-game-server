@@ -567,8 +567,6 @@ class Room extends RoomBase {
 
     const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
 
-    console.warn(newJoinPlayer.juScore);
-
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
@@ -594,7 +592,6 @@ class Room extends RoomBase {
   }
 
   async announcePlayerJoin(newJoinPlayer) {
-    console.warn("join-%s", JSON.stringify(await this.joinMessageFor(newJoinPlayer)));
     this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {
