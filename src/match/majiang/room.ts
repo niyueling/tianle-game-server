@@ -592,6 +592,7 @@ class Room extends RoomBase {
   }
 
   async announcePlayerJoin(newJoinPlayer) {
+    console.warn("join-%s", JSON.stringify(await this.joinMessageFor(newJoinPlayer)));
     this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {

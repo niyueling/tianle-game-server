@@ -147,6 +147,7 @@ export class PublicRoom extends Room {
     message.zhuangJia = newJoinPlayer.zhuang;
     // 更新 model
     message.model = await service.playerService.getPlayerPlainModel(newJoinPlayer.model._id);
+    message.model.score = newJoinPlayer.juScore;
 
     return message;
   }
