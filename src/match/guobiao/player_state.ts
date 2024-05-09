@@ -593,12 +593,6 @@ class PlayerState implements Serializable {
       return map
     }
 
-    this.caiShen.map((v) => {
-      this.cards[v] = 0;
-      this.cards[v] = this.cards[Enums.bai];
-      this.cards[Enums.bai] = 0;
-    })
-
     const refMap = map
     const c = this.cards[card]
 
@@ -1211,7 +1205,10 @@ class PlayerState implements Serializable {
   }
 
   checkQiaoXiang() {
-    const caiCount = this.cards[this.caiShen[0]] + this.cards[this.caiShen[1]] + this.cards[this.caiShen[2]]
+    let caiCount = 0;
+    for (let i = 0; i < this.caiShen.length; i++) {
+      caiCount += this.cards[this.caiShen[i]];
+    }
     if (caiCount) {
       if (HuPaiDetect.checkQiaoXiang(this.cards)) {
         return true
