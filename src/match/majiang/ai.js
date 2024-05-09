@@ -48,6 +48,10 @@ function getUseLessCard(cards) {
 }
 
 function onCanDoSomething(actions, cards, card) {
+  if (actions.hu) {
+    return Enums.hu;
+  }
+
   if (actions.gang) {
     return Enums.gang;
   }
@@ -71,12 +75,6 @@ function onCanDoSomething(actions, cards, card) {
       }
     }
   }
-
-  if (actions.hu) {
-    return Enums.hu;
-  }
-
-  console.log("guo")
 
   return Enums.guo;
 }
@@ -105,11 +103,11 @@ export const playerAi = {
   },
 
   onWaitForDa(actions, cards) {
-    if (actions.gang) {
-      return Enums.gang;
-    }
     if (actions.hu) {
       return Enums.hu;
+    }
+    if (actions.gang) {
+      return Enums.gang;
     }
     return Enums.guo;
   },
