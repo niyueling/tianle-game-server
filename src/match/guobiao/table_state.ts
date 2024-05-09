@@ -839,39 +839,44 @@ class TableState implements Serializable {
     cardType.cardName = "平胡";
 
     for (let i = 0; i < cardTypes.length; i++) {
-      // 起手叫
-      if (cardTypes[i].cardId === 1 && type === 1) {
-        const status = await this.checkQiShouJiao(player);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
+      // 绝张(牌河中已出现过多枚，胡牌时仅剩当前胡牌张的和牌)
+      if (cardTypes[i].cardId === 92) {
+        const status = await this.checkJueZhang(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
-      // 双星辰，含有两种星座牌组成的刻(杠的和牌)
-      if (cardTypes[i].cardId === 2) {
-        const status = await this.checkShuangXingChen(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 门清，没有碰和明杠的情况下，胡其他家点炮的牌
-      if (cardTypes[i].cardId === 3 && type === 2) {
-        const status = await this.checkMenQing(player);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 杠上开花
-      if (cardTypes[i].cardId === 4 && type === 1) {
-        const status = await this.checkGangShangHua(player);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 妙手回春
-      if (cardTypes[i].cardId === 5 && type === 1) {
+      // 妙手回春(剩余牌张数位0的自摸)
+      if (cardTypes[i].cardId === 93 && type === 1) {
         const status = await this.checkMiaoShouHuiChun(player);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
+        }
+      }
+
+      // 海底捞月(剩余牌张数位0的胡其他家点炮的牌)
+      if (cardTypes[i].cardId === 94 && type === 2) {
+        const status = await this.checkHaiDiLaoYue(player);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 杠上开花(用开杠后的补牌胡牌)
+      if (cardTypes[i].cardId === 95 && type === 1) {
+        const status = await this.checkGangShangHua(player);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 双同刻(含有两种花色的同一序数牌刻(杠)的和牌)
+      if (cardTypes[i].cardId === 96) {
+        const status = await this.checkShuangTongKe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
       }
 
       // 海底捞月
@@ -2534,7 +2539,8 @@ class TableState implements Serializable {
       const number = gangList[i] % 10;
       const t1 = gangList.includes(number);
       const t2 = gangList.includes(number + 10);
-      if (t1 && t2) {
+      const t3 = gangList.includes(number + 20);
+      if ((t1 && t2) || (t1 && t3) || (t3 && t2)) {
         flag = true;
       }
     }
