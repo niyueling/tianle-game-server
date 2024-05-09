@@ -99,6 +99,10 @@ class Rule {
     return this.ro.diFen || 1
   }
 
+  get test(): number {
+    return this.ro.test || false
+  }
+
   get specialReward() {
     return this.ro.specialReward || 0
   }

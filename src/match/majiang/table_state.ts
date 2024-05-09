@@ -937,7 +937,7 @@ class TableState implements Serializable {
     this.sleepTime = 1500;
     this.caishen = this.rule.useCaiShen ? [Enums.zeus, Enums.poseidon, Enums.athena] : [Enums.slotNoCard]
     const restCards = this.remainCards - (this.rule.playerCount * 13);
-    if (payload.test && payload.moCards && payload.moCards.length > 0) {
+    if (this.rule.test && payload.moCards && payload.moCards.length > 0) {
       this.testMoCards = payload.moCards;
     }
 
@@ -999,7 +999,7 @@ class TableState implements Serializable {
       }
 
       // 如果是好友房并且传参test=true，设置金豆为金豆上限的1亿倍
-      if (!this.room.isPublic && payload.test) {
+      if (!this.room.isPublic && this.rule.test) {
         const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
         const model = await service.playerService.getPlayerModel(p._id);
         model.gold = conf.maxGold * 100000000;
@@ -3174,7 +3174,7 @@ class TableState implements Serializable {
     player.on(Enums.openCard, async () => {
       if (!player.onDeposit) {
         player.isMingCard = true;
-        await player.sendMessage('game/openCardReply', {
+        await this.room.broadcast('game/openCardReply', {
           ok: true,
           data: {roomId: this.room._id, index: this.atIndex(player)}
         });
