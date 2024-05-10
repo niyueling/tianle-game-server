@@ -3390,7 +3390,8 @@ class TableState implements Serializable {
           this.room.broadcast('game/showHuType', {
             ok: true,
             data: {
-              index: huMsg.from,
+              index: huMsg.index,
+              from: huMsg.from,
               cards: [this.manyHuArray[i].card],
               daCards: [],
               huCards: [],
@@ -3401,7 +3402,7 @@ class TableState implements Serializable {
           msgs.push({
             type: "hu",
             card: this.manyHuArray[i].card,
-            index: huMsg.from,
+            index: huMsg.index,
             from: this.manyHuArray[i].from,
             playersModifyGolds: huMsg.playersModifyGolds,
             constellationCards: huMsg.constellationCards,
@@ -3497,7 +3498,8 @@ class TableState implements Serializable {
 
       return {
         card: msg.card,
-        from: msg.to,
+        index: msg.to,
+        from: msg.from,
         constellationCards: player.constellationCards,
         playersModifyGolds,
         huType: {
