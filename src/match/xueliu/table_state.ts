@@ -1751,17 +1751,18 @@ class TableState implements Serializable {
   async checkQuanShuangKe(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...jieGang];
-    let gangCount = 0;
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    let flag = true;
+    const cards = player.cards.slice();
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    let isJiePao = this.lastDa && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    if (isZiMo && isJiePao) {
-      isJiePao = false;
-    }
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
@@ -1772,7 +1773,7 @@ class TableState implements Serializable {
     if (huResult.hu) {
       if (huResult.huCards.keZi) {
         keZi = huResult.huCards.keZi;
-        gangList = [...gangList, ...keZi];
+        gangList.push(keZi);
       }
 
       if (huResult.huCards.gangZi) {
@@ -1782,12 +1783,18 @@ class TableState implements Serializable {
     }
 
     for (let i = 0; i < gangList.length; i++) {
-      if (gangList[i] <= Enums.tongzi9 && gangList[i] % 2 === 0) {
-        gangCount++;
+      if (gangList[i] <= Enums.tongzi9 && gangList[i] % 2 === 1) {
+        flag = false;
       }
     }
 
-    return gangCount === 4 && (isZiMo || isJiePao);
+    for (let i = 0; i <= Enums.tongzi9; i++) {
+      if (cards[i] > 0 && i % 2 === 1) {
+        flag = false;
+      }
+    }
+
+    return flag && gangList.length === 4 && (isZiMo || isJiePao);
   }
 
   async checkSiJieGao(player, type) {

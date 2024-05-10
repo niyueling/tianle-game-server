@@ -2105,8 +2105,10 @@ class TableState implements Serializable {
   async checkQuanShuangKe(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...jieGang];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
+    const cards = player.cards.slice();
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
@@ -2114,6 +2116,7 @@ class TableState implements Serializable {
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
@@ -2139,14 +2142,22 @@ class TableState implements Serializable {
       }
     }
 
+    for (let i = 0; i <= Enums.shuzi9; i++) {
+      if (cards[i] > 0 && i % 2 === 1) {
+        flag = false;
+      }
+    }
+
     return flag && gangList.length === 4 && (isZiMo || isJiePao);
   }
 
   async checkQuanDanKe(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...jieGang];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
     let flag = true;
+    const cards = player.cards.slice();
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
@@ -2154,6 +2165,7 @@ class TableState implements Serializable {
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
@@ -2175,6 +2187,12 @@ class TableState implements Serializable {
 
     for (let i = 0; i < gangList.length; i++) {
       if (gangList[i] <= Enums.shuzi9 && gangList[i] % 2 === 0) {
+        flag = false;
+      }
+    }
+
+    for (let i = 0; i <= Enums.shuzi9; i++) {
+      if (cards[i] > 0 && i % 2 === 0) {
         flag = false;
       }
     }
@@ -4829,13 +4847,12 @@ class TableState implements Serializable {
     let playersModifyGolds = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
-      const model = await service.playerService.getPlayerModel(p.model._id.toString());
       let params = {
         index: this.atIndex(p),
         _id: p.model._id.toString(),
         shortId: p.model.shortId,
         gold: p.balance,
-        currentGold: model.gold,
+        currentGold: p.juScore,
         isBroke: p.isBroke,
         huType: this.cardTypes
       };
@@ -5055,13 +5072,12 @@ class TableState implements Serializable {
     let playersModifyGolds = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
-      const model = await service.playerService.getPlayerModel(p.model._id.toString());
       let params = {
         index: this.atIndex(p),
         _id: p.model._id.toString(),
         shortId: p.model.shortId,
         gold: p.balance,
-        currentGold: model.gold,
+        currentGold: p.juScore,
         isBroke: p.isBroke,
         huType: this.cardTypes
       };
@@ -5657,13 +5673,12 @@ class TableState implements Serializable {
     let playersModifyGolds = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
-      const model = await service.playerService.getPlayerModel(p.model._id.toString());
       let params = {
         index: this.atIndex(p),
         _id: p.model._id.toString(),
         shortId: p.model.shortId,
         gold: p.balance,
-        currentGold: model.gold,
+        currentGold: p.juScore,
         isBroke: p.isBroke,
         huType: this.cardTypes
       };
