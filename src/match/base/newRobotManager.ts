@@ -149,11 +149,12 @@ export class NewRobotManager {
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐
-      // console.log('some one absent', this.room._id);
+      console.log('some one absent', this.room._id);
       return;
     }
     isOk = this.isNeedDeposit();
     if (!isOk) {
+      console.log('some one not need deposit', this.room._id);
       // 不需要托管
       return;
     }
@@ -367,7 +368,6 @@ export class NewRobotManager {
     for (const proxy of Object.values(this.disconnectPlayers)) {
       index = this.room.readyPlayers.indexOf(proxy.model._id.toString());
       if (index === -1) {
-        // await this.room.nextGame(proxy);
         this.room.ready(proxy);
         flag = false;
         break;
@@ -538,7 +538,7 @@ export class NewRobotManager {
         // console.log(`human player not ready`, this.room._id);
         return;
       }
-      if (flag) {
+      if ((flag && this.room.isPublic) || !this.room.isPublic) {
         this.model.step = RobotStep.running;
       }
       await this.save();
