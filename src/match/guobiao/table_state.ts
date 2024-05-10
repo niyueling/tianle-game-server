@@ -1128,6 +1128,14 @@ class TableState implements Serializable {
         }
       }
 
+      // 两色三节高(含有2种花色中3组序数相连刻(杠)的和牌)
+      if (cardTypes[i].cardId === 128) {
+        const status = await this.checkSanJieGao(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
       // 单色星辰
       if (cardTypes[i].cardId === 11) {
         const status = await this.checkDanSeXingChen(player, type);
@@ -2722,6 +2730,49 @@ class TableState implements Serializable {
     }
 
     const flag = (blackCount > 0 && blueCount > 0) || (blackCount > 0 && redCount > 0) || (redCount > 0 && blueCount > 0);
+
+    return flag && (isZiMo || isJiePao);
+  }
+
+  async checkLiangSeSanJieGao(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList = [...gangList, ...keZi];
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    gangList.sort((a, b) => a - b);
+    let flag = false;
+
+    for (let i = Enums.wanzi1; i <= Enums.tongzi7; i++) {
+      if (gangList.includes(i) && gangList.includes(i + 1) && gangList.includes(i + 2)) {
+        flag = true;
+      }
+    }
 
     return flag && (isZiMo || isJiePao);
   }
