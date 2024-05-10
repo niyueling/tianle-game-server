@@ -4562,7 +4562,7 @@ class TableState implements Serializable {
           msgs.push({
             type: "hu",
             card: this.manyHuArray[i].card,
-            index: huMsg.from,
+            index: huMsg.index,
             from: this.manyHuArray[i].from,
             playersModifyGolds: huMsg.playersModifyGolds,
             constellationCards: huMsg.constellationCards,
