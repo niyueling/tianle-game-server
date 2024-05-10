@@ -3827,7 +3827,7 @@ class TableState implements Serializable {
               index: this.atIndex(player)
             }
 
-            console.warn("huTakeCard is run gameMoStatus-%s", JSON.stringify(this.gameMoStatus));
+            console.warn("huTakeCard is run waitMo-%s, step-%s, from-%s, type-%s gameMoStatus-%s", player.waitMo, this.room.robotManager.model.step, from, 4, JSON.stringify(this.gameMoStatus));
           }
 
           const gameCompetite = async () => {
