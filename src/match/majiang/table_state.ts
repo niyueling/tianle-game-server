@@ -3659,6 +3659,7 @@ class TableState implements Serializable {
 
               const huTakeCard = async () => {
                 if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+                  console.warn("waitMo-%s, step-%s, from-%s, type-%s", player.waitMo, this.room.robotManager.model.step, from, 1);
                   return player.emitter.emit(Enums.huTakeCard, {from, type: 1});
                 }
 
@@ -3669,6 +3670,8 @@ class TableState implements Serializable {
                   type: 1,
                   index: this.atIndex(player)
                 }
+
+                console.warn("huTakeCard is run gameMoStatus-%s", JSON.stringify(this.gameMoStatus));
               }
 
               const gameCompetite = async () => {
@@ -3693,6 +3696,8 @@ class TableState implements Serializable {
                   });
                 }
 
+                console.warn("gameCompetite is run");
+
                 // 给下家摸牌
                 setTimeout(huTakeCard, sleepTime);
               }
@@ -3703,6 +3708,8 @@ class TableState implements Serializable {
                 } else {
                   await this.gameOverNormal(this.players[from], player);
                 }
+
+                console.warn("gameOverFunc is run");
 
                 // 执行巅峰对决
                 setTimeout(gameCompetite, 2200);
@@ -3808,6 +3815,7 @@ class TableState implements Serializable {
 
           const huTakeCard = async () => {
             if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
+              console.warn("waitMo-%s, step-%s, from-%s, type-%s", player.waitMo, this.room.robotManager.model.step, from, 4);
               return player.emitter.emit(Enums.huTakeCard, {from, type: 4});
             }
 
@@ -3818,6 +3826,8 @@ class TableState implements Serializable {
               type: 4,
               index: this.atIndex(player)
             }
+
+            console.warn("huTakeCard is run gameMoStatus-%s", JSON.stringify(this.gameMoStatus));
           }
 
           const gameCompetite = async () => {
@@ -3842,6 +3852,8 @@ class TableState implements Serializable {
               });
             }
 
+            console.warn("gameCompetite is run");
+
             // 给下家摸牌
             setTimeout(huTakeCard, sleepTime);
           }
@@ -3852,6 +3864,8 @@ class TableState implements Serializable {
             } else {
               await this.gameOverNormal(null, player);
             }
+
+            console.warn("gameOverFunc is run");
 
             // 执行巅峰对决
             setTimeout(gameCompetite, 2200);

@@ -440,6 +440,12 @@ class TableState implements Serializable {
     index: number;
   }
 
+  // 庄家打出的首张牌信息
+  zhuangFirstCard: {
+    state: boolean;
+    card: number;
+  }
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -482,6 +488,10 @@ class TableState implements Serializable {
       from: 0,
       type: 1,
       index: 0
+    }
+    this.zhuangFirstCard = {
+      state: false,
+      card: 0
     }
   }
 
@@ -766,7 +776,6 @@ class TableState implements Serializable {
 
       if (p.zhuang) {
         zhuangIndex = i;
-        p.isDiHu = false;
       }
 
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, zhuangIndex)
@@ -991,7 +1000,7 @@ class TableState implements Serializable {
         }
       }
 
-      // 全单刻
+      // 全单刻(仅由序数牌13579组成的对对胡)
       if (cardTypes[i].cardId === 112) {
         const status = await this.checkQuanDanKe(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
@@ -999,9 +1008,73 @@ class TableState implements Serializable {
         }
       }
 
-      // 全双刻
+      // 全双刻(仅由序数牌2468组成的对对胡)
       if (cardTypes[i].cardId === 113) {
         const status = await this.checkQuanShuangKe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 混单刻(仅由字牌+序数牌13579组成的对对胡)
+      if (cardTypes[i].cardId === 114) {
+        const status = await this.checkHunDanKe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 混双刻(仅由字牌+序数牌2468组成的对对胡)
+      if (cardTypes[i].cardId === 115) {
+        const status = await this.checkHunShuangKe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 一色三节高(含有同一花色中3组序数相连刻(杠)的和牌)
+      if (cardTypes[i].cardId === 116) {
+        const status = await this.checkSanJieGao(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 十二金钗
+      if (cardTypes[i].cardId === 117) {
+        const status = await this.checkShiErJinChai(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 三暗刻
+      if (cardTypes[i].cardId === 118) {
+        const status = await this.checkSanAnKe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 一色四节高(含有同一花色中4组序数相连刻(杠)的和牌)
+      if (cardTypes[i].cardId === 119) {
+        const status = await this.checkSiJieGao(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 地和(庄家打出的第一张牌被接炮)
+      if (cardTypes[i].cardId === 120 && !player.zhuang && type === 2) {
+        const status = await this.checkDiHu(player);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 小三元(包含箭牌（中、发、白）的两副刻子（杠），同时另一种箭牌作为将牌)
+      if (cardTypes[i].cardId === 121 && !player.zhuang) {
+        const status = await this.checkXiaoSanYuan(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
         }
@@ -1017,13 +1090,6 @@ class TableState implements Serializable {
       // 双同刻
       if (cardTypes[i].cardId === 12) {
         const status = await this.checkShuangTongKe(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 十二行星
-      if (cardTypes[i].cardId === 13) {
-        const status = await this.checkShiErXingXing(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
@@ -1063,13 +1129,6 @@ class TableState implements Serializable {
           cardType = cardTypes[i];
       }
 
-      // 三节高
-      if (cardTypes[i].cardId === 20) {
-        const status = await this.checkSanJieGao(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
       // 双色星辰
       if (cardTypes[i].cardId === 21) {
         const status = await this.checkShuangSeXingChen(player, type);
@@ -1094,13 +1153,6 @@ class TableState implements Serializable {
       // 混大
       if (cardTypes[i].cardId === 24) {
         const status = await this.checkHunDa(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 三暗刻
-      if (cardTypes[i].cardId === 26) {
-        const status = await this.checkSanAnKe(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
@@ -1131,14 +1183,6 @@ class TableState implements Serializable {
         const status = await this.checkErXingZuo(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
-      }
-
-      // 地胡(非庄家摸到的第一张牌胡牌(每一家的碰·杠·胡等操作均会使地胡不成立))
-      if (cardTypes[i].cardId === 34 && !player.zhuang && type === 1) {
-        const status = await this.checkDiHu(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple) {
-          cardType = cardTypes[i];
-        }
       }
 
       // 景星麟凤
@@ -2046,9 +2090,11 @@ class TableState implements Serializable {
     return !player.isGameDa && player.zhuang && isZiMo;
   }
 
-  async checkDiHu(player, type) {
-    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    return !player.isGameDa && !player.zhuang && player.isDiHu && isZiMo;
+  async checkDiHu(player) {
+    let isJiePao = this.lastDa && player.jiePao(this.zhuangFirstCard.card, this.turn === 2, this.remainCards === 0, this.lastDa);
+    const state = this.zhuangFirstCard.state;
+    this.zhuangFirstCard.state = false;
+    return !player.isGameDa && !player.zhuang && state && isJiePao;
   }
 
   async checkJingXingLinFeng(player, type) {
@@ -2228,6 +2274,124 @@ class TableState implements Serializable {
     return flag && gangList.length === 4 && (isZiMo || isJiePao);
   }
 
+  async checkHunDanKe(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    let flag = false;
+    let ziFlag = true;
+
+    const cards = player.cards.slice();
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+      cards.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList.push(keZi);
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] <= Enums.tongzi9 && gangList[i] % 2 === 0) {
+        flag = false;
+      }
+
+      if (gangList[i] >= Enums.dong && gangList[i] <= Enums.bai) {
+        ziFlag = true;
+      }
+    }
+
+    for (let i = 0; i <= Enums.bai; i++) {
+      if (cards[i] > 0 && i <= Enums.tongzi9 && i % 2 === 0) {
+        flag = false;
+      }
+
+      if (cards[i] > 0 && i >= Enums.dong) {
+        ziFlag = true;
+      }
+    }
+
+    return flag && ziFlag && gangList.length === 4 && (isZiMo || isJiePao);
+  }
+
+  async checkHunShuangKe(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    let flag = false;
+    let ziFlag = true;
+
+    const cards = player.cards.slice();
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+      cards.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList.push(keZi);
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] <= Enums.tongzi9 && gangList[i] % 2 === 0) {
+        flag = false;
+      }
+
+      if (gangList[i] >= Enums.dong && gangList[i] <= Enums.bai) {
+        ziFlag = true;
+      }
+    }
+
+    for (let i = 0; i <= Enums.bai; i++) {
+      if (cards[i] > 0 && i <= Enums.tongzi9 && i % 2 === 0) {
+        flag = false;
+      }
+
+      if (cards[i] > 0 && i >= Enums.dong) {
+        ziFlag = true;
+      }
+    }
+
+    return flag && ziFlag && gangList.length === 4 && (isZiMo || isJiePao);
+  }
+
   async checkSiJieGao(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
@@ -2262,7 +2426,7 @@ class TableState implements Serializable {
     gangList.sort((a, b) => a - b);
     let flag = false;
 
-    for (let i = Enums.wanzi1; i <= Enums.shuzi6; i++) {
+    for (let i = Enums.wanzi1; i <= Enums.tongzi6; i++) {
       if (gangList.includes(i) && gangList.includes(i + 1) &&
         gangList.includes(i + 2) && gangList.includes(i + 3)) {
         flag = true;
@@ -2574,7 +2738,7 @@ class TableState implements Serializable {
     gangList.sort((a, b) => a - b);
     let flag = false;
 
-    for (let i = Enums.wanzi1; i <= Enums.shuzi7; i++) {
+    for (let i = Enums.wanzi1; i <= Enums.tongzi7; i++) {
       if (gangList.includes(i) && gangList.includes(i + 1) && gangList.includes(i + 2)) {
         flag = true;
       }
@@ -2753,7 +2917,7 @@ class TableState implements Serializable {
     return gangList.length >= 4 && (isZiMo || isJiePao);
   }
 
-  async checkShiErXingXing(player, type) {
+  async checkShiErJinChai(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...jieGang];
@@ -2777,6 +2941,53 @@ class TableState implements Serializable {
     }
 
     return gangList.length >= 3 && (isZiMo || isJiePao);
+  }
+
+  async checkXiaoSanYuan(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...jieGang];
+    let jiangList = [];
+    let keCount = 0;
+    let jiangCount = 0;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    let gangZi = [];
+    let keZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+      if (huResult.huCards.gangZi) {
+        keZi = huResult.huCards.KeZi;
+        gangList = [...gangList, ...keZi];
+      }
+      if (huResult.huCards.useJiang) {
+        jiangList = huResult.huCards.useJiang;
+      }
+    }
+
+    for (let i = Enums.zhong; i <= Enums.bai; i++) {
+      if (gangList.includes(i)) {
+        keCount++;
+      }
+
+      if (jiangList.includes(i)) {
+        jiangCount++;
+      }
+    }
+
+    return keCount === 2 && jiangCount === 1 && (isZiMo || isJiePao);
   }
 
   async checkShuangTongKe(player, type) {
@@ -3442,8 +3653,6 @@ class TableState implements Serializable {
           const hangUpList = this.stateData.hangUp;
           this.turn++;
           this.state = stateWaitDa;
-          // 设置所有用户地胡状态为false
-          this.players.map((p) => p.isDiHu = false);
           const nextStateData = {da: player};
           const gangSelection = player.getAvailableGangs();
           this.stateData = nextStateData;
@@ -3552,8 +3761,6 @@ class TableState implements Serializable {
               player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
               const from = this.atIndex(this.lastDa)
               const me = this.atIndex(player)
-              // 设置所有用户地胡状态为false
-              this.players.map((p) => p.isDiHu = false)
               player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
 
               // 计算杠牌次数
@@ -3640,8 +3847,6 @@ class TableState implements Serializable {
       if (ok) {
         player.lastOperateType = 3;
         player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
-        // 设置所有用户地胡状态为false
-        this.players.map((p) => p.isDiHu = false)
         player.sendMessage('game/gangReply', {
           ok: true,
           data: {card, from, gangIndex, type: isAnGang ? "anGang" : "buGang"}
@@ -3784,8 +3989,6 @@ class TableState implements Serializable {
               player.isGameDa = true;
               this.lastDa = player;
               this.stateData = {};
-              // 设置所有用户地胡状态为false
-              this.players.map((p) => p.isDiHu = false)
               player.huTurnList.push({card, turn});
 
               // 设置用户的状态为待摸牌
@@ -3949,8 +4152,6 @@ class TableState implements Serializable {
             player.isGameHu = true;
           }
 
-          // 设置所有用户地胡状态为false
-          this.players.map((p) => p.isDiHu = false)
           from = this.atIndex(this.lastDa);
 
           // 设置用户的状态为待摸牌
@@ -5315,15 +5516,20 @@ class TableState implements Serializable {
     this.lastDa = player;
     player.cancelTimeout();
 
+    // 判断庄家是否打出首张牌
+    if (!this.zhuangFirstCard.state && player.zhuang) {
+      this.zhuangFirstCard = {
+        state: true,
+        card,
+      }
+    }
+
     if (ok) {
       if (!this.isGameDa) {
         this.isGameDa = true;
       }
       if (!player.isGameDa) {
         player.isGameDa = true;
-      }
-      if (player.isDiHu) {
-        player.isDiHu = false;
       }
       if (player.isGameHu && !player.onDeposit) {
         player.onDeposit = true;
