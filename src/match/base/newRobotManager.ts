@@ -156,7 +156,7 @@ export class NewRobotManager {
     if (!isOk) {
       console.log('some one not need deposit', this.room._id);
       // 不需要托管
-      return;
+      // return;
     }
     await this.readyAndPlay();
   }

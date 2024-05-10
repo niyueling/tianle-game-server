@@ -1130,52 +1130,129 @@ class TableState implements Serializable {
 
       // 两色三节高(含有2种花色中3组序数相连刻(杠)的和牌)
       if (cardTypes[i].cardId === 128) {
-        const status = await this.checkSanJieGao(player, type);
+        const status = await this.checkLiangSeSanJieGao(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
         }
       }
 
-      // 单色星辰
-      if (cardTypes[i].cardId === 11) {
-        const status = await this.checkDanSeXingChen(player, type);
+      // 四暗刻(含有4组暗刻(暗杠)的和牌)
+      if (cardTypes[i].cardId === 129) {
+        const status = await this.checkSiAnKe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 字一色(仅由字牌组成的和牌)
+      if (cardTypes[i].cardId === 130) {
+        const status = await this.checkZiYiSe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 五门齐(和牌时手牌包含五种不同的花色，即筒、条、万、风牌（东、南、西、北）和箭牌（中、发、白）)
+      if (cardTypes[i].cardId === 131) {
+        const status = await this.checkWuMenQi(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 三色三节高(含有3种花色中3组序数相连刻(杠)的和牌)
+      if (cardTypes[i].cardId === 132) {
+        const status = await this.checkSanSeSanJieGao(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 二色四节高(含有2种花色中4组序数相连刻(杠)的和牌)
+      if (cardTypes[i].cardId === 133) {
+        const status = await this.checkLiangSeSiJieGao(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 十八罗汉(含有4组杠的和牌)
+      if (cardTypes[i].cardId === 134) {
+        const status = await this.checkShiBaLuoHan(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
 
-      // 双同刻
-      if (cardTypes[i].cardId === 12) {
-        const status = await this.checkShuangTongKe(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
+      // 三色四节高(含有3种花色中4组序数相连刻(杠)的和牌)
+      if (cardTypes[i].cardId === 135) {
+        const status = await this.checkSanSeSiJieGao(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
-      // 十八行星
-      if (cardTypes[i].cardId === 14) {
-        const status = await this.checkShiBaXingXing(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
+      // 绿一色(仅由23468条组成的和牌，若无发，可记清一色)
+      if (cardTypes[i].cardId === 136) {
+        const status = await this.checkLvYiSe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
-      // 断么九
-      if (cardTypes[i].cardId === 15) {
-        const status = await this.checkDuanYaoJiu(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
+      // 三风刻(含有风牌(东，南，西，北)3组刻(杠)的和牌)
+      if (cardTypes[i].cardId === 137) {
+        const status = await this.checkSanFengKe(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
-      // 不求人
-      if (cardTypes[i].cardId === 16 && type === 1) {
-        const status = await this.checkBuQiuRen(player);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
+      // 九五至尊(由红中+风牌+5筒+9筒组成的和牌)
+      if (cardTypes[i].cardId === 138) {
+        const status = await this.checkJiuWuZhiZun(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
+        }
       }
 
-      // 混双
-      if (cardTypes[i].cardId === 17) {
-        const status = await this.checkHunShuang(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
+      // 天降鸿福(由白板+1579条组成的和牌)
+      if (cardTypes[i].cardId === 139) {
+        const status = await this.checkTianJiangHongFu(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
+        }
+      }
+
+      // 混三节(由三节高+字牌组成的和牌)
+      if (cardTypes[i].cardId === 140) {
+        const status = await this.checkHunSanJie(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 清老头(仅由序数牌1和9组成的和牌)
+      if (cardTypes[i].cardId === 141) {
+        const status = await this.checkQingLaoTou(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 大三元(包含箭牌（中、发、白）的三副刻子（杠）)
+      if (cardTypes[i].cardId === 142) {
+        const status = await this.checkDaSanYuan(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
+      }
+
+      // 大四喜(和牌时手牌中需要包含风牌（东、南、西、北）的四副刻（杠）)
+      if (cardTypes[i].cardId === 143) {
+        const status = await this.checkDaSiXi(player, type);
+        if (status && cardTypes[i].multiple >= cardType.multiple) {
+          cardType = cardTypes[i];
+        }
       }
 
       // 混单
@@ -1206,23 +1283,9 @@ class TableState implements Serializable {
           cardType = cardTypes[i];
       }
 
-      // 四暗刻
-      if (cardTypes[i].cardId === 32) {
-        const status = await this.checkSiAnKe(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
       // 十二星座
       if (cardTypes[i].cardId === 33) {
         const status = await this.checkErXingZuo(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 一路福星
-      if (cardTypes[i].cardId === 37) {
-        const status = await this.checkYiLuFuXing(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
@@ -1261,65 +1324,246 @@ class TableState implements Serializable {
         if (status && cardTypes[i].multiple >= cardType.multiple)
           cardType = cardTypes[i];
       }
-
-      // 一天星斗
-      if (cardTypes[i].cardId === 43) {
-        const status = await this.checkYiTianXingDou(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 移星换斗
-      if (cardTypes[i].cardId === 44) {
-        const status = await this.checkYiXingHuanDou(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 星流影集
-      if (cardTypes[i].cardId === 45) {
-        const status = await this.checkXingLiuYingJi(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 大步流星
-      if (cardTypes[i].cardId === 46) {
-        const status = await this.checkDaBuLiuXing(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 月落星沉
-      if (cardTypes[i].cardId === 47) {
-        const status = await this.checkYueLuoXingChen(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 众星捧月
-      if (cardTypes[i].cardId === 48) {
-        const status = await this.checkZhongXingPengYue(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 摩羯之吻
-      if (cardTypes[i].cardId === 49) {
-        const status = await this.checkMoJieZhiWen(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
-
-      // 星蝎交辉
-      if (cardTypes[i].cardId === 50) {
-        const status = await this.checkXingHeJiaoHui(player, type);
-        if (status && cardTypes[i].multiple >= cardType.multiple)
-          cardType = cardTypes[i];
-      }
     }
 
     return cardType;
+  }
+
+  async checkBaiHuaQiFang(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    const cardList = [Enums.dong, Enums.xi, Enums.nan, Enums.bei, Enums.zhong, Enums.fa];
+    let gangList = [...anGang, ...jieGang];
+    let numberCount = 0;
+    let flag = true;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    const cards = player.cards.slice();
+    if (isJiePao) {
+      cards[this.lastHuCard]++;
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (cardList.includes(gangList[i])) {
+        flag = false;
+      }
+
+      numberCount += 4 * (gangList[i] % 10);
+    }
+
+    for (let i = 0; i < peng.length; i++) {
+      if (cardList.includes(peng[i])) {
+        flag = false;
+      }
+
+      numberCount += 3 * (peng[i] % 10);
+    }
+
+    for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
+      if (cards[i] > 0 && !cardList.includes(i)) {
+        flag = false;
+      }
+    }
+
+    return flag && (isZiMo || isJiePao);
+  }
+
+  async checkDaSiXi(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...jieGang];
+    let keCount = 0;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    let gangZi = [];
+    let keZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+      if (huResult.huCards.KeZi) {
+        keZi = huResult.huCards.KeZi;
+        gangList = [...gangList, ...keZi];
+      }
+    }
+
+    for (let i = Enums.dong; i <= Enums.bei; i++) {
+      if (gangList.includes(i)) {
+        keCount++;
+      }
+    }
+
+    return keCount === 4 && (isZiMo || isJiePao);
+  }
+
+  async checkDaSanYuan(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...jieGang];
+    let keCount = 0;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    let gangZi = [];
+    let keZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+      if (huResult.huCards.KeZi) {
+        keZi = huResult.huCards.KeZi;
+        gangList = [...gangList, ...keZi];
+      }
+    }
+
+    for (let i = Enums.zhong; i <= Enums.bai; i++) {
+      if (gangList.includes(i)) {
+        keCount++;
+      }
+    }
+
+    return keCount === 3 && (isZiMo || isJiePao);
+  }
+
+  async checkQingLaoTou(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    const cardList = [Enums.wanzi1, Enums.wanzi9, Enums.shuzi1, Enums.shuzi9, Enums.tongzi1, Enums.tongzi9];
+    let flag = true;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    const cards = player.cards.slice();
+    if (isJiePao) {
+      cards[this.lastHuCard]++;
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (!cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
+      if (cards[i] > 0 && !cardList.includes(i)) {
+        flag = false;
+      }
+    }
+
+    return flag && (isZiMo || isJiePao);
+  }
+
+  async checkTianJiangHongFu(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    const cardList = [Enums.bai, Enums.shuzi1, Enums.shuzi5, Enums.shuzi7, Enums.shuzi9];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    let flag = true;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    const cards = player.cards.slice();
+    if (isJiePao) {
+      cards[this.lastHuCard]++;
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (!cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
+      if (cards[i] > 0 && !cardList.includes(i)) {
+        flag = false;
+      }
+    }
+
+    return flag && (isZiMo || isJiePao);
+  }
+
+  async checkJiuWuZhiZun(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    const cardList = [Enums.tongzi5, Enums.tongzi9, Enums.zhong, Enums.dong, Enums.xi, Enums.nan, Enums.bei];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    let flag = true;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    const cards = player.cards.slice();
+    if (isJiePao) {
+      cards[this.lastHuCard]++;
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (!cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
+      if (cards[i] > 0 && !cardList.includes(i)) {
+        flag = false;
+      }
+    }
+
+    return flag && (isZiMo || isJiePao);
+  }
+
+  async checkLvYiSe(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    const cardList = [Enums.shuzi2, Enums.shuzi3, Enums.shuzi4, Enums.shuzi6, Enums.shuzi8, Enums.fa];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    let flag = true;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    const cards = player.cards.slice();
+    if (isJiePao) {
+      cards[this.lastHuCard]++;
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (!cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
+      if (cards[i] > 0 && !cardList.includes(i)) {
+        flag = false;
+      }
+    }
+
+    return flag && (isZiMo || isJiePao);
   }
 
   async checkDaYuWu(player, type) {
@@ -2078,7 +2322,7 @@ class TableState implements Serializable {
     return gangCount >= 3 && (isZiMo || isJiePao);
   }
 
-  async checkYiLuFuXing(player, type) {
+  async checkZiYiSe(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
@@ -2088,22 +2332,87 @@ class TableState implements Serializable {
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
 
     for (let i = 0; i < gangList.length; i++) {
-      if (gangList[i] < 38) {
+      if (gangList[i] < Enums.dong) {
         flag = false;
       }
     }
 
-    for (let i = 1; i < 38; i++) {
+    for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
       if (player.cards[i] > 0) {
         flag = false;
       }
     }
 
-    if (isJiePao && this.lastHuCard < 38) {
+    if (isJiePao && this.lastHuCard <= Enums.tongzi9) {
       flag = false;
     }
 
     return flag && (isZiMo || isJiePao);
+  }
+
+  async checkWuMenQi(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    let flag = true;
+    let wanCount = 0;
+    let tiaoCount = 0;
+    let tongCount = 0;
+    let fengCount = 0;
+    let jianCount = 0;
+    const cards = player.cards.slice();
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    if (isJiePao) {
+      cards[this.lastHuCard]++;
+    }
+
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] < Enums.wanzi9) {
+        wanCount++;
+      }
+
+      if (gangList[i] >= Enums.shuzi1 && gangList[i] <= Enums.shuzi9) {
+        tiaoCount++;
+      }
+
+      if (gangList[i] >= Enums.tongzi1 && gangList[i] <= Enums.tongzi9) {
+        tongCount++;
+      }
+
+      if (gangList[i] >= Enums.dong && gangList[i] <= Enums.bei) {
+        fengCount++;
+      }
+
+      if (gangList[i] >= Enums.zhong && gangList[i] <= Enums.bai) {
+        jianCount++;
+      }
+    }
+
+    for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
+      if (cards[i] > 0 && i < Enums.wanzi9) {
+        wanCount++;
+      }
+
+      if (cards[i] > 0 && i >= Enums.shuzi1 && i <= Enums.shuzi9) {
+        tiaoCount++;
+      }
+
+      if (cards[i] > 0 && i >= Enums.tongzi1 && i <= Enums.tongzi9) {
+        tongCount++;
+      }
+
+      if (cards[i] > 0 && i >= Enums.dong && i <= Enums.bei) {
+        fengCount++;
+      }
+
+      if (cards[i] > 0 && i >= Enums.zhong && i <= Enums.bai) {
+        jianCount++;
+      }
+    }
+
+    return wanCount && tiaoCount && tongCount && fengCount && jianCount && (isZiMo || isJiePao);
   }
 
   async checkTianHu(player) {
@@ -2734,18 +3043,20 @@ class TableState implements Serializable {
     return flag && (isZiMo || isJiePao);
   }
 
-  async checkLiangSeSanJieGao(player, type) {
+  async checkSanSeSanJieGao(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     const peng = player.events["peng"] || [];
     let gangList = [...anGang, ...jieGang, ...peng];
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    const cards = player.cards.slice();
 
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
@@ -2768,9 +3079,228 @@ class TableState implements Serializable {
     gangList.sort((a, b) => a - b);
     let flag = false;
 
-    for (let i = Enums.wanzi1; i <= Enums.tongzi7; i++) {
-      if (gangList.includes(i) && gangList.includes(i + 1) && gangList.includes(i + 2)) {
+    for (let i = Enums.wanzi1; i <= Enums.wanzi7; i++) {
+      if ((gangList.includes(i) || gangList.includes(i + 10) || gangList.includes(i + 20))
+      && (gangList.includes(i + 1) || gangList.includes(i + 11) || gangList.includes(i + 21))
+      && (gangList.includes(i + 2) || gangList.includes(i + 12) || gangList.includes(i + 22))) {
         flag = true;
+      }
+    }
+
+    const cardList = [Enums.dong, Enums.xi, Enums.nan, Enums.bei, Enums.zhong, Enums.fa, Enums.bai];
+    for (let i = 0; i < gangList.length; i++) {
+      if (cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.dong; i <= Enums.bai; i++) {
+      if (cards[i] > 0) {
+        flag = false;
+      }
+    }
+
+    return flag && (isZiMo || isJiePao);
+  }
+
+  async checkSanSeSiJieGao(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    const cards = player.cards.slice();
+
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList = [...gangList, ...keZi];
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    gangList.sort((a, b) => a - b);
+    let flag = false;
+
+    for (let i = Enums.wanzi1; i <= Enums.wanzi6; i++) {
+      if ((gangList.includes(i) || gangList.includes(i + 10) || gangList.includes(i + 20))
+        && (gangList.includes(i + 1) || gangList.includes(i + 11) || gangList.includes(i + 21))
+        && (gangList.includes(i + 2) || gangList.includes(i + 12) || gangList.includes(i + 22))
+        && (gangList.includes(i + 3) || gangList.includes(i + 13) || gangList.includes(i + 23))) {
+        flag = true;
+      }
+    }
+
+    const cardList = [Enums.dong, Enums.xi, Enums.nan, Enums.bei, Enums.zhong, Enums.fa, Enums.bai];
+    for (let i = 0; i < gangList.length; i++) {
+      if (cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.dong; i <= Enums.bai; i++) {
+      if (cards[i] > 0) {
+        flag = false;
+      }
+    }
+
+    return flag && (isZiMo || isJiePao);
+  }
+
+  async checkLiangSeSanJieGao(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    const cards = player.cards.slice();
+
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList = [...gangList, ...keZi];
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    gangList.sort((a, b) => a - b);
+    let flag = false;
+
+    for (let i = Enums.wanzi1; i <= Enums.wanzi7; i++) {
+      if ((gangList.includes(i) || gangList.includes(i + 10))
+      && (gangList.includes(i + 1) || gangList.includes(i + 11))
+      && (gangList.includes(i + 2) || gangList.includes(i + 12))) {
+        flag = true;
+      }
+      if ((gangList.includes(i) || gangList.includes(i + 20))
+        && (gangList.includes(i + 1) || gangList.includes(i + 21))
+        && (gangList.includes(i + 2) || gangList.includes(i + 22))) {
+        flag = true;
+      }
+      if ((gangList.includes(i + 10) || gangList.includes(i + 20))
+        && (gangList.includes(i + 11) || gangList.includes(i + 21))
+        && (gangList.includes(i + 12) || gangList.includes(i + 22))) {
+        flag = true;
+      }
+    }
+
+    const cardList = [Enums.dong, Enums.xi, Enums.nan, Enums.bei, Enums.zhong, Enums.fa, Enums.bai];
+    for (let i = 0; i < gangList.length; i++) {
+      if (cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.dong; i <= Enums.bai; i++) {
+      if (cards[i] > 0) {
+        flag = false;
+      }
+    }
+
+    return flag && (isZiMo || isJiePao);
+  }
+
+  async checkLiangSeSiJieGao(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    const cards = player.cards.slice();
+
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList = [...gangList, ...keZi];
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    gangList.sort((a, b) => a - b);
+    let flag = false;
+
+    for (let i = Enums.wanzi1; i <= Enums.wanzi6; i++) {
+      if ((gangList.includes(i) || gangList.includes(i + 10))
+        && (gangList.includes(i + 1) || gangList.includes(i + 11))
+        && (gangList.includes(i + 2) || gangList.includes(i + 12))
+        && (gangList.includes(i + 3) || gangList.includes(i + 13))) {
+        flag = true;
+      }
+      if ((gangList.includes(i) || gangList.includes(i + 20))
+        && (gangList.includes(i + 1) || gangList.includes(i + 21))
+        && (gangList.includes(i + 2) || gangList.includes(i + 22))
+        && (gangList.includes(i + 3) || gangList.includes(i + 23))) {
+        flag = true;
+      }
+      if ((gangList.includes(i + 10) || gangList.includes(i + 20))
+        && (gangList.includes(i + 11) || gangList.includes(i + 21))
+        && (gangList.includes(i + 12) || gangList.includes(i + 22))
+        && (gangList.includes(i + 13) || gangList.includes(i + 23))) {
+        flag = true;
+      }
+    }
+
+    const cardList = [Enums.dong, Enums.xi, Enums.nan, Enums.bei, Enums.zhong, Enums.fa, Enums.bai];
+    for (let i = 0; i < gangList.length; i++) {
+      if (cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.dong; i <= Enums.bai; i++) {
+      if (cards[i] > 0) {
+        flag = false;
       }
     }
 
@@ -2784,11 +3314,13 @@ class TableState implements Serializable {
     let gangList = [...anGang, ...jieGang, ...peng];
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    const cards = player.cards.slice();
 
     let keZi = [];
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
@@ -2817,7 +3349,119 @@ class TableState implements Serializable {
       }
     }
 
+    const cardList = [Enums.dong, Enums.xi, Enums.nan, Enums.bei, Enums.zhong, Enums.fa, Enums.bai];
+    for (let i = 0; i < gangList.length; i++) {
+      if (cardList.includes(gangList[i])) {
+        flag = false;
+      }
+    }
+
+    for (let i = Enums.dong; i <= Enums.bai; i++) {
+      if (cards[i] > 0) {
+        flag = false;
+      }
+    }
+
     return flag && (isZiMo || isJiePao);
+  }
+
+  async checkHunSanJie(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+    const cards = player.cards.slice();
+    let ziCount = 0;
+
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList = [...gangList, ...keZi];
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    gangList.sort((a, b) => a - b);
+    let flag = false;
+
+    for (let i = Enums.wanzi1; i <= Enums.tongzi7; i++) {
+      if (gangList.includes(i) && gangList.includes(i + 1) && gangList.includes(i + 2)) {
+        flag = true;
+      }
+    }
+
+    const cardList = [Enums.dong, Enums.xi, Enums.nan, Enums.bei, Enums.zhong, Enums.fa, Enums.bai];
+    for (let i = 0; i < gangList.length; i++) {
+      if (cardList.includes(gangList[i])) {
+        ziCount++;
+      }
+    }
+
+    for (let i = Enums.dong; i <= Enums.bai; i++) {
+      if (cards[i] > 0) {
+        ziCount++;
+      }
+    }
+
+    return flag && ziCount && (isZiMo || isJiePao);
+  }
+
+  async checkSanFengKe(player, type) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    let gangList = [...anGang, ...jieGang];
+    let fengCount = 0;
+    const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
+    let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
+
+    let keZi = [];
+    let gangZi = [];
+    if (isJiePao) {
+      player.cards[this.lastHuCard]++;
+    }
+
+    const huResult = player.checkZiMo();
+    if (isJiePao) {
+      player.cards[this.lastHuCard]--;
+    }
+
+    if (huResult.hu) {
+      if (huResult.huCards.keZi) {
+        keZi = huResult.huCards.keZi;
+        gangList = [...gangList, ...keZi];
+      }
+
+      if (huResult.huCards.gangZi) {
+        gangZi = huResult.huCards.gangZi;
+        gangList = [...gangList, ...gangZi];
+      }
+    }
+
+    for (let i = 0; i <= gangList.length; i++) {
+      if ([Enums.dong, Enums.xi, Enums.nan, Enums.bei].includes(gangList[i])) {
+        fengCount++;
+      }
+    }
+
+    return fengCount === 3 && (isZiMo || isJiePao);
   }
 
   async checkShuangAnKe(player, type) {
@@ -2964,7 +3608,7 @@ class TableState implements Serializable {
     return flag && (isZiMo || isJiePao);
   }
 
-  async checkShiBaXingXing(player, type) {
+  async checkShiBaLuoHan(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
     let gangList = [...anGang, ...jieGang];
