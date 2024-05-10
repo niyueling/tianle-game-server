@@ -1255,7 +1255,7 @@ class TableState implements Serializable {
         }
       }
 
-      // 混单
+      // 百花齐放(由白板+序数牌点数>=100点组成的和牌)
       if (cardTypes[i].cardId === 18) {
         const status = await this.checkHunDan(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple)
@@ -1350,7 +1350,9 @@ class TableState implements Serializable {
         flag = false;
       }
 
-      numberCount += 4 * (gangList[i] % 10);
+      if (gangList[i] <= Enums.tongzi9) {
+        numberCount += 4 * (gangList[i] % 10);
+      }
     }
 
     for (let i = 0; i < peng.length; i++) {
@@ -1358,16 +1360,23 @@ class TableState implements Serializable {
         flag = false;
       }
 
-      numberCount += 3 * (peng[i] % 10);
+      if (peng[i] <= Enums.tongzi9) {
+        numberCount += 3 * (peng[i] % 10);
+      }
+
     }
 
     for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
-      if (cards[i] > 0 && !cardList.includes(i)) {
+      if (cards[i] > 0 && cardList.includes(i)) {
         flag = false;
+      }
+
+      if (cards[i] > 0 && i <= Enums.tongzi9) {
+        numberCount += peng[i] % 10;
       }
     }
 
-    return flag && (isZiMo || isJiePao);
+    return flag && numberCount >= 100 && (isZiMo || isJiePao);
   }
 
   async checkDaSiXi(player, type) {

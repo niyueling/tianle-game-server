@@ -152,12 +152,12 @@ export class NewRobotManager {
       console.log('some one absent', this.room._id);
       return;
     }
-    isOk = this.isNeedDeposit();
-    if (!isOk) {
-      console.log('some one not need deposit', this.room._id);
-      // 不需要托管
-      // return;
-    }
+    // isOk = this.isNeedDeposit();
+    // if (!isOk) {
+    //   console.log('some one not need deposit', this.room._id);
+    //   // 不需要托管
+    //   // return;
+    // }
     await this.readyAndPlay();
   }
 
