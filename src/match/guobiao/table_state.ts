@@ -2990,7 +2990,7 @@ class TableState implements Serializable {
         gangZi = huResult.huCards.gangZi;
         gangList = [...gangList, ...gangZi];
       }
-      if (huResult.huCards.gangZi) {
+      if (huResult.huCards.KeZi) {
         keZi = huResult.huCards.KeZi;
         gangList = [...gangList, ...keZi];
       }
@@ -3037,7 +3037,7 @@ class TableState implements Serializable {
         gangZi = huResult.huCards.gangZi;
         gangList = [...gangList, ...gangZi];
       }
-      if (huResult.huCards.gangZi) {
+      if (huResult.huCards.KeZi) {
         keZi = huResult.huCards.KeZi;
         gangList = [...gangList, ...keZi];
       }
