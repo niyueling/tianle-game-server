@@ -2190,7 +2190,7 @@ class TableState implements Serializable {
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
-      cards.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
@@ -2239,7 +2239,7 @@ class TableState implements Serializable {
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
-      cards.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
@@ -2290,7 +2290,7 @@ class TableState implements Serializable {
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
-      cards.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
@@ -2349,7 +2349,7 @@ class TableState implements Serializable {
     let gangZi = [];
     if (isJiePao) {
       player.cards[this.lastHuCard]++;
-      cards.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
     const huResult = player.checkZiMo();
