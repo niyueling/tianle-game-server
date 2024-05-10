@@ -947,10 +947,10 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
-      const cards13 = payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : (model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p));
+      const cards13 = this.rule.test && payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : (model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p));
 
       // 如果客户端指定发牌
-      if (payload.cards && payload.cards[i].length === 13) {
+      if (this.rule.test && payload.cards && payload.cards[i].length === 13) {
         for (let j = 0; j < payload.cards[i].length; j++) {
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
           this.remainCards--;
@@ -996,14 +996,6 @@ class TableState implements Serializable {
       if (p.zhuang) {
         zhuangIndex = i;
         p.isDiHu = false;
-      }
-
-      // 如果是好友房并且传参test=true，设置金豆为金豆上限的1亿倍
-      if (!this.room.isPublic && this.rule.test) {
-        const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-        const model = await service.playerService.getPlayerModel(p._id);
-        model.gold = conf.maxGold * 100000000;
-        await model.save();
       }
 
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, constellationCards, zhuangIndex)
@@ -3681,11 +3673,9 @@ class TableState implements Serializable {
 
               const gameCompetite = async () => {
                 let isAllHu = true;
-                let brokes = [];
                 let sleepTime = 500;
 
                 for (let i = 0; i < this.players.length; i++) {
-                  brokes.push({isBroke: this.players[i].isBroke, isGameHu: this.players[i].isGameHu})
                   if (!this.players[i].isBroke && !this.players[i].isGameHu) {
                     isAllHu = false;
                   }

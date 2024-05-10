@@ -270,7 +270,7 @@ export class BackendProcess {
         this.gameName
       )
 
-      const category = await GameCategory.findOne({_id: room.rule.ro.categoryId}).lean();
+      // const category = await GameCategory.findOne({_id: room.rule.ro.categoryId}).lean();
       let cardTableId = -1;
 
       // 获取用户称号
@@ -279,7 +279,7 @@ export class BackendProcess {
         cardTableId = playerCardTable.propId;
       }
 
-      await theCreator.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}})
+      await theCreator.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, cardTableId}})
       await roomProxy.joinAsCreator(theCreator)
       // 第一次进房间,保存信息
       await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId)
