@@ -50,18 +50,21 @@ export class RobotManager extends NewRobotManager {
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
-      console.warn(this.isPlayerDa(playerId), this.isPlayerGang(playerId), this.isPlayerChoice(playerId));
+      const isPlayerDa = this.isPlayerDa(playerId);
+      const isPlayerGang = this.isPlayerGang(playerId);
+      const isPlayerChoice = this.isPlayerChoice(playerId);
+      console.warn("isPlayerDa-%s, isPlayerGang-%s, isPlayerChoice-%s, isZiMo-%s", isPlayerDa, isPlayerGang, isPlayerChoice, isHu);
       if (isHu.hu) {
         await proxy.choice(Enums.hu)
       } else if (AnGangIndex) {
         await proxy.gang(Enums.anGang, AnGangIndex)
       } else if (buGangIndex) {
         await proxy.gang(Enums.buGang, buGangIndex)
-      } else if (this.isPlayerGang(playerId)) {
-        await proxy.gang(this.isPlayerGang(playerId))
-      } else if (this.isPlayerChoice(playerId)) {
-        await proxy.choice(this.isPlayerChoice(playerId))
-      } else if (this.isPlayerDa(playerId)) {
+      } else if (isPlayerGang) {
+        await proxy.gang(isPlayerGang)
+      } else if (isPlayerChoice) {
+        await proxy.choice(isPlayerChoice)
+      } else if (isPlayerDa) {
         if (this.waitInterval[key] >= this.getWaitSecond()) {
           await proxy.playCard();
           // 重新计时

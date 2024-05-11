@@ -969,7 +969,7 @@ class TableState implements Serializable {
           await this.gameOver();
           this.logger.info('hu  player %s zimo gameover', index)
         } else {
-          player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
+          player.emitter.emit(Enums.da, this.turn, card);
         }
       } else if (this.state === stateQiangGang) {
         if (this.stateData.who === player && turn === this.stateData.turn) {
