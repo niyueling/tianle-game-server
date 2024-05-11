@@ -596,13 +596,13 @@ class Room extends RoomBase {
   }
 
   async announcePlayerJoin(newJoinPlayer) {
-    this.broadcast('room/join', await this.joinMessageFor(newJoinPlayer))
+    this.broadcast('room/join', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
       .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
-      newJoinPlayer.sendMessage('room/join', await this.joinMessageFor(alreadyInRoomPlayer));
+      newJoinPlayer.sendMessage('room/join', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
 
@@ -1049,7 +1049,7 @@ class Room extends RoomBase {
 
     if (this.isRoomAllOver()) {
       const message = this.allOverMessage()
-      this.broadcast('room/allOver', message)
+      this.broadcast('room/allOver', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
       this.emit('empty', this.disconnected)
     }
