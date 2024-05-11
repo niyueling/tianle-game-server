@@ -4422,7 +4422,9 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
       changeGolds[i].currentGold = model.gold;
-      changeGolds[i].isBroke = model.gold === 0;
+      if (this.room.isPublic) {
+        changeGolds[i].isBroke = model.gold === 0;
+      }
     }
 
     this.room.broadcast('game/showHuType', {
@@ -4581,7 +4583,9 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
       changeGolds[i].currentGold = model.gold;
-      changeGolds[i].isBroke = this.players[i].isBroke;
+      if (this.room.isPublic) {
+        changeGolds[i].isBroke = this.players[i].isBroke;
+      }
     }
 
     // 判断巅峰对决
@@ -5685,7 +5689,7 @@ class TableState implements Serializable {
         shortId: p.model.shortId,
         gold: p.balance,
         currentGold: p.juScore,
-        isBroke: p.isBroke,
+        isBroke: false,
         huType: this.cardTypes
       };
 
