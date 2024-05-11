@@ -26,7 +26,7 @@ export class RobotManager extends NewRobotManager {
     let proxy;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
-      if (this.isPlayerDa(proxy.model._id) || this.isPlayerGuo(proxy.model._id)) {
+      if (this.isPlayerDa(proxy.model._id.toString()) || this.isPlayerGuo(proxy.model._id.toString())) {
         if (this.waitInterval[key]) {
           this.waitInterval[key]++;
         } else {
@@ -34,21 +34,6 @@ export class RobotManager extends NewRobotManager {
         }
       }
     }
-  }
-
-  checkIsRobot(player) {
-    const keys = Object.keys(this.disconnectPlayers);
-    let proxy;
-    let flag = false;
-    for (const key of keys) {
-      proxy = this.disconnectPlayers[key];
-      if (proxy.model._id === player._id) {
-        flag = true;
-        break;
-      }
-    }
-
-    return flag;
   }
 
   // 出牌
@@ -61,7 +46,7 @@ export class RobotManager extends NewRobotManager {
     let playerId;
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
-      playerId = proxy.model._id;
+      playerId = proxy.model._id.toString();
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
@@ -94,7 +79,7 @@ export class RobotManager extends NewRobotManager {
   // 打
   isPlayerDa(playerId) {
     return this.room.gameState.stateData[Enums.da] &&
-      playerId === this.room.gameState.stateData[Enums.da]._id
+      playerId === this.room.gameState.stateData[Enums.da]._id.toString()
   }
 
   isPlayerBuGang(player) {
@@ -120,7 +105,7 @@ export class RobotManager extends NewRobotManager {
   isPlayerGuo(playerId) {
     const actionList = [Enums.chi];
     for (const action of actionList) {
-      if (this.room.gameState.stateData[action] && playerId === this.room.gameState.stateData[action]._id) {
+      if (this.room.gameState.stateData[action] && playerId === this.room.gameState.stateData[action]._id.toString()) {
         return true;
       }
     }
@@ -131,7 +116,7 @@ export class RobotManager extends NewRobotManager {
     const actionList = [Enums.gang, Enums.anGang, Enums.mingGang];
     for (const action of actionList) {
       if ([Enums.gang, Enums.anGang, Enums.mingGang].includes(action) && this.room.gameState.stateData[action]) {
-        if (playerId === this.room.gameState.stateData[action]._id) return action;
+        if (playerId === this.room.gameState.stateData[action]._id.toString()) return action;
       }
     }
 
@@ -143,14 +128,14 @@ export class RobotManager extends NewRobotManager {
     const actionList = [Enums.hu, Enums.peng];
     for (const action of actionList) {
       if ([Enums.peng].includes(action)
-        && this.room.gameState.stateData[action] && playerId === this.room.gameState.stateData[action]._id) {
+        && this.room.gameState.stateData[action] && playerId === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }
       if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
         this.room.gameState.stateData[action].length > 0) {
         if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
-          this.room.gameState.stateData[action][0]._id
-          : this.room.gameState.stateData[action]._id)) return action;
+          this.room.gameState.stateData[action][0]._id.toString()
+          : this.room.gameState.stateData[action]._id.toString())) return action;
       }
     }
     return false;
