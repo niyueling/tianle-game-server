@@ -5410,7 +5410,7 @@ class TableState implements Serializable {
       player.constellationCards.push(constellationArrs[random]);
       this.room.broadcast("game/openConstellation", {ok: true, data: {card, newCard: constellationArrs[random], index: this.atIndex(player), multiple: await this.calcConstellationCardScore(player)}})
 
-      setTimeout(nextDo2, 3000);
+      setTimeout(nextDo2, 3500);
     }
 
     if ([Enums.poseidon, Enums.zeus, Enums.athena].includes(card)) {
