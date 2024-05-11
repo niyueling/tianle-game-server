@@ -19,7 +19,7 @@ export class SourceCardMap extends Array<number> {
   lastTakeCard: number
   gang: boolean
   qiaoXiang: boolean
-  caiShen: number
+  caiShen: number[]
   turn: number
   alreadyTakenCard?: boolean
   qiangGang?: boolean
@@ -146,7 +146,7 @@ class PlayerState implements Serializable {
   tingPai: boolean = false
 
   @autoSerialize
-  caiShen: number
+  caiShen: number[]
   lockMsg: boolean = false
 
   @autoSerialize
@@ -352,7 +352,7 @@ class PlayerState implements Serializable {
       for (let i = 1; i < 38; i++) {
         if (this.gangForbid.indexOf(i) >= 0) continue
 
-        if (i === this.caiShen) continue
+        if (this.caiShen.includes(i)) continue
 
         if (this.cards[i] === 4) {
           if (!msg.gang) {
@@ -446,12 +446,8 @@ class PlayerState implements Serializable {
   }
 
   checkPengGang(card, map) {
-    if (card === this.caiShen)
+    if (this.caiShen.includes(card))
       return map
-
-    if (card === Enums.bai) {
-      card = this.caiShen
-    }
 
     if (this.hadQiaoXiang)
       return map
@@ -459,11 +455,6 @@ class PlayerState implements Serializable {
     if (this.pengForbidden.indexOf(card) >= 0) {
       return map
     }
-
-    const caiCount = this.cards[this.caiShen]
-    this.cards[this.caiShen] = 0
-    this.cards[this.caiShen] = this.cards[Enums.bai]
-    this.cards[Enums.bai] = 0
 
     const refMap = map
     const c = this.cards[card]
@@ -475,9 +466,6 @@ class PlayerState implements Serializable {
         refMap.gang = this
       }
     }
-
-    this.cards[Enums.bai] = this.cards[this.caiShen]
-    this.cards[this.caiShen] = caiCount
 
     return refMap
   }
@@ -502,7 +490,7 @@ class PlayerState implements Serializable {
   }
 
   markJiePao(card, map, ignore = false) {
-    if (card === this.caiShen) return false
+    if (this.caiShen.includes(card)) return false
 
     let check = this.checkHuState(card)
     let canHu;
@@ -544,7 +532,7 @@ class PlayerState implements Serializable {
   }
 
   checkJiePao(card, ignore = false) {
-    if (card === this.caiShen) return false
+    if (this.caiShen.includes(card)) return false
 
     const checkResult = this.checkHuState(card);
 
@@ -730,9 +718,9 @@ class PlayerState implements Serializable {
     const caiShen = this.caiShen
 
     this.cards.caiShen = caiShen
-    this.cards[caiShen]++
+    this.cards[caiShen[0]]++
     const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
-    this.cards[caiShen]--
+    this.cards[caiShen[0]]--
 
     return checkResult.hu
   }
@@ -741,9 +729,9 @@ class PlayerState implements Serializable {
     const caiShen = this.caiShen
 
     cards.caiShen = caiShen
-    cards[caiShen]++
+    cards[caiShen[0]]++
     const checkResult = HuPaiDetect.check(cards, this.events, this.rule, this.seatIndex)
-    cards[caiShen]--
+    cards[caiShen[0]]--
 
     return checkResult
   }
@@ -951,7 +939,7 @@ class PlayerState implements Serializable {
   }
 
   checkQiaoXiang() {
-    const caiCount = this.cards[this.caiShen]
+    const caiCount = this.cards[this.caiShen[0]]
     if (caiCount) {
       if (HuPaiDetect.checkQiaoXiang(this.cards)) {
         return true
