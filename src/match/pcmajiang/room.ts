@@ -611,6 +611,12 @@ class Room extends RoomBase {
     return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder._id === player._id)
   }
 
+  async shuffleDataApply(payload) {
+    if (this.allReady && !this.gameState) {
+      return await this.startGame(payload);
+    }
+  }
+
   async join(newJoinPlayer) {
 
     const isReconnect = this.indexOf(newJoinPlayer) >= 0
