@@ -20,6 +20,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
+import {TianleErrorCode} from "@fm/common/constants";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -335,7 +336,7 @@ class TableState implements Serializable {
   @autoSerialize
   remainCards: number
   @autoSerialize
-  caishen: number[]
+  caishen: number
 
   @serialize
   players: PlayerState[]
@@ -490,7 +491,7 @@ class TableState implements Serializable {
   async fapai() {
     this.shuffle()
     this.sleepTime = 0
-    this.caishen = this.rule.useCaiShen ? [Enums.zhong] : [Enums.slotNoCard]
+    this.caishen = this.rule.useCaiShen ? Enums.zhong : Enums.slotNoCard
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
     // 判断麻将补助是否开房
@@ -584,9 +585,6 @@ class TableState implements Serializable {
         return;
       }
       player.deposit(() => {
-        console.log("table_state.js 183 ", "执行自动打")
-        this.logger.info('takeCard player-%s  执行自动打', index)
-
         if (msg) {
           const takenCard = msg.card
           const todo = player.ai.onWaitForDa(msg, player.cards)
@@ -594,22 +592,18 @@ class TableState implements Serializable {
             case Enums.gang:
               const gangCard = msg.gang[0][0]
               player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
-              player.sendMessage('game/depositGangBySelf', {card: gangCard, turn: this.turn})
               break
             case Enums.hu:
               player.emitter.emit(Enums.hu, this.turn, takenCard)
-              player.sendMessage('game/depositZiMo', {card: takenCard, turn: this.turn})
               break
             default:
               const card = player.ai.getUseLessCard(player.cards, takenCard)
               player.emitter.emit(Enums.da, this.turn, card)
-              player.sendMessage('game/depositDa', {card, turn: this.turn})
               break
           }
         } else {
           const card = player.ai.getUseLessCard(player.cards, Enums.slotNoCard)
           player.emitter.emit(Enums.da, this.turn, card)
-          player.sendMessage('game/depositDa', {card, turn: this.turn})
         }
       })
     })
@@ -617,31 +611,24 @@ class TableState implements Serializable {
       player.deposit(() => {
         const card = msg.card
         const todo = player.ai.onCanDoSomething(msg, player.cards, card)
-        console.log(`${player.model.shortId}选项:${todo}`)
         switch (todo) {
           case Enums.peng:
             player.emitter.emit(Enums.peng, this.turn, card)
-            player.sendMessage('game/depositPeng', {card, turn: this.turn})
             break
           case Enums.gang:
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
-            player.sendMessage('game/depositGangByOtherDa', {card, turn: this.turn})
             break
           case Enums.hu:
             player.emitter.emit(Enums.hu, this.turn, card)
-            player.sendMessage('game/depositHu', {card, turn: this.turn})
             break
           case Enums.chi:
             player.emitter.emit(Enums.chi, this.turn, card, ...msg.chiCombol[0])
-            player.sendMessage('game/depositChi', {card, turn: this.turn, chiCombol: msg.chiCombol[0]})
             break
           default:
             player.emitter.emit(Enums.guo, this.turn, card)
             break
         }
       })
-
-      this.logger.info('waitForDoSomeThing player %s', index)
     })
     player.on('willTakeCard', async denyFunc => {
       if (this.remainCards < 0) {
@@ -669,83 +656,25 @@ class TableState implements Serializable {
     player.on(Enums.da, async (turn, card) => {
       await this.onPlayerDa(player, turn, card);
     })
-    player.on(Enums.chi, (turn, card, otherCard1, otherCard2) => {
-      this.logger.info('chi player-%s ', index)
 
-      if (this.turn !== turn) {
-        player.sendMessage('ChiReply', {errorCode: 1})
-        return
-      }
-
-      if (this.state !== stateWaitAction) {
-        player.sendMessage('ChiReply', {errorCode: 6})
-        return
-      }
-      if (this.stateData[Enums.chi] !== player) {
-        player.sendMessage('ChiReply', {errorCode: 3})
-        return
-      }
-
-      this.actionResolver.requestAction(player, 'chi', () => {
-        const ok = player.chiPai(card, otherCard1, otherCard2, this.lastDa);
-        if (ok) {
-          this.turn++;
-          this.state = stateWaitDa;
-          this.stateData = {da: player};
-          const gangSelection = player.getAvailableGangs()
-
-          player.sendMessage('ChiReply', {
-            errorCode: 0, turn: this.turn,
-            card, suit: [otherCard1, otherCard2],
-            gang: gangSelection.length > 0,
-            gangSelection,
-            forbidCards: player.forbidCards
-          });
-          this.room.broadcast('game/oppoChi', {
-            card,
-            turn,
-            index,
-            suit: [otherCard1, otherCard2]
-          }, player.msgDispatcher);
-        } else {
-          player.sendMessage('ChiReply', {errorCode: 4, msg: '吃不进'});
-        }
-      }, () => {
-        player.sendMessage('ChiReply', {errorCode: 4, msg: '优先级不足'});
-      })
-
-      this.actionResolver.tryResolve()
-    })
     player.on(Enums.peng, (turn, card) => {
-      if (this.turn !== turn) {
-        logger.info('peng player-%s this.turn:%s turn:%s', index, this.turn, turn)
-        player.emitter.emit(Enums.guo, turn, card)
-        player.sendMessage('PengReply', {errorCode: 1})
+      if (this.state !== stateWaitAction) {
+        player.emitter.emit(Enums.guo, turn, card);
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamStateInvaid});
         return
       }
-      if (this.state !== stateWaitAction) {
-        logger.info('peng player-%s this.state:%s stateWaitAction:%s', index, this.state, stateWaitAction)
-        player.emitter.emit(Enums.guo, turn, card)
-        player.sendMessage('PengReply', {errorCode: 6})
+      if (this.stateData.pengGang !== player || this.stateData.card !== card) {
+        player.emitter.emit(Enums.guo, turn, card);
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamInvaid});
         return
       }
       if (this.hasPlayerHu()) {
-        logger.info('peng player-%s card:%s but has player hu', index, card)
-        player.sendMessage('PengReply', {errorCode: 2})
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengButPlayerHu})
         player.lockMessage()
         player.emitter.emit(Enums.guo, turn, card)
         player.unlockMessage()
         return
       }
-
-      if (this.stateData.pengGang !== player || this.stateData.card !== card) {
-        logger.info('peng player-%s card:%s has player pengGang or curCard not is this card', index, card)
-        player.emitter.emit(Enums.guo, turn, card)
-        player.sendMessage('PengReply', {errorCode: 3, msg: '错误的碰参数'})
-        return
-      }
-
-      // const from = this.atIndex(this.lastDa)
 
       this.actionResolver.requestAction(player, 'peng', () => {
         const ok = player.pengPai(card, this.lastDa);
@@ -753,14 +682,16 @@ class TableState implements Serializable {
           const hangUpList = this.stateData.hangUp
           this.turn++
           this.state = stateWaitDa
+          const from = this.atIndex(this.lastDa);
           const nextStateData = {da: player}
           const gangSelection = player.getAvailableGangs()
-          player.sendMessage('PengReply', {
-            errorCode: 0,
-            turn: this.turn,
-            gang: gangSelection.length > 0,
-            gangSelection
-          })
+          player.sendMessage('game/pengReply', {ok: true, data: {
+              turn: this.turn,
+              card,
+              from,
+              gang: gangSelection.length > 0,
+              gangSelection
+            }})
           for (const gangCard of gangSelection) {
             if (gangCard === card) {
               player.gangForbid.push(gangCard[0])
@@ -768,7 +699,6 @@ class TableState implements Serializable {
           }
 
           this.stateData = nextStateData
-          const from = this.atIndex(this.lastDa)
           const me = this.atIndex(player)
 
           for (let i = 1; i < 4; i++) {
@@ -780,9 +710,11 @@ class TableState implements Serializable {
           }
 
           this.room.broadcast('game/oppoPeng', {
-            card,
-            index,
-            turn, from
+            ok: true, data: {
+              card,
+              index,
+              turn, from
+            }
           }, player.msgDispatcher)
           if (hangUpList.length > 0) {    // 向所有挂起的玩家回复
             hangUpList.forEach(hangUpMsg => {
@@ -791,11 +723,11 @@ class TableState implements Serializable {
           }
         } else {
           logger.info('PengReply player-%s card:%s has player hu ,not contain self', index, card)
-          player.sendMessage('PengReply', {errorCode: 4});
+          player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengButPlayerHu})
           return;
         }
       }, () => {
-        player.sendMessage('PengReply', {errorCode: 4, msg: '竞争失败'})
+        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengPriorityInsufficient})
       })
 
       this.actionResolver.tryResolve()
@@ -1741,16 +1673,33 @@ class TableState implements Serializable {
 
   async onPlayerDa(player, turn, card) {
     const index = this.players.indexOf(player);
-    this.logger.info('da player-%s card:%s', index, card)
     let from
-    // const card = card_
+
     if (this.state !== stateWaitDa) {
-      player.sendMessage('DaReply', {errorCode: 1, info: '不能打牌'})
-      this.logger.info('da player-%s card:%s 不能打牌', index, card)
+      player.sendMessage('game/daReply', {
+        ok: false,
+        info: TianleErrorCode.cardDaError,
+        data: {
+          index: this.atIndex(player),
+          daIndex: this.atIndex(this.stateData[Enums.da]),
+          card,
+          turn,
+          state: this.state
+        }
+      })
       return
-    } else if (this.stateData[Enums.da]._id !== player._id) {
-      player.sendMessage('DaReply', {errorCode: 2, info: '不是您的回合'})
-      this.logger.info('da player-%s card:%s 不是您的回合', index, card)
+    } else if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
+      player.sendMessage('game/daReply', {
+        ok: false,
+        info: TianleErrorCode.notDaRound,
+        data: {
+          index: this.atIndex(player),
+          daIndex: this.atIndex(this.stateData[Enums.da]),
+          card,
+          turn,
+          state: this.state
+        }
+      })
       return
     }
 
@@ -1758,34 +1707,25 @@ class TableState implements Serializable {
     if (ok) {
       this.lastDa = player
       player.cancelTimeout()
-      player.sendMessage('DaReply', {errorCode: 0})
-
-      if (player.isTing()) {
-        if (player.events[Enums.anGang] && player.events[Enums.anGang].length > 0) {
-          player.sendMessage('game/showAnGang',
-            {index, cards: player.events[Enums.anGang]})
-          this.room.broadcast('game/oppoShowAnGang',
-            {index, cards: player.events[Enums.anGang]}
-            , player.msgDispatcher)
-        }
-      }
+      await player.sendMessage('game/daReply', {ok: true, data: card});
+      this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
     } else {
-      player.sendMessage('DaReply', {errorCode: 3, info: '不能打这张牌'})
-      this.logger.info('da player-%s card:%s 不能打这张牌', index, card)
+      player.sendMessage('game/daReply', {
+        ok: false,
+        info: TianleErrorCode.notDaThisCard,
+        data: {
+          index: this.atIndex(player),
+          daIndex: this.atIndex(this.stateData[Enums.da]),
+          card,
+          turn,
+          state: this.state
+        }
+      });
       return
     }
 
     from = this.atIndex(this.lastDa)
     this.turn++
-
-    if (this.remainCards === 4) {
-      this.room.broadcast('game/lastFour', {})
-      this.logger.info('game/lastFour')
-    }
-    if (this.remainCards === 1) {
-      this.room.broadcast('game/lastOne', {})
-      this.logger.info('game/lastOne')
-    }
 
     let check: HuCheck = {card}
     for (let j = 1; j < this.players.length; j++) {
@@ -1823,8 +1763,8 @@ class TableState implements Serializable {
       }
       this.state = stateWaitDa;
       this.stateData = {da: xiajia, card: newCard, msg};
-      const sendMsg = {index: this.players.indexOf(xiajia)}
-      this.room.broadcast('game/oppoTakeCard', sendMsg, xiajia.msgDispatcher)
+      const sendMsg = {index: this.players.indexOf(xiajia), card: newCard, msg}
+      this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
       this.logger.info('da broadcast game/oppoTakeCard   msg %s', JSON.stringify(sendMsg))
     })
 
@@ -1833,12 +1773,6 @@ class TableState implements Serializable {
         this.actionResolver.appendAction(p, 'hu', p.huInfo)
       }
     }
-
-    // if (check[Enums.gang]) {
-    //   const p = check[Enums.gang]
-    //   let gangInfo = [card ,p.getGangKind(card, p === player)]
-    //   this.actionResolver.appendAction(p, 'gang', gangInfo)
-    // }
 
     if (check[Enums.pengGang]) {
       if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
@@ -1850,26 +1784,19 @@ class TableState implements Serializable {
       }
     }
 
-    if (check[Enums.chi]) {
-      this.actionResolver.appendAction(check[Enums.chi], 'chi', check.chiCombol)
-    }
-
-    this.room.broadcast('game/oppoDa', {index, card}, player.msgDispatcher)
     for (let i = 1; i < this.players.length; i++) {
-
       const j = (from + i) % this.players.length;
       const p = this.players[j]
-
       const msg = this.actionResolver.allOptions(p)
 
       if (msg) {
         p.record('choice', card, msg)
         // 碰、杠等
-        p.sendMessage('game/canDoSomething', msg)
+        p.sendMessage('game/canDoSomething', {ok: true, data: msg})
       }
     }
 
-    if (check[Enums.chi] || check[Enums.pengGang] || check[Enums.hu]) {
+    if (check[Enums.pengGang] || check[Enums.hu]) {
       this.state = stateWaitAction;
       this.stateData = check;
       this.stateData.hangUp = [];
@@ -1883,24 +1810,21 @@ class TableState implements Serializable {
     console.log('guo  player %s card %s', index, playCard)
     // const from = this.atIndex(this.lastDa)
     if (this.turn !== playTurn) {
-      player.sendMessage('GuoReply', {errorCode: 1})
+      player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceAction});
     } else if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
-      player.sendMessage('GuoReply', {errorCode: 2})
+      player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceState});
     } else if (this.state === stateQiangGang && this.stateData.who == player) {
-      console.log('stateQiangGang player-%s ', index)
-
-      player.sendMessage('GuoReply', {errorCode: 0})
+      player.sendMessage('game/guoReply', {ok: true, data: {}})
 
       const {whom, card, turn} = this.stateData
       this.state = stateWaitDa
       this.stateData = {[Enums.da]: whom, cancelQiang: true}
       whom.emitter.emit(Enums.gangBySelf, turn, card)
     } else {
-      player.sendMessage('GuoReply', {errorCode: 0});
+      player.sendMessage('game/guoReply', {ok: true, data: {}})
       this.actionResolver.cancel(player)
 
       player.guoOption(playCard)
-
       this.actionResolver.tryResolve()
       return;
     }
