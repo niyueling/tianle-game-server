@@ -55,9 +55,10 @@ export function createHandler(redisClient: AsyncRedisClient) {
       player.model = await PlayerModel.findOne({_id: playerId}).lean();
       player.setGameName(gameType);
       await player.connectToBackend(gameType);
+      console.warn(gameType);
 
       player.model.disconnectedRoom = false
-      const allGameTypes = [GameType.mj, GameType.xueliu, GameType.guobiao];
+      const allGameTypes = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj];
       for (let i = 0; i < allGameTypes.length; i++) {
         // 下发掉线子游戏
         const room = await service.roomRegister.getDisconnectRoomByPlayerId(player.model._id.toString(), allGameTypes[i]);
