@@ -577,6 +577,7 @@ class Room extends RoomBase {
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
     return {
+      _id: this._id,
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),

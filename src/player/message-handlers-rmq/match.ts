@@ -55,7 +55,6 @@ export function createHandler(redisClient: AsyncRedisClient) {
       player.model = await PlayerModel.findOne({_id: playerId}).lean();
       player.setGameName(gameType);
       await player.connectToBackend(gameType);
-      console.warn(gameType);
 
       player.model.disconnectedRoom = false
       const allGameTypes = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj];
