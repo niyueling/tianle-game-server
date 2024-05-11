@@ -195,6 +195,7 @@ export default class RoomProxy {
         }
 
         if (messageBody.name === 'room/ready') {
+          console.log(333)
           room.ready(thePlayer)
           await this.tryBestStore(rabbit.redisClient, room)
           return

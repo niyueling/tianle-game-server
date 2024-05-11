@@ -211,10 +211,12 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   async ready(player) {
     if (this.isReadyPlayer(player._id.toString())) {
+      console.warn(111)
       return
     }
 
     if (this.gameState) {
+      console.warn(222)
       return
     }
 
