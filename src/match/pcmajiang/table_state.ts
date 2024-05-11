@@ -517,7 +517,7 @@ class TableState implements Serializable {
       this.logger.info('takeCard player-%s  take %s', this.zhuang._id, nextCard)
 
       const index = 0
-      this.room.broadcast('game/oppoTakeCard', {index}, this.zhuang.msgDispatcher)
+      this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, this.zhuang.msgDispatcher)
       this.state = stateWaitDa
       this.stateData = {msg, da: this.zhuang, card: nextCard}
     }
