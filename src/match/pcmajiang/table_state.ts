@@ -123,11 +123,6 @@ const generateCards = function () {
 
   return cards
 }
-
-function getTimeString() {
-  return moment().format('YYYYMMDDHHmm')
-}
-
 export function cardChangeDebugger<T extends new(...args: any[]) => {
   room: any
   cards: any
@@ -1297,9 +1292,7 @@ class TableState implements Serializable {
   async restoreMessageForPlayer(player: PlayerState) {
     const index = this.atIndex(player)
 
-    const pushMsg = await this.generateReconnectMsg(index);
-
-    return pushMsg
+    return await this.generateReconnectMsg(index)
   }
 
   async onRefresh(index) {
