@@ -702,7 +702,7 @@ class Room extends RoomBase {
     roomCreator.room = null
     this.players.forEach(player => {
       if (player && player !== roomCreator) {
-        player.sendMessage('room/dissolve', {})
+        player.sendMessage('room/dissolve', {ok: true, data: {}})
         player.room = null
       }
     })
@@ -724,7 +724,7 @@ class Room extends RoomBase {
     this.players
       .filter(p => p)
       .forEach(player => {
-        player.sendMessage('room/dissolve', allOverMessage)
+        player.sendMessage('room/dissolve', {ok: true, data: allOverMessage})
         player.room = null
       })
     // await this.refundClubOwner();

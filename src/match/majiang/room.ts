@@ -665,7 +665,7 @@ class Room extends RoomBase {
 
   async dissolve(roomCreator) {
     if (roomCreator._id !== this.ownerId) {
-      roomCreator.sendMessage('room/dissolveReply', {errorCode: 1})
+      roomCreator.sendMessage('room/dissolveReply', {ok: false, data: {}})
       return false
     }
     // await this.refundClubOwner();
@@ -675,7 +675,7 @@ class Room extends RoomBase {
       this.gameState.dissolve()
     }
     // this.recordScore()
-    roomCreator.sendMessage('room/dissolveReply', {errorCode: 0})
+    roomCreator.sendMessage('room/dissolveReply', {ok: true, data: {}})
     roomCreator.room = null
     this.players.forEach(player => {
       if (player && player !== roomCreator) {

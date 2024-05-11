@@ -902,14 +902,14 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   async dissolve(roomCreator) {
     if (roomCreator._id !== this.ownerId) {
-      roomCreator.sendMessage('room/dissolveReply', {errorCode: 1})
+      roomCreator.sendMessage('room/dissolveReply', {ok: false, data: {}})
       return false
     }
     if (this.autoDissolveTimer) {
       clearTimeout(this.autoDissolveTimer)
     }
     this.dissolveAndDestroyTable()
-    roomCreator.sendMessage('room/dissolveReply', {errorCode: 0})
+    roomCreator.sendMessage('room/dissolveReply', {ok: true, data: {}})
     roomCreator.room = null
     this.players.forEach(player => {
       if (player && player !== roomCreator) {
