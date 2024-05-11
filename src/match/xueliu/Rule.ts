@@ -51,6 +51,10 @@ class Rule {
     return this.ro.hzlz_option
   }
 
+  get test() {
+    return this.ro.test
+  }
+
   get useKun() {
     return this.ro.juShu === 'yiKun'
   }

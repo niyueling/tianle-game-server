@@ -585,17 +585,17 @@ class TableState implements Serializable {
     this.sleepTime = 1500;
     this.caishen = this.rule.useCaiShen ? [Enums.zhong] : [Enums.slotNoCard]
     const restCards = this.remainCards - (this.rule.playerCount * 13);
-    if (payload.test && payload.moCards && payload.moCards.length > 0) {
+    if (this.rule.test && payload.moCards && payload.moCards.length > 0) {
       this.testMoCards = payload.moCards;
     }
     const needShuffle = this.room.shuffleData.length > 0;
     let zhuangIndex = 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
-      const cards13 = payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : await this.take13Cards(p);
+      const cards13 = this.rule.test && payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : await this.take13Cards(p);
 
       // 如果客户端指定发牌
-      if (payload.cards && payload.cards[i].length === 13) {
+      if (this.rule.test && payload.cards && payload.cards[i].length === 13) {
         for (let j = 0; j < payload.cards[i].length; j++) {
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
           this.remainCards--;

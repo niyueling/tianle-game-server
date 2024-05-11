@@ -83,6 +83,10 @@ class Rule {
     return this.ro.useCaiShen
   }
 
+  get test() {
+    return this.ro.test
+  }
+
   get feiNiao(): number {
     return this.ro.feiNiao || 0
   }

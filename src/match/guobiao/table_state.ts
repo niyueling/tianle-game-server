@@ -643,7 +643,7 @@ class TableState implements Serializable {
   async consumeGangOrKeCard(cardNum?) {
     const isGang = Math.random() < 0.1;
 
-    const cardNumber = isGang && !cardNum ? 4 : (!cardNum && Math.random() < 0.1 ? 2 : 3);
+    const cardNumber = isGang && !cardNum ? 4 : (!cardNum && Math.random() < 0.3 ? 2 : 3);
     let cards = [];
     this.remainCards -= cardNumber;
     const counter = {};
@@ -685,7 +685,7 @@ class TableState implements Serializable {
     const residueCards = 13 - cards.length;
     const flag = Math.random();
     if (residueCards > 3 && flag < 0.2) {
-      const consumeCards = await this.consumeGangOrKeCard(3);
+      const consumeCards = await this.consumeGangOrKeCard();
       cards = [...cards, ...consumeCards];
     }
 
@@ -747,7 +747,7 @@ class TableState implements Serializable {
     this.sleepTime = 1500;
     this.caishen = this.rule.useCaiShen ? [Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju] : [Enums.slotNoCard]
     const restCards = this.remainCards - (this.rule.playerCount * 13);
-    if (payload.test && payload.moCards && payload.moCards.length > 0) {
+    if (this.rule.test && payload.moCards && payload.moCards.length > 0) {
       this.testMoCards = payload.moCards;
     }
 
@@ -756,10 +756,10 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
       const model = await service.playerService.getPlayerModel(p._id);
-      const cards13 = payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : (model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p));
+      const cards13 = this.rule.test && payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : (model.dominateCount > 0 ? await this.takeDominateCards() : await this.take13Cards(p));
 
       // 如果客户端指定发牌
-      if (payload.cards && payload.cards[i].length === 13) {
+      if (this.rule.test && payload.cards && payload.cards[i].length === 13) {
         for (let j = 0; j < payload.cards[i].length; j++) {
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
           this.remainCards--;
@@ -1327,7 +1327,7 @@ class TableState implements Serializable {
         }
       }
 
-      // 七星连珠
+      // 七星连珠(由同一花色的序数牌组成序数相连的7个对子的和牌)
       if (cardTypes[i].cardId === 153) {
         const status = await this.checkQiXingLianZhu(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
