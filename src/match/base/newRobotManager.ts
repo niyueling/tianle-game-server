@@ -528,6 +528,23 @@ export class NewRobotManager {
     }
   }
 
+  async nextRound() {
+    // 更新位置
+    if (this.model.step !== RobotStep.running) {
+      return;
+    }
+    await this.updatePlayerOrder();
+    await this.decreaseDepositTimes();
+    if (this.room.isPublic) {
+      // 金豆房，要检查金豆
+      this.model.step = RobotStep.waitRuby;
+    } else {
+      this.model.step = RobotStep.start;
+    }
+    await this.save();
+    console.log('next round', this.room._id)
+  }
+
   async readyAndPlay() {
     let isOk;
     if (this.model.step === RobotStep.start) {

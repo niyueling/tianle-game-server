@@ -17,6 +17,7 @@ import {service} from "../service/importService";
 import { IGame, IRoom, ITable, SimplePlayer } from './interfaces';
 import {once} from "./onceDecorator"
 import {autoSerialize, Serializable, serialize, serializeHelp} from "./serializeDecorator"
+import {eqlModelId} from "./pcmajiang/modelId";
 
 export const playerInClub = async (clubShortId: string, playerId: string) => {
   if (!clubShortId) {
@@ -691,6 +692,15 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   // }
 
   abstract listen(player)
+
+  protected removeOrder(player: SimplePlayer) {
+    for (let i = 0; i < this.playersOrder.length; i++) {
+      const po = this.playersOrder[i]
+      if (po && eqlModelId(po, player)) {
+        this.playersOrder[i] = null
+      }
+    }
+  }
 
   get rule() {
     return this.game.rule
