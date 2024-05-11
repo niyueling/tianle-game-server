@@ -1920,7 +1920,7 @@ class TableState implements Serializable {
 
     // 有中打中,非万能牌优先打
     const middleCard = this.checkUserHasCard(player.cards, enums.zhong);
-    if (middleCard.count === 1 && !this.room.rule.caiShen) return middleCard.index;
+    if (middleCard.count > 0 && !this.rule.useCaiShen) return middleCard.index;
 
     // 有1,9孤牌打1,9孤牌
     const lonelyCard = this.getCardOneOrNoneLonelyCard(player);
