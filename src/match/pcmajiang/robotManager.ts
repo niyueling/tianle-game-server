@@ -53,7 +53,7 @@ export class RobotManager extends NewRobotManager {
       const isPlayerDa = this.isPlayerDa(playerId);
       const isPlayerGang = this.isPlayerGang(playerId);
       const isPlayerChoice = this.isPlayerChoice(playerId);
-      console.warn("isPlayerDa-%s, isPlayerGang-%s, isPlayerChoice-%s, isZiMo-%s", isPlayerDa, isPlayerGang, isPlayerChoice, isHu);
+      console.warn("index-%s, isPlayerDa-%s, isPlayerGang-%s, isPlayerChoice-%s, isZiMo-%s", this.room.gameState.atIndex(proxy.playerState),isPlayerDa, isPlayerGang, isPlayerChoice, JSON.stringify(isHu));
       if (isHu.hu) {
         await proxy.choice(Enums.hu)
       } else if (AnGangIndex) {
