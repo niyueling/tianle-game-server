@@ -5414,7 +5414,7 @@ class TableState implements Serializable {
     }
 
     if ([Enums.poseidon, Enums.zeus, Enums.athena].includes(card)) {
-      setTimeout(nextDo1, 1000);
+      setTimeout(nextDo1, 10);
     } else {
       setTimeout(nextDo, 200);
     }
