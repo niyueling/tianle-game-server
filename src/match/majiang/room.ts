@@ -1000,7 +1000,7 @@ class Room extends RoomBase {
     this.gameState.dissolve()
     this.gameState = null
 
-    if (this.isRoomAllOver()) {
+    if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
       this.broadcast('room/allOver', message)
       this.players.forEach(x => x && this.leave(x))
