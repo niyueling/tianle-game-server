@@ -1233,11 +1233,6 @@ class TableState implements Serializable {
         const player = this.players[i];
         state1.model.played += 1
         if (this.room.isPublic) {
-          // 金豆房
-          if (player.balance < 0 && this.room.preventTimes[player.model.shortId] > 0) {
-            // 输豆，扣掉一次免输次数
-            this.room.preventTimes[player.model.shortId]--;
-          }
           state1.score = player.balance;
           state1.rubyReward = 0;
           // 是否破产
@@ -1850,7 +1845,7 @@ class TableState implements Serializable {
       // 配置失败
       console.error('invalid room level');
     } else {
-      times = conf.minScore;
+      times = conf.base * conf.Ante;
     }
     let winRuby = 0;
     let lostRuby = 0;
@@ -1864,8 +1859,8 @@ class TableState implements Serializable {
           winnerList.push(p);
         } else {
           const model = await service.playerService.getPlayerModel(p.model._id);
-          if (model.ruby < -p.balance) {
-            p.balance = -model.ruby;
+          if (model.gold < -p.balance) {
+            p.balance = -model.gold;
             p.isBroke = true;
           }
           lostRuby += p.balance;
@@ -1887,9 +1882,7 @@ class TableState implements Serializable {
         p.balance = Math.floor(p.balance / winRuby * lostRuby * -1);
         console.log('after balance', p.balance, p.model.shortId)
       }
-      // tempScore = Math.floor(tempScore / winRuby * lostRuby * -1);
     }
-    // return {winner, score: tempScore};
   }
 
   getPlayerByShortId(shortId) {
