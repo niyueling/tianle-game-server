@@ -1011,11 +1011,11 @@ class TableState implements Serializable {
             player.cards.qiangGang = false
           }
         } else {
-          player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
+          player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huPriorityInsufficient});
           logger.info('hu  player %s stateQiangGang 不是您能抢', index)
         }
       } else {
-        player.sendMessage('HuReply', {errorCode: 3});
+        player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.huInvaid});
         logger.info('hu  player %s stateQiangGang HuReply', index)
       }
     });
@@ -1272,7 +1272,7 @@ class TableState implements Serializable {
         maiDi: this.rule.maiDi
       }
 
-      this.room.broadcast('game/game-over', gameOverMsg)
+      this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       await this.room.gameOver(nextZhuang.model._id, states)
       this.logger.info('game/game-over  %s', JSON.stringify(gameOverMsg))
     }
