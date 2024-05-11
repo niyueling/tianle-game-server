@@ -362,6 +362,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
           }
 
           if (messageBody.name === 'room/joinReply') {
+            console.warn(messageBody)
             if(!messageBody.payload.ok) {
               return this.sendMessage(messageBody.name, messageBody.payload)
             }
