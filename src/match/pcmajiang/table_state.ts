@@ -490,7 +490,7 @@ class TableState implements Serializable {
 
   async fapai() {
     this.shuffle()
-    this.sleepTime = 0
+    this.sleepTime = 1500
     this.caishen = this.rule.useCaiShen ? Enums.zhong : Enums.slotNoCard
     const restCards = this.remainCards - (this.rule.playerCount * 13);
 
