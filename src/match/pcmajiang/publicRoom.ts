@@ -80,16 +80,13 @@ export class PublicRoom extends Room {
   // 更新 ruby
   async addScore(playerId, v) {
     const findPlayer = this.players.find(player => {
-      return player && player.model._id === playerId
+      return player && player.model._id.toString() === playerId.toString()
     })
     // 添加倍率
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
     if (!conf) {
       console.error('game config lost', this.gameRule.categoryId);
-      conf = {
-        roomRate: 10000,
-        minAmount: 10000,
-      }
+      return ;
     }
     await service.playerService.updateRoomRuby(this._id.toString(), findPlayer.model._id, findPlayer.model.shortId,
       v)
@@ -106,7 +103,7 @@ export class PublicRoom extends Room {
       return;
     }
     findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
-    findPlayer.sendMessage('resource/update', pick(findPlayer.model, ['gold', 'gem', 'ruby']))
+    findPlayer.sendMessage('resource/update', pick(findPlayer.model, ['gold', 'diamond', 'voucher']))
   }
 
   // 更新 player model
