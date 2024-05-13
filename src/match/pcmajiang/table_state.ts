@@ -986,6 +986,7 @@ class TableState implements Serializable {
             const from = this.atIndex(this.lastDa);
 
             if (ok) {
+              this.stateData = {};
               this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
               this.room.broadcast('game/showHuType', {
                 ok: true,
@@ -1036,6 +1037,7 @@ class TableState implements Serializable {
       } else if (isZiMo) {
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
         if (ok) {
+          this.stateData = {};
           this.room.broadcast('game/showHuType', {
             ok: true,
             data: {
