@@ -954,7 +954,7 @@ class PlayerState implements Serializable {
       this.onDeposit = false
       const cards = genCardArray(this.cards)
       this.cancelTimeout()
-      this.sendMessage('game/cancelDeposit-ok', {cards})
+      this.sendMessage('game/cancelDepositReply', {cards})
     })
     playerSocket.on('game/refreshQuiet', () => {
       this.emitter.emit('refreshQuiet', playerSocket, this.seatIndex)

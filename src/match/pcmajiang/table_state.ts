@@ -1313,7 +1313,6 @@ class TableState implements Serializable {
   }
 
   async drawGame() {
-    logger.info('state:', this.state);
     if (this.state !== stateGameOver) {
       this.state = stateGameOver
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
