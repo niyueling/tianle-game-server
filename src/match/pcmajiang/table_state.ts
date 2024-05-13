@@ -986,36 +986,40 @@ class TableState implements Serializable {
             const from = this.atIndex(this.lastDa);
 
             if (ok) {
-              player.sendMessage('game/huReply', {
+              this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
+              this.room.broadcast('game/showHuType', {
                 ok: true,
                 data: {
-                  card,
+                  index,
                   from,
-                  turn,
-                  type: "jiepao"
+                  cards: [card],
+                  daCards: [],
+                  huCards: [],
+                  card,
+                  type: "jiepao",
                 }
               });
-              this.stateData[Enums.hu].remove(player);
-              this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-              if (chengbaoStarted) {
-                this.lastDa.recordGameEvent(Enums.chengBao, {});
-              }
-              this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
-              const huPlayerIndex = this.atIndex(player)
-              for (let i = 1; i < this.players.length; i++) {
-                const playerIndex = (huPlayerIndex + i) % this.players.length
-                const nextPlayer = this.players[playerIndex]
-                if (nextPlayer === this.lastDa) {
-                  break
-                }
 
-                if (nextPlayer.checkJiePao(card)) {
-                  nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa)
-                  nextPlayer.sendMessage('game/genHu', {ok: true, data: {}})
-                  this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index: playerIndex}}, nextPlayer.msgDispatcher)
-                }
+              const gameOver = async() => {
+                await this.gameOver();
               }
-              await this.gameOver();
+
+              const huReply = async() => {
+                player.sendMessage('game/huReply', {
+                  ok: true,
+                  data: {
+                    card,
+                    from,
+                    turn,
+                    type: "jiepao"
+                  }
+                });
+                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+
+                setTimeout(gameOver, 1000);
+              }
+
+              setTimeout(huReply, 1000);
             } else {
               player.emitter.emit(Enums.guo, this.turn, card);
             }
@@ -1032,17 +1036,39 @@ class TableState implements Serializable {
       } else if (isZiMo) {
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
         if (ok) {
-          await player.sendMessage('game/huReply', {
+          this.room.broadcast('game/showHuType', {
             ok: true,
             data: {
-              card,
+              index,
               from: this.atIndex(player),
+              cards: [card],
+              daCards: [],
+              huCards: [],
+              card,
               type: "zimo",
-              turn,
             }
           });
-          this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
-          await this.gameOver();
+
+          const gameOver = async() => {
+            await this.gameOver();
+          }
+
+          const huReply = async() => {
+            await player.sendMessage('game/huReply', {
+              ok: true,
+              data: {
+                card,
+                from: this.atIndex(player),
+                type: "zimo",
+                turn,
+              }
+            });
+            this.room.broadcast('game/oppoZiMo', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+
+            setTimeout(gameOver, 1000);
+          }
+
+          setTimeout(huReply, 1000);
         } else {
           player.emitter.emit(Enums.da, this.turn, card);
         }
