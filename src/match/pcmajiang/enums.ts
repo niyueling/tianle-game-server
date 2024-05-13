@@ -84,6 +84,7 @@ const enums = {
   dianPao: 'dianPao',
 
   hunhun: 'hunhun',
+  multipleHu: 'multipleHu',
   dianGang: 'dianGang',
   taJiaZiMo: 'taJiaZiMo',
   taJiaAnGang: 'taJiaAnGang',

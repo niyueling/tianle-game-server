@@ -216,7 +216,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
 
     if (this.gameState) {
-      console.warn(222)
       return
     }
 
