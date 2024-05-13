@@ -1214,6 +1214,30 @@ class PlayerState implements Serializable {
     this.listenDispatcher(msgDispatcher)
   }
 
+  daHuPai(card, daPlayer) {
+    // 1.如果是接炮，从打牌用户打出的牌移除这张牌
+    if (daPlayer) {
+      daPlayer.consumeDropped(card);
+    } else {
+      // 2. 如果是自摸，则从自己的牌堆移除这张牌
+      if (this.cards[card] > 0) {
+        this.cards[card]--;
+
+        this.lastDa = true
+        this.pengForbidden = []
+        this.huForbiddenFan = 0
+        this.huForbiddenCards = []
+        this.forbidCards = []
+        this.freeCard = Enums.slotNoCard
+
+        this.emitter.emit('lastDa')
+        this.record('hu', card)
+      }
+    }
+
+    return true;
+  }
+
   deposit(callback) {
     let minutes = 15 * 1000;
 

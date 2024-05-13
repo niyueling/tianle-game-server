@@ -985,7 +985,7 @@ class TableState implements Serializable {
             const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
             const from = this.atIndex(this.lastDa);
 
-            if (ok) {
+            if (ok && player.daHuPai(card, this.players[from])) {
               this.stateData = {};
               this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
               this.room.broadcast('game/showHuType', {
@@ -1036,7 +1036,7 @@ class TableState implements Serializable {
         this.actionResolver.tryResolve()
       } else if (isZiMo) {
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
-        if (ok) {
+        if (ok && player.daHuPai(card, null)) {
           this.stateData = {};
           this.room.broadcast('game/showHuType', {
             ok: true,
