@@ -20,8 +20,9 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import Player from "../../database/models/player";
+import RoomGoldRecord from "../../database/models/roomGoldRecord";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -669,6 +670,10 @@ class TableState implements Serializable {
       await this.onPlayerDa(player, turn, card);
     })
 
+    player.on(Enums.multipleHu, async () => {
+      await this.onPlayerMultipleHu(player);
+    })
+
     player.on(Enums.peng, (turn, card) => {
       if (this.state !== stateWaitAction) {
         player.emitter.emit(Enums.guo, turn, card)
@@ -1098,24 +1103,6 @@ class TableState implements Serializable {
     });
   }
 
-  multiTimesSettleWithSpecial(states, specialId, times) {
-    const specialState = states.find(s => s.model._id === specialId)
-
-    console.log(`${__filename}:1577 multiTimesSettleWithSpecial`, specialState)
-
-    if (specialState.score > 0) {
-      for (const state of states) {
-        state.score *= times
-      }
-    } else {
-      const winState = states.find(s => s.score > 0)
-      if (winState) {
-        winState.score += specialState.score * -(times - 1)
-        specialState.score *= times
-      }
-    }
-  }
-
   generateNiao() {
     const playerNiaos = []
     const playerIndex = 0
@@ -1148,6 +1135,109 @@ class TableState implements Serializable {
     }
 
     return playerNiaos
+  }
+
+  async onPlayerMultipleHu(player) {
+    const msgs = [];
+    // 判断是否同时存在胡牌和杠牌，存在则直接杠牌过
+    let huCount = 0;
+    for (let i = 0; i < this.manyHuArray.length; i++) {
+      if (this.manyHuArray[i].action === Enums.hu) {
+        huCount++;
+      }
+    }
+
+    for (let i = 0; i < this.manyHuArray.length; i++) {
+      // 处理过牌
+      if (this.manyHuArray[i].action === Enums.guo || ([Enums.gang, Enums.peng].includes(this.manyHuArray[i].action) && huCount > 0)) {
+        this.players[this.manyHuArray[i].to].emitter.emit(Enums.guo, this.turn, this.manyHuArray[i].card);
+        msgs.push({type: Enums.guo, card: this.manyHuArray[i].card, index: this.manyHuArray[i].to});
+      }
+
+      // 处理碰牌
+      if (this.manyHuArray[i].action === Enums.peng && huCount === 0) {
+        this.players[this.manyHuArray[i].to].emitter.emit(Enums.peng, this.turn, this.manyHuArray[i].card);
+        msgs.push({
+          type: Enums.peng,
+          card: this.manyHuArray[i].card,
+          index: this.manyHuArray[i].to,
+          from: this.manyHuArray[i].from
+        });
+      }
+
+      // 处理杠牌
+      if (this.manyHuArray[i].action === Enums.gang && huCount === 0) {
+        this.players[this.manyHuArray[i].to].emitter.emit(Enums.gangByOtherDa, this.turn, this.manyHuArray[i].card);
+        msgs.push({
+          type: Enums.gang,
+          card: this.manyHuArray[i].card,
+          index: this.manyHuArray[i].to,
+          from: this.manyHuArray[i].from
+        });
+      }
+
+      // 处理胡牌
+      if (this.manyHuArray[i].action === Enums.hu) {
+        const huPlayer = this.players[this.manyHuArray[i].to];
+        const huMsg = await this.onMultipleHu(huPlayer, this.manyHuArray[i]);
+
+        if (huMsg) {
+          this.room.broadcast('game/showHuType', {
+            ok: true,
+            data: {
+              index: huMsg.from,
+              cards: [this.manyHuArray[i].card],
+              daCards: [],
+              huCards: [],
+              type: "jiepao",
+            }
+          });
+
+          msgs.push({
+            type: "hu",
+            card: this.manyHuArray[i].card,
+            index: huMsg.index,
+            from: huMsg.from
+          });
+        }
+      }
+    }
+
+    const gameOver = async () => {
+      await this.gameOver();
+    }
+
+    const huReply = async () => {
+      this.room.broadcast("game/multipleHuReply", {ok: true, data: {manyHuArray: this.manyHuArray, msg: msgs, huCount}});
+
+      setTimeout(gameOver, 1000);
+    }
+
+    setTimeout(huReply, 1000);
+  }
+
+  async onMultipleHu(player, msg) {
+    const ok = player.jiePao(msg.card, this.turn === 2, this.remainCards === 0, this.lastDa);
+    if (ok && player.daHuPai(msg.card, this.players[msg.from])) {
+      player.lastOperateType = 4;
+      player.isGameDa = true;
+      player.isGameHu = true;
+      this.lastDa = player;
+
+      return {
+        card: msg.card,
+        index: msg.to,
+        from: msg.from
+      };
+    } else {
+      player.sendMessage('game/huReply', {
+        ok: false,
+        info: TianleErrorCode.huInvaid,
+        data: {type: "ziMo", card: msg.card}
+      });
+
+      return {};
+    }
   }
 
   assignNiaos() {
@@ -1211,8 +1301,6 @@ class TableState implements Serializable {
         await this.room.addScore(state1.model._id, state1.score)
       }
     }
-
-    // await this.room.recordRoomScore('dissolve')
   }
 
   async gameOver() {
@@ -1230,9 +1318,6 @@ class TableState implements Serializable {
       this.players.forEach(x => x.gameOver())
       this.room.removeListener('reconnect', this.onReconnect)
       this.room.removeListener('empty', this.onRoomEmpty)
-
-      // await this.room.charge()
-
       const nextZhuang = this.nextZhuang()
       const niaos = this.generateNiao()
       this.assignNiaos()
@@ -1296,7 +1381,7 @@ class TableState implements Serializable {
 
       this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       await this.room.gameOver(nextZhuang.model._id, states)
-      this.logger.info('game/game-over  %s', JSON.stringify(gameOverMsg))
+      this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
     }
     this.logger.close()
   }
