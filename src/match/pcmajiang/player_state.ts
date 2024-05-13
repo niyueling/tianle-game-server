@@ -1215,27 +1215,27 @@ class PlayerState implements Serializable {
   }
 
   deposit(callback) {
-    let minutes = 30 * 1000
+    let minutes = 15 * 1000;
 
     // if (!this.room.isPublic) {
     //   return
     // }
-    if (this.rule.ro.roomType === 'battleRoom') {
-      console.log('battle room')
-    } else if (this.rule.ro.roomType === 'normal' && this.rule.ro.autoCommit) {
-      minutes = (this.rule.ro.autoCommit + 1) * 1000
-    } else {
-      return
-    }
+    // if (this.rule.ro.roomType === 'battleRoom') {
+    //   console.log('battle room')
+    // } else if (this.rule.ro.roomType === 'normal' && this.rule.ro.autoCommit) {
+    //   minutes = (this.rule.ro.autoCommit + 1) * 1000
+    // } else {
+    //   return
+    // }
 
     if (!this.msgDispatcher) {
-      return
+      return;
     }
     this.cancelTimeout()
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
         this.onDeposit = true
-        this.sendMessage('game/startDeposit', {})
+        this.sendMessage('game/startDeposit', {});
         callback()
         this.timeoutTask = null
       }, minutes)
