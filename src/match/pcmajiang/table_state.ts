@@ -1223,6 +1223,7 @@ class TableState implements Serializable {
       player.isGameDa = true;
       player.isGameHu = true;
       this.lastDa = player;
+      this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
 
       return {
         card: msg.card,
