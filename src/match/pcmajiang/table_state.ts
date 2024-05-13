@@ -1344,10 +1344,190 @@ class TableState implements Serializable {
       this.players.forEach(x => x.gameOver())
       this.room.removeListener('reconnect', this.onReconnect)
       this.room.removeListener('empty', this.onRoomEmpty)
+
+      this.room.charge()
+
       const nextZhuang = this.nextZhuang()
+      // 生成鸟牌
       const niaos = this.generateNiao()
+      // 计算用户的鸟牌数
       this.assignNiaos()
       this.niaos = niaos
+
+      // 其他三家鸟数
+      let noHuNiaoCount = 0;
+      // 胡牌用户鸟数
+      let huNiaoCount = 0;
+      let huType = 0;
+      let score = 1;
+      const feiNiaoArrs = [];
+
+      if (this.rule.quanFei > 0) {
+        // 计算鸟数
+        for (let i = 0; i < this.players.length; i++) {
+          const p = this.players[i];
+
+          // 计算胡牌用户鸟数和其他三家鸟数
+          p.huPai() ? huNiaoCount += p.niaoCount : noHuNiaoCount += p.niaoCount;
+
+          if (p.events.zimo) {
+            huType = 1;
+          }
+
+          if (p.events.jiePao) {
+            huType = 2;
+          }
+        }
+
+        console.warn("huNiaoCount-%s noHuNiaoCount-%s huType-%s", huNiaoCount, noHuNiaoCount, huType);
+
+        // 计算底分
+        if (huType !== 0) {
+          for (let i = 0; i < this.players.length; i++) {
+            const p = this.players[i];
+
+            // 计算胡牌基数底分
+            if (p.huPai()) {
+              if (p.events.zimo) {
+                score = 2;
+                if (p.events.hu[0].pengPengHu
+                  || p.events.hu[0].qiDui || p.events.hu[0].diHu) {
+                  score = 4;
+                }
+                if (p.events.hu[0].qingYiSe || p.events.hu[0].tianHu
+                  || p.events.hu[0].haoQi) {
+                  score = 8;
+                }
+                if ((p.events.hu[0].qingYiSe && p.events.hu[0].qiDui) ||
+                  p.events.hu[0].qingYiSe && p.events.hu[0].pengPengHu) {
+                  score = 16;
+                }
+                if (p.events.hu[0].qingYiSe && p.events.hu[0].haoQi) {
+                  score = 32;
+                }
+
+                p.gameDiFen += (noHuNiaoCount + this.rule.playerCount - 1) * score;
+
+                for (let j = 0; j < this.players.length; j++) {
+                  if (p._id !== this.players[j]._id) {
+                    this.players[j].gameDiFen -= (p.niaoCount + 1) * score;
+                  }
+                }
+              }
+
+              if (p.events.jiePao) {
+                if (p.events.hu[0].pengPengHu || p.events.hu[0].qiDui || p.events.hu[0].qiangGang) {
+                  console.warn("pengPengHu-%s qiDui-%s qiangGang-%s", p.events.hu[0].pengPengHu,
+                    p.events.hu[0].qiDui, p.events.hu[0].qiangGang);
+                  score = 6;
+                }
+                if (p.events.hu[0].qingYiSe || p.events.hu[0].haoQi) {
+                  score = 12;
+                }
+                if ((p.events.hu[0].qingYiSe && p.events.hu[0].qiDui) ||
+                  (p.events.hu[0].qingYiSe && p.events.hu[0].pengPengHu)) {
+                  score = 24;
+                }
+                if (p.events.hu[0].qingYiSe && p.events.hu[0].haoQi) {
+                  score = 48;
+                }
+
+                for (let j = 0; j < this.players.length; j++) {
+                  if (p._id !== this.players[j]._id && this.players[j].events.dianPao) {
+                    p.gameDiFen += (this.players[j].niaoCount + 1) * score;
+                    this.players[j].gameDiFen -= (p.niaoCount + 1) * score;
+                  }
+                }
+              }
+
+              console.warn("hu events %s score %s", JSON.stringify(p.events), score);
+            }
+          }
+
+          // 计算杠牌底分
+          for (let i = 0; i < this.players.length; i++) {
+            const p = this.players[i];
+
+            // 计算暗杠分数
+            if (p.eventCount('anGang') > 0) {
+              console.warn("roomId-%s anGangCount-%s", this.room._id, p.eventCount('anGang'));
+              const anGangCount = p.eventCount('anGang');
+              let otherNiaoCount = 0;
+
+              for (let j = 0; j < this.players.length; j++) {
+                if (p._id !== this.players[j]._id) {
+                  otherNiaoCount += this.players[j].niaoCount;
+                }
+              }
+
+              p.gameDiFen += (otherNiaoCount + this.rule.playerCount - 1) * 2 * anGangCount;
+
+              for (let j = 0; j < this.players.length; j++) {
+                if (p._id !== this.players[j]._id) {
+                  this.players[j].gameDiFen -= (p.niaoCount + 1) * 2 * anGangCount;
+                }
+              }
+            }
+
+            // 计算补杠分数
+            if (p.eventCount('buGang') > 0) {
+              console.warn("roomId-%s buGangCount-%s", this.room._id, p.eventCount('buGang'));
+              const buGangCount = p.eventCount('buGang');
+              let otherNiaoCount = 0;
+
+              for (let j = 0; j < this.players.length; j++) {
+                if (p._id !== this.players[j]._id) {
+                  otherNiaoCount += this.players[j].niaoCount;
+                }
+              }
+              p.gameDiFen += (otherNiaoCount + this.rule.playerCount - 1) * buGangCount;
+
+              for (let j = 0; j < this.players.length; j++) {
+                if (p._id !== this.players[j]._id) {
+                  this.players[j].gameDiFen -= (p.niaoCount + 1) * buGangCount;
+                }
+              }
+            }
+
+            // 计算明杠分数
+            if (p.gangFrom.length > 0) {
+              console.warn("roomId-%s jieGangCount-%s", this.room._id, p.gangFrom.length);
+              for (let j = 0; j < p.gangFrom.length; j++) {
+                p.gameDiFen += (p.gangFrom[j].niaoCount + 1) * 3;
+                p.gangFrom[j].gameDiFen -= (p.niaoCount + 1) * 3;
+              }
+            }
+          }
+        }
+
+        const diFenArrs = [];
+        for (let i = 0; i < this.players.length; i++) {
+          diFenArrs.push({shortId: this.players[i].model.shortId, diFen: this.players[i].gameDiFen });
+        }
+
+        console.warn("diFen-%s", JSON.stringify(diFenArrs))
+
+        // 计算最终分数
+        for (let i = 0; i < this.players.length; i++) {
+          const p = this.players[i];
+          p.gameScore = p.gameDiFen;
+          const playerNiaos = p.niaoCards;
+          const nPlayers = this.players.length;
+          for (const niao of playerNiaos) {
+            const tail = niao % 10
+            const index = (tail + nPlayers - 1) % nPlayers
+            p.gameScore += this.players[index].gameDiFen;
+            // @ts-ignore
+            p.feiNiaoCards.push({card: niao, score: this.players[index].gameDiFen});
+          }
+        }
+
+        for (let i = 0; i < this.players.length; i++) {
+          feiNiaoArrs.push({shortId: this.players[i].model.shortId, feiNiaoCards: this.players[i].feiNiaoCards });
+        }
+
+        console.warn("feiNiaoArrs-%s", JSON.stringify(feiNiaoArrs))
+      }
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const huPlayers = this.players
@@ -1380,6 +1560,12 @@ class TableState implements Serializable {
         } else {
           state1.score = this.players[i].balance * this.rule.diFen
         }
+
+        if (this.rule.quanFei > 0) {
+          state1["feiNiaos"] = feiNiaoArrs[i];
+          state1.score = this.players[i].gameScore;
+        }
+
         await this.room.addScore(state1.model._id, state1.score)
       }
 

@@ -207,6 +207,13 @@ class PlayerState implements Serializable {
   // 补助的棋牌
   helpCards: any[] = []
 
+  // 底分
+  gameDiFen: 0
+  // 实际得分
+  gameScore: 0
+  // 鸟牌积分
+  feiNiaoCards: []
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -242,6 +249,10 @@ class PlayerState implements Serializable {
     this.lastOptions = {}
     this.recorder = new DummyRecorder()
     this.alreadyTakenCard = false
+
+    this.gameDiFen = 0
+    this.gameScore = 0
+    this.feiNiaoCards = []
   }
 
   setGameRecorder(r) {
