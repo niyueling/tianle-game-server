@@ -845,7 +845,6 @@ class TableState implements Serializable {
             if (ok) {
               player.lastOperateType = 3;
               this.turn++;
-              player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
               const from = this.atIndex(this.lastDa)
               const me = this.atIndex(player)
               player.sendMessage('game/gangReply', {ok: true, data: {card, from, type: "mingGang"}});
@@ -916,7 +915,6 @@ class TableState implements Serializable {
       const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
       if (ok) {
         player.lastOperateType = 3;
-        player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
         player.sendMessage('game/gangReply', {
           ok: true,
           data: {card, from, gangIndex, type: isAnGang ? "anGang" : "buGang"}
