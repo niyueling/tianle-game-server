@@ -622,7 +622,7 @@ class TableState implements Serializable {
     })
     player.on('waitForDoSomeThing', msg => {
       player.deposit(() => {
-        const card = msg.card
+        const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data)
         console.warn("todo-%s", todo)
         switch (todo) {
