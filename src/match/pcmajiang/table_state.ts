@@ -466,7 +466,7 @@ class TableState implements Serializable {
   shuffle() {
     alg.shuffle(this.cards)
     this.turn = 1
-    this.remainCards = this.cards.length
+    this.remainCards = this.cards.length - (this.rule.quanFei ? this.rule.quanFei * this.rule.playerCount + 1 : 0);
   }
 
   consumeCard(playerState: PlayerState) {
