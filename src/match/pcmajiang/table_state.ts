@@ -1581,7 +1581,9 @@ class TableState implements Serializable {
       if (huPlayers.length > 0) {
         this.calcGangScore()
       }
+
       await this.recordRubyReward();
+
       for (const state1 of states) {
         const i = states.indexOf(state1);
         const player = this.players[i];
@@ -1594,15 +1596,16 @@ class TableState implements Serializable {
           // mvp 次数
           state1.mvpTimes = 0;
         } else {
-          state1.score = this.players[i].balance * this.rule.diFen
+          state1.score = (this.rule.quanFei > 0 ? this.players[i].gameScore : this.players[i].balance) * this.rule.diFen
         }
 
         if (this.rule.quanFei > 0) {
           state1["feiNiaos"] = feiNiaoArrs[i];
-          state1.score = this.players[i].gameScore;
         }
 
-        await this.room.addScore(state1.model._id, state1.score)
+        if (this.room.isPublic) {
+          await this.room.addScore(state1.model._id, state1.score);
+        }
       }
 
       await this.room.recordGameRecord(this, states)
@@ -2201,34 +2204,6 @@ class TableState implements Serializable {
     // 金豆房记录奖励
     // let record;
     await this.getBigWinner();
-    // const {winnerList, ruby} = await service.rubyReward.calculateRubyReward(this.room.uid, resp.winner);
-    // if (ruby > 0) {
-    //   // 瓜分奖池
-    //   record = await service.rubyReward.winnerGainRuby(this.room.uid, Number(this.room._id), winnerList,
-    //     resp.winner, this.room.game.juIndex);
-    //   for (const shortId of winnerList) {
-    //     const player = this.getPlayerByShortId(shortId);
-    //     if (!player) {
-    //       throw new Error('invalid balance player')
-    //     }
-    //     player.winFromReward(ruby);
-    //   }
-    // } else {
-    //   // 扣除 30% 金豆， 系统 1：1 补充
-    //   const rubyReward = Math.floor(resp.score * config.game.winnerReservePrizeRuby);
-    //   for (const shortId of resp.winner) {
-    //     // 扣掉用户 30% 金豆
-    //     const player = this.getPlayerByShortId(shortId);
-    //     if (!player) {
-    //       throw new Error('invalid balance player')
-    //     }
-    //     player.winFromReward(-rubyReward);
-    //   }
-    //   record = await service.rubyReward.systemAddRuby(this.room.uid, Number(this.room._id),
-    //     rubyReward * resp.winner.length,
-    //     rubyReward * resp.winner.length, resp.winner, this.room.game.juIndex)
-    // }
-    // return record;
   }
 
   // 本局大赢家
@@ -2250,7 +2225,12 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       if (p) {
-        p.balance *= times * this.rule.diFen;
+        // 如果是全飞，设置用户的底分
+        if (this.rule.quanFei > 0) {
+          p.balance = p.gameScore;
+        }
+
+        p.balance *= (times * this.rule.diFen);
         if (p.balance > 0) {
           winRuby += p.balance;
           winnerList.push(p);
