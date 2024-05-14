@@ -1135,11 +1135,11 @@ class TableState implements Serializable {
       this.players.forEach(p => {
         p.niaoCards = []
         playerNiaos[playerIndex] = {}
-        playerNiaos[playerIndex][p._id] = []
+        playerNiaos[playerIndex][p._id.toString()] = []
         for (let i = 0; i < this.rule.quanFei; i++) {
           const niaoPai = this.consumeCard(null)
           if (niaoPai) {
-            playerNiaos[playerIndex][p._id].push(niaoPai)
+            playerNiaos[playerIndex][p._id.toString()].push(niaoPai)
             p.niaoCards.push(niaoPai)
           }
         }
@@ -1151,9 +1151,9 @@ class TableState implements Serializable {
         if (niaoPai) {
           if (!playerNiaos[0]) {
             playerNiaos[0] = {}
-            playerNiaos[0][this.players[0]._id] = []
+            playerNiaos[0][this.players[0]._id.toString()] = []
           }
-          playerNiaos[0][this.players[0]._id].push(niaoPai)
+          playerNiaos[0][this.players[0]._id.toString()].push(niaoPai)
           this.players[0].niaoCards.push(niaoPai)
         }
       }
@@ -1520,8 +1520,6 @@ class TableState implements Serializable {
           diFenArrs.push({shortId: this.players[i].model.shortId, diFen: this.players[i].gameDiFen });
         }
 
-        console.warn("diFen-%s", JSON.stringify(diFenArrs))
-
         // 计算最终分数
         for (let i = 0; i < this.players.length; i++) {
           const p = this.players[i];
@@ -1539,6 +1537,7 @@ class TableState implements Serializable {
 
         for (let i = 0; i < this.players.length; i++) {
           feiNiaoArrs.push({shortId: this.players[i].model.shortId, feiNiaoCards: this.players[i].feiNiaoCards });
+          console.warn("index-%s, gameScore-%s", this.players[i].seatIndex, this.players[i].gameScore);
         }
 
         console.warn("feiNiaoArrs-%s", JSON.stringify(feiNiaoArrs))
