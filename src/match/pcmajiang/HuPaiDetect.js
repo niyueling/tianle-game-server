@@ -316,14 +316,18 @@ const HuPaiDetect = {
     if (resMap.hu) {
       if (siZhang.length === 1) {
         resMap.haoQi = true
+        resMap.huType = 'haoQi'
       } else if (siZhang.length === 2) {
           resMap.shuangHaoQi = true
+          resMap.huType = 'shuangHaoQi'
       } else if (siZhang.length === 3) {
           resMap.sanHaoQi = true
+        resMap.huType = 'sanHaoQi'
       } else {
         resMap.qiDui = true
+        resMap.huType = 'qiDui'
       }
-      resMap.huType = 'qiDui'
+
       resMap.huCards = {duiZi, siZhang, sanZhang}
     }
 
