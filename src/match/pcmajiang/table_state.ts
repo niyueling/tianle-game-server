@@ -2096,7 +2096,7 @@ class TableState implements Serializable {
 
       const msg = this.actionResolver.allOptions(p);
       const model = await service.playerService.getPlayerModel(p.model._id);
-      if (msg && model.gold > 0 && !p.isBroke) {
+      if (msg && ((model.gold > 0 && !p.isBroke && this.room.isPublic) || !this.room.isPublic)) {
         huCount++;
         this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});
         this.canManyHuPlayers.push(p._id.toString());

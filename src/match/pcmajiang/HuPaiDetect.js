@@ -362,7 +362,6 @@ const HuPaiDetect = {
         delete option.multiOptions
         result.options.push(option)
       }
-      //console.log(`${__filename}:315 huRecur`, result)
       return exit        //   递归退出条件：如果没有剩牌，则和牌返回。
     }
     let i = 1;
