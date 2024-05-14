@@ -781,7 +781,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   onRequestDissolve(player) {
     const dissolveInfo = this.initDissolveByPlayer(player)
     this.broadcast('room/dissolveReq',
-      {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime})
+      {ok: true, data: {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime}})
     if (this.canDissolve()) {
       this.forceDissolve()
       return
@@ -834,7 +834,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     if (item) {
       item.type = 'agree'
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo})
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}})
 
     if (this.canDissolve()) {
       this.forceDissolve()
@@ -855,7 +855,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       this.dissolveTimeout = null
     }
     this.broadcast('room/dissolveReq',
-      {dissolveReqInfo: this.dissolveReqInfo})
+      {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}})
     return true
   }
 

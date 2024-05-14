@@ -853,7 +853,7 @@ class Room extends RoomBase {
       return
     }
     const dissolveInfo = this.getDissolvePlayerInfo(player);
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime}});
     if (this.canDissolve()) {
       this.forceDissolve()
       return
@@ -880,7 +880,7 @@ class Room extends RoomBase {
     if (item) {
       item.type = 'agree';
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
 
     if (this.canDissolve()) {
       this.forceDissolve()

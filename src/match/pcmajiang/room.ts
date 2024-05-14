@@ -869,7 +869,7 @@ class Room extends RoomBase {
       return
     }
     const dissolveInfo = this.getDissolvePlayerInfo(player);
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime}});
     if (this.canDissolve()) {
       this.forceDissolve()
       return
@@ -896,7 +896,7 @@ class Room extends RoomBase {
     if (item) {
       item.type = 'agree';
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
 
     if (this.canDissolve()) {
       this.forceDissolve()
@@ -919,7 +919,7 @@ class Room extends RoomBase {
       this.roomState = ''
       this.dissolveTimeout = null
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
     return true;
   }
 
@@ -974,7 +974,7 @@ class Room extends RoomBase {
         item.type = 'waitConfirm';
       }
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}, player);
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}}, player);
   }
 
   updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer) {
@@ -989,7 +989,7 @@ class Room extends RoomBase {
       }
     }
     this.broadcast('room/dissolveReq',
-      {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
+      {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
@@ -1003,7 +1003,7 @@ class Room extends RoomBase {
         item.type = 'offline'
       }
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   changeZhuang() {
