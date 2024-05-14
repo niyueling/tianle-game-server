@@ -3,7 +3,6 @@
  */
 // @ts-ignore
 import {pick, random} from 'lodash'
-import * as moment from 'moment'
 import * as logger from "winston";
 import * as winston from "winston";
 import PlayerModel from "../../database/models/player";
@@ -20,9 +19,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {ConsumeLogType, RobotStep, TianleErrorCode} from "@fm/common/constants";
-import Player from "../../database/models/player";
-import RoomGoldRecord from "../../database/models/roomGoldRecord";
+import {TianleErrorCode} from "@fm/common/constants";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -742,7 +739,8 @@ class TableState implements Serializable {
           const hangUpList = this.stateData.hangUp;
           this.turn++;
           this.state = stateWaitDa;
-          const nextStateData = {da: player};
+          const card = this.promptWithPattern(player, null);
+          const nextStateData = {da: player, card};
           const gangSelection = player.getAvailableGangs();
           this.stateData = nextStateData;
           const from = this.atIndex(this.lastDa);
@@ -2296,11 +2294,11 @@ class TableState implements Serializable {
   promptWithPattern(player: PlayerState, lastTakeCard) {
     // 获取摸牌前的卡牌
     const cards = player.cards.slice();
-    if (cards[lastTakeCard] > 0) cards[lastTakeCard]--;
+    if (cards[lastTakeCard] > 0 && lastTakeCard) cards[lastTakeCard]--;
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
-      if (player.cards[lastTakeCard] > 0) return lastTakeCard;
+      if (player.cards[lastTakeCard] > 0 && lastTakeCard) return lastTakeCard;
     }
 
     // 有中打中,非万能牌优先打
