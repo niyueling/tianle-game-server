@@ -57,7 +57,7 @@ export class RobotManager extends NewRobotManager {
         console.warn("index-%s, isPlayerDa-%s, isPlayerGang-%s, isPlayerChoice-%s, isZiMo-%s, cards-%s", this.room.gameState.atIndex(proxy.playerState),isPlayerDa,
           isPlayerGang, isPlayerChoice, JSON.stringify(isHu), JSON.stringify(proxy.playerState.cards));
       }
-      if (isHu.hu) {
+      if (isHu.hu && !this.room.gameState.stateData.type) {
         await proxy.choice(Enums.hu)
       } else if (AnGangIndex) {
         await proxy.gang(Enums.anGang, AnGangIndex)

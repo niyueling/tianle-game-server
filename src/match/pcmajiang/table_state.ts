@@ -740,7 +740,7 @@ class TableState implements Serializable {
           this.turn++;
           this.state = stateWaitDa;
           const card = this.promptWithPattern(player, null);
-          const nextStateData = {da: player, card};
+          const nextStateData = {da: player, card, type: Enums.peng};
           const gangSelection = player.getAvailableGangs();
           this.stateData = nextStateData;
           const from = this.atIndex(this.lastDa);
