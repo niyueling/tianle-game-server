@@ -1618,6 +1618,7 @@ class TableState implements Serializable {
         niaos,
         creator: this.room.creator.model._id,
         juShu: this.restJushu,
+        juCount: this.rule.juShu,
         juIndex: this.room.game.juIndex,
         useKun: this.rule.useKun,
         states,
