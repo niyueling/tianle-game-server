@@ -2277,7 +2277,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    logger.info(`${player.model.shortId}游戏操作:${todo}`);
+    logger.info("index-%s,todo-%s,card-%s", player.seatIndex, todo, this.stateData.card);
 
     switch (todo) {
       case Enums.peng:
