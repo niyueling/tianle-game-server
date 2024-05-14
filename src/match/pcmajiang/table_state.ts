@@ -2123,12 +2123,6 @@ class TableState implements Serializable {
         this.canManyHuPlayers.push(p._id.toString());
         p.record('choice', card, msg);
 
-        // 如果用户可以杠，并且胡牌已托管，则取消托管
-        if (msg["gang"] && p.onDeposit) {
-          p.onDeposit = false;
-          p.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}})
-        }
-
         // 碰、杠等
         p.sendMessage('game/canDoSomething', {ok: true, data: msg});
         this.room.broadcast('game/oppoCanDoSomething', {
