@@ -314,10 +314,13 @@ const HuPaiDetect = {
     }
 
     if (resMap.hu) {
-      if (siZhang.length > 0) {
+      if (siZhang.length === 1) {
         resMap.haoQi = true
-      }
-      else {
+      } else if (siZhang.length === 2) {
+          resMap.shuangHaoQi = true
+      } else if (siZhang.length === 3) {
+          resMap.sanHaoQi = true
+      } else {
         resMap.qiDui = true
       }
       resMap.huType = 'qiDui'
@@ -1222,6 +1225,8 @@ const HuPaiDetect = {
         {prop: 'pengPengHu', times: 2},
         {prop: 'qiDui', times: 2},
         {prop: 'haoQi', times: 4},
+        {prop: 'shuangHaoQi', times: 8},
+        {prop: 'sanHaoQi', times: 16},
       ]
     }
     if(rule.hzlz_option === 'qidui'){
