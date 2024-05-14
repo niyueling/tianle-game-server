@@ -386,6 +386,9 @@ class TableState implements Serializable {
   // 是否正在执行一炮多响
   isRunMultiple: boolean = false;
 
+  // 测试工具摸牌
+  testMoCards: any[] = [];
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -417,6 +420,7 @@ class TableState implements Serializable {
     this.manyHuPlayers = [];
     this.canManyHuPlayers = [];
     this.isRunMultiple = false;
+    this.testMoCards = [];
   }
 
   toJSON() {
@@ -471,22 +475,24 @@ class TableState implements Serializable {
 
   consumeCard(playerState: PlayerState) {
     const player = playerState
-    // const isRobot = player.room.robotManager.checkIsRobot(player);
-
-    // if(isRobot) {
-    //   const rCard = this.robotTingConsumeCard(player);
-    //   if(rCard) return rCard;
-    // }
-
-    const cardIndex = --this.remainCards
+    let cardIndex = --this.remainCards
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
-    const card = this.cards[cardIndex]
+    let card = this.cards[cardIndex]
+
+    if (this.testMoCards.length > 0) {
+      const moIndex = this.cards.findIndex(card => card === this.testMoCards[0]);
+      if (moIndex !== -1) {
+        cardIndex = moIndex;
+        card = this.cards[moIndex];
+        this.testMoCards.splice(0, 1);
+      }
+    }
+
     this.cards.splice(cardIndex, 1);
-    // logger.info('player %s normal-consumeCard %s', player.model.shortId, card)
     this.lastTakeCard = card;
-    return card
+    return card;
   }
 
   take13Cards(player: PlayerState) {
@@ -498,15 +504,18 @@ class TableState implements Serializable {
     return cards
   }
 
-  async start() {
-    await this.fapai();
+  async start(payload) {
+    await this.fapai(payload);
   }
 
-  async fapai() {
+  async fapai(payload) {
     this.shuffle()
     this.sleepTime = 1500
     this.caishen = this.rule.useCaiShen ? Enums.zhong : Enums.slotNoCard
     const restCards = this.remainCards - (this.rule.playerCount * 13);
+    if (this.rule.test && payload.moCards && payload.moCards.length > 0) {
+      this.testMoCards = payload.moCards;
+    }
 
     // 判断麻将补助是否开房
     // const isMajongOpen = await service.utils.getGlobalConfigByName("majiangHelp");
@@ -515,9 +524,21 @@ class TableState implements Serializable {
     const needShuffle = this.room.shuffleData.length > 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i]
-      const cards13 = this.take13Cards(p)
-      const finallyCards = [...p.helpCards, ...cards13];
-      p.onShuffle(restCards, this.caishen, this.restJushu, finallyCards, i, this.room.game.juIndex, needShuffle)
+      const cards13 = this.rule.test && payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : this.take13Cards(p)
+      // const finallyCards = [...p.helpCards, ...cards13];
+
+      // 如果客户端指定发牌
+      if (this.rule.test && payload.cards && payload.cards[i].length === 13) {
+        for (let j = 0; j < payload.cards[i].length; j++) {
+          const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
+          this.remainCards--;
+          const card = this.cards[cardIndex];
+          this.cards.splice(cardIndex, 1);
+          this.lastTakeCard = card;
+        }
+      }
+
+      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle)
     }
 
     // 金豆房扣除开局金豆
