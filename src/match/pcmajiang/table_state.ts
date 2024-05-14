@@ -1398,10 +1398,12 @@ class TableState implements Serializable {
                   score = 8;
                 }
                 if ((p.events.hu[0].qingYiSe && p.events.hu[0].qiDui) ||
-                  p.events.hu[0].qingYiSe && p.events.hu[0].pengPengHu) {
+                  (p.events.hu[0].qingYiSe && p.events.hu[0].pengPengHu) ||
+                  p.events.hu[0].shuangHaoQi) {
                   score = 16;
                 }
-                if (p.events.hu[0].qingYiSe && p.events.hu[0].haoQi) {
+
+                if ((p.events.hu[0].qingYiSe && p.events.hu[0].haoQi) || p.events.hu[0].sanHaoQi) {
                   score = 32;
                 }
                 if (p.events.hu[0].qingYiSe && p.events.hu[0].shuangHaoQi) {
@@ -1430,10 +1432,12 @@ class TableState implements Serializable {
                   score = 12;
                 }
                 if ((p.events.hu[0].qingYiSe && p.events.hu[0].qiDui) ||
-                  (p.events.hu[0].qingYiSe && p.events.hu[0].pengPengHu)) {
+                  (p.events.hu[0].qingYiSe && p.events.hu[0].pengPengHu) ||
+                  p.events.hu[0].shuangHaoQi) {
                   score = 24;
                 }
-                if (p.events.hu[0].qingYiSe && p.events.hu[0].haoQi) {
+                if ((p.events.hu[0].qingYiSe && p.events.hu[0].haoQi) ||
+                  p.events.hu[0].sanHaoQi) {
                   score = 48;
                 }
                 if (p.events.hu[0].qingYiSe && p.events.hu[0].shuangHaoQi) {
