@@ -623,7 +623,8 @@ class TableState implements Serializable {
     player.on('waitForDoSomeThing', msg => {
       player.deposit(() => {
         const card = msg.card
-        const todo = player.ai.onCanDoSomething(msg, player.cards, card)
+        const todo = player.ai.onCanDoSomething(msg)
+        console.warn("todo-%s", todo)
         switch (todo) {
           case Enums.peng:
             player.emitter.emit(Enums.peng, this.turn, card)

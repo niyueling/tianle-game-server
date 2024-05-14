@@ -47,7 +47,8 @@ function getUseLessCard(cards) {
   return ret;
 }
 
-function onCanDoSomething(actions, cards, card) {
+function onCanDoSomething(actions) {
+  console.warn("actions-%s", JSON.stringify(actions));
   if (actions.hu) {
     return Enums.hu;
   }
@@ -81,8 +82,8 @@ export default {
     return Enums.guo;
   },
 
-  onCanDoSomething(actions, cards, card) {
-    return onCanDoSomething(actions, cards, card)
+  onCanDoSomething(actions) {
+    return onCanDoSomething(actions)
   }
 }
 
@@ -104,7 +105,7 @@ export const playerAi = {
     return Enums.guo;
   },
 
-  onCanDoSomething(actions, cards, card) {
-    return onCanDoSomething(actions, cards, card)
+  onCanDoSomething(actions) {
+    return onCanDoSomething(actions)
   }
 }
