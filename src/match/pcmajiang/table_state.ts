@@ -1371,6 +1371,7 @@ class TableState implements Serializable {
       this.assignNiaos()
       this.niaos = niaos
 
+      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       // 其他三家鸟数
       let noHuNiaoCount = 0;
       // 胡牌用户鸟数
@@ -1557,7 +1558,6 @@ class TableState implements Serializable {
         // console.warn("feiNiaoArrs-%s", JSON.stringify(feiNiaoArrs))
       }
 
-      const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
       const huPlayers = this.players
         .filter(p => p.huPai())
 
@@ -1589,7 +1589,7 @@ class TableState implements Serializable {
           // mvp 次数
           state1.mvpTimes = 0;
         } else {
-          state1.score = (this.rule.quanFei > 0 || this.rule.feiNiao > 0 ? this.players[i].gameScore : this.players[i].balance) * this.rule.diFen
+          state1.score = ((this.rule.quanFei > 0 || this.rule.feiNiao > 0) ? this.players[i].gameScore : this.players[i].balance) * this.rule.diFen
         }
 
         if (this.rule.quanFei > 0 || this.rule.feiNiao > 0) {
