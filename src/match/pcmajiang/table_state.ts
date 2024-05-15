@@ -1579,6 +1579,7 @@ class TableState implements Serializable {
       }
 
       await this.recordRubyReward();
+      let isLiuJu = true;
 
       for (const state1 of states) {
         const i = states.indexOf(state1);
@@ -1602,6 +1603,10 @@ class TableState implements Serializable {
         if (this.room.isPublic) {
           await this.room.addScore(state1.model._id, state1.score);
         }
+
+        if (state1.score !== 0) {
+          isLiuJu = false;
+        }
       }
 
       await this.room.recordGameRecord(this, states)
@@ -1612,6 +1617,7 @@ class TableState implements Serializable {
 
       const gameOverMsg = {
         niaos,
+        liuJu: isLiuJu,
         creator: this.room.creator.model._id,
         juShu: this.restJushu,
         juCount: this.rule.juShu,
