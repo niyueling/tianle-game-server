@@ -1646,6 +1646,7 @@ class TableState implements Serializable {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       console.warn("room reconnect")
       const player = this.players[index]
+      player.onDeposit = false;
       player.reconnect(playerMsgDispatcher)
       player.sendMessage('game/reconnect', await this.generateReconnectMsg(index))
     })
