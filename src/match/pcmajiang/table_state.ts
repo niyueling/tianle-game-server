@@ -1379,7 +1379,7 @@ class TableState implements Serializable {
       let score = 1;
       const feiNiaoArrs = [];
 
-      if (this.rule.quanFei > 0) {
+      if (this.rule.quanFei > 0 || this.rule.feiNiao > 0) {
         // 计算鸟数
         for (let i = 0; i < this.players.length; i++) {
           const p = this.players[i];
@@ -1592,7 +1592,7 @@ class TableState implements Serializable {
           state1.score = (this.rule.quanFei > 0 ? this.players[i].gameScore : this.players[i].balance) * this.rule.diFen
         }
 
-        if (this.rule.quanFei > 0) {
+        if (this.rule.quanFei > 0 || this.rule.feiNiao > 0) {
           state1["feiNiaos"] = feiNiaoArrs[i];
         }
 
