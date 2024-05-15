@@ -1441,26 +1441,28 @@ class TableState implements Serializable {
 
               if (p.events.jiePao) {
                 if (p.events.hu[0].pengPengHu || p.events.hu[0].qiDui || p.events.hu[0].qiangGang) {
-                  score = 6;
+                  score = 2;
                 }
                 if (p.events.hu[0].qingYiSe || p.events.hu[0].haoQi) {
-                  score = 12;
+                  score = 4;
                 }
                 if ((p.events.hu[0].qingYiSe && p.events.hu[0].qiDui) ||
                   (p.events.hu[0].qingYiSe && p.events.hu[0].pengPengHu) ||
                   p.events.hu[0].shuangHaoQi) {
-                  score = 24;
+                  score = 8;
                 }
                 if ((p.events.hu[0].qingYiSe && p.events.hu[0].haoQi) ||
                   p.events.hu[0].sanHaoQi) {
-                  score = 48;
+                  score = 16;
                 }
                 if (p.events.hu[0].qingYiSe && p.events.hu[0].shuangHaoQi) {
-                  score = 96;
+                  score = 32;
                 }
                 if (p.events.hu[0].qingYiSe && p.events.hu[0].sanHaoQi) {
-                  score = 192;
+                  score = 64;
                 }
+
+                score *= (this.rule.playerCount - 1);
 
                 for (let j = 0; j < this.players.length; j++) {
                   if (p._id !== this.players[j]._id && this.players[j].events.dianPao) {
