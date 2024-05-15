@@ -1069,7 +1069,14 @@ class Room extends RoomBase {
     this.snapshot
       .filter(p => p)
       .forEach(player => {
+        console.warn({
+          index: player.seatIndex,
+          userName: player.model.nickname,
+          avatar: player.model.avatar,
+          shortId: player.model.shortId
+        });
         message.players[player.model._id] = {
+          index: player.seatIndex,
           userName: player.model.nickname,
           avatar: player.model.avatar,
           shortId: player.model.shortId
