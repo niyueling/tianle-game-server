@@ -547,7 +547,6 @@ class Room extends RoomBase {
 
   async reconnect(reconnectPlayer) {
     const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer._id))
-    // if (disconnectedItem) {
     reconnectPlayer.room = this
     this.arrangePos(reconnectPlayer, true)
     this.mergeOrder()
@@ -573,7 +572,6 @@ class Room extends RoomBase {
       this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
     }
     return true
-    // }
   }
 
   async broadcastRejoin(reconnectPlayer) {
