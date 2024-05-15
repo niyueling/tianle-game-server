@@ -575,7 +575,7 @@ class Room extends RoomBase {
   }
 
   async broadcastRejoin(reconnectPlayer) {
-    this.broadcast('room/rejoin', await this.joinMessageFor(reconnectPlayer))
+    this.broadcast('room/rejoin', {ok: true, data: await this.joinMessageFor(reconnectPlayer)})
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
@@ -758,7 +758,7 @@ class Room extends RoomBase {
       this.updateDisconnectPlayerDissolveInfoAndBroadcast(player);
     }
 
-    this.broadcast('room/playerDisconnect', {index: this.players.indexOf(player)}, player.msgDispatcher)
+    this.broadcast('room/playerDisconnect', {ok: false, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
     this.removePlayer(player)
     this.disconnected.push([player._id, index])
     this.emit('disconnect', p._id)
@@ -1050,7 +1050,7 @@ class Room extends RoomBase {
     this.clearReady()
     await this.delPlayerBless();
     // 下一局
-    await this.robotManager.nextRound();
+    // await this.robotManager.nextRound();
 
     this.gameState.dissolve()
     this.gameState = null

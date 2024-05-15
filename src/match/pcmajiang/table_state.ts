@@ -1396,8 +1396,6 @@ class TableState implements Serializable {
           }
         }
 
-        // console.warn("huNiaoCount-%s noHuNiaoCount-%s huType-%s", huNiaoCount, noHuNiaoCount, huType);
-
         // 计算底分
         if (huType !== 0) {
           for (let i = 0; i < this.players.length; i++) {
@@ -1442,8 +1440,6 @@ class TableState implements Serializable {
 
               if (p.events.jiePao) {
                 if (p.events.hu[0].pengPengHu || p.events.hu[0].qiDui || p.events.hu[0].qiangGang) {
-                  // console.warn("pengPengHu-%s qiDui-%s qiangGang-%s", p.events.hu[0].pengPengHu,
-                  //   p.events.hu[0].qiDui, p.events.hu[0].qiangGang);
                   score = 6;
                 }
                 if (p.events.hu[0].qingYiSe || p.events.hu[0].haoQi) {
