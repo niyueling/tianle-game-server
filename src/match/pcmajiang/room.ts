@@ -1065,36 +1065,38 @@ class Room extends RoomBase {
 
   allOverMessage(): any {
 
-    const message = {players: {}, roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode}
+    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode}
     this.snapshot
       .filter(p => p)
       .forEach(player => {
-        message.players[player.model._id] = {
+        message.players.push({
+          _id: player._id.toString(),
           userName: player.model.nickname,
           avatar: player.model.avatar,
           shortId: player.model.shortId
-        }
+        });
       })
     Object.keys(this.counterMap).forEach(x => {
       this.counterMap[x].forEach(p => {
-        if (message.players[p]) {
-          // 玩家未离开房间
-          message.players[p][x] = (message.players[p][x] || 0) + 1
+        const index = message.players.findIndex(p1 => p1._id === p);
+        if (index !== -1) {
+          message.players[index][x] = (message.players[p][x] || 0) + 1;
         }
       })
     })
     Object.keys(this.scoreMap).forEach(playerId => {
-      if (message.players[playerId]) {
-        (message.players[playerId].score = this.playerGainRecord[playerId])
+      const index = message.players.findIndex(p1 => p1._id === playerId);
+      if (index !== -1) {
+        message.players[index].score = this.playerGainRecord[playerId];
       }
     })
 
-    const creator = message.players[this.creator.model._id]
-    if (creator) {
-      creator['isCreator'] = true
+    const index = message.players.findIndex(p1 => p1._id === this.creator.model._id.toString());
+    if (index !== -1) {
+      message.players[index].isCreator = true;
     }
 
-    return message
+    return message;
   }
 
   async chargeCreator() {
