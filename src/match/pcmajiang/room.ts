@@ -567,8 +567,8 @@ class Room extends RoomBase {
     }
 
     const i = this.snapshot.findIndex(p => p._id === reconnectPlayer._id)
-    this.emit('reconnect', reconnectPlayer, i)
     await this.broadcastRejoin(reconnectPlayer)
+    this.emit('reconnect', reconnectPlayer, i)
     if (this.dissolveTimeout) {
       this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
     }
