@@ -1396,7 +1396,7 @@ class TableState implements Serializable {
           }
         }
 
-        console.warn("huNiaoCount-%s noHuNiaoCount-%s huType-%s", huNiaoCount, noHuNiaoCount, huType);
+        // console.warn("huNiaoCount-%s noHuNiaoCount-%s huType-%s", huNiaoCount, noHuNiaoCount, huType);
 
         // 计算底分
         if (huType !== 0) {
@@ -1442,8 +1442,8 @@ class TableState implements Serializable {
 
               if (p.events.jiePao) {
                 if (p.events.hu[0].pengPengHu || p.events.hu[0].qiDui || p.events.hu[0].qiangGang) {
-                  console.warn("pengPengHu-%s qiDui-%s qiangGang-%s", p.events.hu[0].pengPengHu,
-                    p.events.hu[0].qiDui, p.events.hu[0].qiangGang);
+                  // console.warn("pengPengHu-%s qiDui-%s qiangGang-%s", p.events.hu[0].pengPengHu,
+                  //   p.events.hu[0].qiDui, p.events.hu[0].qiangGang);
                   score = 6;
                 }
                 if (p.events.hu[0].qingYiSe || p.events.hu[0].haoQi) {
@@ -1473,7 +1473,7 @@ class TableState implements Serializable {
                 }
               }
 
-              console.warn("hu events %s score %s", JSON.stringify(p.events), score);
+              // console.warn("hu events %s score %s", JSON.stringify(p.events), score);
             }
           }
 
@@ -1483,7 +1483,7 @@ class TableState implements Serializable {
 
             // 计算暗杠分数
             if (p.eventCount('anGang') > 0) {
-              console.warn("roomId-%s anGangCount-%s", this.room._id, p.eventCount('anGang'));
+              // console.warn("roomId-%s anGangCount-%s", this.room._id, p.eventCount('anGang'));
               const anGangCount = p.eventCount('anGang');
               let otherNiaoCount = 0;
 
@@ -1504,7 +1504,7 @@ class TableState implements Serializable {
 
             // 计算补杠分数
             if (p.eventCount('buGang') > 0) {
-              console.warn("roomId-%s buGangCount-%s", this.room._id, p.eventCount('buGang'));
+              // console.warn("roomId-%s buGangCount-%s", this.room._id, p.eventCount('buGang'));
               const buGangCount = p.eventCount('buGang');
               let otherNiaoCount = 0;
 
@@ -1524,7 +1524,7 @@ class TableState implements Serializable {
 
             // 计算明杠分数
             if (p.gangFrom.length > 0) {
-              console.warn("roomId-%s jieGangCount-%s", this.room._id, p.gangFrom.length);
+              // console.warn("roomId-%s jieGangCount-%s", this.room._id, p.gangFrom.length);
               for (let j = 0; j < p.gangFrom.length; j++) {
                 p.gameDiFen += (p.gangFrom[j].niaoCount + 1) * 3;
                 p.gangFrom[j].gameDiFen -= (p.niaoCount + 1) * 3;
@@ -1558,7 +1558,7 @@ class TableState implements Serializable {
           console.warn("index-%s, gameScore-%s", this.players[i].seatIndex, this.players[i].gameScore);
         }
 
-        console.warn("feiNiaoArrs-%s", JSON.stringify(feiNiaoArrs))
+        // console.warn("feiNiaoArrs-%s", JSON.stringify(feiNiaoArrs))
       }
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
@@ -2277,7 +2277,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    logger.info("index-%s, todo-%s, stateCard-%s, stateData-%s", player.seatIndex, todo, this.stateData.card, JSON.stringify(this.stateData));
+    // logger.info("index-%s, todo-%s, stateCard-%s, stateData-%s", player.seatIndex, todo, this.stateData.card, JSON.stringify(this.stateData));
 
     switch (todo) {
       case Enums.peng:
