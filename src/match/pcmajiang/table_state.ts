@@ -693,12 +693,12 @@ class TableState implements Serializable {
     player.on(Enums.peng, (turn, card) => {
       if (this.state !== stateWaitAction) {
         player.emitter.emit(Enums.guo, turn, card)
-        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamStateInvaid});
+        // player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamStateInvaid});
         return
       }
       if (this.stateData.pengGang !== player || this.stateData.card !== card) {
         player.emitter.emit(Enums.guo, turn, card)
-        player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamInvaid});
+        // player.sendMessage('game/pengReply', {ok: false, info: TianleErrorCode.pengParamInvaid});
         return
       }
 
@@ -739,8 +739,8 @@ class TableState implements Serializable {
           const hangUpList = this.stateData.hangUp;
           this.turn++;
           this.state = stateWaitDa;
-          const card = this.promptWithPattern(player, null);
-          const nextStateData = {da: player, card, type: Enums.peng};
+          const daCard = this.promptWithPattern(player, null);
+          const nextStateData = {da: player, daCard, type: Enums.peng};
           const gangSelection = player.getAvailableGangs();
           this.stateData = nextStateData;
           const from = this.atIndex(this.lastDa);
