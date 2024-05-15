@@ -1589,7 +1589,7 @@ class TableState implements Serializable {
           // mvp 次数
           state1.mvpTimes = 0;
         } else {
-          state1.score = (this.rule.quanFei > 0 ? this.players[i].gameScore : this.players[i].balance) * this.rule.diFen
+          state1.score = (this.rule.quanFei > 0 || this.rule.feiNiao > 0 ? this.players[i].gameScore : this.players[i].balance) * this.rule.diFen
         }
 
         if (this.rule.quanFei > 0 || this.rule.feiNiao > 0) {
