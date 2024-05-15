@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {ConsumeLogType} from "@fm/common/constants";
+import {ConsumeLogType, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
@@ -552,15 +552,15 @@ class Room extends RoomBase {
     this.arrangePos(reconnectPlayer, true)
     this.mergeOrder()
     this.listen(reconnectPlayer);
-    // reconnectPlayer.on('disconnect', this.disconnectCallback)
     if (disconnectedItem) {
       this.removeDisconnected(disconnectedItem)
     }
 
     if (!this.gameState) {
+      console.warn("gameState is dissolve");
       await this.announcePlayerJoin(reconnectPlayer)
     }
-    // Fixme the index may be wrong
+
     const i = this.snapshot.findIndex(p => p._id === reconnectPlayer._id)
     this.emit('reconnect', reconnectPlayer, i)
     await this.broadcastRejoin(reconnectPlayer)
@@ -680,12 +680,12 @@ class Room extends RoomBase {
 
   async nextGame(thePlayer) {
     if (this.game.juShu <= 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '牌局已经结束.'})
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
       return false;
     }
 
     if (this.indexOf(thePlayer) < 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '您已经不属于这个房间.'})
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
       return false;
     }
 

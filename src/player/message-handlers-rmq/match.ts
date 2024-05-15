@@ -33,7 +33,7 @@ export function createHandler(redisClient: AsyncRedisClient) {
         player.setGameName(message.gameType)
         player.requestToCurrentRoom('room/reconnect')
       } else {
-        player.sendMessage('room/reconnect', {ok: false, data: {}})
+        player.sendMessage('room/reconnectReply', {ok: false, data: {}})
       }
     },
 

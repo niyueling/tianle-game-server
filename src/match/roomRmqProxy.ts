@@ -245,7 +245,7 @@ export default class RoomProxy {
           const playerModel = await service.playerService.getPlayerPlainModel(messageBody.from);
           if (!playerModel) {
             logger.error('the player not exists', messageBody)
-            return
+            return;
           }
 
           // 获取牌桌
