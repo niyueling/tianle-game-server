@@ -1642,12 +1642,14 @@ class TableState implements Serializable {
 
   listenRoom(room) {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
+      console.warn("room reconnect")
       const player = this.players[index]
       player.reconnect(playerMsgDispatcher)
       player.sendMessage('game/reconnect', await this.generateReconnectMsg(index))
     })
 
     room.once('empty', this.onRoomEmpty = () => {
+      console.warn("room empty")
       this.players.forEach(x => {
         x.gameOver()
       })
