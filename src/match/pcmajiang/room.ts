@@ -558,6 +558,7 @@ class Room extends RoomBase {
 
     if (!this.gameState) {
       console.warn("gameState is dissolve");
+      reconnectPlayer.sendMessage("game/gameJuFinish", {ok: true, data: {room: this._id, juIndex: this.game.juIndex, juCount: this.rule.juShu}});
       await this.announcePlayerJoin(reconnectPlayer)
     }
 
