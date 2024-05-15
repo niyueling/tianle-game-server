@@ -48,7 +48,6 @@ function getUseLessCard(cards) {
 }
 
 function onCanDoSomething(actions) {
-  console.warn("actions-%s", JSON.stringify(actions));
   if (actions.hu) {
     return Enums.hu;
   }
