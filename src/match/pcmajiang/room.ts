@@ -1080,7 +1080,7 @@ class Room extends RoomBase {
       this.counterMap[x].forEach(p => {
         const index = message.players.findIndex(p1 => p1._id === p);
         if (index !== -1) {
-          message.players[index][x] = (message.players[p][x] || 0) + 1;
+          message.players[index][x] = (message.players[index][x] || 0) + 1;
         }
       })
     })
