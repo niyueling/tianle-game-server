@@ -1665,7 +1665,7 @@ class TableState implements Serializable {
     if (!player) {
       return
     }
-    player.sendMessage('room/refresh', await this.restoreMessageForPlayer(player))
+    player.sendMessage('room/refresh', {ok: true, data: await this.restoreMessageForPlayer(player)})
   }
 
   async onRefreshQuiet(playerMsgDispatcher, index) {

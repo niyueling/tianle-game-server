@@ -94,7 +94,7 @@ export default class RoomProxy {
     const table = room.gameState
     for (const p of room.players) {
       if (table && p) {
-        p.sendMessage('room/refresh', table.restoreMessageForPlayer(p))
+        p.sendMessage('room/refresh', {ok: true, data: table.restoreMessageForPlayer(p)})
       }
       if (p) {
         await room.broadcastRejoin(p)
