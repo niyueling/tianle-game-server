@@ -1070,8 +1070,9 @@ class Room extends RoomBase {
       .filter(p => p)
       .forEach(player => {
         message.players[player.model._id] = {
-          userName: player.model.name,
-          headImgUrl: player.model.headImgUrl
+          userName: player.model.nickname,
+          avatar: player.model.avatar,
+          shortId: player.model.shortId
         }
       })
     Object.keys(this.counterMap).forEach(x => {
