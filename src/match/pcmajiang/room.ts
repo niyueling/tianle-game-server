@@ -562,7 +562,6 @@ class Room extends RoomBase {
         await this.forceDissolve();
         return ;
       } else {
-        reconnectPlayer.sendMessage("game/gameJuFinish", {ok: true, data: {room: this._id, juIndex: this.game.juIndex, juCount: this.rule.juShu}});
         await this.announcePlayerJoin(reconnectPlayer);
       }
     }
