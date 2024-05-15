@@ -1733,7 +1733,7 @@ class TableState implements Serializable {
         break
       }
       case stateWaitAction: {
-        const actions = this.actionResolver.allOptions && this.actionResolver.allOptions(player)
+        const actions = this.actionResolver && this.actionResolver.allOptions && this.actionResolver.allOptions(player)
         if (actions) {
           pushMsg.current = {
             index, state: 'waitAction',
