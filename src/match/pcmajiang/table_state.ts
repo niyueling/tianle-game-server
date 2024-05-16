@@ -1523,8 +1523,8 @@ class TableState implements Serializable {
             if (p.gangFrom.length > 0) {
               // console.warn("roomId-%s jieGangCount-%s", this.room._id, p.gangFrom.length);
               for (let j = 0; j < p.gangFrom.length; j++) {
-                p.gameDiFen += (p.gangFrom[j].niaoCount + 1) * 3;
-                p.gangFrom[j].gameDiFen -= (p.niaoCount + 1) * 3;
+                p.gameDiFen += (p.gangFrom[j].niaoCount + 1) * (this.rule.playerCount - 1);
+                p.gangFrom[j].gameDiFen -= (p.niaoCount + 1) * (this.rule.playerCount - 1);
               }
             }
           }
