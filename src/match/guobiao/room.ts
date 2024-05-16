@@ -671,17 +671,17 @@ class Room extends RoomBase {
 
   async dissolve(roomCreator) {
     if (roomCreator._id !== this.ownerId) {
-      roomCreator.sendMessage('room/dissolveReply', {ok: false, data: {}})
+      roomCreator.sendMessage('room/dissolve', {ok: false, data: {}})
       return false
     }
     // await this.refundClubOwner();
     if (this.gameState !== null) {
-      // player.sendMessage('room/dissolveReply', {errorCode: 2});
+      // player.sendMessage('room/dissolve', {errorCode: 2});
       // return false;
       this.gameState.dissolve()
     }
     // this.recordScore()
-    roomCreator.sendMessage('room/dissolveReply', {ok: true, data: {}})
+    roomCreator.sendMessage('room/dissolve', {ok: true, data: {}})
     roomCreator.room = null
     this.players.forEach(player => {
       if (player && player !== roomCreator) {

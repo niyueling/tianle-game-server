@@ -1265,7 +1265,6 @@ class TableState implements Serializable {
       player.lastOperateType = 4;
       player.isGameDa = true;
       player.isGameHu = true;
-      this.lastDa = player;
       this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
 
       return {
@@ -1277,7 +1276,7 @@ class TableState implements Serializable {
       player.sendMessage('game/huReply', {
         ok: false,
         info: TianleErrorCode.huInvaid,
-        data: {type: "ziMo", card: msg.card}
+        data: {type: "jiePao", card: msg.card}
       });
 
       return {};
@@ -1361,7 +1360,6 @@ class TableState implements Serializable {
       this.players.forEach(x => x.gameOver())
       this.room.removeListener('reconnect', this.onReconnect)
       this.room.removeListener('empty', this.onRoomEmpty)
-
       this.room.charge()
 
       const nextZhuang = this.nextZhuang()
@@ -1556,8 +1554,6 @@ class TableState implements Serializable {
           feiNiaoArrs.push({shortId: this.players[i].model.shortId, feiNiaoCards: this.players[i].feiNiaoCards });
           console.warn("index-%s, gameScore-%s", this.players[i].seatIndex, this.players[i].gameScore);
         }
-
-        // console.warn("feiNiaoArrs-%s", JSON.stringify(feiNiaoArrs))
       }
 
       const huPlayers = this.players
