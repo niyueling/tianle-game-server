@@ -1039,7 +1039,12 @@ class Room extends RoomBase {
     if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
       this.broadcast('room/allOver', {ok: true, data: message});
-      this.players.forEach(x => x && this.leave(x));
+      this.players.forEach(x => {
+        console.warn(x);
+        if (x) {
+          this.leave(x);
+        }
+      });
       this.emit('empty', this.disconnected)
     }
   }
