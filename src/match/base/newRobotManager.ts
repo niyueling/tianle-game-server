@@ -152,12 +152,12 @@ export class NewRobotManager {
       console.log('some one absent', this.room._id);
       return;
     }
-    // isOk = this.isNeedDeposit();
-    // if (!isOk) {
-    //   console.log('some one not need deposit', this.room._id);
-    //   // 不需要托管
-    //   // return;
-    // }
+    isOk = this.isNeedDeposit();
+    if (!isOk) {
+      console.log(' not player need deposit', this.room._id);
+      // 不需要托管
+      return;
+    }
     await this.readyAndPlay();
   }
 
@@ -406,9 +406,6 @@ export class NewRobotManager {
       if (playerId !== "" || this.room.players[i] ) {
         continue;
       }
-      // if (i === 0) {
-      //   await this.room.forceDissolve();
-      // }
 
       const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id);
       const robotProxy = await this.createProxy(model._id.toString());
