@@ -1361,7 +1361,7 @@ class TableState implements Serializable {
       this.players.forEach(x => x.gameOver())
       this.room.removeListener('reconnect', this.onReconnect)
       this.room.removeListener('empty', this.onRoomEmpty)
-      this.room.charge()
+      await this.room.charge()
 
       const nextZhuang = this.nextZhuang()
       // 生成鸟牌
@@ -1607,8 +1607,7 @@ class TableState implements Serializable {
       await this.room.recordGameRecord(this, states)
       await this.room.recordRoomScore()
       // 更新大赢家
-      await this.room.updateBigWinner();
-      await this.room.charge();
+      // await this.room.updateBigWinner();
 
       const gameOverMsg = {
         niaos,
@@ -1630,7 +1629,6 @@ class TableState implements Serializable {
 
       this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       await this.room.gameOver(nextZhuang.model._id, states)
-      this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
     }
     this.logger.close()
   }
