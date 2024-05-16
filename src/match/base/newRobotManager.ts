@@ -154,7 +154,7 @@ export class NewRobotManager {
     }
     isOk = this.isNeedDeposit();
     if (!isOk) {
-      console.log(' not player need deposit', this.room._id);
+      console.log(' room %snot player need deposit %s', this.room._id, JSON.stringify(this.model.depositPlayer));
       // 不需要托管
       return;
     }
