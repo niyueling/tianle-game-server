@@ -476,7 +476,8 @@ class TableState implements Serializable {
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
-    let card = this.cards[cardIndex]
+    cardIndex = Math.floor(Math.random() * this.cards.length);
+    let card = this.cards[cardIndex];
 
     if (this.testMoCards.length > 0) {
       const moIndex = this.cards.findIndex(card => card === this.testMoCards[0]);
