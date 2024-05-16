@@ -621,7 +621,6 @@ class Room extends RoomBase {
   }
 
   async join(newJoinPlayer) {
-
     const isReconnect = this.indexOf(newJoinPlayer) >= 0
     if (isReconnect || this.disconnected.find(x => x[0] === newJoinPlayer._id)) {
       return this.reconnect(newJoinPlayer)
@@ -1057,8 +1056,8 @@ class Room extends RoomBase {
 
     if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
-      this.broadcast('room/allOver', {ok: true, data: message})
-      this.players.forEach(x => x && this.leave(x))
+      this.broadcast('room/allOver', {ok: true, data: message});
+      // this.players.forEach(x => x && this.leave(x));
       this.emit('empty', this.disconnected)
     }
   }
