@@ -756,19 +756,25 @@ class Room extends RoomBase {
 
   leave(player) {
     if (this.gameState || !player) {
+      console.warn("player is disconnect in room %s", this._id)
       // 游戏已开始 or 玩家不存在
       return false
     }
     const p = player
     if (p.room !== this) {
+      console.warn("player is not in this room %s", this._id)
       return false
     }
 
     if (this.indexOf(player) < 0) {
+      console.warn("player is already leave room %s", this._id)
       return true
     }
 
-    if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
+    if (this.game.juIndex > 0 && !this.game.isAllOver()) {
+      console.warn("room %s is not finish", this._id)
+      return false
+    }
 
     p.removeListener('disconnect', this.disconnectCallback)
     this.emit('leave', {_id: player._id})
@@ -1040,7 +1046,7 @@ class Room extends RoomBase {
       const message = this.allOverMessage()
       this.broadcast('room/allOver', {ok: true, data: message});
       this.players.forEach(x => {
-        console.warn(x);
+        // console.warn(x);
         if (x) {
           this.leave(x);
         }
