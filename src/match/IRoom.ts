@@ -210,12 +210,16 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   async ready(player) {
+    if (!player) {
+      console.warn("player is disconnect");
+    }
     if (this.isReadyPlayer(player._id.toString())) {
-      console.warn(111)
+      console.warn("player is ready");
       return
     }
 
     if (this.gameState) {
+      console.warn("game is not start");
       return
     }
 
