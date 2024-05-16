@@ -122,7 +122,7 @@ class Room extends RoomBase {
   clubOwner: any
 
   @autoSerialize
-  dissolveReqInfo: Array<{ name: string, _id: string, type: string }> = []
+  dissolveReqInfo: Array<{ name: string, _id: string, avatar: string, type: string }> = []
 
   @serialize
   waitNextGamePlayers: any[] = []
@@ -855,7 +855,7 @@ class Room extends RoomBase {
 
   onRequestDissolve(player) {
     if (Date.now() - this.dissolveTime < 60 * 1000) {
-      player.sendMessage('game/showInfo', {ok: false, info: '1分钟时间内不能再次发起解散'})
+      player.sendMessage('game/showInfo', {ok: false, info: TianleErrorCode.dissolveInsufficient})
       return
     }
     const dissolveInfo = this.getDissolvePlayerInfo(player);
@@ -919,6 +919,7 @@ class Room extends RoomBase {
     this.dissolveReqInfo.push({
       type: 'originator',
       name: player.model.name,
+      avatar: player.model.avatar,
       _id: player.model._id
     });
     for (let i = 0; i < this.players.length; i++) {
@@ -926,13 +927,15 @@ class Room extends RoomBase {
       if (pp && pp.isRobot()) {
         this.dissolveReqInfo.push({
           type: 'agree',
-          name: pp.model.name,
+          name: pp.model.nickname,
+          avatar: pp.model.avatar,
           _id: pp.model._id
         });
       } else if (pp && pp !== player) {
         this.dissolveReqInfo.push({
           type: 'waitConfirm',
-          name: pp.model.name,
+          avatar: pp.model.avatar,
+          name: pp.model.nickname,
           _id: pp.model._id
         });
       }
