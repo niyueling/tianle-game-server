@@ -124,9 +124,9 @@ const HuPaiDetect = {
       .sort(sorter)
 
     const maxResult = sortedResult[0] || {hu: false}
-    if (maxResult.fan >= 16) {
-      maxResult.fan = 16
-    }
+    // if (maxResult.fan >= 16) {
+    //   maxResult.fan = 16
+    // }
 
     return maxResult
   },
