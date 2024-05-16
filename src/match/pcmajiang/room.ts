@@ -918,7 +918,7 @@ class Room extends RoomBase {
     this.dissolveTime = Date.now();
     this.dissolveReqInfo.push({
       type: 'originator',
-      name: player.model.name,
+      name: player.model.nickname,
       avatar: player.model.avatar,
       _id: player.model._id
     });
