@@ -1440,28 +1440,26 @@ class TableState implements Serializable {
 
               if (p.events.jiePao) {
                 if (p.events.hu[0].pengPengHu || p.events.hu[0].qiDui || p.events.hu[0].qiangGang) {
-                  score = 2;
+                  score = 2 * (this.rule.playerCount - 1);
                 }
                 if (p.events.hu[0].qingYiSe || p.events.hu[0].haoQi) {
-                  score = 4;
+                  score = 4 * (this.rule.playerCount - 1);
                 }
                 if ((p.events.hu[0].qingYiSe && p.events.hu[0].qiDui) ||
                   (p.events.hu[0].qingYiSe && p.events.hu[0].pengPengHu) ||
                   p.events.hu[0].shuangHaoQi) {
-                  score = 8;
+                  score = 8 * (this.rule.playerCount - 1);
                 }
                 if ((p.events.hu[0].qingYiSe && p.events.hu[0].haoQi) ||
                   p.events.hu[0].sanHaoQi) {
-                  score = 16;
+                  score = 16 * (this.rule.playerCount - 1);
                 }
                 if (p.events.hu[0].qingYiSe && p.events.hu[0].shuangHaoQi) {
-                  score = 32;
+                  score = 32 * (this.rule.playerCount - 1);
                 }
                 if (p.events.hu[0].qingYiSe && p.events.hu[0].sanHaoQi) {
-                  score = 64;
+                  score = 64 * (this.rule.playerCount - 1);
                 }
-
-                score *= (this.rule.playerCount - 1);
 
                 for (let j = 0; j < this.players.length; j++) {
                   if (p._id !== this.players[j]._id && this.players[j].events.dianPao) {
