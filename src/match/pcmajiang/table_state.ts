@@ -1722,7 +1722,7 @@ class TableState implements Serializable {
           pushMsg.current = {
             index,
             state: 'waitDa',
-            msg: this.stateData.msg,
+            msg: this.stateData.msg.data,
           }
         } else {
           pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'}
