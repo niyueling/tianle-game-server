@@ -1183,7 +1183,7 @@ class PlayerState implements Serializable {
       lastDa: this.lastDa,
       score: this.score,
       base: this.room.currentBase,
-      caiShen: this.caiShen,
+      caiShen: [this.caiShen],
       rule: this.rule,
       room: this.room._id
     }
@@ -1203,7 +1203,7 @@ class PlayerState implements Serializable {
       ip: this.ip,
       score: this.score,
       base: this.room.currentBase,
-      caiShen: this.caiShen,
+      caiShen: [this.caiShen],
       rule: this.rule,
       room: this.room._id
     }
