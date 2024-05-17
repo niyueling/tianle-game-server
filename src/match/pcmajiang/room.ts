@@ -337,7 +337,6 @@ class Room extends RoomBase {
 
   arrangePos(player, reconnect?) {
     if (reconnect) {
-
       const indexForPlayer = this.indexOf(player)
 
       if (indexForPlayer < 0) {
@@ -605,13 +604,13 @@ class Room extends RoomBase {
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString() && !this.readyPlayers.includes(x.model._id.toString()))) {
+      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString())) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
 
   indexOf(player) {
-    return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder._id === player._id)
+    return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder._id.toString() === player._id.toString())
   }
 
   async shuffleDataApply(payload) {
@@ -622,7 +621,7 @@ class Room extends RoomBase {
 
   async join(newJoinPlayer) {
     const isReconnect = this.indexOf(newJoinPlayer) >= 0
-    if (isReconnect || this.disconnected.find(x => x[0] === newJoinPlayer._id)) {
+    if (isReconnect || this.disconnected.find(x => x[0].toString() === newJoinPlayer._id.toString())) {
       return this.reconnect(newJoinPlayer)
     }
 
