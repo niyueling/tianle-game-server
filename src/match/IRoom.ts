@@ -779,7 +779,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     // 所有人都同意了，才能解散
     const agreeReqs = this.dissolveReqInfo.filter(reqInfo => reqInfo.type === 'agree'
       || reqInfo.type === 'originator' || reqInfo.type === 'agree_offline')
-    return agreeReqs.length === this.dissolveReqInfo.length;
+    return agreeReqs.length >= this.dissolveReqInfo.length - 1;
   }
 
   onRequestDissolve(player) {
