@@ -386,6 +386,9 @@ class TableState implements Serializable {
   // 测试工具摸牌
   testMoCards: any[] = [];
 
+  // 判断对局是否开始
+  isGameRunning: boolean = false;
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -418,6 +421,7 @@ class TableState implements Serializable {
     this.canManyHuPlayers = [];
     this.isRunMultiple = false;
     this.testMoCards = [];
+    this.isGameRunning = false;
   }
 
   toJSON() {
@@ -538,6 +542,9 @@ class TableState implements Serializable {
 
       p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle)
     }
+
+    //设置对局已经开始
+    this.isGameRunning = true;
 
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
@@ -1695,6 +1702,7 @@ class TableState implements Serializable {
       remainCards: this.remainCards,
       base: this.room.currentBase,
       juIndex: this.room.game.juIndex,
+      isGameRunning: this.isGameRunning,
       juShu: this.restJushu,
       current: {},
       redPocketsData,
