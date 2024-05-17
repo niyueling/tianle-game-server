@@ -782,7 +782,7 @@ class Room extends RoomBase {
 
     for (let i = 0; i < this.playersOrder.length; i++) {
       const po = this.playersOrder[i]
-      if (po && po.model._id === player.model._id) {
+      if (po && po.model._id.toString() === player.model._id.toString()) {
         this.playersOrder[i] = null
       }
     }
@@ -794,8 +794,8 @@ class Room extends RoomBase {
     //   }
     // }
     this.broadcast('room/leaveReply', {ok: true, data: {_id: p._id, index}})
-    this.removeReadyPlayer(p._id)
-    this.clearScore(player._id)
+    this.removeReadyPlayer(p._id.toString())
+    this.clearScore(player._id.toString())
 
     return true
   }
