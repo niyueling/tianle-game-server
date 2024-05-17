@@ -373,7 +373,8 @@ class Room extends RoomBase {
   }
 
   getScore(player) {
-    return this.scoreMap[player._id]
+
+    return (this.rule.quanFei > 0 || this.rule.feiNiao > 0) ? player.gameScore : player.balance
   }
 
   async recordGameRecord(table, states) {
