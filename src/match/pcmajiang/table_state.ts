@@ -1608,9 +1608,7 @@ class TableState implements Serializable {
           state1["feiNiaos"] = feiNiaoArrs[i];
         }
 
-        if (this.room.isPublic) {
-          await this.room.addScore(state1.model._id, state1.score);
-        }
+        await this.room.addScore(state1.model._id, state1.score);
 
         if (state1.score !== 0) {
           isLiuJu = false;
