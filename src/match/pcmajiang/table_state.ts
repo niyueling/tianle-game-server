@@ -1715,6 +1715,7 @@ class TableState implements Serializable {
       remainCards: this.remainCards,
       base: this.room.currentBase,
       juIndex: this.room.game.juIndex,
+      isGameRunning: this.isGameRunning,
       juShu: this.restJushu,
       current: {},
       redPocketsData,

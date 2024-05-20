@@ -1236,6 +1236,8 @@ const HuPaiDetect = {
       return [
         {prop: 'qiDui', times: 2},
         {prop: 'haoQi', times: 4},
+        {prop: 'shuangHaoQi', times: 8},
+        {prop: 'sanHaoQi', times: 16},
       ]
     }
     return []
