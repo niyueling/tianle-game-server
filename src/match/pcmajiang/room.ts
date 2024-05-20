@@ -682,9 +682,6 @@ class Room extends RoomBase {
       return false;
     }
 
-    this.readyPlayers = [];
-    this.joinRoomPlayers = [];
-
     await this.announcePlayerJoin(thePlayer);
     return true;
   }
@@ -1050,6 +1047,8 @@ class Room extends RoomBase {
     this.sortPlayer(nextZhuang)
     this.clearReady()
     await this.delPlayerBless();
+    this.readyPlayers = [];
+    this.joinRoomPlayers = [];
     // 下一局
     // await this.robotManager.nextRound();
 
