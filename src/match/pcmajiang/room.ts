@@ -987,8 +987,7 @@ class Room extends RoomBase {
         item.type = 'waitConfirm'
       }
     }
-    this.broadcast('room/dissolveReq',
-      {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
