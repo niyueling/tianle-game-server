@@ -296,7 +296,7 @@ const HuPaiDetect = {
         if (cards[lastTakeCard] === 3) {
           resMap.baoTou = true
         } else {
-          resMap.qiDuiZiBaoTou = true
+          // resMap.qiDuiZiBaoTou = true
           resMap.baoTou = true
         }
       }
@@ -318,10 +318,10 @@ const HuPaiDetect = {
         resMap.haoQi = true
         resMap.huType = 'haoQi'
       } else if (siZhang.length === 2) {
-          resMap.shuangHaoQi = true
-          resMap.huType = 'shuangHaoQi'
+        resMap.shuangHaoQi = true
+        resMap.huType = 'shuangHaoQi'
       } else if (siZhang.length === 3) {
-          resMap.sanHaoQi = true
+        resMap.sanHaoQi = true
         resMap.huType = 'sanHaoQi'
       } else {
         resMap.qiDui = true
