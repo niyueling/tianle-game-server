@@ -763,23 +763,23 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     if (this.dissolveReqInfo.length === 0) {
       return false
     }
-    // const onLinePlayer = this.dissolveReqInfo
-    //   .filter(reqInfo => {
-    //     const id = reqInfo._id
-    //     return !this.disconnected.some(item => item[0] === id)
-    //   })
-    // const agreeReqs = onLinePlayer.filter(reqInfo => reqInfo.type === 'agree'
-    //   || reqInfo.type === 'originator' || reqInfo.type === 'agree_offline')
-    //
-    // if (onLinePlayer.length <= 2) {
-    //   return agreeReqs.length === 2;
-    // }
-    //
-    // return agreeReqs.length > 0 && agreeReqs.length + 1 >= onLinePlayer.length
-    // 所有人都同意了，才能解散
-    const agreeReqs = this.dissolveReqInfo.filter(reqInfo => reqInfo.type === 'agree'
+    const onLinePlayer = this.dissolveReqInfo
+      .filter(reqInfo => {
+        const id = reqInfo._id.toString()
+        return !this.disconnected.some(item => item[0] === id)
+      })
+    const agreeReqs = onLinePlayer.filter(reqInfo => reqInfo.type === 'agree'
       || reqInfo.type === 'originator' || reqInfo.type === 'agree_offline')
-    return agreeReqs.length >= this.dissolveReqInfo.length - 1;
+
+    if (onLinePlayer.length <= 2) {
+      return agreeReqs.length === 2;
+    }
+
+    return agreeReqs.length > 0 && agreeReqs.length + 1 >= onLinePlayer.length
+    // 所有人都同意了，才能解散
+    // const agreeReqs = this.dissolveReqInfo.filter(reqInfo => reqInfo.type === 'agree'
+    //   || reqInfo.type === 'originator' || reqInfo.type === 'agree_offline')
+    // return agreeReqs.length >= this.dissolveReqInfo.length;
   }
 
   onRequestDissolve(player) {
