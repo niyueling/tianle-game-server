@@ -618,7 +618,7 @@ class Room extends RoomBase {
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString() && this.joinRoomPlayers.includes(alreadyInRoomPlayer._id.toString()))) {
+      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString() && this.joinRoomPlayers.includes(x._id.toString()))) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
