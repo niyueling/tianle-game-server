@@ -375,7 +375,7 @@ class Room extends RoomBase {
   getScore(player) {
     // console.warn("seatIndex-%s, quanFei-%s, feiNiao-%s, gameScore-%s, balance-%s, diFen-%s", player.seatIndex, this.rule.quanFei > 0,
     //   this.rule.feiNiao > 0, player.gameScore, player.balance, player.gameDiFen)
-    console.warn(JSON.stringify(player))
+    console.warn("playerInfo-%s", JSON.stringify(player))
     return (this.rule.quanFei > 0 || this.rule.feiNiao > 0) ? player.gameScore : player.balance
   }
 
