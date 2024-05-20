@@ -471,11 +471,6 @@ class PlayerState implements Serializable {
       return map
     }
 
-    const caiCount = this.cards[this.caiShen]
-    this.cards[this.caiShen] = 0
-    this.cards[this.caiShen] = this.cards[Enums.bai]
-    this.cards[Enums.bai] = 0
-
     const refMap = map
     const c = this.cards[card]
 
@@ -486,9 +481,6 @@ class PlayerState implements Serializable {
         refMap.gang = this
       }
     }
-
-    this.cards[Enums.bai] = this.cards[this.caiShen]
-    this.cards[this.caiShen] = caiCount
 
     return refMap
   }
