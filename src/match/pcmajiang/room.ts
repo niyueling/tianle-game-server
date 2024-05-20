@@ -143,6 +143,9 @@ class Room extends RoomBase {
 
   robotManager: RobotManager
 
+  // 用户是否加入房间
+  joinRoomPlayers: any[] = [];
+
   constructor(rule: any) {
     super()
     this.game = new Game(rule)
@@ -150,6 +153,7 @@ class Room extends RoomBase {
     this.capacity = rule.playerCount || 4
     this.players = new Array(this.capacity).fill(null)
     this.playersOrder = new Array(this.capacity).fill(null)
+    this.joinRoomPlayers = [];
     this.snapshot = []
     this.isPublic = rule.isPublic
     this.disconnectCallback = messageBoyd => {
@@ -606,12 +610,14 @@ class Room extends RoomBase {
   }
 
   async announcePlayerJoin(newJoinPlayer) {
-    this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
+    this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)});
+    this.joinRoomPlayers.push(newJoinPlayer._id.toString());
+
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString())) {
+      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString() && this.joinRoomPlayers.includes(x.model._id.toString()))) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
@@ -677,6 +683,7 @@ class Room extends RoomBase {
     }
 
     this.readyPlayers = [];
+    this.joinRoomPlayers = [];
 
     await this.announcePlayerJoin(thePlayer);
     return true;
