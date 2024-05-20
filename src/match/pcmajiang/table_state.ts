@@ -642,12 +642,12 @@ class TableState implements Serializable {
               player.emitter.emit(Enums.hu, this.turn, takenCard)
               break
             default:
-              const card = player.ai.getUseLessCard(player.cards, takenCard)
+              const card = this.promptWithPattern(player, this.lastTakeCard);
               player.emitter.emit(Enums.da, this.turn, card)
               break
           }
         } else {
-          const card = player.ai.getUseLessCard(player.cards, Enums.slotNoCard)
+          const card = this.promptWithPattern(player, this.lastTakeCard);
           player.emitter.emit(Enums.da, this.turn, card)
         }
       })
