@@ -525,19 +525,19 @@ class Room extends RoomBase {
     const p = PlayerManager.getInstance().getPlayer(playerId)
     this.scoreMap[playerId] += gains
 
-    if (gains > 0) {
-      if (p) {
-        p.addGold(gains)
-      } else {
-        PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
-          if (err) {
-            logger.error(err)
-          } else {
-            return;
-          }
-        })
-      }
-    }
+    // if (gains > 0) {
+    //   if (p) {
+    //     p.addGold(gains)
+    //   } else {
+    //     PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
+    //       if (err) {
+    //         logger.error(err)
+    //       } else {
+    //         return;
+    //       }
+    //     })
+    //   }
+    // }
   }
 
   removeDisconnected(item) {
