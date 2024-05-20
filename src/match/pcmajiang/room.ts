@@ -373,7 +373,8 @@ class Room extends RoomBase {
   }
 
   getScore(player) {
-
+    console.warn("seatIndex-%s, quanFei-%s, feiNiao-%s, gameScore-%s, balance-%s, diFen-%s", player.seatIndex, this.rule.quanFei > 0,
+      this.rule.feiNiao > 0, player.gameScore, player.balance, player.gameDiFen)
     return (this.rule.quanFei > 0 || this.rule.feiNiao > 0) ? player.gameScore : player.balance
   }
 
@@ -598,7 +599,7 @@ class Room extends RoomBase {
       zhuangCounter: this.zhuangCounter,
       juIndex: this.game.juIndex,
       readyPlayers: this.readyPlayers.map(playerId => {
-        const readyPlayer = this.inRoomPlayers.find(p => p._id === playerId)
+        const readyPlayer = this.inRoomPlayers.find(p => p._id.toString() === playerId)
         return this.players.indexOf(readyPlayer)
       }),
       disconnectedPlayers: this.disconnected.map(item => this.indexOf({_id: item[0]})),
