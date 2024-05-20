@@ -754,7 +754,8 @@ class TableState implements Serializable {
           this.turn++;
           this.state = stateWaitDa;
           const daCard = this.promptWithPattern(player, null);
-          const nextStateData = {da: player, daCard, type: Enums.peng};
+          // const index = player;
+          const nextStateData = {da: player, card: daCard, type: Enums.peng};
           const gangSelection = player.getAvailableGangs();
           this.stateData = nextStateData;
           const from = this.atIndex(this.lastDa);
@@ -2309,9 +2310,9 @@ class TableState implements Serializable {
 
   // 托管模式出牌
   promptWithPattern(player: PlayerState, lastTakeCard) {
-    // 获取摸牌前的卡牌
     const cards = player.cards.slice();
-    if (cards[lastTakeCard] > 0 && lastTakeCard) cards[lastTakeCard]--;
+    if (lastTakeCard && cards[lastTakeCard] > 0) cards[lastTakeCard]--;
+
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
