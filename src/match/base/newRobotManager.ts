@@ -149,12 +149,12 @@ export class NewRobotManager {
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐
-      console.log('some one absent', this.room._id);
+      // console.log('some one absent', this.room._id);
       return;
     }
     isOk = this.isNeedDeposit();
     if (!isOk) {
-      console.log(' room %s not player need deposit', this.room._id);
+      // console.log(' room %s not player need deposit', this.room._id);
       // 不需要托管
       return;
     }
