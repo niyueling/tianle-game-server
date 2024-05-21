@@ -1203,6 +1203,10 @@ class TableState implements Serializable {
     return playerNiaos
   }
 
+  isEmptyObject(obj) {
+    return obj && Object.keys(obj).length === 0;
+  }
+
   async onPlayerMultipleHu(player) {
     const msgs = [];
     // 判断是否同时存在胡牌和杠牌，存在则直接杠牌过
@@ -1704,12 +1708,6 @@ class TableState implements Serializable {
 
   async generateReconnectMsg(index) {
     const player = this.players[index]
-    let redPocketsData = null
-    let validPlayerRedPocket = null
-    if (this.room.isHasRedPocket) {
-      redPocketsData = this.room.redPockets;
-      validPlayerRedPocket = this.room.vaildPlayerRedPocketArray;
-    }
     let roomRubyReward = 0;
     const lastRecord = await service.rubyReward.getLastRubyRecord(this.room.uid);
     if (lastRecord) {
@@ -1722,9 +1720,7 @@ class TableState implements Serializable {
       juIndex: this.room.game.juIndex,
       isGameRunning: this.isGameRunning,
       juShu: this.restJushu,
-      current: {},
-      redPocketsData,
-      validPlayerRedPocket,
+      current: {}
     }
     let msg;
     for (let i = 0; i < this.players.length; i++) {
@@ -1751,6 +1747,13 @@ class TableState implements Serializable {
         } else {
           pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'}
         }
+
+        // 处理特殊情况，防止重连对局卡死
+        // if (this.atIndex(daPlayer) === -1) {
+        //   const playerIndex = await this.getPlayerDaIndex();
+        //
+        // }
+
         break
       }
       case stateWaitAction: {
@@ -1763,67 +1766,35 @@ class TableState implements Serializable {
         }
         break
       }
-      case stateWaitGangShangHua: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'waitGangShangHua',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'waitGangShangHua'}
-        }
-        break
-      }
-      case stateWaitGangShangAction: {
-        const indices = this.stateData.currentIndex
-        for (let i = 0; i < indices.length; i++) {
-          if (indices[i] === index) {
-            pushMsg.current = {index, state: 'waitGangShangAction', msg: this.stateData.lastMsg[i]}
-            break
-          }
-        }
-        break
-      }
-      case stateQiangHaiDi: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'qiangHaiDi',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'qiangHaiDi'}
-        }
-        break
-      }
-      case stateWaitDaHaiDi: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'waitDaHaiDi',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'waitDaHaiDi'}
-        }
-        break
-      }
-      case stateWaitHaiDiPao: {
-        const indices = this.stateData.currentIndex
-        for (let i = 0; i < indices.length; i++) {
-          if (indices[i] === index) {
-            pushMsg.current = {index, state: 'waitHaiDiPao', msg: this.stateData.lastMsg[i]}
-            break
-          }
-        }
-        break
-      }
+
       default:
         break
     }
 
+    if (Object.keys(pushMsg.current).length === 0) {
+      console.warn("state-%s, stateData-%s", this.state, JSON.stringify(this.stateData));
+    }
+
     return pushMsg
+  }
+
+  async getPlayerDaIndex() {
+    for (let i = 0; i < this.players.length; i++) {
+      let cardCount = 0;
+      const p = this.players[i];
+
+      for (let j = 0; j < p.cards.length; j++) {
+        if (p.cards[j] > 0) {
+          cardCount += p.cards[j];
+        }
+      }
+
+      if ([2, 5, 8, 11, 14].includes(cardCount)) {
+        return i;
+      }
+    }
+
+    return -1;
   }
 
   distance(p1, p2) {
