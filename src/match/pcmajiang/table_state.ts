@@ -1427,12 +1427,10 @@ class TableState implements Serializable {
             if (p.huPai()) {
               if (p.events.zimo) {
                 score = 2;
-                if (p.events.hu[0].pengPengHu
-                  || p.events.hu[0].qiDui || p.events.hu[0].diHu) {
+                if (p.events.hu[0].pengPengHu || p.events.hu[0].qiDui) {
                   score = 4;
                 }
-                if (p.events.hu[0].qingYiSe || p.events.hu[0].tianHu
-                  || p.events.hu[0].haoQi) {
+                if (p.events.hu[0].qingYiSe || p.events.hu[0].haoQi) {
                   score = 8;
                 }
                 if ((p.events.hu[0].qingYiSe && p.events.hu[0].qiDui) ||
@@ -1450,6 +1448,9 @@ class TableState implements Serializable {
                 if (p.events.hu[0].qingYiSe && p.events.hu[0].sanHaoQi) {
                   score = 128;
                 }
+                if (p.events.hu[0].tianHu) {
+                  score === 2 ? score *= 4 : score *= 8;
+                }
 
                 p.gameDiFen += (noHuNiaoCount + this.rule.playerCount - 1) * score;
 
@@ -1460,7 +1461,7 @@ class TableState implements Serializable {
                 }
               }
 
-              if (p.events.jiePao) {
+              if (p.events.jiePao && p._id.toString() === winner._id.toString()) {
                 if (p.events.hu[0].pengPengHu || p.events.hu[0].qiDui || p.events.hu[0].qiangGang) {
                   score = 2 * (this.rule.playerCount - 1);
                 }
@@ -1481,6 +1482,10 @@ class TableState implements Serializable {
                 }
                 if (p.events.hu[0].qingYiSe && p.events.hu[0].sanHaoQi) {
                   score = 64 * (this.rule.playerCount - 1);
+                }
+
+                if (p.events.hu[0].diHu) {
+                  score *= 4;
                 }
 
                 for (let j = 0; j < this.players.length; j++) {
