@@ -1273,6 +1273,7 @@ class PlayerState implements Serializable {
         callback()
         this.timeoutTask = null
       }, minutes)
+      console.warn("timeoutTask-%s", this.timeoutTask);
     } else {
       const isRobot = this.msgDispatcher.isRobot()
 

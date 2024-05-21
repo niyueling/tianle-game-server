@@ -1129,8 +1129,8 @@ const HuPaiDetect = {
       if (cards.indexOf(card) > -1) {
         long.push(card)
       }
-      if (card % 10 == 9) {
-        found = (long.length == 9);
+      if (card % 10 === 9) {
+        found = (long.length === 9);
         if (found) {
           result['yiTiaoLong'] = true
           break
