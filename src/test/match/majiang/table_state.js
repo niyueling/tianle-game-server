@@ -2,11 +2,10 @@
 
 import * as chai from 'chai'
 import * as chaiProperties from 'chai-properties'
-import Enums from '../../../match/majiang/enums'
+import Enums from '../../../match/pcmajiang/enums'
 import {last, nth} from 'lodash'
 import {displayMessage, packets, packetsTo} from './mockwebsocket'
 import setupMatch from './setupMatch'
-import { clearMessage } from '../mockwebsocket'
 
 const {expect} = chai
 chai.use(chaiProperties);
@@ -28,7 +27,7 @@ const genAssistList = (cards, card) => {
   return assistList;
 };
 
-describe('Table State', function () {
+describe('牌桌', function () {
 
   describe('游戏流程', function () {
 
@@ -160,7 +159,7 @@ describe('Table State', function () {
     });
 
 
-    it.skip('吃 胡 一起出现 //凡盟', function () {
+    it.skip('吃 胡 一起出现', function () {
 
       table.fapai()
       changeCaishen(Enums.dong)
@@ -321,7 +320,7 @@ describe('Table State', function () {
         expect(check).to.has.properties({
           chiCombol: [[Enums.bai, Enums.wanzi3]]
         });
-        expect(check.chi == player1).to.be.true;
+        expect(check.chi === player1).to.be.true;
       });
 
       it('财神不是白板,白板可以碰', function () {
@@ -332,8 +331,8 @@ describe('Table State', function () {
         let check = {};
         player1.checkPengGang(Enums.bai, check);
         expect(check).not.empty;
-        expect(check.pengGang == player1).to.be.true
-        expect(check.peng == player1).to.be.true
+        expect(check.pengGang === player1).to.be.true
+        expect(check.peng === player1).to.be.true
       });
 
 
@@ -500,7 +499,7 @@ describe('Table State', function () {
       player1.emitter.emit(Enums.da, table.turn, Enums.wanzi1)
       table.remainCards = 0
       player2.emitter.emit(Enums.guo, table.turn, Enums.wanzi1)
-      
+
       await sleep(sleepDur)
       displayMessage()
 

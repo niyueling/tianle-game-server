@@ -2,12 +2,12 @@
 
 import * as chai from 'chai'
 import * as chaiProperties from 'chai-properties'
-import Enums from '../../../match/majiang/enums'
+import Enums from '../../../match/pcmajiang/enums'
 import {last, nth} from 'lodash'
 import {packets, displayMessage, clearMessage, packetsWithMessageName,scoreString}  from './mockwebsocket'
 import setupMatch, {cardsFromArray}  from './setupMatch'
-import TableState from "../../../match/majiang/table_state";
-import PlayerState from "../../../match/majiang/player_state";
+import TableState from "../../../match/pcmajiang/table_state";
+import PlayerState from "../../../match/pcmajiang/player_state";
 
 
 const {expect} = chai
@@ -19,7 +19,7 @@ let sleep = function (time) {
   })
 }
 
-describe('凡盟结算', () => {
+describe('结算', () => {
 
   let room, table: TableState;
   let player1: PlayerState, player2: PlayerState, player3: PlayerState, player4: PlayerState;
@@ -37,7 +37,7 @@ describe('凡盟结算', () => {
   });
 
   it('七对子 0番', async() => {
-    table.fapai()
+    table.fapai({})
     table.turn = 10
 
     player1.cards = cardsFromArray([
@@ -59,7 +59,7 @@ describe('凡盟结算', () => {
 
     player1.requestAction(Enums.da, table.turn, Enums.wanzi1)
     player2.requestAction(Enums.hu, table.turn, Enums.wanzi1)
- 
+
     await sleep(sleepDur);
 
     displayMessage()
@@ -69,7 +69,7 @@ describe('凡盟结算', () => {
 
 
   it('豪七对子 0番', async() => {
-    table.fapai()
+    table.fapai({})
     table.turn = 10
 
     player1.cards = cardsFromArray([
@@ -99,7 +99,7 @@ describe('凡盟结算', () => {
   })
 
   it('碰碰胡 0番', async() => {
-    table.fapai()
+    table.fapai({})
     table.turn = 10
 
     player1.cards = cardsFromArray([
@@ -125,7 +125,7 @@ describe('凡盟结算', () => {
   })
 
   it('清一色 0番', async() => {
-    table.fapai()
+    table.fapai({})
     table.turn = 10
 
     player1.cards = cardsFromArray([

@@ -1,8 +1,8 @@
 import * as chai from 'chai'
-import TableState from '../../../match/majiang/table_state'
+import TableState from '../../../match/pcmajiang/table_state'
 import setupMatch from './setupMatch'
 import {displayMessage, packets} from './mockwebsocket'
-import Room from "../../../match/majiang/room";
+import Room from "../../../match/pcmajiang/room";
 import {last} from 'lodash'
 
 const {expect} = chai

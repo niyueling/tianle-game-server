@@ -2,12 +2,12 @@
 
 import * as chai from 'chai'
 import * as chaiProperties from 'chai-properties'
-import Enums from '../../../match/majiang/enums'
+import Enums from '../../../match/pcmajiang/enums'
 import {last, nth} from 'lodash'
 import {packets, displayMessage, clearMessage, scoreString, packetsWithMessageName} from './mockwebsocket'
 import setupMatch, {cardsFromArray} from './setupMatch'
-import TableState from "../../../match/majiang/table_state";
-import PlayerState from "../../../match/majiang/player_state";
+import TableState from "../../../match/pcmajiang/table_state";
+import PlayerState from "../../../match/pcmajiang/player_state";
 
 const {expect} = chai
 
@@ -20,7 +20,7 @@ let sleep = function (time) {
   })
 }
 
-describe('凡盟抢杠胡', () => {
+describe('抢杠胡', () => {
 
   let room, table: TableState;
   let player1: PlayerState, player2: PlayerState, player3: PlayerState, player4: PlayerState;
@@ -39,7 +39,7 @@ describe('凡盟抢杠胡', () => {
 
 
   it('抢杠', async() => {
-    table.fapai()
+    table.fapai({})
     table.turn = 10
 
     player1.events.peng = [Enums.wanzi1]
@@ -57,7 +57,7 @@ describe('凡盟抢杠胡', () => {
     player1.requestAction(Enums.gangBySelf, table.turn, Enums.wanzi1)
     player2.requestAction(Enums.hu, table.turn, Enums.wanzi1)
 
-    await sleep(sleepDur); 
+    await sleep(sleepDur);
 
     displayMessage()
 
@@ -65,7 +65,7 @@ describe('凡盟抢杠胡', () => {
   })
 
   it('多人能抢杠', async () => {
-    table.fapai()
+    table.fapai({})
     table.turn = 10
 
     player1.events.peng = [Enums.wanzi1]
@@ -100,7 +100,7 @@ describe('凡盟抢杠胡', () => {
   })
 
   it('多人能抢杠bug 放杠者在中间', async() => {
-    table.fapai()
+    table.fapai({})
 
     player1.cards = cardsFromArray([
       Enums.wanzi2, Enums.wanzi3,
@@ -142,7 +142,7 @@ describe('凡盟抢杠胡', () => {
 
 
   it('无人抢杠', () => {
-    table.fapai()
+    table.fapai({})
 
     player1.events.peng = [Enums.wanzi1]
     player1.cards = cardsFromArray([Enums.wanzi1, Enums.wanzi2])
@@ -168,7 +168,7 @@ describe('凡盟抢杠胡', () => {
   })
 
   it('抢杠 玩家放弃抢杠', () => {
-    table.fapai()
+    table.fapai({})
 
     player1.events.peng = [Enums.wanzi1]
     player1.cards = cardsFromArray([Enums.wanzi1])
@@ -201,7 +201,7 @@ describe('凡盟抢杠胡', () => {
     })
 
     it('平胡能抢杠', () => {
-      table.fapai()
+      table.fapai({})
       table.turn = 10
 
       player1.cards = cardsFromArray([Enums.wanzi1])

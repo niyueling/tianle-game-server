@@ -1,4 +1,4 @@
-import Enums from "../match/majiang/enums";
+import Enums from "../match/pcmajiang/enums";
 import alg from '../utils/algorithm'
 
 const generateCards = function () {

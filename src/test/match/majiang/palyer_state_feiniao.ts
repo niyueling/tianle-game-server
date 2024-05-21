@@ -2,17 +2,15 @@
 
 import * as chai from 'chai'
 import * as chaiProperties from 'chai-properties'
-import Enums from '../../../match/majiang/enums'
-import {last, nth} from 'lodash'
-import {packets, displayMessage, clearMessage, scoreString, packetsWithMessageName}  from './mockwebsocket'
-import setupMatch, {cardsFromArray}  from './setupMatch'
-import TableState from "../../../match/majiang/table_state";
-import PlayerState from "../../../match/majiang/player_state";
+import Enums from '../../../match/pcmajiang/enums'
+import setupMatch  from './setupMatch'
+import TableState from "../../../match/pcmajiang/table_state";
+import PlayerState from "../../../match/pcmajiang/player_state";
 const {expect} = chai
 
 chai.use(chaiProperties);
 
-describe('凡盟飞鸟计费', () => {
+describe('飞鸟计费', () => {
 
   let room, table: TableState;
   let player1: PlayerState, player2: PlayerState, player3: PlayerState, player4: PlayerState;
@@ -143,7 +141,7 @@ describe('凡盟全飞计算', () =>{
     expect(player2.buyer.map(x => x._id)).to.have.properties([ 'testid3', 'testid4' ])
 
     player2.winFrom(player3, 10)
-    
+
     expect(scoreString()).to.equal('-10,20,-20,10')
   })
 })

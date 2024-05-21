@@ -4,7 +4,7 @@ import * as chai from 'chai'
 import * as chaiProperties from 'chai-properties'
 import Enums from '../../../match/pcmajiang/enums'
 import {last, nth} from 'lodash'
-import {packets, displayMessage, clearMessage, scoreString, packetsWithMessageName, packetsTo} from './mockwebsocket'
+import {packets, displayMessage, scoreString, packetsWithMessageName} from './mockwebsocket'
 import setupMatch, {cardsFromArray} from './setupMatch'
 import TableState from "../../../match/pcmajiang/table_state";
 
@@ -18,7 +18,7 @@ let sleep = function (time) {
   })
 }
 
-describe('凡盟一炮多响胡', () => {
+describe('一炮多响胡', () => {
 
   let room, table: TableState;
   let player1, player2, player3, player4;

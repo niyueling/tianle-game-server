@@ -39,14 +39,14 @@ class MockWebSocket {
   }
 
   static packetsWithMessageName(name) {
-    return packets.filter(p => p.name == name)
+    return packets.filter(p => p.name === name)
   }
 
   static packetsTo(to, messageName) {
-    return packets.filter(p => p.to == to)
+    return packets.filter(p => p.to === to)
       .filter((p) => {
         if (!messageName) return true
-        return p.name == messageName
+        return p.name === messageName
       })
   }
 }

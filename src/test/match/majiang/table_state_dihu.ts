@@ -17,7 +17,7 @@ let sleep = function (time) {
   })
 }
 
-describe('凡盟地胡', () => {
+describe('地胡', () => {
 
   let room, table: TableState;
   let player1, player2, player3, player4;

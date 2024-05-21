@@ -2,7 +2,7 @@
 
 
 import setupMatch, {emptyCards} from './setupMatch'
-import Enums from '../../../match/majiang/enums'
+import Enums from '../../../match/pcmajiang/enums'
 import * as chai from 'chai'
 
 const {expect} = chai

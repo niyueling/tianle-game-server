@@ -6,7 +6,6 @@ import * as sinon from 'sinon';
 import * as chai from 'chai';
 
 import Room, {PublicRoom} from '../../../match/majiang/room';
-import PlayerStub from '../../player/player-stub';
 import * as lo from 'lodash'
 
 const should = chai.should();
@@ -201,9 +200,6 @@ describe('Room', () => {
       for (let player of room.players) {
         expect(player.model.gold).to.equal(8000)
       }
-
     })
-
-
   })
 });

@@ -2,11 +2,11 @@
 
 import * as chai from 'chai'
 import * as chaiProperties from 'chai-properties'
-import Enums from '../../../match/majiang/enums'
-import {last, nth} from 'lodash'
-import {packets, displayMessage, clearMessage, scoreString, packetsWithMessageName, packetsTo} from './mockwebsocket'
+import Enums from '../../../match/pcmajiang/enums'
+import {last} from 'lodash'
+import {displayMessage, scoreString, packetsTo} from './mockwebsocket'
 import setupMatch, {cardsFromArray} from './setupMatch'
-import TableState from "../../../match/majiang/table_state";
+import TableState from "../../../match/pcmajiang/table_state";
 
 const {expect} = chai
 
@@ -18,7 +18,7 @@ let sleep = function (time) {
   })
 }
 
-describe('凡盟地胡', () => {
+describe('杠牌', () => {
 
   let room, table: TableState;
   let player1, player2, player3, player4;
@@ -37,7 +37,7 @@ describe('凡盟地胡', () => {
 
 
   it('记录接杠的来源', () => {
-    table.fapai()
+    table.fapai({})
     player1.cards = cardsFromArray([Enums.wanzi1])
     player2.cards = cardsFromArray([Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi9])
     player3.cards = cardsFromArray()
@@ -51,7 +51,7 @@ describe('凡盟地胡', () => {
   })
 
   it('自己杠没有记录', () => {
-    table.fapai()
+    table.fapai({})
 
     player1.cards = cardsFromArray([Enums.wanzi2])
     player2.cards = cardsFromArray([Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi9])
@@ -70,7 +70,7 @@ describe('凡盟地胡', () => {
   })
 
   it('流局不结算杠', async() => {
-    table.fapai()
+    table.fapai({})
 
     player1.cards = cardsFromArray([Enums.wanzi2])
     player2.cards = cardsFromArray([Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi9])
@@ -92,7 +92,7 @@ describe('凡盟地胡', () => {
 
 
   it('摸牌后 不杠 自后不会再提示杠', () => {
-    table.fapai()
+    table.fapai({})
 
     player1.cards = cardsFromArray([Enums.wanzi2])
     player2.cards = cardsFromArray([Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi9])
@@ -111,7 +111,7 @@ describe('凡盟地胡', () => {
 
 
   it('手上3张一万 别人打一万,碰完不能在杠', () => {
-    table.fapai()
+    table.fapai({})
 
     player1.cards = cardsFromArray([Enums.wanzi1])
     player2.cards = cardsFromArray([Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi9])
@@ -128,7 +128,7 @@ describe('凡盟地胡', () => {
   });
 
   it('多人抢杠，平胡', async () => {
-    table.fapai()
+    table.fapai({})
 
     player1.cards = cardsFromArray([Enums.wanzi1])
     player1.events.mingGang = [Enums.wanzi1]
@@ -149,7 +149,7 @@ describe('凡盟地胡', () => {
   })
 
   it('多人抢杠，碰碰胡', async () => {
-    table.fapai()
+    table.fapai({})
 
     player1.cards = cardsFromArray([Enums.wanzi1])
     player1.events.mingGang = [Enums.wanzi1]

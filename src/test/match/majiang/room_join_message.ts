@@ -2,7 +2,7 @@ import * as chai from 'chai'
 import {first, last} from 'lodash'
 import * as uuid from "node-uuid"
 import * as chaiProperties from 'chai-properties'
-import Room from "../../../match/majiang/room";
+import Room from "../../../match/pcmajiang/room";
 import {clearMessage, packets, displayMessage, packetsWithMessageName, packetsTo} from './mockwebsocket'
 import {createPlayerSocket} from './setupMatch'
 

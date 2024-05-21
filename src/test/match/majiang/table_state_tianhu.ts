@@ -2,11 +2,10 @@
 
 import * as chai from 'chai'
 import * as chaiProperties from 'chai-properties'
-import Enums from '../../../match/majiang/enums'
-import {last, nth} from 'lodash'
-import {packets, displayMessage, clearMessage, scoreString, packetsWithMessageName}  from './mockwebsocket'
+import Enums from '../../../match/pcmajiang/enums'
+import {packets, displayMessage, scoreString}  from './mockwebsocket'
 import setupMatch, {cardsFromArray}  from './setupMatch'
-import TableState from "../../../match/majiang/table_state";
+import TableState from "../../../match/pcmajiang/table_state";
 const {expect} = chai
 
 chai.use(chaiProperties);
@@ -17,7 +16,7 @@ let sleep = function (time) {
   })
 }
 
-describe('凡盟天胡', () => {
+describe('天胡', () => {
 
   let room, table: TableState;
   let player1, player2, player3, player4;
@@ -35,7 +34,7 @@ describe('凡盟天胡', () => {
   });
 
   it('天胡 平胡', async() => {
-    table.fapai()
+    table.fapai({})
 
     table.stateData.card = Enums.wanzi9
 
@@ -59,7 +58,7 @@ describe('凡盟天胡', () => {
   });
 
   it('天胡 七对', async() => {
-    table.fapai()
+    table.fapai({})
 
     table.stateData.card = Enums.wanzi9
 

@@ -2,16 +2,14 @@
 
 import * as chai from 'chai'
 import * as chaiProperties from 'chai-properties'
-import Enums from '../../../match/majiang/enums'
-import {last, nth} from 'lodash'
-import {packets, displayMessage, clearMessage, scoreString, packetsWithMessageName}  from './mockwebsocket'
-import setupMatch, {cardsFromArray}  from './setupMatch'
-import TableState from "../../../match/majiang/table_state";
+import Enums from '../../../match/pcmajiang/enums'
+import setupMatch  from './setupMatch'
+import TableState from "../../../match/pcmajiang/table_state";
 const {expect} = chai
 
 chai.use(chaiProperties);
 
-describe('凡盟天胡', () => {
+describe('生成飞鸟牌', () => {
 
   let room, table: TableState;
   let player1, player2, player3, player4;
