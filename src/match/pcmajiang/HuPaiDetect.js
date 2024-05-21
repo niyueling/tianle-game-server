@@ -277,7 +277,6 @@ const HuPaiDetect = {
     let useCaiDuiZiCount = hasDuiZi + danZhangNeedCai + sanZhangNeedCai * 2
 
     let hasDanBai = danZhang.indexOf(Enums.bai) >= 0 || sanZhang.indexOf(Enums.bai) >= 0
-    console.warn("hasDuiZi-%s, remainCaiCount-%s, useCaiDuiZiCount-%s, lastTakeCard-%s, caiShen-%s", hasDuiZi, remainCaiCount, useCaiDuiZiCount, lastTakeCard, caiShen);
     if (hasDuiZi === 7) {
       resMap.hu = true
       resMap.wuCai = true
