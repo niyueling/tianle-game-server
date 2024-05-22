@@ -891,7 +891,7 @@ class Room extends RoomBase {
     }
 
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === player.model._id;
+      return x._id.toString() === player.model._id.toString();
     });
     if (item) {
       item.type = 'agree';
@@ -941,7 +941,7 @@ class Room extends RoomBase {
           avatar: pp.model.avatar,
           _id: pp.model._id
         });
-      } else if (pp && pp !== player) {
+      } else if (pp && pp._id.toString() !== player._id.toString()) {
         this.dissolveReqInfo.push({
           type: 'waitConfirm',
           avatar: pp.model.avatar,

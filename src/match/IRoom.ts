@@ -771,6 +771,8 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     const agreeReqs = onLinePlayer.filter(reqInfo => reqInfo.type === 'agree'
       || reqInfo.type === 'originator' || reqInfo.type === 'agree_offline')
 
+    console.warn(onLinePlayer.length);
+
     if (onLinePlayer.length <= 2) {
       return agreeReqs.length === 2;
     }
