@@ -963,7 +963,7 @@ class Room extends RoomBase {
 
   updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer) {
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === reconnectPlayer.model._id
+      return x._id.toString() === reconnectPlayer._id.toString()
     })
     if (item) {
       if (item.type === 'agree_offline') {
@@ -977,7 +977,7 @@ class Room extends RoomBase {
 
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === player.model._id
+      return x._id.toString() === player.model._id.toString()
     })
     if (item) {
       if (item.type === 'agree') {
