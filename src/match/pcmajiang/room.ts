@@ -934,22 +934,13 @@ class Room extends RoomBase {
     });
     for (let i = 0; i < this.players.length; i++) {
       const pp = this.players[i];
-      if (pp && pp.isRobot()) {
-        this.dissolveReqInfo.push({
-          type: 'offline',
-          name: pp.model.nickname,
-          avatar: pp.model.avatar,
-          _id: pp.model._id
-        });
-      } else if (pp && pp._id.toString() !== player._id.toString()) {
+      if (pp && pp._id.toString() !== player._id.toString()) {
         this.dissolveReqInfo.push({
           type: 'waitConfirm',
-          avatar: pp.model.avatar,
           name: pp.model.nickname,
+          avatar: pp.model.avatar,
           _id: pp.model._id
         });
-      } else {
-        console.warn(pp._id.toString(), player._id.toString())
       }
     }
 
