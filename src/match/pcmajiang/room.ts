@@ -948,21 +948,11 @@ class Room extends RoomBase {
           name: pp.model.nickname,
           _id: pp.model._id
         });
+      } else {
+        console.warn(pp)
       }
     }
-    // for (let i = 0; i < this.disconnected.length; i++) {
-    //   const pp = this.disconnected[i];
-    //   this.snapshot.forEach(p => {
-    //       if (pp && p.model._id === pp[0]) {
-    //         this.dissolveReqInfo.push({
-    //           type: 'offline',
-    //           name: p.model.name,
-    //           _id: p.model._id
-    //         });
-    //       }
-    //     }
-    //   )
-    // }
+
     return this.dissolveReqInfo;
   }
 
