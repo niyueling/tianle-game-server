@@ -949,7 +949,7 @@ class Room extends RoomBase {
           _id: pp.model._id
         });
       } else {
-        console.warn(pp)
+        console.warn(pp._id.toString(), player._id.toString())
       }
     }
 
