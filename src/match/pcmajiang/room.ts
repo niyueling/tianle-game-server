@@ -936,7 +936,7 @@ class Room extends RoomBase {
       const pp = this.players[i];
       if (pp && pp.isRobot()) {
         this.dissolveReqInfo.push({
-          type: 'agree',
+          type: 'offline',
           name: pp.model.nickname,
           avatar: pp.model.avatar,
           _id: pp.model._id

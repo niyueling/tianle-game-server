@@ -47,8 +47,8 @@ export const createPlayerSocket = function (id) {
   let p = new MockPlayer(webSocket);
   const objectId = new ObjectId();
   p.model = {
-    _id: objectId,
-    nickname: objectId,
+    _id: objectId.toString(),
+    nickname: objectId.toString(),
     gold: 50000,
     diamond: 200
   }

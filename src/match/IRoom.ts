@@ -727,7 +727,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       const pp = this.players[i]
       if (pp && pp.isRobot()) {
         this.dissolveReqInfo.push({
-          type: 'agree',
+          type: 'offline',
           name: pp.model.name,
           _id: pp.model._id
         })
