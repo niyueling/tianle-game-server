@@ -2107,7 +2107,9 @@ class TableState implements Serializable {
       const j = (from + i) % this.players.length;
       const p = this.players[j];
       const msg = this.actionResolver.allOptions(p);
-      if (msg && ((p.model.gold > 0 && !p.isBroke && this.room.isPublic) || !this.room.isPublic)) {
+      const model = await service.playerService.getPlayerModel(p._id);
+      console.log("isPublic-%s, gold-%s, msg-%s", this.room.isPublic, model.gold, JSON.stringify(msg));
+      if (msg && ((model.gold > 0 && !p.isBroke && this.room.isPublic) || !this.room.isPublic)) {
         huCount++;
         this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});
         this.canManyHuPlayers.push(p._id.toString());
