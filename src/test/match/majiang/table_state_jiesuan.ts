@@ -28,8 +28,8 @@ describe('结算', () => {
 
   const scoreString = () => table.players.map(p => p.balance).join()
 
-  beforeEach(function () {
-    let match = setupMatch()
+  beforeEach(async function () {
+    let match = await setupMatch()
     table = match.table
     room = match.room
     player1 = match.players[0]
@@ -70,35 +70,33 @@ describe('结算', () => {
   });
 
   it('平胡自摸', async() => {
-    table.fapai({})
-    table.turn = 10
-
-    player1.cards = cardsFromArray([Enums.wanzi2]);
-    player2.cards = cardsFromArray([
-      Enums.tongzi1, Enums.tongzi2, Enums.tongzi3,
-      Enums.wanzi3, Enums.wanzi3, Enums.wanzi3,
-      Enums.wanzi5, Enums.wanzi5, Enums.wanzi5,
-      Enums.wanzi7, Enums.wanzi7, Enums.wanzi7,
-      Enums.tongzi1
-    ])
-    player3.cards = cardsFromArray()
-    player4.cards = cardsFromArray()
-
-    changeCaishen(Enums.slotNoCard)
-
+    await table.fapai({cards: [
+        [Enums.wanzi2],
+        [
+          Enums.tongzi1, Enums.tongzi2, Enums.tongzi3,
+          Enums.wanzi3, Enums.wanzi3, Enums.wanzi3,
+          Enums.wanzi5, Enums.wanzi5, Enums.wanzi5,
+          Enums.wanzi7, Enums.wanzi7, Enums.wanzi7,
+          Enums.wanzi2
+        ],
+        [],
+        []
+      ]});
+    table.turn = 1;
+    changeCaishen(Enums.slotNoCard);
 
     table.cards = [
       Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi1
-    ]
-    table.remainCards = table.cards.length
-
+    ];
+    table.remainCards = table.cards.length;
 
     player1.emitter.emit(Enums.da, table.turn, Enums.wanzi2)
-    player2.emitter.emit(Enums.hu, table.turn, Enums.tongzi1)
+    player2.emitter.emit(Enums.hu, table.turn, Enums.wanzi2)
 
     await sleep(sleepDur);
 
     let state = last(packetsWithMessageName('game/game-over')).message.states[1]
+    console.warn(state)
 
     expect(scoreString()).to.equal('-2,6,-2,-2')
 

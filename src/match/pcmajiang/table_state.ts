@@ -24,11 +24,7 @@ import {TianleErrorCode} from "@fm/common/constants";
 const stateWaitDa = 1
 const stateWaitAction = 2
 export const stateGameOver = 3
-const stateWaitGangShangHua = 4
 const stateWaitGangShangAction = 5
-const stateQiangHaiDi = 6
-const stateWaitDaHaiDi = 7
-const stateWaitHaiDiPao = 8
 const stateQiangGang = 9
 
 class HuCheck {
@@ -406,7 +402,7 @@ class TableState implements Serializable {
       this.listenPlayer(p)
     }
     this.turn = 1
-    this.state = stateWaitAction
+    this.state = stateWaitDa
     this.lastDa = null
 
     const transports = []
@@ -503,13 +499,13 @@ class TableState implements Serializable {
     return card;
   }
 
-  take13Cards(player: PlayerState) {
-    const cards = []
-    // logger.info(`${player.model.shortId}目前有${player.helpCards.length}张牌`);
-    for (let i = 0; i < 13 - player.helpCards.length || 0; i++) {
-      cards.push(this.consumeCard(player))
+  take13Cards(player: PlayerState, clist) {
+    const cards = this.rule.test ? clist.slice() : [];
+    const cardCount = cards.length;
+    for (let i = 0; i < 13 - cardCount; i++) {
+      cards.push(this.consumeCard(player));
     }
-    return cards
+    return cards;
   }
 
   async start(payload) {
@@ -518,7 +514,7 @@ class TableState implements Serializable {
 
   async fapai(payload) {
     this.shuffle()
-    this.sleepTime = 1500
+    this.sleepTime = 0
     this.caishen = this.rule.useCaiShen ? Enums.zhong : Enums.slotNoCard
     const restCards = this.remainCards - (this.rule.playerCount * 13);
     if (this.rule.test && payload.moCards && payload.moCards.length > 0) {
@@ -532,11 +528,11 @@ class TableState implements Serializable {
     const needShuffle = this.room.shuffleData.length > 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i]
-      const cards13 = this.rule.test && payload.cards && payload.cards[i].length === 13 ? payload.cards[i] : this.take13Cards(p)
+      const cards13 = this.take13Cards(p, payload.cards[i])
       // const finallyCards = [...p.helpCards, ...cards13];
 
       // 如果客户端指定发牌
-      if (this.rule.test && payload.cards && payload.cards[i].length === 13) {
+      if (this.rule.test && payload.cards && payload.cards[i].length > 0) {
         for (let j = 0; j < payload.cards[i].length; j++) {
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
           this.remainCards--;
@@ -564,8 +560,8 @@ class TableState implements Serializable {
 
       const index = 0
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard}}, this.zhuang.msgDispatcher)
-      this.state = stateWaitDa
-      this.stateData = {msg, da: this.zhuang, card: nextCard}
+      this.state = stateWaitDa;
+      this.stateData = {msg, da: this.zhuang, card: nextCard};
     }
 
     if (this.sleepTime === 0) {
@@ -987,7 +983,6 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.hu, async (turn, card) => {
-      const chengbaoStarted = this.remainCards <= 3
       const recordCard = this.stateData.card;
       const isJiePao = this.state === stateWaitAction && recordCard === card && this.stateData[Enums.hu].contains(player)
       const isZiMo = this.state === stateWaitDa && recordCard === card
@@ -2100,7 +2095,7 @@ class TableState implements Serializable {
       if (check[Enums.peng]) this.actionResolver.appendAction(check[Enums.peng], 'peng')
       if (check[Enums.gang]) {
         const p = check[Enums.gang]
-        const gangInfo = [card, p.getGangKind(card, p === player)]
+        const gangInfo = [card, p.getGangKind(card, p._id.toString() === player._id.toString())]
         p.gangForbid.push(card)
         this.actionResolver.appendAction(check[Enums.gang], 'gang', gangInfo)
       }
@@ -2108,12 +2103,14 @@ class TableState implements Serializable {
 
     let huCount = 0;
 
+    console.log(from);
     for (let i = 1; i < this.players.length; i++) {
       const j = (from + i) % this.players.length;
       const p = this.players[j];
 
       const msg = this.actionResolver.allOptions(p);
       const model = await service.playerService.getPlayerModel(p.model._id);
+      console.log("isPublic-%s, gold-%s, msg-%s", this.room.isPublic, model.gold, JSON.stringify(msg));
       if (msg && ((model.gold > 0 && !p.isBroke && this.room.isPublic) || !this.room.isPublic)) {
         huCount++;
         this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});

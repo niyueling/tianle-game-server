@@ -7,6 +7,7 @@ import TableState from '../../../match/pcmajiang/table_state'
 import PlayerManager from '../../../player/player-manager'
 import {SourceCardMap} from '../../../match/pcmajiang/player_state'
 import * as EventEmitter from 'events'
+import { ObjectId } from 'mongodb';
 
 
 class MockPlayer extends Player {
@@ -41,16 +42,17 @@ class MockPlayer extends Player {
   }
 }
 
-
 export const createPlayerSocket = function (id) {
   const webSocket = new MockWebSocket()
   let p = new MockPlayer(webSocket);
+  const objectId = new ObjectId();
   p.model = {
-    _id: `testid${id}`,
-    name: `testid${id}`,
+    _id: objectId,
+    nickname: objectId,
     gold: 50000,
-    gem: 200
+    diamond: 200
   }
+
   p.onJsonMessage = function (msg) {
     this.onMessage(JSON.stringify(msg));
   }
@@ -59,7 +61,7 @@ export const createPlayerSocket = function (id) {
   return p
 }
 
-export default function setupMatch(playerCounter = 4, extra = {}) {
+export default async function setupMatch(playerCounter = 4, extra = {}) {
   let mockSockets, playerSocket, room, table;
   let player1
 
@@ -72,27 +74,27 @@ export default function setupMatch(playerCounter = 4, extra = {}) {
 
 
   const allRule = Object.assign({
-    isPublic: false,
-    playerCount: playerCounter,
-    canChi: true,
-    juShu: 8,
-    quanShu: 4,
-    share: true,
+    autoCommit: 30,
     feiNiao: 0,
-    kehu: ['qifeng', 'haoQi'],
-    keJiePao: true
+    gameType: "pcmj",
+    isPublic: false,
+    juShu: 12,
+    keJiePao: false,
+    playerCount: 4,
+    test: true,
+    type: "pcmj",
+    useCaiShen: false
   }, extra)
 
   room = new Room(allRule)
-
   room._id = '123456'
 
-  playerSockets.forEach((p) => {
-    room.join(p)
-    room.ready(p)
-  });
+  for (const p of playerSockets) {
+    await room.join(p)
+    await room.ready(p)
+  }
 
-  table = new TableState(room, room.rule, 3);
+  table = new TableState(room, room.rule, 1);
   room.gameState = table;
 
   [player1] = table.players
