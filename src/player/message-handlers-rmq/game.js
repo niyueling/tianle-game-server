@@ -103,7 +103,7 @@ addMsg('game/changePlayerCards')
 addMsg('game/changeNextCards')
 // 掉线重连成功,取消托管
 addMsg('game/disableRobot')
-addMsg('game/refresh')
+addMsg('game/refreshQuiet')
 
 export default exportObj
 
