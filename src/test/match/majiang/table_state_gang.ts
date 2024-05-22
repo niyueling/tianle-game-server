@@ -24,8 +24,8 @@ describe('杠牌', () => {
   let player1, player2, player3, player4;
   let changeCaishen
 
-  beforeEach(function () {
-    let match = setupMatch()
+  beforeEach(async function () {
+    let match = await setupMatch()
     table = match.table
     room = match.room
     player1 = match.players[0]
