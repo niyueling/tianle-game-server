@@ -528,7 +528,7 @@ class TableState implements Serializable {
     const needShuffle = this.room.shuffleData.length > 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i]
-      const cards13 = this.take13Cards(p, payload.cards[i])
+      const cards13 = this.take13Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : [])
       // const finallyCards = [...p.helpCards, ...cards13];
 
       // 如果客户端指定发牌
