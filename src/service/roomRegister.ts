@@ -18,11 +18,21 @@ export default class RoomRegister extends BaseService {
 
   async putPlayerInGameRoom(player: string, game: GameType | string, roomNumber: string) {
     await this.recordJoinRoom(player, parseInt(roomNumber, 10), game)
+
+    // 存储房间已加入人数
+    let playerCount = await this.redis.getAsync(`${roomNumber}:joinCount`);
+    const joinCount = !playerCount ? 1 : Number(playerCount) + 1;
+    await this.redis.setAsync(`${roomNumber}:joinCount`, String(joinCount));
+
     return this.redis.hsetAsync(`u:${player}`, game, roomNumber)
   }
 
-  async removePlayerFromGameRoom(player: string, game: GameType | string) {
+  async removePlayerFromGameRoom(player: string, game: GameType | string, roomNumber) {
     await this.deleteJoinRoom(player, game);
+    let playerCount = await this.redis.getAsync(`${roomNumber}:joinCount`);
+    const joinCount = Number(playerCount) - 1;
+    await this.redis.setAsync(`${roomNumber}:joinCount`, String(joinCount));
+
     return this.redis.hdelAsync(`u:${player}`, game)
   }
 

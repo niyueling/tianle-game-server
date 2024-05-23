@@ -160,7 +160,7 @@ export default class RoomProxy {
           }
 
           if (room.canJoin(newPlayer)) {
-            newPlayer.sendMessage('room/join-success', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}})
+            newPlayer.sendMessage('room/join-success', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}});
             await room.join(newPlayer)
             await service.roomRegister.putPlayerInGameRoom(messageBody.from, gameName, room._id)
           } else {
@@ -230,7 +230,7 @@ export default class RoomProxy {
 
         if (messageBody.name === 'room/leave') {
           if (room.leave(thePlayer)) {
-            await service.roomRegister.removePlayerFromGameRoom(messageBody.from, gameName)
+            await service.roomRegister.removePlayerFromGameRoom(messageBody.from, gameName, room._id)
 
             thePlayer.sendMessage('room/leaveReply', {ok: true, data: {playerId: thePlayer._id, roomId: this.room._id}})
             await this.tryBestStore(rabbit.redisClient, room)

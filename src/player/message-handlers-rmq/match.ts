@@ -12,18 +12,9 @@ export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
 }
 
-const allGameName = ['majiang', 'xueliu']
-
-function getLobby(gameType) {
-  const gameType2Lobby = {
-    majiang: majiangLobby,
-    xueliu: xueliuLobby,
-  }
-  return gameType2Lobby[gameType] || gameType2Lobby.majiang
-}
+const allGameName = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj]
 
 export function createHandler(redisClient: AsyncRedisClient) {
-
   return {
     'room/reconnect': async (player, message) => {
       const room = await service.roomRegister.getDisconnectedRoom(player.model._id.toString(), message.gameType);
