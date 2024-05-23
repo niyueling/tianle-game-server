@@ -1692,15 +1692,6 @@ class TableState implements Serializable {
     player.sendMessage('room/refresh', {ok: true, data: await this.restoreMessageForPlayer(player)})
   }
 
-  async onRefreshQuiet(playerMsgDispatcher, index) {
-    const player = this.players[index]
-    const reconnect = await this.generateReconnectMsg(index)
-    const rejoin = await this.room.joinMessageFor(playerMsgDispatcher)
-
-    player.sendMessage('game/reconnect', reconnect)
-    player.sendMessage('room/rejoin', rejoin)
-  }
-
   async generateReconnectMsg(index) {
     const player = this.players[index]
     let roomRubyReward = 0;
