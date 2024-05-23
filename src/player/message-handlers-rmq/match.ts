@@ -12,13 +12,12 @@ export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
 }
 
-const allGameName = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj]
+const allGameName = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj, GameType.xmmj]
 
 export function createHandler(redisClient: AsyncRedisClient) {
   return {
     'room/reconnect': async (player, message) => {
       const room = await service.roomRegister.getDisconnectedRoom(player.model._id.toString(), message.gameType);
-      // console.warn("roomId %s gameType %s", room, message.gameType)
       if (room) {
         player.currentRoom = room
         player.setGameName(message.gameType)
@@ -48,15 +47,14 @@ export function createHandler(redisClient: AsyncRedisClient) {
       await player.connectToBackend(gameType);
 
       player.model.disconnectedRoom = false
-      const allGameTypes = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj];
-      for (let i = 0; i < allGameTypes.length; i++) {
+      for (let i = 0; i < allGameName.length; i++) {
         // 下发掉线子游戏
-        const room = await service.roomRegister.getDisconnectRoomByPlayerId(player.model._id.toString(), allGameTypes[i]);
+        const room = await service.roomRegister.getDisconnectRoomByPlayerId(player.model._id.toString(), allGameName[i]);
         if (room) {
           // 掉线的子游戏类型
           player.model.disconnectedRoom = true;
           player.model.disconnectedRoomId = room;
-          player.model.continueGameType = allGameTypes[i];
+          player.model.continueGameType = allGameName[i];
         }
       }
 
