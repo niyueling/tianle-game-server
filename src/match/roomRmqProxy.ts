@@ -357,7 +357,7 @@ export default class RoomProxy {
 
         this.room.on('leave', async ({_id}) => {
           try {
-            await service.roomRegister.removePlayerFromGameRoom(_id, gameType)
+            await service.roomRegister.removePlayerFromGameRoom(_id, gameType, room._id)
           } catch (e) {
             logger.error('removePlayerFromGameRoom', _id, e)
           }
@@ -372,7 +372,7 @@ export default class RoomProxy {
           }
 
           logger.info('room', room.playersOrder.filter(p => p).forEach(({_id}) => {
-            service.roomRegister.removePlayerFromGameRoom(_id, gameType)
+            service.roomRegister.removePlayerFromGameRoom(_id, gameType, room._id)
           }))
 
           clearInterval(this.spinner)
