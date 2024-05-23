@@ -162,7 +162,7 @@ export default class RoomProxy {
           if (room.canJoin(newPlayer)) {
             newPlayer.sendMessage('room/join-success', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}});
             await room.join(newPlayer)
-            await service.roomRegister.putPlayerInGameRoom(messageBody.from, gameName, room._id)
+            await service.roomRegister.putPlayerInGameRoom(messageBody.from, gameName, room._id, room.gameRule.playerCount)
           } else {
             newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFull})
             return
