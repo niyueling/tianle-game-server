@@ -215,7 +215,7 @@ export class BackendProcess {
       await saveRoomDetail(room._id, JSON.stringify(room.toJSON()))
       await service.roomRegister.saveNewRoomRecord(room, messageBody.payload.gameType, playerModel, rule);
       await this.redisClient.saddAsync('room', room._id)
-      await service.roomRegister.putPlayerInGameRoom(messageBody.from, this.gameName, room._id)
+      await service.roomRegister.putPlayerInGameRoom(messageBody.from, this.gameName, room._id, room.rule.ro.playerCount)
       await this.redisClient.saddAsync(`cluster-${this.cluster}`, room._id)
       await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()))
     } catch (e) {
@@ -286,7 +286,7 @@ export class BackendProcess {
       await saveRoomDetail(room._id, JSON.stringify(room.toJSON()))
       await service.roomRegister.saveNewRoomRecord(room, messageBody.payload.gameType, playerModel, rule);
       await this.redisClient.saddAsync('room', room._id)
-      await service.roomRegister.putPlayerInGameRoom(messageBody.from, this.gameName, room._id)
+      await service.roomRegister.putPlayerInGameRoom(messageBody.from, this.gameName, room._id, room.rule.ro.playerCount)
       await this.redisClient.saddAsync(`cluster-${this.cluster}`, room._id)
       await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()))
     } catch (e) {
