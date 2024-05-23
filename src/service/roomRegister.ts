@@ -25,6 +25,7 @@ export default class RoomRegister extends BaseService {
     const joinCount = !playerCount ? 1 : Number(playerCount) + 1;
     await this.redis.hsetAsync(`room:join:${roomNumber}`, `joinCount`, String(joinCount));
     if (!capacity) {
+      console.warn("playerCapacity-%s", playerCapacity);
       await this.redis.hsetAsync(`room:join:${roomNumber}`, `capacity`, String(playerCapacity));
     }
     return this.redis.hsetAsync(`u:${player}`, game, roomNumber)
