@@ -16,22 +16,25 @@ export default class RoomRegister extends BaseService {
     this.redis = createClient();
   }
 
-  async putPlayerInGameRoom(player: string, game: GameType | string, roomNumber: string) {
+  async putPlayerInGameRoom(player: string, game: GameType | string, roomNumber: string, playerCapacity: number) {
     await this.recordJoinRoom(player, parseInt(roomNumber, 10), game)
 
     // 存储房间已加入人数
-    let playerCount = await this.redis.getAsync(`${roomNumber}:joinCount`);
+    let playerCount = await this.redis.hgetAsync(`room:join:${roomNumber}`, `joinCount`);
+    let capacity = await this.redis.hgetAsync(`room:join:${roomNumber}`, `capacity`);
     const joinCount = !playerCount ? 1 : Number(playerCount) + 1;
-    await this.redis.setAsync(`${roomNumber}:joinCount`, String(joinCount));
-
+    await this.redis.hsetAsync(`room:join:${roomNumber}`, `joinCount`, String(joinCount));
+    if (!capacity) {
+      await this.redis.hsetAsync(`room:join:${roomNumber}`, `capacity`, String(playerCapacity));
+    }
     return this.redis.hsetAsync(`u:${player}`, game, roomNumber)
   }
 
   async removePlayerFromGameRoom(player: string, game: GameType | string, roomNumber) {
     await this.deleteJoinRoom(player, game);
-    let playerCount = await this.redis.getAsync(`${roomNumber}:joinCount`);
+    let playerCount = await this.redis.hgetAsync(`room:join:${roomNumber}`, `joinCount`);
     const joinCount = Number(playerCount) - 1;
-    await this.redis.setAsync(`${roomNumber}:joinCount`, String(joinCount));
+    await this.redis.hsetAsync(`room:join:${roomNumber}`, `joinCount`, String(joinCount));
 
     return this.redis.hdelAsync(`u:${player}`, game)
   }
