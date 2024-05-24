@@ -568,8 +568,8 @@ class Room extends RoomBase {
       }
     }
 
-    const i = this.snapshot.findIndex(p => p._id === reconnectPlayer._id)
-    await this.broadcastRejoin(reconnectPlayer)
+    const i = this.snapshot.findIndex(p => p._id.toString() === reconnectPlayer._id.toString())
+    await this.broadcastRejoin(reconnectPlayer);
 
     const reconnectFunc = async () => {
       this.emit('reconnect', reconnectPlayer, i);
@@ -584,7 +584,9 @@ class Room extends RoomBase {
   }
 
   async broadcastRejoin(reconnectPlayer) {
-    this.broadcast('room/rejoin', {ok: true, data: await this.joinMessageFor(reconnectPlayer)})
+    const joinInfo = await this.joinMessageFor(reconnectPlayer);
+    console.warn("joinInfo-%s", JSON.stringify(joinInfo));
+    this.broadcast('room/rejoin', {ok: true, data: joinInfo})
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
