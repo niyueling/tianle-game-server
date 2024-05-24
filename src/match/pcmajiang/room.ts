@@ -404,7 +404,8 @@ class Room extends RoomBase {
 
     const playerArray = states.map(state => {
       return {
-        name: state.model.name,
+        nickname: state.model.nickname,
+        avatar: state.model.avatar,
         score: state.score,
       }
     })
@@ -585,7 +586,6 @@ class Room extends RoomBase {
 
   async broadcastRejoin(reconnectPlayer) {
     const joinInfo = await this.joinMessageFor(reconnectPlayer);
-    console.warn("joinInfo-%s", JSON.stringify(joinInfo));
     this.broadcast('room/rejoin', {ok: true, data: joinInfo})
   }
 
