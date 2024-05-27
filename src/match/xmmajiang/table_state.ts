@@ -1,6 +1,7 @@
 /**
  * Created by Color on 2016/7/6.
  */
+// @ts-ignore
 import {pick} from 'lodash'
 import * as logger from "winston";
 import * as winston from "winston";
@@ -351,6 +352,9 @@ class TableState implements Serializable {
   @autoSerialize
   lastTakeCard: number
 
+  // 测试工具自定义摸牌
+  testMoCards: any[] = [];
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -368,12 +372,13 @@ class TableState implements Serializable {
       this.listenPlayer(p)
     }
     this.turn = 1
-    this.state = stateWaitAction
+    this.state = stateWaitDa
     this.lastDa = null
     this.logger = winston;
 
     this.setGameRecorder(new GameRecorder(this))
     this.stateData = {}
+    this.testMoCards = [];
   }
 
   toJSON() {
@@ -427,29 +432,50 @@ class TableState implements Serializable {
     this.remainCards = this.cards.length
   }
 
-  async consumeCard(playerState: PlayerState, notifyFlower = true) {
+  async consumeCard(playerState: PlayerState, notifyFlower = true, reset = false, isHelp = true) {
     const player = playerState
-    const cardIndex = --this.remainCards
+    let cardIndex = --this.remainCards
     console.log('remain cards =====', this.remainCards);
+
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
-    const card = this.cards[cardIndex]
+
+    // 如果是花牌重新摸牌，则不能摸到花牌
+    cardIndex = this.cards.findIndex(c => !this.isFlower(c));
+
+    // 客户端指定摸牌
+    if (this.testMoCards.length > 0 && isHelp) {
+      const moIndex = this.cards.findIndex(card => card === this.testMoCards[0]);
+      if (moIndex !== -1) {
+        cardIndex = moIndex;
+        this.testMoCards.splice(0, 1);
+      }
+    }
+
+    // 牌堆移除这张牌
+    const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
+
+    // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
       // 拿到花以后,重新发牌
-      this.room.broadcast('game/takeFlower', {card, seatIndex: player.seatIndex})
+      this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: player.seatIndex}})
       if (player) {
         player.cards[card]++;
         // 花牌记录
         await this.room.auditManager.playerTakeCard(player.model._id, card);
       }
-      console.log('get flower card');
-      return this.consumeCard(player, notifyFlower);
+
+      const getFlowerCard = async() => {
+        console.log('get flower card');
+        return this.consumeCard(player, notifyFlower, reset);
+      }
+
+      setTimeout(getFlowerCard, 500);
     }
-    // tslint:disable-next-line:max-line-length
-    // logger.info(`consumeCard player ${playerState && playerState.model.shortId}: ${card}, cardIndex ${cardIndex}, cardList: ${JSON.stringify(this.cards)}`);
+
     return card
   }
 
@@ -458,47 +484,66 @@ class TableState implements Serializable {
     return cardValue >= Enums.spring && cardValue <= Enums.ju
   }
 
-  async take16Cards(player: PlayerState) {
-    const cards = []
+  async take16Cards(player: PlayerState, clist) {
+    const cards = this.rule.test ? clist.slice() : [];
+    const cardCount = cards.length;
     const flowerList = [];
     let card;
-    for (let i = 0; i < 16; i++) {
-      card = await this.consumeCard(player, false);
+    for (let i = 0; i < 16 - cardCount; i++) {
+      card = await this.consumeCard(player, false, false, false);
       if (this.isFlower(card)) {
         flowerList.push(card);
-        // 重新发
-        i--;
-      } else {
-        cards.push(card)
       }
+
+      cards.push(card)
     }
     return {cards, flowerList}
   }
 
-  async start() {
-    await this.fapai();
+  async takeFlowerResetCards(player: PlayerState) {
+    const cards = [];
+    for (let i = 0; i < player.flowerList.length; i++) {
+      cards.push(await this.consumeCard(player, false, true, false));
+    }
+    return cards;
   }
 
-  async fapai() {
+  async start(payload) {
+    await this.fapai(payload);
+  }
+
+  async fapai(payload) {
     this.shuffle()
-    this.sleepTime = 0
+    this.sleepTime = 1500
     // 金牌
     this.caishen = this.randGoldCard();
-    await this.room.auditManager.start(this.room.game.juIndex, this.caishen)
-    // 16张
+    await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
+    // 总牌数扣掉每人16张
     let restCards = this.remainCards - (this.rule.playerCount * 16);
     const needShuffle = this.room.shuffleData.length > 0;
     let cardList = [];
-    if (config.xmmj.specialCard) {
-      cardList = await this.specialCard();
-    } else {
-      for (let i = 0, iMax = this.players.length; i < iMax; i++) {
-        const p = this.players[i]
-        const result = await this.take16Cards(p)
-        this.logger.info('fapai player-%s :%s', i, result.cards)
-        cardList.push(result);
-        // 再扣掉花牌
-        restCards -= result.flowerList.length;
+
+    // 测试工具自定义摸9张牌
+    if (this.rule.test && payload.moCards && payload.moCards.length > 0) {
+      this.testMoCards = payload.moCards;
+    }
+
+    for (let i = 0, iMax = this.players.length; i < iMax; i++) {
+      const p = this.players[i]
+      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : []);
+      this.logger.info('fapai player-%s :%s', i, result.cards);
+      p.flowerList = result.flowerList;
+      cardList.push(result);
+
+      // 如果客户端指定发牌
+      if (this.rule.test && payload.cards && payload.cards[i].length > 0) {
+        for (let j = 0; j < payload.cards[i].length; j++) {
+          const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
+          this.remainCards--;
+          const card = this.cards[cardIndex];
+          this.cards.splice(cardIndex, 1);
+          this.lastTakeCard = card;
+        }
       }
     }
     const allFlowerList = [];
@@ -507,60 +552,40 @@ class TableState implements Serializable {
       this.players[i].onShuffle(restCards, this.caishen, this.restJushu, cardList[i].cards, i, this.room.game.juIndex,
         needShuffle, cardList[i].flowerList, allFlowerList)
       // 记录发牌
-      await this.room.auditManager.playerTakeCardList(this.players[i].model._id,
-        [...cardList[i].cards, ...cardList[i].flowerList]);
+      await this.room.auditManager.playerTakeCardList(this.players[i].model._id, cardList[i].cards);
     }
+
+    // 延迟0.5秒，花牌重新摸牌
+    const flowerResetCard = async() => {
+      for (let i = 0; i < this.players.length; i++) {
+        const p = this.players[i];
+        if (p.flowerList.length) {
+          const result = await this.takeFlowerResetCards(p);
+          restCards -= p.flowerList.length;
+
+          p.sendMessage('game/flowerResetCard', {ok: true, data: {restCards, flowerList: p.flowerList, index: i, cards: result}})
+        }
+      }
+    }
+
+    setTimeout(flowerResetCard, 500);
+
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
       await this.room.payRubyForStart();
     }
 
     const nextDo = async () => {
-      const nextCard = await this.consumeCard(this.zhuang)
-      const msg = await this.zhuang.takeCard(this.turn, nextCard)
-      // this.logger.info('takeCard player-%s  take %s', this.zhuang._id, nextCard)
+      const nextCard = await this.consumeCard(this.zhuang);
+      const msg = await this.zhuang.takeCard(this.turn, nextCard);
 
       const index = 0
-      this.room.broadcast('game/oppoTakeCard', {index}, this.zhuang.msgDispatcher)
-      this.state = stateWaitDa
-      this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard}
+      this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
+      this.state = stateWaitDa;
+      this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
     }
 
-    if (this.sleepTime === 0) {
-      await nextDo()
-    } else {
-      setTimeout(nextDo, this.sleepTime)
-    }
-  }
-
-  // 特殊牌
-  async specialCard() {
-    // 胡牌
-    // 天胡测试
-    // const cardList = makeCards.makeTianHu(this.players.length, this.caishen)
-    // // 地胡测试
-    // const cardList = makeCards.makeDiHu(this.players.length, this.caishen, 1)
-    // 3金倒测试
-    // const cardList = makeCards.make3Jin(this.players.length, this.caishen, 1)
-    // // 游金
-    // const cardList = makeCards.makeYouJin(this.players.length, this.caishen)
-    // <!-- 3 游金
-    const {cardList, cardMapList} = makeCards.make3YouJin(this.cards, this.players.length, this.caishen)
-    this.cards = cardMapList;
-    // 3 游金 --!>
-    let index;
-    const cardAndFlower = [];
-    for (const list of cardList) {
-      cardAndFlower.push({cards: list, flowerList: []})
-      for (const card of list) {
-        index = this.cards.indexOf(card);
-        // 删除原来的牌
-        this.cards.splice(index, 1);
-        this.remainCards--;
-        this.lastTakeCard = card;
-      }
-    }
-    return cardAndFlower;
+    setTimeout(nextDo, this.sleepTime)
   }
 
   atIndex(player: PlayerState) {

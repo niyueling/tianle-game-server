@@ -2,6 +2,7 @@
  * Created by Color on 2016/7/7.
  */
 import * as EventEmitter from 'events'
+// @ts-ignore
 import {pick, random} from 'lodash'
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serializeHelp} from "../serializeDecorator"
 import basicAi, {playerAi} from './ai'
@@ -211,6 +212,9 @@ class PlayerState implements Serializable {
   // 金豆奖励
   rubyReward: number = 0
 
+  // 初始发牌摸到的花牌
+  flowerList: any[] = [];
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -246,6 +250,7 @@ class PlayerState implements Serializable {
     this.lastOptions = {}
     this.recorder = new DummyRecorder()
     this.alreadyTakenCard = false
+    this.flowerList = [];
   }
 
   get youJinTimes() {
@@ -448,7 +453,7 @@ class PlayerState implements Serializable {
       this.freeCard = card
     }
 
-    const ret = this.sendMessage('game/TakeCard', msg)
+    const ret = this.sendMessage('game/TakeCard', {ok: true, data: msg})
     this.emitter.emit('waitForDa', msg)
 
     this.alreadyTakenCard = true
@@ -604,18 +609,14 @@ class PlayerState implements Serializable {
     cards.forEach(x => {
       this.cards[x]++
     });
-    // 记录花牌
-    flowerList.forEach(x => {
-      this.cards[x]++;
-    })
     this.caiShen = caiShen
     this.cards['caiShen'] = caiShen
     this.seatIndex = seatIndex
     this.recorder.recordUserEvent(this, 'shuffle')
-    this.sendMessage('game/Shuffle', {
-      juShu, cards, caiShen, remainCards, juIndex,
-      needShuffle: !!needShuffle, flowerList, allFlowerList
-    })
+    this.sendMessage('game/Shuffle', {ok: true, data: {
+        juShu, cards, caiShen, remainCards, juIndex,
+        needShuffle: !!needShuffle, flowerList, allFlowerList
+      }})
   }
 
   @triggerAfterAction

@@ -39,6 +39,10 @@ class Rule {
     return this.ro.ruleType || Enums.ruleType.lobby4Player;
   }
 
+  get test() {
+    return this.ro.test;
+  }
+
   get juShu() {
     return this.ro.juShu
   }
