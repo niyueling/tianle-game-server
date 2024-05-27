@@ -38,6 +38,8 @@ class CardManager {
       // 不需要大牌
       return service.utils.shuffleArray(allCards.filter(value => !(value >= Enums.dong && value <= Enums.bai)))
     }
+
+    console.warn(allCards);
     return service.utils.shuffleArray(allCards.slice());
   }
 
