@@ -433,14 +433,16 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState, notifyFlower = true, reset = false, isHelp = true) {
     const player = playerState
     let cardIndex = --this.remainCards
-    console.log('remain cards =====', this.remainCards);
+    // console.log('remain cards =====', this.remainCards);
 
     if (cardIndex === 0 && player) {
       player.takeLastCard = true
     }
 
     // 如果是花牌重新摸牌，则不能摸到花牌
-    cardIndex = this.cards.findIndex(c => !this.isFlower(c));
+    if (reset) {
+      cardIndex = this.cards.findIndex(c => !this.isFlower(c));
+    }
 
     // 客户端指定摸牌
     if (this.testMoCards.length > 0 && isHelp) {

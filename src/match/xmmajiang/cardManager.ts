@@ -39,7 +39,6 @@ class CardManager {
       return service.utils.shuffleArray(allCards.filter(value => !(value >= Enums.dong && value <= Enums.bai)))
     }
 
-    console.warn(JSON.stringify(allCards));
     return service.utils.shuffleArray(allCards.slice());
   }
 
