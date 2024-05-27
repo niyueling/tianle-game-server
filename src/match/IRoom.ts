@@ -1,4 +1,4 @@
-import {ConsumeLogType, playerAttributes, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, GameType, playerAttributes, TianleErrorCode} from "@fm/common/constants";
 import * as EventEmitter from 'events'
 import * as lodash from 'lodash'
 import * as logger from 'winston'
@@ -373,12 +373,16 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async broadcastStartGame(payload) {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
 
-    this.broadcast('room/startGame', {ok: true, data: {
-        juIndex: this.game.juIndex,
-        playersPosition: this.players.filter(x => x).map(x => x.model),
-        // 获取底分
-        diFen: conf ? conf.Ante : 1,
-      }})
+    const startGame = async() => {
+      this.broadcast('room/startGame', {ok: true, data: {
+          juIndex: this.game.juIndex,
+          playersPosition: this.players.filter(x => x).map(x => x.model),
+          // 获取底分
+          diFen: conf ? conf.Ante : 1,
+        }})
+    }
+
+    setTimeout(startGame, this.gameRule.type === GameType.xmmj ? 2000 : 500)
   }
 
   async join(newJoinPlayer) {
