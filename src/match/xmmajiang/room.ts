@@ -4,6 +4,7 @@
 import {GameType} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
+// @ts-ignore
 import {pick} from 'lodash'
 import * as mongoose from 'mongoose'
 import * as logger from 'winston'
@@ -575,6 +576,7 @@ class Room extends RoomBase {
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
     return {
+      _id: this._id,
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),
@@ -594,13 +596,13 @@ class Room extends RoomBase {
   }
 
   async announcePlayerJoin(newJoinPlayer) {
-    this.broadcast('room/join', await this.joinMessageFor(newJoinPlayer))
+    this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
       .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
-      newJoinPlayer.sendMessage('room/join', await this.joinMessageFor(alreadyInRoomPlayer));
+      newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
 
