@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {GameType} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
@@ -120,7 +120,7 @@ class Room extends RoomBase {
   clubOwner: any
 
   @autoSerialize
-  dissolveReqInfo: Array<{ name: string, _id: string, type: string }> = []
+  dissolveReqInfo: Array<{ name: string, _id: string, type: string, avatar: string }> = []
 
   @serialize
   waitNextGamePlayers: any[] = []
@@ -272,7 +272,7 @@ class Room extends RoomBase {
     this.roomState = ''
     this.players.forEach(player => {
       if (player) {
-        player.sendMessage('room/dissolve', {})
+        player.sendMessage('room/dissolve', {ok: true, data: {}})
         player.room = null
       }
     })
@@ -420,7 +420,7 @@ class Room extends RoomBase {
       juShu: this.game.juIndex,
       players: players.map(p => p.model._id),
       playersInfo: players.map(player => (
-        {model: pick(player.model, ['name', 'headImgUrl', 'sex', 'gold', 'shortId'])}
+        {model: pick(player.model, ['nickname', 'avatar', 'diamond', 'gold', 'shortId'])}
       )),
       record: playerArray,
       game: {
@@ -441,7 +441,7 @@ class Room extends RoomBase {
 
       const positions = this.players.map(p => p && p.model)
 
-      this.broadcast('room/playersPosition', {positions});
+      this.broadcast('room/playersPosition', {ok: true, data: {positions}});
     }
   }
 
@@ -577,7 +577,7 @@ class Room extends RoomBase {
   }
 
   async broadcastRejoin(reconnectPlayer) {
-    this.broadcast('room/rejoin', await this.joinMessageFor(reconnectPlayer))
+    this.broadcast('room/rejoin', {ok: true, data: await this.joinMessageFor(reconnectPlayer)})
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
@@ -680,36 +680,36 @@ class Room extends RoomBase {
 
   async nextGame(thePlayer) {
     if (this.game.juShu <= 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '牌局已经结束.'})
-      return
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
+      return false;
     }
 
     if (this.indexOf(thePlayer) < 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '您已经不属于这个房间.'})
-      return false
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
+      return false;
     }
 
-    await this.announcePlayerJoin(thePlayer)
-    return true
+    await this.announcePlayerJoin(thePlayer);
+    return true;
   }
 
   async dissolve(roomCreator) {
     if (roomCreator._id !== this.ownerId) {
-      roomCreator.sendMessage('room/dissolveReply', {errorCode: 1})
+      roomCreator.sendMessage('room/dissolve', {ok: false, data: {}})
       return false
     }
     // await this.refundClubOwner();
     if (this.gameState !== null) {
-      // player.sendMessage('room/dissolveReply', {errorCode: 2});
+      // player.sendMessage('room/dissolve', {errorCode: 2});
       // return false;
       this.gameState.dissolve()
     }
     // this.recordScore()
-    roomCreator.sendMessage('room/dissolveReply', {errorCode: 0})
+    roomCreator.sendMessage('room/dissolve', {ok: true, data: {}})
     roomCreator.room = null
     this.players.forEach(player => {
       if (player && player !== roomCreator) {
-        player.sendMessage('room/dissolve', {})
+        player.sendMessage('room/dissolve', {ok: true, data: {}})
         player.room = null
       }
     })
@@ -731,7 +731,7 @@ class Room extends RoomBase {
     this.players
       .filter(p => p)
       .forEach(player => {
-        player.sendMessage('room/dissolve', allOverMessage)
+        player.sendMessage('room/dissolve', {ok: true, data: allOverMessage})
         player.room = null
       })
     // await this.refundClubOwner();
@@ -755,7 +755,7 @@ class Room extends RoomBase {
       this.updateDisconnectPlayerDissolveInfoAndBroadcast(player);
     }
 
-    this.broadcast('room/playerDisconnect', {index: this.players.indexOf(player)}, player.msgDispatcher)
+    this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
     this.removePlayer(player)
     this.disconnected.push([player._id, index])
     this.emit('disconnect', p._id)
@@ -772,19 +772,25 @@ class Room extends RoomBase {
 
   leave(player) {
     if (this.gameState || !player) {
+      console.warn("player is disconnect in room %s", this._id)
       // 游戏已开始 or 玩家不存在
       return false
     }
     const p = player
     if (p.room !== this) {
+      console.warn("player is not in this room %s", this._id)
       return false
     }
 
     if (this.indexOf(player) < 0) {
+      console.warn("player is already leave room %s", this._id)
       return true
     }
 
-    if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
+    if (this.game.juIndex > 0 && !this.game.isAllOver()) {
+      console.warn("room %s is not finish", this._id)
+      return false
+    }
 
     p.removeListener('disconnect', this.disconnectCallback)
     this.emit('leave', {_id: player._id})
@@ -792,7 +798,7 @@ class Room extends RoomBase {
 
     for (let i = 0; i < this.playersOrder.length; i++) {
       const po = this.playersOrder[i]
-      if (po && po.model._id === player.model._id) {
+      if (po && po.model._id.toString() === player.model._id.toString()) {
         this.playersOrder[i] = null
       }
     }
@@ -803,9 +809,9 @@ class Room extends RoomBase {
     //     this.players[i] = null
     //   }
     // }
-    this.broadcast('room/leave', {_id: p._id})
-    this.removeReadyPlayer(p._id)
-    this.clearScore(player._id)
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id, roomId: this._id}})
+    this.removeReadyPlayer(p._id.toString())
+    this.clearScore(player._id.toString())
 
     return true
   }
@@ -865,11 +871,11 @@ class Room extends RoomBase {
 
   onRequestDissolve(player) {
     if (Date.now() - this.dissolveTime < 60 * 1000) {
-      player.sendMessage('game/showInfo', {ok: false, info: '1分钟时间内不能再次发起解散'})
+      player.sendMessage('game/showInfo', {ok: false, info: TianleErrorCode.dissolveInsufficient})
       return
     }
     const dissolveInfo = this.getDissolvePlayerInfo(player);
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime}});
     if (this.canDissolve()) {
       this.forceDissolve()
       return
@@ -891,12 +897,12 @@ class Room extends RoomBase {
     }
 
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === player.model._id;
+      return x._id.toString() === player.model._id.toString();
     });
     if (item) {
       item.type = 'agree';
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
 
     if (this.canDissolve()) {
       this.forceDissolve()
@@ -919,7 +925,7 @@ class Room extends RoomBase {
       this.roomState = ''
       this.dissolveTimeout = null
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
     return true;
   }
 
@@ -928,38 +934,22 @@ class Room extends RoomBase {
     this.dissolveTime = Date.now();
     this.dissolveReqInfo.push({
       type: 'originator',
-      name: player.model.name,
+      name: player.model.nickname,
+      avatar: player.model.avatar,
       _id: player.model._id
     });
     for (let i = 0; i < this.players.length; i++) {
       const pp = this.players[i];
-      if (pp && pp.isRobot()) {
-        this.dissolveReqInfo.push({
-          type: 'agree',
-          name: pp.model.name,
-          _id: pp.model._id
-        });
-      } else if (pp && pp !== player) {
+      if (pp && pp._id.toString() !== player._id.toString()) {
         this.dissolveReqInfo.push({
           type: 'waitConfirm',
-          name: pp.model.name,
+          name: pp.model.nickname,
+          avatar: pp.model.avatar,
           _id: pp.model._id
         });
       }
     }
-    // for (let i = 0; i < this.disconnected.length; i++) {
-    //   const pp = this.disconnected[i];
-    //   this.snapshot.forEach(p => {
-    //       if (pp && p.model._id === pp[0]) {
-    //         this.dissolveReqInfo.push({
-    //           type: 'offline',
-    //           name: p.model.name,
-    //           _id: p.model._id
-    //         });
-    //       }
-    //     }
-    //   )
-    // }
+
     return this.dissolveReqInfo;
   }
 
@@ -974,12 +964,12 @@ class Room extends RoomBase {
         item.type = 'waitConfirm';
       }
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}, player);
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}}, player);
   }
 
   updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer) {
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === reconnectPlayer.model._id
+      return x._id.toString() === reconnectPlayer._id.toString()
     })
     if (item) {
       if (item.type === 'agree_offline') {
@@ -988,13 +978,12 @@ class Room extends RoomBase {
         item.type = 'waitConfirm'
       }
     }
-    this.broadcast('room/dissolveReq',
-      {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === player.model._id
+      return x._id.toString() === player.model._id.toString()
     })
     if (item) {
       if (item.type === 'agree') {
@@ -1003,7 +992,7 @@ class Room extends RoomBase {
         item.type = 'offline'
       }
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   changeZhuang() {
@@ -1040,7 +1029,7 @@ class Room extends RoomBase {
 
     if (this.isRoomAllOver()) {
       const message = this.allOverMessage()
-      this.broadcast('room/allOver', message)
+      this.broadcast('room/allOver', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
       this.emit('empty', this.disconnected)
     }
@@ -1048,35 +1037,38 @@ class Room extends RoomBase {
 
   allOverMessage(): any {
 
-    const message = {players: {}, roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode}
+    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode}
     this.snapshot
       .filter(p => p)
       .forEach(player => {
-        message.players[player.model._id] = {
-          userName: player.model.name,
-          headImgUrl: player.model.headImgUrl
-        }
+        message.players.push({
+          _id: player._id.toString(),
+          userName: player.model.nickname,
+          avatar: player.model.avatar,
+          shortId: player.model.shortId
+        });
       })
     Object.keys(this.counterMap).forEach(x => {
       this.counterMap[x].forEach(p => {
-        if (message.players[p]) {
-          // 玩家未离开房间
-          message.players[p][x] = (message.players[p][x] || 0) + 1
+        const index = message.players.findIndex(p1 => p1._id === p);
+        if (index !== -1) {
+          message.players[index][x] = (message.players[index][x] || 0) + 1;
         }
       })
     })
     Object.keys(this.scoreMap).forEach(playerId => {
-      if (message.players[playerId]) {
-        (message.players[playerId].score = this.playerGainRecord[playerId])
+      const index = message.players.findIndex(p1 => p1._id === playerId);
+      if (index !== -1) {
+        message.players[index].score = this.playerGainRecord[playerId];
       }
     })
 
-    const creator = message.players[this.creator.model._id]
-    if (creator) {
-      creator['isCreator'] = true
+    const index = message.players.findIndex(p1 => p1._id === this.creator.model._id.toString());
+    if (index !== -1) {
+      message.players[index].isCreator = true;
     }
 
-    return message
+    return message;
   }
 
   async chargeCreator() {
