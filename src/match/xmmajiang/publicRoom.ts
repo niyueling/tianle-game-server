@@ -1,6 +1,7 @@
 import {GameType} from "@fm/common/constants";
 import {Errors, getCodeByError} from "@fm/common/errors";
 import {Channel} from "amqplib";
+// @ts-ignore
 import {pick} from "lodash";
 import {service} from "../../service/importService";
 import {getPlayerRmqProxy} from "../PlayerRmqProxy";
@@ -76,6 +77,12 @@ export class PublicRoom extends Room {
     this.clearScore(player.model._id)
 
     return true
+  }
+
+  async shuffleDataApply(payload) {
+    if (this.allReady && !this.gameState) {
+      return await this.startGame(payload);
+    }
   }
 
   // 更新 ruby

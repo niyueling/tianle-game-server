@@ -361,6 +361,12 @@ class Room extends RoomBase {
     }
   }
 
+  async shuffleDataApply(payload) {
+    if (this.allReady && !this.gameState) {
+      return await this.startGame(payload);
+    }
+  }
+
   isEmpty() {
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
