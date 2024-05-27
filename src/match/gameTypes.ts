@@ -1,1 +1,1 @@
-export type GameTypes = 'majiang' | 'xueliu' | 'guobiao' | 'pcmj' | 'xmmj';
+export type GameTypes = 'majiang' | 'xueliu' | 'guobiao' | 'pcmj' | 'xmmajiang';
