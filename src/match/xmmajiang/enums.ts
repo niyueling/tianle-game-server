@@ -67,17 +67,17 @@ const enums = {
   maxValidCard: 38,
   // 花牌
   // 春夏秋冬
-  spring: 41,
-  summer: 42,
-  autumn: 43,
-  winter: 44,
+  spring: 53,
+  summer: 54,
+  autumn: 55,
+  winter: 56,
   // 梅兰竹菊
-  mei: 45,
-  lan: 46,
-  zhu: 47,
-  ju: 48,
+  mei: 57,
+  lan: 58,
+  zhu: 59,
+  ju: 60,
   // 最后一张牌
-  finalCard: 49,
+  finalCard: 61,
 
   chi: 'chi',
   peng: 'peng',
