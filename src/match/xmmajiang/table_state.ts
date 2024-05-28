@@ -825,8 +825,9 @@ class TableState implements Serializable {
           const from = this.atIndex(this.lastDa)
           const me = this.atIndex(player)
           player.sendMessage('game/pengReply', {ok: true, data: {
-              errorCode: 0,
               turn: this.turn,
+              card,
+              from,
               gang: gangSelection.length > 0,
               gangSelection
             }})
