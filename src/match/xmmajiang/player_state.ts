@@ -391,7 +391,7 @@ class PlayerState implements Serializable {
     // }
 
     this.lastCardToken = card
-    if (this.room.gameState.isFlower(card)) {
+    if (!this.room.gameState.isFlower(card)) {
       this.cards[card]++
     }
 
@@ -597,7 +597,7 @@ class PlayerState implements Serializable {
   onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList) {
 
     cards.forEach(x => {
-      if (this.room.gameState.isFlower(x)) {
+      if (!this.room.gameState.isFlower(x)) {
         this.cards[x]++;
       }
     });
