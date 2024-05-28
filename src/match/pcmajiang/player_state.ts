@@ -312,7 +312,7 @@ class PlayerState implements Serializable {
     if (huResult.hu) {
       msg.hu = true
     }
-    return this.sendMessage('game/takeHaiDiCard', msg)
+    return this.sendMessage('game/takeHaiDiCard', {ok: true, data: msg})
   }
 
   // 杠完取牌

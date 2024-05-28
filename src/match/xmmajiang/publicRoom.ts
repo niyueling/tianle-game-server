@@ -1,4 +1,4 @@
-import {GameType} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 import {Errors, getCodeByError} from "@fm/common/errors";
 import {Channel} from "amqplib";
 // @ts-ignore
@@ -124,7 +124,7 @@ export class PublicRoom extends Room {
       return;
     }
     findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
-    findPlayer.sendMessage('resource/update', pick(findPlayer.model, ['gold', 'diamond', 'voucher']))
+    findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'voucher'])})
   }
 
   // 更新 player model
@@ -171,12 +171,12 @@ export class PublicRoom extends Room {
   // 检查房间是否升级
   async nextGame(thePlayer) {
     if (!this.robotManager && thePlayer) {
-      return thePlayer.sendMessage('room/join-fail', {reason: '牌局已经结束.'})
+      return thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
     }
     // 检查金豆
     const resp = await service.gameConfig.rubyRequired(thePlayer.model._id, this.gameRule.categoryId);
     if (resp.isNeedRuby) {
-      return thePlayer.sendMessage('room/join-fail', {reason: '请补充金豆', code: getCodeByError(Errors.rubyNotEnough)})
+      return thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.goldInsufficient})
     }
     return super.nextGame(thePlayer);
   }

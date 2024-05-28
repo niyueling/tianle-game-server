@@ -257,7 +257,7 @@ export class ActionResolver implements Serializable {
     this.actionsOptions.filter(ao => ao.state === 'waiting')
       .forEach(ao => {
         if (!notified[ao.who._id]) {
-          ao.who.sendMessage('game/actionClose', {})
+          ao.who.sendMessage('game/actionClose', {ok: true, data: {}})
           notified[ao.who._id] = true
         }
       })
@@ -412,10 +412,10 @@ class TableState implements Serializable {
       for (const name of stateDataArrayNames) {
         if (this.stateData[name]) {
           for (let j = 0; j < this.stateData[name].length; j++) {
-            if (this.stateData[name][j]._id === p._id) {
+            if (this.stateData[name][j]._id.toString() === p._id.toString()) {
               console.log(name, ` <= name ${p.model.name}, shortId  `, p.model.shortId)
             }
-            if (this.stateData[name][j]._id === p._id) {
+            if (this.stateData[name][j]._id.toString() === p._id.toString()) {
               this.stateData[name][j] = p
             }
           }
@@ -463,7 +463,7 @@ class TableState implements Serializable {
     // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
       // 拿到花以后,重新发牌
-      this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: player.seatIndex}})
+      this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: player.seatIndex, remainCards: this.remainCards}})
       if (player) {
         player.cards[card]++;
         // 花牌记录
@@ -471,7 +471,6 @@ class TableState implements Serializable {
       }
 
       const getFlowerCard = async() => {
-        console.log('get flower card');
         return this.consumeCard(player, notifyFlower, true);
       }
 
@@ -533,7 +532,7 @@ class TableState implements Serializable {
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i]
       const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : []);
-      this.logger.info('fapai player-%s :%s', i, result.cards);
+      // this.logger.info('fapai player-%s :%s', i, result.cards);
       p.flowerList = result.flowerList;
       cardList.push(result);
 
@@ -653,9 +652,6 @@ class TableState implements Serializable {
         bigCard = bigCardList[0];
       }
       player.deposit(async () => {
-        console.log("table_state.js 183 ", "执行自动打")
-        this.logger.info('takeCard player-%s  执行自动打', index)
-
         if (msg) {
           const takenCard = msg.card
           const todo = player.ai.onWaitForDa(msg, player.cards)
@@ -663,18 +659,15 @@ class TableState implements Serializable {
             case Enums.gang:
               const gangCard = msg.gang[0][0]
               player.emitter.emit(Enums.gangBySelf, this.turn, gangCard)
-              player.sendMessage('game/depositGangBySelf', {card: gangCard, turn: this.turn})
               break
             case Enums.hu:
               player.emitter.emit(Enums.hu, this.turn, takenCard)
-              player.sendMessage('game/depositZiMo', {card: takenCard, turn: this.turn})
               break
             default:
               const card = player.ai.getUseLessCard(player.cards, takenCard, bigCard)
               // TODO drop emit
               // player.emitter.emit(Enums.da, this.turn, card)
               await this.onPlayerDa(player, this.turn, card);
-              player.sendMessage('game/depositDa', {card, turn: this.turn})
               break
           }
         } else {
@@ -682,7 +675,6 @@ class TableState implements Serializable {
           // TODO drop emit
           // player.emitter.emit(Enums.da, this.turn, card)
           await this.onPlayerDa(player, this.turn, card);
-          player.sendMessage('game/depositDa', {card, turn: this.turn})
         }
       })
     })
@@ -690,31 +682,26 @@ class TableState implements Serializable {
       player.deposit(() => {
         const card = msg.card
         const todo = player.ai.onCanDoSomething(msg, player.cards, card)
-        console.log(`${player.model.shortId}选项:${todo}`)
+        console.log("msg-%s", JSON.stringify(msg))
         switch (todo) {
           case Enums.peng:
             player.emitter.emit(Enums.peng, this.turn, card)
-            player.sendMessage('game/depositPeng', {card, turn: this.turn})
             break
           case Enums.gang:
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card)
-            player.sendMessage('game/depositGangByOtherDa', {card, turn: this.turn})
             break
           case Enums.hu:
             player.emitter.emit(Enums.hu, this.turn, card)
-            player.sendMessage('game/depositHu', {card, turn: this.turn})
             break
-          // case Enums.chi:
-          //   player.emitter.emit(Enums.chi, this.turn, card, ...msg.chiCombol[0])
-          //   player.sendMessage('game/depositChi', {card, turn: this.turn, chiCombol: msg.chiCombol[0]})
-          //   break
+          case Enums.chi:
+            player.emitter.emit(Enums.chi, this.turn, card, ...msg.chiCombol[0])
+            player.sendMessage('game/depositChi', {card, turn: this.turn, chiCombol: msg.chiCombol[0]})
+            break
           default:
             player.emitter.emit(Enums.guo, this.turn, card)
             break
         }
       })
-
-      this.logger.info('waitForDoSomeThing player %s', index)
     })
     player.on('willTakeCard', async denyFunc => {
       if (this.remainCards < 0) {
@@ -722,7 +709,6 @@ class TableState implements Serializable {
         await this.gameOver()
         return
       }
-      this.logger.info('willTakeCard player-%s', index)
     })
 
     player.on("mayQiaoXiang", () => {
@@ -739,10 +725,6 @@ class TableState implements Serializable {
       player.stashPopTakeCard()
     })
 
-    // TODO drop emit
-    // player.on(Enums.da, async (turn, card) => {
-    //   await this.onPlayerDa(player, turn, card);
-    // })
     player.on(Enums.chi, async (turn, card, shunZiList) => {
       const cardList = shunZiList.filter(value => value !== card);
       const otherCard1 = cardList[0]
@@ -793,7 +775,7 @@ class TableState implements Serializable {
         }
       }, () => {
         player.emitter.emit(Enums.guo, turn, card);
-        player.sendMessage('ChiReply', {ok: false, info: TianleErrorCode.chiPriorityInsufficient});
+        player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiPriorityInsufficient});
       })
 
       await this.actionResolver.tryResolve()
@@ -972,34 +954,7 @@ class TableState implements Serializable {
         player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
       }
     })
-    player.on(Enums.buBySelf, async (turn, card) => {
-      if (this.turn !== turn) {
-        player.sendMessage('BuReply', {errorCode: 1})
-      } else if (this.state !== stateWaitDa) {
-        player.sendMessage('BuReply', {errorCode: 2})
-      } else if (this.stateData[Enums.da] !== player) {
-        console.error('bu gang fail', JSON.stringify(this.stateData))
-        player.sendMessage('BuReply', {errorCode: 3})
-      } else {
-        const broadcastMsg = {turn, card, index}
-        const ok = await player.buBySelf(card, broadcastMsg)
-        if (ok) {
-          player.sendMessage('BuReply', {errorCode: 0})
-          this.room.broadcast('game/oppoBuBySelf', broadcastMsg, player.msgDispatcher)
-          this.turn++
-          const nextCard = await this.consumeCard(player)
-          const msg = player.takeCard(this.turn, nextCard)
-          if (!msg) {
-            return
-          }
-          this.room.broadcast('game/oppoTakeCard', {index}, player.msgDispatcher)
-          this.state = stateWaitDa
-          this.stateData = {msg, da: player, card: nextCard}
-        } else {
-          player.sendMessage('BuReply', {errorCode: 4})
-        }
-      }
-    })
+
     player.on(Enums.hu, async (turn, card) => {
       const chengbaoStarted = this.remainCards <= 3
 
@@ -1126,28 +1081,28 @@ class TableState implements Serializable {
 
     player.on('lastDa', () => {
       this.players.forEach(x => {
-        if (x !== player) {
+        if (x._id.toString() !== player._id.toString()) {
           x.clearLastDaFlag()
         }
       })
     })
     player.on('recordZiMo', huResult => {
       this.players.forEach(x => {
-        if (x !== player) {
+        if (x._id.toString() !== player._id.toString()) {
           x.recordGameEvent(Enums.taJiaZiMo, huResult)
         }
       })
     })
     player.on('recordAnGang', card => {
       this.players.forEach(x => {
-        if (x !== player) {
+        if (x._id.toString() !== player._id.toString()) {
           x.recordGameEvent(Enums.taJiaAnGang, card)
         }
       })
     })
     player.on('recordMingGangSelf', card => {
       this.players.forEach(x => {
-        if (x !== player) {
+        if (x._id.toString() !== player._id.toString()) {
           x.recordGameEvent(Enums.taJiaMingGangSelf, card)
         }
       })
@@ -1155,86 +1110,21 @@ class TableState implements Serializable {
     player.on('qiShouHu', (info, showCards, restCards) => {
       this.sleepTime = 3000
       this.players.forEach(x => {
-        if (x !== player) {
+        if (x._id.toString() !== player._id.toString()) {
           x.recordGameEvent('taJiaQiShouHu', info)
         }
       })
-      player.sendMessage('game/qiShouHu', {info, showCards, restCards})
-      this.room.broadcast('game/oppoQiShouHu', {info, showCards, index}, player.msgDispatcher)
+      player.sendMessage('game/qiShouHu', {ok: true, data: {info, showCards, restCards}})
+      this.room.broadcast('game/oppoQiShouHu', {ok: true, data: {info, showCards, index}}, player.msgDispatcher)
     })
     player.on('recordGangShangKaiHua', info => {
       this.players.forEach(x => {
-        if (x !== player) {
+        if (x._id.toString() !== player._id.toString()) {
           x.recordGameEvent('taJiaGangShangKaiHua', info)
         }
       })
     });
   }
-
-  multiTimesSettleWithSpecial(states, specialId, times) {
-    const specialState = states.find(s => s.model._id === specialId)
-
-    console.log(`${__filename}:1577 multiTimesSettleWithSpecial`, specialState)
-
-    if (specialState.score > 0) {
-      for (const state of states) {
-        state.score *= times
-      }
-    } else {
-      const winState = states.find(s => s.score > 0)
-      if (winState) {
-        winState.score += specialState.score * -(times - 1)
-        specialState.score *= times
-      }
-    }
-  }
-
-  // async generateNiao() {
-  //   const playerNiaos = []
-  //   const playerIndex = 0
-  //   if (this.rule.quanFei > 0) {
-  //     for (const p of this.players) {
-  //       p.niaoCards = []
-  //       playerNiaos[playerIndex] = {}
-  //       playerNiaos[playerIndex][p._id] = []
-  //       for (let i = 0; i < this.rule.quanFei; i++) {
-  //         const niaoPai = await this.consumeCard(null)
-  //         if (niaoPai) {
-  //           playerNiaos[playerIndex][p._id].push(niaoPai)
-  //           p.niaoCards.push(niaoPai)
-  //         }
-  //       }
-  //     }
-  //   } else {
-  //     this.players[0].niaoCards = []
-  //     for (let i = 0; i < this.rule.feiNiao; i++) {
-  //       const niaoPai = await this.consumeCard(null)
-  //       if (niaoPai) {
-  //         if (!playerNiaos[0]) {
-  //           playerNiaos[0] = {}
-  //           playerNiaos[0][this.players[0]._id] = []
-  //         }
-  //         playerNiaos[0][this.players[0]._id].push(niaoPai)
-  //         this.players[0].niaoCards.push(niaoPai)
-  //       }
-  //     }
-  //   }
-  //
-  //   return playerNiaos
-  // }
-
-  // assignNiaos() {
-  //   this.players.forEach(p => {
-  //     const playerNiaos = p.niaoCards
-  //     const nPlayers = this.players.length
-  //     for (const niao of playerNiaos) {
-  //       const tail = niao % 10
-  //       const index = (tail + nPlayers - 1) % nPlayers
-  //       this.players[index].niaoCount += 1
-  //       this.players[index].buyer.push(p)
-  //     }
-  //   })
-  // }
 
   nextZhuang(): PlayerState {
     const currentZhuangIndex = this.atIndex(this.zhuang)
@@ -1272,7 +1162,7 @@ class TableState implements Serializable {
   }
 
   async drawGame() {
-    logger.info('state:', this.state);
+    // logger.info('state:', this.state);
     if (this.state !== stateGameOver) {
       this.state = stateGameOver
       // 没有赢家
@@ -1385,9 +1275,8 @@ class TableState implements Serializable {
         maiDi: this.rule.maiDi
       }
 
-      this.room.broadcast('game/game-over', gameOverMsg)
+      this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       await this.room.gameOver(nextZhuang.model._id, states)
-      this.logger.info('game/game-over  %s', JSON.stringify(gameOverMsg))
     }
     // this.logger.close()
   }
@@ -1402,7 +1291,7 @@ class TableState implements Serializable {
     room.on('reconnect', this.onReconnect = (playerMsgDispatcher, index) => {
       const player = this.players[index]
       player.reconnect(playerMsgDispatcher)
-      player.sendMessage('game/reconnect', this.generateReconnectMsg(index))
+      player.sendMessage('game/reconnect', {ok: true, data: this.generateReconnectMsg(index)})
     })
 
     room.once('empty', this.onRoomEmpty = () => {
@@ -1422,16 +1311,7 @@ class TableState implements Serializable {
     if (!player) {
       return
     }
-    player.sendMessage('room/refresh', this.restoreMessageForPlayer(player))
-  }
-
-  async onRefreshQuiet(playerMsgDispatcher, index) {
-    const player = this.players[index]
-    const reconnect = this.generateReconnectMsg(index)
-    const rejoin = await this.room.joinMessageFor(playerMsgDispatcher)
-
-    player.sendMessage('game/reconnect', reconnect)
-    player.sendMessage('room/rejoin', rejoin)
+    player.sendMessage('room/refresh', {ok: true, data: this.restoreMessageForPlayer(player)})
   }
 
   generateReconnectMsg(index) {
@@ -1733,36 +1613,7 @@ class TableState implements Serializable {
       return null;
     }
     // 金豆房记录奖励
-    // let record;
     await this.getBigWinner();
-    // const { winnerList, ruby } = await service.rubyReward.calculateRubyReward(this.room.uid, resp.winner);
-    // if (ruby > 0) {
-    //   // 瓜分奖池
-    //   record = await service.rubyReward.winnerGainRuby(this.room.uid, Number(this.room._id), winnerList,
-    //     resp.winner, this.room.game.juIndex);
-    //   for (const shortId of winnerList) {
-    //     const player = this.getPlayerByShortId(shortId);
-    //     if (!player) {
-    //       throw new Error('invalid balance player')
-    //     }
-    //     player.winFromReward(ruby);
-    //   }
-    // } else {
-    //   // 扣除 30% 金豆， 系统 1：1 补充
-    //   const rubyReward = Math.floor(resp.score * config.game.winnerReservePrizeRuby);
-    //   for (const shortId of resp.winner) {
-    //     // 扣掉用户 30% 金豆
-    //     const player = this.getPlayerByShortId(shortId);
-    //     if (!player) {
-    //       throw new Error('invalid balance player')
-    //     }
-    //     player.winFromReward(-rubyReward);
-    //   }
-    //   record = await service.rubyReward.systemAddRuby(this.room.uid, Number(this.room._id),
-    //     rubyReward * resp.winner.length,
-    //     rubyReward * resp.winner.length, resp.winner, this.room.game.juIndex)
-    // }
-    // return record;
   }
 
   // 本局大赢家
@@ -1776,7 +1627,7 @@ class TableState implements Serializable {
       // 配置失败
       console.error('invalid room level');
     } else {
-      times = conf.minScore;
+      times = conf.base * conf.Ante;
     }
     let winRuby = 0;
     let lostRuby = 0;
@@ -1784,14 +1635,14 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       if (p) {
-        p.balance *= times * this.rule.diFen;
+        p.balance *= (times * this.rule.diFen);
         if (p.balance > 0) {
           winRuby += p.balance;
           winnerList.push(p);
         } else {
           const model = await service.playerService.getPlayerModel(p.model._id);
-          if (model.ruby < -p.balance) {
-            p.balance = -model.ruby;
+          if (model.gold < -p.balance) {
+            p.balance = -model.gold;
             p.isBroke = true;
           }
           lostRuby += p.balance;
@@ -1813,9 +1664,7 @@ class TableState implements Serializable {
         p.balance = Math.floor(p.balance / winRuby * lostRuby * -1);
         console.log('after balance', p.balance, p.model.shortId)
       }
-      // tempScore = Math.floor(tempScore / winRuby * lostRuby * -1);
     }
-    // return { winner, score: tempScore };
   }
 
   getPlayerByShortId(shortId) {

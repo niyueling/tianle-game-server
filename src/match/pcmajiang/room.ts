@@ -442,7 +442,7 @@ class Room extends RoomBase {
 
       const positions = this.players.map(p => p && p.model)
 
-      this.broadcast('room/playersPosition', {positions});
+      this.broadcast('room/playersPosition', {ok: true, data: {positions}});
     }
   }
 
@@ -1053,7 +1053,6 @@ class Room extends RoomBase {
   }
 
   allOverMessage(): any {
-
     const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode}
     this.snapshot
       .filter(p => p)
@@ -1098,9 +1097,9 @@ class Room extends RoomBase {
       const payee = playerManager.getPlayer(creatorId) || this.creator
 
       payee.model.gem -= createRoomNeed
-      payee.sendMessage('resource/createRoomUsedGem', {
-        createRoomNeed,
-      })
+      payee.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
+          createRoomNeed,
+        }})
 
       PlayerModel.update({_id: creatorId},
         {
@@ -1135,9 +1134,9 @@ class Room extends RoomBase {
         const payee = playerManager.getPlayer(player.model._id) || player
 
         payee.model.gem -= share
-        payee.sendMessage('resource/createRoomUsedGem', {
-          createRoomNeed: share
-        })
+        payee.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
+            createRoomNeed: share
+          }})
         PlayerModel.update({_id: player.model._id},
           {
             $inc: {
@@ -1175,9 +1174,9 @@ class Room extends RoomBase {
         }
       })
 
-    this.clubOwner.sendMessage('resource/createRoomUsedGem', {
-      createRoomNeed: fee
-    })
+    this.clubOwner.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
+        createRoomNeed: fee
+      }})
   }
 
   sortPlayer(zhuang) {
