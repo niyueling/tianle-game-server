@@ -646,6 +646,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.chi, async (turn, card, shunZiList) => {
+      console.warn("shunZiList-%s", JSON.stringify(shunZiList));
       const cardList = shunZiList.filter(value => value !== card);
       const otherCard1 = cardList[0]
       const otherCard2 = cardList[1]
