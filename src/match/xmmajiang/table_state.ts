@@ -463,6 +463,7 @@ class TableState implements Serializable {
     // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
       // 拿到花以后,重新发牌
+      player.flowerList.push(card);
       this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: player.seatIndex, remainCards: this.remainCards}})
       if (player) {
         player.cards[card]++;

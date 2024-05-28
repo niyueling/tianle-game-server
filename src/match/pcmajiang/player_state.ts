@@ -1328,6 +1328,7 @@ class PlayerState implements Serializable {
     return this.gangForbid.indexOf(card) >= 0
   }
 
+
   getAvailableGangs() {
     const gangs = []
     for (const pengCard of this.events.peng || []) {

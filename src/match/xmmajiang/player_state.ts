@@ -391,7 +391,10 @@ class PlayerState implements Serializable {
     // }
 
     this.lastCardToken = card
-    this.cards[card]++
+    if (this.room.gameState.isFlower(card)) {
+      this.cards[card]++
+    }
+
     const msg = {card, turn, gang: null, hu: false, huInfo: null}
     this.recorder.recordUserEvent(this, 'moPai', card)
     this.recordGameSingleEvent(Enums.lastPlayerTakeCard, card);
@@ -592,8 +595,11 @@ class PlayerState implements Serializable {
 
   // 添加花牌
   onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList) {
+
     cards.forEach(x => {
-      this.cards[x]++
+      if (this.room.gameState.isFlower(x)) {
+        this.cards[x]++;
+      }
     });
     this.caiShen = caiShen
     this.cards['caiShen'] = caiShen
