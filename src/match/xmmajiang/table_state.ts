@@ -474,10 +474,10 @@ class TableState implements Serializable {
         return await this.consumeCard(player, notifyFlower, true);
       }
 
-      setTimeout(getFlowerCard, 500);
-    } else {
-      return card
+      setTimeout(getFlowerCard, 1000);
     }
+
+    return card
   }
 
   // 是否是花牌

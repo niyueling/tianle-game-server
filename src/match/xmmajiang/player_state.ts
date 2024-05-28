@@ -431,20 +431,6 @@ class PlayerState implements Serializable {
 
     const huResult = this.checkZiMo()
     if (huResult.hu) {
-      // if (this.hadQiaoXiang) {
-      //   // 不用选择 直接胡
-      //   this.sendMessage('game/TakeCard', msg)
-      //   // 禁止触发旧麻将机器人
-      //   // this.emitter.emit('waitForDa', msg)
-      //   this.room.gameState.stateData.card = card
-      //   return this.emitter.emit(Enums.hu, this.turn, card)
-      // }
-      // 没有胡 7 对
-      // if (this.rule.useCaiShen && (this.rule.keJiePao || !this.rule.keJiePao && this.rule.hzlz_option === 'qidui')) {
-      //   huResult = {
-      //     qiDui: huResult.qiDui || huResult.haoQi
-      //   }
-      // }
       msg.huInfo = huResult
       msg.hu = true
       this.huForbiddenCards = []
@@ -453,12 +439,12 @@ class PlayerState implements Serializable {
       this.freeCard = card
     }
 
-    const ret = this.sendMessage('game/TakeCard', {ok: true, data: msg})
+    this.sendMessage('game/TakeCard', {ok: true, data: msg})
     this.emitter.emit('waitForDa', msg)
 
     this.alreadyTakenCard = true
 
-    return ret
+    return msg
   }
 
   checkChi(card, check) {
