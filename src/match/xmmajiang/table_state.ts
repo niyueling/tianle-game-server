@@ -65,96 +65,9 @@ interface StateData {
   huInfo?: any
 }
 
-const getCanPengCards = (p, checks) => {
-  const ret = []
-  checks.forEach(x => {
-    if (x.peng === p) {
-      ret.push(x.card)
-    }
-  })
-  return ret
-}
-
-const getCanGangCards = (p, checks, gangPlayer) => {
-  const ret = []
-  checks.forEach(x => {
-    if (x.gang === p) {
-      ret.push([x.card, p.getGangKind(x.card, p === gangPlayer)])
-    }
-  })
-  return ret
-}
-
-const getCanBuCards = (p, checks, gangPlayer) => {
-  const ret = []
-  checks.forEach(x => {
-    if (x.bu === p) {
-      ret.push([x.card, p.getGangKind(x.card, p === gangPlayer)])
-    }
-  })
-  return ret
-}
-
 const generateCards = function (noBigCard) {
   return manager.allCards(noBigCard);
 }
-
-// function getTimeString() {
-//   return moment().format('YYYYMMDDHHmm')
-// }
-// export function cardChangeDebugger<T extends {
-//   new(...args: any[]): {
-//     room: any
-//     cards: any
-//     remainCards: any
-//     listenPlayer(p: PlayerState): void
-//   }
-//
-// }>(constructor: T) {
-//
-//   return class TableWithDebugger extends constructor {
-//
-//     constructor(...args) {
-//       super(...args)
-//     }
-//
-//     listenPlayer(player: PlayerState) {
-//       super.listenPlayer(player)
-//
-//       player.on('changePlayerCards', msg => {
-//         this.changePlayerCards(player, msg)
-//       })
-//       player.on('changeNextCards', msg => {
-//         this.changNextCards(msg)
-//       })
-//     }
-//
-//     changNextCards(cards) {
-//       cards.forEach(card => {
-//         this.cards.push(card)
-//       })
-//       this.remainCards = this.cards.length;
-//     }
-//
-//     changePlayerCards(player, cards) {
-//       for (let i = 0; i < 38; i++) {
-//         player.cards[i] = 0
-//       }
-//       cards.forEach(c => {
-//         player.cards[c] ++
-//       })
-//       const handCards = []
-//       for (let i = 0; i < player.cards.length; i++) {
-//         const c = player.cards[i]
-//         for (let j = 0; j < c; j++) {
-//           handCards.push(i)
-//         }
-//       }
-//       this.room.broadcast('game/changeCards', {index: player.seatIndex, cards: handCards})
-//       player.sendMessage('game/changePlayerCardsReply', {ok: true, info: '换牌成功！'})
-//     }
-//   }
-// }
 
 type Action = 'hu' | 'peng' | 'gang' | 'chi'
 
@@ -199,7 +112,7 @@ export class ActionResolver implements Serializable {
     return serializeHelp(this)
   }
 
-  resume(actionJSON) {
+  resume() {
     console.log('resume')
   }
 
@@ -242,12 +155,12 @@ export class ActionResolver implements Serializable {
 
       if (ao.state === 'try') {
         this.notifyWaitingPlayer()
-        await ao.onResolve()
+        ao.onResolve()
         this.fireAndCleanAllAfterAction()
         return
       }
     }
-    await this.next()
+    this.next()
   }
 
   notifyWaitingPlayer() {
@@ -1591,9 +1504,9 @@ class TableState implements Serializable {
       }
     }
 
-    // if (check[Enums.chi]) {
-    //   this.actionResolver.appendAction(check[Enums.chi], 'chi', check.chiCombol)
-    // }
+    if (check[Enums.chi]) {
+      this.actionResolver.appendAction(check[Enums.chi], 'chi', check.chiCombol)
+    }
 
     for (let i = 1; i < this.players.length; i++) {
       const j = (from + i) % this.players.length;
@@ -1616,11 +1529,7 @@ class TableState implements Serializable {
   }
 
   async onPlayerGuo(player, playTurn, playCard) {
-    const index = this.players.indexOf(player);
-
-    if (this.turn !== playTurn) {
-      player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceAction});
-    } else if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
+    if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
       player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceState});
     } else {
       player.sendMessage('game/guoReply', {ok: true, data: {}});
@@ -1688,15 +1597,6 @@ class TableState implements Serializable {
         console.log('after balance', p.balance, p.model.shortId)
       }
     }
-  }
-
-  getPlayerByShortId(shortId) {
-    for (const p of this.players) {
-      if (p && p.model.shortId === shortId) {
-        return p;
-      }
-    }
-    return null;
   }
 
   getPlayerStateById(playerId) {
@@ -1950,7 +1850,7 @@ class TableState implements Serializable {
       }
     });
 
-    newCards.forEach((card, i) => {
+    newCards.forEach(card => {
       values.forEach(v => {
         if (card.value === v) {
           count++;
@@ -2095,7 +1995,7 @@ class TableState implements Serializable {
       }
     });
 
-    newCards.forEach((card, i) => {
+    newCards.forEach(card => {
       if (card.value === value) {
         index = card.index;
         count++;
@@ -2104,83 +2004,6 @@ class TableState implements Serializable {
 
     if (count > 0) return {index, count};
     return {index: 0, count: 0};
-  }
-
-  robotTingConsumeCard(player) {
-    // 帮机器人摸合适的牌
-    const isMo = Math.random() < 0.4;
-    if (isMo) {
-      const lackCard = this.getCardLack(player);
-      if (lackCard) return lackCard;
-    }
-
-    // const ting = player.isRobotTing(player.cards);
-    // logger.info(`ting:${JSON.stringify(ting)}`);
-    // if(ting.hu) {
-    //   logger.info(`${player.model.shortId}(${player.model.name})的卡牌可胡牌`);
-    //   const isHu = Math.random() < 1;
-    //   if(isHu) {
-    //     let cas = [];
-    //     player.cards.forEach((c, x) => {
-    //       if(c > 0) cas.push({card: x, count: c})
-    //     })
-    //     let huCards = Array.from(new Set([...ting.huCards.useJiang]));
-    //     const index = this.cards.findIndex((c) => huCards.includes(c));
-    //
-    //     if(index !== -1) {
-    //       const cardIndex = --this.remainCards
-    //       if (cardIndex === 0 && player) {
-    //         player.takeLastCard = true
-    //       }
-    //       const card = this.cards[index]
-    //       this.cards.splice(index, 1);
-    //       logger.info('robot-consumeCard %s', card)
-    //       this.lastTakeCard = card;
-    //       return card
-    //     }
-    //   }
-    // }
-
-    return false;
-  }
-
-  getCardLack(player) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 1; j <= 7; j++) {
-        let card;
-        const tail = j + i * 10;
-        const tailIndex = this.checkUserHasCard(player.cards, tail);
-        const tailR = this.checkUserHasCard(player.cards, tail + 1);
-        const tailRR = this.checkUserHasCard(player.cards, tail + 2);
-        const isPeng = Math.random() < 0.2;
-
-        if ([1, 3].includes(tailIndex.count) && tailR.count === 0 && [1, 3].includes(tailRR.count))
-          card = [tailR.index];
-        if ([1, 3].includes(tailIndex.count) && [1, 3].includes(tailR.count) && tailRR.count === 0)
-          card = [tailRR.index];
-        if (tailIndex.count === 1 && tailR.count === 1 && tailRR.count === 0) card = [tailRR.index];
-        if (tailIndex.count === 1 && tailR.count === 0 && tailRR.count === 1) card = [tailR.index];
-        if ([1, 3].includes(tailIndex.count) && [1, 3].includes(tailR.count) && tailRR.count === 0)
-          card = [tailRR.index];
-        if ([2].includes(tailIndex.count) && isPeng) card = [tailIndex.index];
-        // if(player.events.peng) card = player.events.peng;
-
-        const index = this.cards.findIndex(c => card.includes(c));
-        if (index !== -1) {
-          const cardIndex = --this.remainCards
-          if (cardIndex === 0 && player) {
-            player.takeLastCard = true
-          }
-          card = this.cards[index];
-          this.cards.splice(index, 1);
-          logger.info('robot-getCardLackCard %s', card)
-          this.lastTakeCard = card;
-          return card
-        }
-      }
-    }
-
-    return false;
   }
 
   randGoldCard() {
