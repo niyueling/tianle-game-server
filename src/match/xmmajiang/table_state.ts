@@ -1688,9 +1688,9 @@ class TableState implements Serializable {
       }
     }
 
-    if (check[Enums.chi]) {
-      this.actionResolver.appendAction(check[Enums.chi], 'chi', check.chiCombol)
-    }
+    // if (check[Enums.chi]) {
+    //   this.actionResolver.appendAction(check[Enums.chi], 'chi', check.chiCombol)
+    // }
 
     for (let i = 1; i < this.players.length; i++) {
       const j = (from + i) % this.players.length;
