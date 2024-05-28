@@ -905,8 +905,11 @@ class TableState implements Serializable {
             const msg = await player.gangTakeCard(this.turn, nextCard);
             if (msg) {
               this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, player.msgDispatcher);
-              this.state = stateWaitDa;
-              this.stateData = {da: player, card: nextCard, msg};
+
+              if (!this.isFlower(nextCard)) {
+                this.state = stateWaitDa;
+                this.stateData = {da: player, card: nextCard, msg};
+              }
             }
           } else {
             player.emitter.emit(Enums.guo, turn, card);
@@ -951,12 +954,12 @@ class TableState implements Serializable {
         this.actionResolver = new ActionResolver({turn, card, from}, async () => {
           const nextCard = await this.consumeCard(player);
           const msg = await player.gangTakeCard(this.turn, nextCard);
-          if (!msg) {
-            return;
-          }
           this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, player.msgDispatcher);
-          this.state = stateWaitDa;
-          this.stateData = {msg, da: player, card: nextCard};
+
+          if (!this.isFlower(nextCard)) {
+            this.state = stateWaitDa;
+            this.stateData = {da: player, card: nextCard, msg};
+          }
         })
 
         await this.actionResolver.tryResolve()
