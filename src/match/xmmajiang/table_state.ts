@@ -434,10 +434,9 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState, notifyFlower = true, reset = false, isHelp = true) {
     const player = playerState
     let cardIndex = --this.remainCards
-    // console.log('remain cards =====', this.remainCards);
 
     if (cardIndex === 0 && player) {
-      player.takeLastCard = true
+      player.takeLastCard = true;
     }
 
     // 如果是花牌重新摸牌，则不能摸到花牌
@@ -459,6 +458,8 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
+    console.warn("cardIndex-%s, card-%s, isFlower-%s, notifyFlower-%s", cardIndex, card, this.isFlower(card), notifyFlower);
+
     // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
       // 拿到花以后,重新发牌
@@ -471,7 +472,7 @@ class TableState implements Serializable {
 
       const getFlowerCard = async() => {
         console.log('get flower card');
-        return this.consumeCard(player, notifyFlower, reset);
+        return this.consumeCard(player, notifyFlower, true);
       }
 
       setTimeout(getFlowerCard, 500);
