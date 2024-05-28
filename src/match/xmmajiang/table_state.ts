@@ -649,7 +649,7 @@ class TableState implements Serializable {
     // })
 
     player.on('waitForDa', async msg => {
-      this.logger.info('waitForDa %s', JSON.stringify(msg))
+      // this.logger.info('waitForDa %s', JSON.stringify(msg))
       if (player.isPublicRobot) {
         // 金豆房机器人， 不打
         return;
@@ -692,7 +692,7 @@ class TableState implements Serializable {
       player.deposit(() => {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
-        console.log("msg-%s", JSON.stringify(msg.data))
+        // console.log("msg-%s", JSON.stringify(msg.data))
         switch (todo) {
           case Enums.peng:
             player.emitter.emit(Enums.peng, this.turn, card)

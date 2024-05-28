@@ -861,7 +861,7 @@ class PlayerState implements Serializable {
         // 非游金，重置次数
         this.recordGameSingleEvent(Enums.youJinTimes, 0);
       }
-      console.debug('check you jin 检查游金', isOk, 'times', this.events[Enums.youJinTimes], 'shortId', this.model.shortId);
+      // console.debug('check you jin 检查游金', isOk, 'times', this.events[Enums.youJinTimes], 'shortId', this.model.shortId);
       return true
     }
     console.error('no such card', card)
