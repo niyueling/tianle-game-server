@@ -458,7 +458,7 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
-    console.warn("cardIndex-%s, card-%s, isFlower-%s, notifyFlower-%s", cardIndex, card, this.isFlower(card), notifyFlower);
+    // console.warn("cardIndex-%s, card-%s, isFlower-%s, notifyFlower-%s", cardIndex, card, this.isFlower(card), notifyFlower);
 
     // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
@@ -664,7 +664,7 @@ class TableState implements Serializable {
       player.deposit(async () => {
         if (msg) {
           const takenCard = msg.card
-          const todo = player.ai.onWaitForDa(msg, player.cards)
+          const todo = player.ai.onWaitForDa(msg)
           switch (todo) {
             case Enums.gang:
               const gangCard = msg.gang[0][0]
@@ -691,7 +691,7 @@ class TableState implements Serializable {
     player.on('waitForDoSomeThing', msg => {
       player.deposit(() => {
         const card = msg.data.card
-        const todo = player.ai.onCanDoSomething(msg.data, player.cards, card)
+        const todo = player.ai.onCanDoSomething(msg.data)
         // console.log("msg-%s", JSON.stringify(msg.data))
         switch (todo) {
           case Enums.peng:
@@ -705,7 +705,6 @@ class TableState implements Serializable {
             break
           case Enums.chi:
             player.emitter.emit(Enums.chi, this.turn, card, ...msg.chiCombol[0])
-            player.sendMessage('game/depositChi', {card, turn: this.turn, chiCombol: msg.chiCombol[0]})
             break
           default:
             player.emitter.emit(Enums.guo, this.turn, card)

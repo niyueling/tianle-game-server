@@ -47,7 +47,7 @@ function getUseLessCard(cards) {
 
 export default {
   getUseLessCard,
-  onWaitForDa(actions, cards) {
+  onWaitForDa(actions) {
     if (actions.hu) {
       return Enums.hu;
     }
@@ -57,7 +57,7 @@ export default {
     return Enums.guo;
   },
 
-  onCanDoSomething(actions, cards, card) {
+  onCanDoSomething(actions) {
     if (actions.hu) {
       return Enums.hu;
     }
@@ -66,27 +66,11 @@ export default {
     }
 
     if (actions.peng) {
-      let dui = 0;
-      for (let i = 0; i < cards.length; i++) {
-        if (cards[i] > 1) {
-          dui++;
-        }
-      }
-      if (dui > 2) {
-        return Enums.peng;
-      } else if (dui === 2) {
-        if (Math.random() < 0.5) {
-          return Enums.peng;
-        }
-      } else if (dui === 1) {
-        if (Math.random() < 0.25) {
-          return Enums.peng;
-        }
-      }
+      return Enums.peng;
     }
 
     if (actions.chi) {
-      return Enums.chi
+      return Enums.chi;
     }
 
     return Enums.guo;
@@ -105,11 +89,32 @@ export const playerAi = {
     return getUseLessCard(cards)
   },
 
-  onWaitForDa(actions, cards) {
-    return Enums.guo
+  onWaitForDa(actions) {
+    if (actions.hu) {
+      return Enums.hu;
+    }
+    if (actions.gang) {
+      return Enums.gang;
+    }
+    return Enums.guo;
   },
 
-  onCanDoSomething(actions, cards, card) {
-    return Enums.guo
+  onCanDoSomething(actions) {
+    if (actions.hu) {
+      return Enums.hu;
+    }
+    if (actions.gang) {
+      return Enums.gang;
+    }
+
+    if (actions.peng) {
+      return Enums.peng;
+    }
+
+    if (actions.chi) {
+      return Enums.chi;
+    }
+
+    return Enums.guo;
   }
 }
