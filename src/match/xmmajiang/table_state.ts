@@ -1664,150 +1664,6 @@ class TableState implements Serializable {
     return -1
   }
 
-  // gangShangGoNext(index, player, buzhang, guo) {
-  //   const xiajiaIndex = (index + 1) % this.players.length
-  //   const xiajia = this.players[xiajiaIndex]
-  //   const checks =
-  //     buzhang.map(x => {
-  //       const checkResult: HuCheck = {card: x}
-  //       if (!guo) {
-  //         player.checkGangShangGang(x, checkResult)
-  //       }
-  //       xiajia.checkChi(x, checkResult)
-  //       for (let i = 1; i < this.players.length; i++) {
-  //         const p = this.players[(index + i) % this.players.length]
-  //         const hu = p.checkJiePao(x)
-  //         if (hu) {
-  //           if (!checkResult.hu) {
-  //             checkResult.hu = [p]
-  //           } else {
-  //             checkResult.hu.push(p)
-  //           }
-  //         }
-  //         p.checkPengGang(x, checkResult)
-  //       }
-  //       return checkResult
-  //     })
-  //   const checkReduce =
-  //     checks.reduce((acc0, x) => {
-  //       // const acc0 = acc0_
-  //       if (x.hu) {
-  //         if (acc0.hu == null) {
-  //           acc0.hu = []
-  //         }
-  //         x.hu.forEach(h => (!acc0.hu.contains(h)) && acc0.hu.push(h))
-  //       }
-  //       if (x.peng) {
-  //         if (acc0.pengGang == null) {
-  //           acc0.pengGang = []
-  //         }
-  //         if (acc0.peng == null) {
-  //           acc0.peng = []
-  //         }
-  //         (!acc0.pengGang.contains(x.peng)) && acc0.pengGang.push(x.peng)
-  //         acc0.peng.push(x.peng)
-  //       }
-  //       if (x.bu) {
-  //         if (acc0.pengGang == null) {
-  //           acc0.pengGang = []
-  //         }
-  //         if (acc0.bu == null) {
-  //           acc0.bu = []
-  //         }
-  //         (!acc0.pengGang.contains(x.bu)) && acc0.pengGang.push(x.bu)
-  //         acc0.bu.push(x.bu)
-  //       }
-  //       if (x.gang) {
-  //         if (acc0.pengGang == null) {
-  //           acc0.pengGang = []
-  //         }
-  //         if (acc0.gang == null) {
-  //           acc0.gang = []
-  //         }
-  //         (!acc0.pengGang.contains(x.gang)) && acc0.pengGang.push(x.gang)
-  //         acc0.gang.push(x.gang)
-  //       }
-  //       if (x.chi) {
-  //         acc0.chi = x.chi
-  //         if (acc0.chiCombol == null) {
-  //           acc0.chiCombol = []
-  //         }
-  //         if (!acc0.chiCombol.find(c => c[0] === x.card)) {
-  //           acc0.chiCombol.push([x.card, x.chiCombol])
-  //         }
-  //       }
-  //       return acc0
-  //     }, {})
-  //   if (checkReduce.hu || checkReduce.pengGang || checkReduce.chi) {
-  //     this.state = stateWaitGangShangAction
-  //     this.stateData = {checks, checkReduce, cards: buzhang, gangPlayer: player}
-  //     this.stateData.currentIndex = []
-  //     this.stateData.lastMsg = []
-  //     if (checkReduce.hu != null && checkReduce.hu.length > 0) {
-  //       console.log('can hu')
-  //       checkReduce.hu.forEach(x => {
-  //         this.stateData.currentIndex.push(this.players.indexOf(x))
-  //         this.stateData.lastMsg.push(x.sendMessage('game/canDoSomethingGang', {
-  //           cards: buzhang,
-  //           turn: this.turn,
-  //           hu: true,
-  //           peng: checkReduce.peng && checkReduce.peng.contains(x),
-  //           pengSelection: getCanPengCards(x, checks),
-  //           gang: checkReduce.gang && checkReduce.gang.contains(x),
-  //           gangSelection: getCanGangCards(x, checks, player),
-  //           bu: checkReduce.bu && checkReduce.bu.contains(x),
-  //           buSelection: getCanBuCards(x, checks, player),
-  //           chi: checkReduce.chi === x,
-  //           chiCombol: checkReduce.chi === x && checkReduce.chiCombol,
-  //         }))
-  //       })
-  //     } else if (checkReduce.pengGang != null && checkReduce.pengGang.length > 0) {
-  //
-  //       checkReduce.pengGang.sort((a, b) => this.distance(player, a) - this.distance(player, b))
-  //       const first = checkReduce.pengGang[0]
-  //       this.stateData.currentIndex.push(this.players.indexOf(first))
-  //       this.stateData.lastMsg.push(first.sendMessage('game/canDoSomethingGang', {
-  //         cards: buzhang,
-  //         turn: this.turn,
-  //         peng: checkReduce.peng && checkReduce.peng.contains(first),
-  //         pengSelection: getCanPengCards(first, checks),
-  //         gang: checkReduce.gang && checkReduce.gang.contains(first),
-  //         gangSelection: getCanGangCards(first, checks, player),
-  //         bu: checkReduce.bu && checkReduce.bu.contains(first),
-  //         buSelection: getCanBuCards(first, checks, player),
-  //         chi: checkReduce.chi === first,
-  //         chiCombol: checkReduce.chi === first && checkReduce.chiCombol,
-  //       }))
-  //     } else if (checkReduce.chi) {
-  //       console.log('can chi')
-  //       this.stateData.currentIndex.push(this.players.indexOf(checkReduce.chi))
-  //       this.stateData.lastMsg.push(
-  //         checkReduce.chi.sendMessage('game/canDoSomethingGang', {
-  //           cards: buzhang,
-  //           turn: this.turn,
-  //           chi: true,
-  //           chiCombol: checkReduce.chiCombol,
-  //         }))
-  //     }
-  //   } else {
-  //     console.log('can do nothing')
-  //     const nextCard = this.consumeCard(xiajia)
-  //     const msg = xiajia.takeCard(this.turn, nextCard)
-  //     if (!msg) {
-  //       return
-  //     }
-  //     this.state = stateWaitDa
-  //     this.stateData = {
-  //       da: xiajia,
-  //       card: nextCard,
-  //       msg,
-  //     }
-  //     this.room.broadcast('game/oppoTakeCard', {
-  //       index: this.players.indexOf(xiajia),
-  //     }, xiajia.msgDispatcher)
-  //   }
-  // }
-
   hasPlayerHu() {
     return this.players.find(x => x.isHu()) != null
   }
@@ -1819,36 +1675,8 @@ class TableState implements Serializable {
     }
   }
 
-  // arrangeCaiShen() {
-  //   const caiShen = this.cards[0]
-  //   const cardsWithoutCaiShen = this.cards.filter(c => c !== caiShen)
-  //
-  //   const newCards = [caiShen]
-  //
-  //   const caiShenIndex = [
-  //     random(3, 13 * 4),
-  //     random(13 * 4 + 8, 13 * 4 + 16),
-  //     random(13 * 4 + 40, 13 * 4 + 48)]
-  //     .map(i => i + 33)
-  //
-  //   let nextCaiIndex = caiShenIndex.shift()
-  //   for (let i = 1; i < this.cards.length; i++) {
-  //     if (i === nextCaiIndex) {
-  //       newCards.push(caiShen)
-  //       nextCaiIndex = caiShenIndex.shift()
-  //     } else {
-  //       newCards.push(cardsWithoutCaiShen.shift())
-  //     }
-  //   }
-  //
-  //   this.cards = newCards.reverse()
-  //
-  // }
-
-  // on(Enums.da)
   async onPlayerDa(player, turn, card) {
     const index = this.players.indexOf(player);
-    // this.logger.info(`da player ${player.model.shortId}, card: ${card}`)
     let from
     if (this.state !== stateWaitDa) {
       player.sendMessage('game/daReply', {
@@ -1940,7 +1768,7 @@ class TableState implements Serializable {
       }
       this.state = stateWaitDa;
       this.stateData = {da: xiajia, card: newCard, msg};
-      const sendMsg = {index: this.players.indexOf(xiajia)}
+      const sendMsg = {index: this.players.indexOf(xiajia), card: newCard, msg}
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
     })
 

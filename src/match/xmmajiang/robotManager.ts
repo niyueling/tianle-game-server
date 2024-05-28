@@ -59,7 +59,7 @@ export class RobotManager extends NewRobotManager {
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
     let playerId;
-    console.log('robot play card, keys', keys, this.room._id);
+    // console.log('robot play card, keys', keys, this.room._id);
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
       playerId = proxy.model._id;
@@ -94,7 +94,7 @@ export class RobotManager extends NewRobotManager {
   // 打
   isPlayerDa(playerId) {
     return this.room.gameState.stateData[Enums.da] &&
-      playerId === this.room.gameState.stateData[Enums.da]._id
+      playerId.toString() === this.room.gameState.stateData[Enums.da]._id.toString()
   }
 
   isPlayerBuGang(player) {
@@ -120,7 +120,7 @@ export class RobotManager extends NewRobotManager {
   isPlayerGuo(playerId) {
     const actionList = [Enums.chi];
     for (const action of actionList) {
-      if (this.room.gameState.stateData[action] && playerId === this.room.gameState.stateData[action]._id) {
+      if (this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return true;
       }
     }
@@ -131,7 +131,7 @@ export class RobotManager extends NewRobotManager {
     const actionList = [Enums.gang, Enums.anGang, Enums.mingGang];
     for (const action of actionList) {
       if ([Enums.gang, Enums.anGang, Enums.mingGang].includes(action) && this.room.gameState.stateData[action]) {
-        if (playerId === this.room.gameState.stateData[action]._id) return action;
+        if (playerId.toString() === this.room.gameState.stateData[action]._id.toString()) return action;
       }
     }
 
@@ -143,14 +143,14 @@ export class RobotManager extends NewRobotManager {
     const actionList = [Enums.hu, Enums.peng, Enums.chi];
     for (const action of actionList) {
       if ([Enums.peng].includes(action)
-        && this.room.gameState.stateData[action] && playerId === this.room.gameState.stateData[action]._id) {
+        && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }
       if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
         this.room.gameState.stateData[action].length > 0) {
-        if (playerId === (Array.isArray(this.room.gameState.stateData[action]) ?
-          this.room.gameState.stateData[action][0]._id
-          : this.room.gameState.stateData[action]._id)) return action;
+        if (playerId.toString() === (Array.isArray(this.room.gameState.stateData[action]) ?
+          this.room.gameState.stateData[action][0]._id.toString()
+          : this.room.gameState.stateData[action]._id.toString())) return action;
       }
     }
     return false;
