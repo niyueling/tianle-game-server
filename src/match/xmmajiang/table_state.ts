@@ -475,9 +475,6 @@ class TableState implements Serializable {
         const resetCard = await this.consumeCard(player, notifyFlower, true);
         const msg = await player.takeCard(this.turn, resetCard)
 
-        if (!msg) {
-          return;
-        }
         this.state = stateWaitDa;
         this.stateData = {da: player, card: resetCard, msg};
         const sendMsg = {index: this.players.indexOf(player), card: resetCard, msg}
@@ -592,8 +589,11 @@ class TableState implements Serializable {
 
       const index = 0
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
-      this.state = stateWaitDa;
-      this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
+
+      if (!this.isFlower(nextCard)) {
+        this.state = stateWaitDa;
+        this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
+      }
     }
 
     setTimeout(nextDo, this.sleepTime)
@@ -1551,11 +1551,11 @@ class TableState implements Serializable {
       const newCard = await this.consumeCard(xiajia)
       const msg = await xiajia.takeCard(this.turn, newCard)
 
-      if (!msg) {
-        return;
+      if (!this.isFlower(newCard)) {
+        this.state = stateWaitDa;
+        this.stateData = {da: xiajia, card: newCard, msg};
       }
-      this.state = stateWaitDa;
-      this.stateData = {da: xiajia, card: newCard, msg};
+
       const sendMsg = {index: this.players.indexOf(xiajia), card: newCard, msg}
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
     })
