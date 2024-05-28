@@ -475,10 +475,12 @@ class TableState implements Serializable {
         const resetCard = await this.consumeCard(player, notifyFlower, true);
         const msg = await player.takeCard(this.turn, resetCard)
 
-        this.state = stateWaitDa;
-        this.stateData = {da: player, card: resetCard, msg};
-        const sendMsg = {index: this.players.indexOf(player), card: resetCard, msg}
-        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, player.msgDispatcher)
+        if (msg) {
+          this.state = stateWaitDa;
+          this.stateData = {da: player, card: resetCard, msg};
+          const sendMsg = {index: this.players.indexOf(player), card: resetCard, msg}
+          this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, player.msgDispatcher)
+        }
       }
 
       setTimeout(getFlowerCard, 500);
