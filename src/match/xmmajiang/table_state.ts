@@ -684,12 +684,12 @@ class TableState implements Serializable {
               gangSelection,
               forbidCards: player.forbidCards
             }});
-          this.room.broadcast('game/oppoChi', {
-            card,
-            turn,
-            index,
-            suit: [card, otherCard1, otherCard2].sort(),
-          }, player.msgDispatcher);
+          this.room.broadcast('game/oppoChi', {ok: true, data: {
+              card,
+              turn,
+              index,
+              suit: [card, otherCard1, otherCard2].sort(),
+            }}, player.msgDispatcher);
         } else {
           player.emitter.emit(Enums.guo, turn, card);
           player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiNotSuccess});
