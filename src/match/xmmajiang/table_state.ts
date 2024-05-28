@@ -1505,6 +1505,7 @@ class TableState implements Serializable {
     }
 
     if (check[Enums.chi]) {
+      check[Enums.chi].chiCombol = check.chiCombol;
       this.actionResolver.appendAction(check[Enums.chi], 'chi', check.chiCombol)
     }
 
@@ -1619,7 +1620,7 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.gangByOtherDa, this.turn, this.stateData.card)
         break;
       case Enums.chi:
-        player.emitter.emit(Enums.chi, this.turn, this.stateData.card)
+        player.emitter.emit(Enums.chi, this.turn, this.stateData.card, ...player.chiCombol[0])
         break;
       case Enums.anGang:
       case Enums.buGang:

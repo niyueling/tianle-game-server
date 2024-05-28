@@ -163,7 +163,6 @@ class PlayerState implements Serializable {
   seatIndex: number
 
   @autoSerialize
-    // tslint:disable-next-line:variable-name
   _id: string
   takeLastCard: boolean
 
@@ -215,6 +214,9 @@ class PlayerState implements Serializable {
   // 初始发牌摸到的花牌
   flowerList: any[] = [];
 
+  // 可以吃的牌
+  chiCombol: any[] = [];
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -251,6 +253,7 @@ class PlayerState implements Serializable {
     this.recorder = new DummyRecorder()
     this.alreadyTakenCard = false
     this.flowerList = [];
+    this.chiCombol = [];
   }
 
   get youJinTimes() {
