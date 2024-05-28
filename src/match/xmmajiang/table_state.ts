@@ -1217,6 +1217,10 @@ class TableState implements Serializable {
       }
     });
 
+    player.on(Enums.da, async (turn, card) => {
+      await this.onPlayerDa(player, turn, card)
+    })
+
     player.on(Enums.guo, async (turn, card) => {
       await this.onPlayerGuo(player, turn, card)
     })
