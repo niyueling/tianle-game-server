@@ -917,7 +917,7 @@ class TableState implements Serializable {
       if (this.state !== stateWaitDa) {
         return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamStateInvaid});
       }
-      if (this.stateData[Enums.da]._id.toString() !== player.model._id.toString()) {
+      if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() !== player.model._id.toString()) {
         return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
       }
 
