@@ -970,118 +970,123 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.hu, async (turn, card) => {
-      const chengbaoStarted = this.remainCards <= 3
-
-      if (this.turn !== turn) {
-        player.sendMessage('HuReply', {errorCode: 1});
-        return;
-      }
       const recordCard = this.stateData.card;
-      const isJiePao = this.state === stateWaitAction &&
-        recordCard === card && this.stateData[Enums.hu].contains(player)
-      const isZiMo = this.state === stateWaitDa && recordCard === card
+      const isJiePao = this.state === stateWaitAction && recordCard === card && this.stateData[Enums.hu].contains(player);
+      const isZiMo = this.state === stateWaitDa && recordCard === card;
       if (isJiePao && this.isSomeOne2youOr3you()) {
-        player.sendMessage('HuReply', {errorCode: 1, msg: '游金中，只能自摸'});
+        player.sendMessage('ame/huReply', {ok: false, info: TianleErrorCode.youJinNotHu});
         return;
       }
+
       if (isJiePao) {
         this.actionResolver.requestAction(player, 'hu', async () => {
             const ok = player.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa);
-            logger.info('hu  player %s jiepao %s', index, ok)
+            const from = this.atIndex(this.lastDa);
 
-            if (ok) {
-              player.sendMessage('HuReply', {errorCode: 0});
-              this.stateData[Enums.hu].remove(player);
+            if (ok && player.daHuPai(card, this.players[from])) {
+              this.stateData = {};
               this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-              if (chengbaoStarted) {
-                this.lastDa.recordGameEvent(Enums.chengBao, {});
-              }
-              this.room.broadcast('game/oppoHu', {turn, card, index}, player.msgDispatcher);
-              const huPlayerIndex = this.atIndex(player)
-              for (let i = 1; i < this.players.length; i++) {
-                const playerIndex = (huPlayerIndex + i) % this.players.length
-                const nextPlayer = this.players[playerIndex]
-                if (nextPlayer === this.lastDa) {
-                  break
-                }
+              this.stateData[Enums.hu].remove(player);
 
-                if (nextPlayer.checkJiePao(card)) {
-                  nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.lastDa)
-                  nextPlayer.sendMessage('game/genHu', {})
-                  this.room.broadcast('game/oppoHu', {turn, card, index: playerIndex}, nextPlayer.msgDispatcher)
+              this.room.broadcast('game/showHuType', {
+                ok: true,
+                data: {
+                  index,
+                  from,
+                  cards: [card],
+                  daCards: [],
+                  huCards: [],
+                  card,
+                  type: "jiepao",
                 }
+              });
+
+              const gameOver = async() => {
+                await this.gameOver();
               }
-              await this.gameOver();
-              logger.info('hu  player %s gameover', index)
+
+              const huReply = async() => {
+                player.sendMessage('game/huReply', {
+                  ok: true,
+                  data: {
+                    card,
+                    from,
+                    turn,
+                    type: "jiepao"
+                  }
+                });
+                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+
+                setTimeout(gameOver, 1000);
+              }
+
+              setTimeout(huReply, 1000);
             } else {
-              player.sendMessage('HuReply', {errorCode: 2});
+              player.emitter.emit(Enums.guo, this.turn, card);
             }
           },
           () => {
-            player.sendMessage('HuReply', {errorCode: 3, msg: '竞争失败'});
+            player.sendMessage('game/huReply', {
+              ok: false,
+              info: TianleErrorCode.huPriorityInsufficient
+            });
           }
         )
         await this.actionResolver.tryResolve()
       } else if (isZiMo) {
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
-        if (ok) {
-          player.sendMessage('HuReply', {errorCode: 0});
+        if (ok && player.daHuPai(card, null)) {
           // 是否3金倒
           const huSanJinDao = player.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0;
-          this.room.broadcast('game/oppoZiMo', {
-            turn, card, index,
-            youJinTimes: player.events[Enums.youJinTimes] || 0,
-            // 是否3金倒
-            isSanJinDao: huSanJinDao,
-          }, player.msgDispatcher);
-          await this.gameOver();
-          this.logger.info('hu  player %s zimo gameover', index)
-        } else {
-          player.sendMessage('HuReply', {errorCode: 2, msg: '不能自摸'});
-        }
-      } else if (this.state === stateQiangGang) {
-        if (this.stateData.who === player && turn === this.stateData.turn) {
-          player.cards.qiangGang = true
 
-          const qiangGangJiePao = player.jiePao(card, turn === 2, this.remainCards === 0, this.stateData.whom)
-          logger.info('hu  player %s stateQiangGang jiePao %s', index, qiangGangJiePao)
-          if (qiangGangJiePao) {
-
-            if (chengbaoStarted) {
-              this.stateData.whom.recordGameEvent(Enums.chengBao, {});
+          this.stateData = {};
+          this.room.broadcast('game/showHuType', {
+            ok: true,
+            data: {
+              index,
+              from: this.atIndex(player),
+              cards: [card],
+              daCards: [],
+              huCards: [],
+              card,
+              type: "zimo",
             }
+          });
 
-            player.sendMessage('HuReply', {errorCode: 0})
-            this.stateData.whom.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-            // this.stateData.whom.recordGameEvent(Enums.chengBao, {})
-            this.room.broadcast('game/oppoHu', {turn, card, index}, player.msgDispatcher);
-            const huPlayerIndex = this.atIndex(player)
-            for (let i = 1; i < this.players.length; i++) {
-              const playerIndex = (huPlayerIndex + i) % this.players.length
-              const nextPlayer = this.players[playerIndex]
-              if (nextPlayer === this.stateData.whom) {
-                break
-              }
-
-              if (nextPlayer.checkJiePao(card, true)) {
-                nextPlayer.cards.qiangGang = true
-                nextPlayer.jiePao(card, turn === 2, this.remainCards === 0, this.stateData.whom)
-                nextPlayer.sendMessage('game/genHu', {})
-                this.room.broadcast('game/oppoHu', {turn, card, index: playerIndex}, nextPlayer.msgDispatcher)
-              }
-            }
-            await this.gameOver()
-            logger.info('hu  player %s stateQiangGang jiePao gameOver', index)
-          } else {
-            player.cards.qiangGang = false
+          const gameOver = async() => {
+            await this.gameOver();
           }
+
+          const huReply = async() => {
+            await player.sendMessage('game/huReply', {
+              ok: true,
+              data: {
+                card,
+                from: this.atIndex(player),
+                type: "zimo",
+                turn,
+                youJinTimes: player.events[Enums.youJinTimes] || 0,
+                // 是否3金倒
+                isSanJinDao: huSanJinDao,
+              }
+            });
+
+            this.room.broadcast('game/oppoZiMo', {ok: true, data: {
+              turn,
+                card,
+                index,
+                youJinTimes: player.events[Enums.youJinTimes] || 0,
+                // 是否3金倒
+                isSanJinDao: huSanJinDao
+            }}, player.msgDispatcher);
+
+            setTimeout(gameOver, 1000);
+          }
+
+          setTimeout(huReply, 1000);
         } else {
-          player.sendMessage('HuReply', {errorCode: 2, message: '不是您能抢'})
-          logger.info('hu  player %s stateQiangGang 不是您能抢', index)
+          player.emitter.emit(Enums.da, this.turn, card);
         }
-      } else {
-        player.sendMessage('HuReply', {errorCode: 3});
-        logger.info('hu  player %s stateQiangGang HuReply', index)
       }
     });
 
