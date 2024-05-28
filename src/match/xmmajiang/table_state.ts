@@ -615,7 +615,7 @@ class TableState implements Serializable {
             break
           case Enums.chi:
             console.log("msg-%s", JSON.stringify(msg.data))
-            player.emitter.emit(Enums.chi, this.turn, card, ...msg.data.chiCombol[0])
+            player.emitter.emit(Enums.chi, this.turn, card, msg.data.chiCombol[0])
             break
           default:
             player.emitter.emit(Enums.guo, this.turn, card)
