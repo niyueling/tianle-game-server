@@ -603,7 +603,6 @@ class TableState implements Serializable {
       player.deposit(() => {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data)
-        // console.log("msg-%s", JSON.stringify(msg.data))
         switch (todo) {
           case Enums.peng:
             player.emitter.emit(Enums.peng, this.turn, card)
@@ -615,6 +614,7 @@ class TableState implements Serializable {
             player.emitter.emit(Enums.hu, this.turn, card)
             break
           case Enums.chi:
+            console.log("msg-%s", JSON.stringify(msg.data))
             player.emitter.emit(Enums.chi, this.turn, card, ...msg.data.chiCombol[0])
             break
           default:
