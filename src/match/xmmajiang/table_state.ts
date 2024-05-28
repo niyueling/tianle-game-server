@@ -481,7 +481,7 @@ class TableState implements Serializable {
         this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, player.msgDispatcher)
       }
 
-      setTimeout(getFlowerCard, 1000);
+      setTimeout(getFlowerCard, 500);
     }
 
     return card
@@ -1555,6 +1555,10 @@ class TableState implements Serializable {
     this.actionResolver = new ActionResolver(env, async () => {
       const newCard = await this.consumeCard(xiajia)
       const msg = await xiajia.takeCard(this.turn, newCard)
+
+      if (!msg) {
+        return ;
+      }
 
       if (!this.isFlower(newCard)) {
         this.state = stateWaitDa;

@@ -152,7 +152,6 @@ export class BackendProcess {
 
   async joinPublicRoom(playerModel, messageBody) {
     const playerRouteKey = `user.${messageBody.from}.${this.gameName}`;
-    console.warn(playerRouteKey);
 
     const roomId = await this.redisClient.lpopAsync('roomIds')
     if (!roomId) {
