@@ -9,7 +9,6 @@ import {service} from "../../service/importService";
 import alg from '../../utils/algorithm'
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, serializeHelp} from "../serializeDecorator"
 import {manager} from "./cardManager";
-import enums from "./enums";
 import Enums from "./enums";
 import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
@@ -1610,7 +1609,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    logger.info("index-%s, todo-%s, card-%s, chiCombol-%s", this.atIndex(player), todo, this.stateData.card, player.chiCombol.length ? JSON.stringify(player.chiCombol) : null);
+    logger.info("index-%s, todo-%s, card-%s, chiCombol-%s", this.atIndex(player), todo, this.stateData.card, player.chiCombol.length ? JSON.stringify(player.chiCombol[0]) : null);
 
     switch (todo) {
       case Enums.peng:
@@ -1620,7 +1619,7 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.gangByOtherDa, this.turn, this.stateData.card)
         break;
       case Enums.chi:
-        player.emitter.emit(Enums.chi, this.turn, this.stateData.card, ...player.chiCombol[0])
+        player.emitter.emit(Enums.chi, this.turn, this.stateData.card, player.chiCombol[0])
         break;
       case Enums.anGang:
       case Enums.buGang:
