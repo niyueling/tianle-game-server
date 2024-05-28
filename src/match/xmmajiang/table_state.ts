@@ -616,7 +616,7 @@ class TableState implements Serializable {
             player.emitter.emit(Enums.hu, this.turn, card)
             break
           case Enums.chi:
-            player.emitter.emit(Enums.chi, this.turn, card, ...msg.chiCombol[0])
+            player.emitter.emit(Enums.chi, this.turn, card, ...msg.data.chiCombol[0])
             break
           default:
             player.emitter.emit(Enums.guo, this.turn, card)
