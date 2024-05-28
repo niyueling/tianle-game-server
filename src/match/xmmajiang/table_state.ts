@@ -1609,7 +1609,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    logger.info("index-%s, todo-%s, card-%s, chiCombol-%s", this.atIndex(player), todo, this.stateData.card, player.chiCombol.length ? JSON.stringify(player.chiCombol[0]) : null);
+    logger.info("index-%s, todo-%s, card-%s, chiCombol-%s", this.atIndex(player), todo, this.stateData.card, player.chiCombol.length ? JSON.stringify(player.chiCombol) : null);
 
     switch (todo) {
       case Enums.peng:
