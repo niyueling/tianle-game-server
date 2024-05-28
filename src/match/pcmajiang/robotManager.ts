@@ -132,9 +132,9 @@ export class RobotManager extends NewRobotManager {
 
   // 是否碰胡
   isPlayerChoice(playerId) {
-    const actionList = [Enums.hu, Enums.peng];
+    const actionList = [Enums.hu, Enums.peng, Enums.chi];
     for (const action of actionList) {
-      if ([Enums.peng].includes(action)
+      if ([Enums.peng, Enums.chi].includes(action)
         && this.room.gameState.stateData[action] && playerId === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }

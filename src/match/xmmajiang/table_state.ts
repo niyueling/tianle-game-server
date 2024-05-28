@@ -1618,9 +1618,9 @@ class TableState implements Serializable {
       case Enums.gang:
         player.emitter.emit(Enums.gangByOtherDa, this.turn, this.stateData.card)
         break;
-      // case Enums.chi:
-      //   player.emitter.emit(Enums.chi, this.turn, this.stateData.card)
-      //   break;
+      case Enums.chi:
+        player.emitter.emit(Enums.chi, this.turn, this.stateData.card)
+        break;
       case Enums.anGang:
       case Enums.buGang:
         player.emitter.emit(Enums.gangBySelf, this.turn, card)
