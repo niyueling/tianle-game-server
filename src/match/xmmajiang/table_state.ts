@@ -470,8 +470,18 @@ class TableState implements Serializable {
         await this.room.auditManager.playerTakeCard(player.model._id, card);
       }
 
+      // 摸到花牌重新摸牌
       const getFlowerCard = async() => {
-        return await this.consumeCard(player, notifyFlower, true);
+        const resetCard = await this.consumeCard(player, notifyFlower, true);
+        const msg = await player.takeCard(this.turn, resetCard)
+
+        if (!msg) {
+          return;
+        }
+        this.state = stateWaitDa;
+        this.stateData = {da: player, card: resetCard, msg};
+        const sendMsg = {index: this.players.indexOf(player), card: resetCard, msg}
+        this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, player.msgDispatcher)
       }
 
       setTimeout(getFlowerCard, 1000);
