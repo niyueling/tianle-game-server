@@ -471,15 +471,13 @@ class TableState implements Serializable {
       }
 
       const getFlowerCard = async() => {
-        await this.consumeCard(player, notifyFlower, true);
+        return await this.consumeCard(player, notifyFlower, true);
       }
 
       setTimeout(getFlowerCard, 500);
-
-      return ;
+    } else {
+      return card
     }
-
-    return card
   }
 
   // 是否是花牌
