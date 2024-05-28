@@ -867,7 +867,7 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.guo, turn, card);
         return;
       }
-      if (this.stateData[Enums.gang] !== player || this.stateData.card !== card) {
+      if ((this.stateData[Enums.gang] && this.stateData[Enums.gang]._id.toString() !== player._id.toString()) || this.stateData.card !== card) {
         player.emitter.emit(Enums.guo, turn, card);
         return
       }
@@ -885,6 +885,7 @@ class TableState implements Serializable {
             this.turn++;
             const from = this.atIndex(this.lastDa)
             const me = this.atIndex(player)
+            this.stateData = {};
             player.sendMessage('game/gangReply', {ok: true, data: {card, from}});
 
             this.room.broadcast(
@@ -944,6 +945,7 @@ class TableState implements Serializable {
 
       const ok = await player.gangBySelf(card, broadcastMsg, gangIndex);
       if (ok) {
+        this.stateData = {};
         player.sendMessage('game/gangReply', {
           ok: true,
           data: {card, from, gangIndex, type: isAnGang ? "anGang" : "buGang"}
@@ -1502,6 +1504,7 @@ class TableState implements Serializable {
     if (ok) {
       this.lastDa = player
       player.cancelTimeout()
+      this.stateData = {};
       await player.sendMessage('game/daReply', {ok: true, data: card});
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
       // 扣掉打的牌
