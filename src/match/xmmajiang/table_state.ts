@@ -471,10 +471,12 @@ class TableState implements Serializable {
       }
 
       const getFlowerCard = async() => {
-        return this.consumeCard(player, notifyFlower, true);
+        await this.consumeCard(player, notifyFlower, true);
       }
 
       setTimeout(getFlowerCard, 500);
+
+      return ;
     }
 
     return card
