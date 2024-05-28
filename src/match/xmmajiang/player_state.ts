@@ -1323,17 +1323,13 @@ class PlayerState implements Serializable {
   }
 
   deposit(callback) {
-    let minutes = 30 * 1000
+    let minutes = 15 * 1000
 
     // if (!this.room.isPublic) {
     //   return
     // }
-    if (this.rule.ro.roomType === 'battleRoom') {
-      console.log('battle room')
-    } else if (this.rule.ro.roomType === 'normal' && this.rule.ro.autoCommit) {
+    if (!this.room.isPublic && this.rule.ro.autoCommit) {
       minutes = (this.rule.ro.autoCommit + 1) * 1000
-    } else {
-      return
     }
 
     if (!this.msgDispatcher) {
