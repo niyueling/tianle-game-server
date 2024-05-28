@@ -370,8 +370,6 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
-    // console.warn("cardIndex-%s, card-%s, isFlower-%s, notifyFlower-%s", cardIndex, card, this.isFlower(card), notifyFlower);
-
     // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
       // 拿到花以后,重新发牌
@@ -614,7 +612,7 @@ class TableState implements Serializable {
             player.emitter.emit(Enums.hu, this.turn, card)
             break
           case Enums.chi:
-            console.log("msg-%s", JSON.stringify(msg.data))
+            // console.log("msg-%s", JSON.stringify(msg.data))
             player.emitter.emit(Enums.chi, this.turn, card, msg.data.chiCombol[0])
             break
           default:
@@ -646,7 +644,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.chi, async (turn, card, shunZiList) => {
-      console.warn("shunZiList-%s", JSON.stringify(shunZiList));
+      // console.warn("shunZiList-%s", JSON.stringify(shunZiList));
       const cardList = shunZiList.filter(value => value !== card);
       const otherCard1 = cardList[0]
       const otherCard2 = cardList[1]
@@ -1614,7 +1612,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    logger.info("index-%s, todo-%s, card-%s, chiCombol-%s", this.atIndex(player), todo, this.stateData.card, player.chiCombol.length ? JSON.stringify(player.chiCombol) : null);
+    // logger.info("index-%s, todo-%s, card-%s, chiCombol-%s", this.atIndex(player), todo, this.stateData.card, player.chiCombol.length ? JSON.stringify(player.chiCombol) : null);
 
     switch (todo) {
       case Enums.peng:
