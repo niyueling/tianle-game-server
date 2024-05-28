@@ -1643,15 +1643,16 @@ class TableState implements Serializable {
       // 从大牌中随机选第一个
       return bigCardList[0];
     }
+
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
       if (player.cards[lastTakeCard] > 0) return lastTakeCard;
     }
 
-    // 有中打中,非万能牌优先打
-    const middleCard = this.checkUserHasCard(player.cards, enums.zhong);
-    if (middleCard.count === 1 && middleCard.index !== this.caishen) return middleCard.index;
+    // 有大牌，非单张，先打大牌
+    const middleCard = this.checkUserBigCard(player.cards);
+    if (middleCard.code) return middleCard.index;
 
     // 有1,9孤牌打1,9孤牌
     const lonelyCard = this.getCardOneOrNoneLonelyCard(player);
@@ -1692,6 +1693,16 @@ class TableState implements Serializable {
     // 从卡牌随机取一张牌
     const randCard = this.getCardRandCard(player);
     if (randCard.code) return randCard.index;
+  }
+
+  checkUserBigCard(cards) {
+    for (let i = Enums.dong; i < Enums.bai; i++) {
+      if (cards[i] === 1 && i !== this.caishen) {
+        return {code: true, index: i};
+      }
+    }
+
+    return {code: false, index: 0};
   }
 
   getCardOtherMayCard(player) {
