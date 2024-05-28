@@ -682,7 +682,7 @@ class TableState implements Serializable {
               break
           }
         } else {
-          const card = this.promptWithPattern(player, this.lastTakeCard);
+          const card = await this.promptWithPattern(player, this.lastTakeCard);
           player.emitter.emit(Enums.da, this.turn, card)
         }
       })
