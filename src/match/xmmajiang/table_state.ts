@@ -987,9 +987,9 @@ class TableState implements Serializable {
             const from = this.atIndex(this.lastDa);
 
             if (ok && player.daHuPai(card, this.players[from])) {
-              this.stateData = {};
               this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
               this.stateData[Enums.hu].remove(player);
+              this.stateData = {};
 
               this.room.broadcast('game/showHuType', {
                 ok: true,
