@@ -623,7 +623,7 @@ class TableState implements Serializable {
       })
     })
     player.on('willTakeCard', async denyFunc => {
-      if (this.remainCards < 0) {
+      if (this.remainCards < (this.rule.noBigCard ? 16 : 0)) {
         denyFunc()
         await this.gameOver()
         return
@@ -1726,7 +1726,7 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       if (p) {
-        p.balance *= (times * this.rule.diFen);
+        p.balance *= times;
         if (p.balance > 0) {
           winRuby += p.balance;
           winnerList.push(p);
