@@ -4873,7 +4873,7 @@ class TableState implements Serializable {
   listenRoom(room) {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       const player = this.players[index];
-
+      player.onDeposit = false;
       player.reconnect(playerMsgDispatcher);
       player.sendMessage('game/reconnect', {ok: true, data: await this.generateReconnectMsg(index)})
     })
@@ -4970,16 +4970,17 @@ class TableState implements Serializable {
             msg: this.stateData.msg ?? {},
           }
         } else {
-          if (!daPlayer) {
-            await this.room.forceDissolve();
-          } else {
-            const index = this.atIndex(daPlayer);
-            if (index === -1) {
-              await this.room.forceDissolve();
-            } else {
-              pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'};
-            }
-          }
+          pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'};
+          // if (!daPlayer) {
+          //   await this.room.forceDissolve();
+          // } else {
+          //   const index = this.atIndex(daPlayer);
+          //   if (index === -1) {
+          //     await this.room.forceDissolve();
+          //   } else {
+          //     pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'};
+          //   }
+          // }
         }
         break
       }
