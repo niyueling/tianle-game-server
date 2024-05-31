@@ -204,5 +204,27 @@ module.exports = {
     specialCard: false,
     // 最大番数
     maxFan: 16,
+    // 金牌水数
+    goldShui: 1,
+    // 花牌水数
+    huaShui: 1,
+    // 花牌一套水数
+    huaSetShui: 8,
+    // 八花齐水数
+    allHuaShui: 16,
+    // 暗刻水数
+    anKeShui: 1,
+    // 字牌暗刻水数
+    ziAnKeShui: 2,
+    // 明杠水数
+    mingGangShui:2,
+    // 字牌明杠水数
+    ziMingGangShui: 3,
+    // 暗杠水数
+    anGangShui: 3,
+    //字牌暗杠水数
+    ziAnGangShui: 4,
+    // 字牌碰水数
+    ziPengShui: 1
   }
 }

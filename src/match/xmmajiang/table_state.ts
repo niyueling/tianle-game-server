@@ -1,9 +1,9 @@
 /**
  * Created by Color on 2016/7/6.
  */
+import * as config from "../../config"
 // @ts-ignore
 import {pick} from 'lodash'
-import * as logger from "winston";
 import * as winston from "winston";
 import {service} from "../../service/importService";
 import alg from '../../utils/algorithm'
@@ -1056,37 +1056,153 @@ class TableState implements Serializable {
   }
 
   nextZhuang(): PlayerState {
-    const currentZhuangIndex = this.atIndex(this.zhuang)
-    const huPlayers = this.players.filter(p => p.huPai())
+    // 获取本局庄家位置
+    const currentZhuangIndex = this.atIndex(this.zhuang);
 
-    let nextZhuangIndex = currentZhuangIndex
+    // 获取本局胡牌用户数据
+    const huPlayers = this.players.filter(p => p.huPai());
 
+    // 计算下一局庄家位置
+    let nextZhuangIndex = currentZhuangIndex;
     if (huPlayers.length === 1) {
       nextZhuangIndex = this.atIndex(huPlayers[0])
     } else if (huPlayers.length > 1) {
-      const loser = this.players.find(p => p.events[Enums.dianPao])
-      nextZhuangIndex = this.atIndex(loser)
+      const loser = this.players.find(p => p.events[Enums.dianPao]);
+      nextZhuangIndex = this.atIndex(loser);
     }
-    console.debug('get next zhuang short id', this.players[nextZhuangIndex].model.shortId);
-    // 没胡牌，继续当庒
+
+    // 计算用户番数
+    const playerFanShus = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      // 如果用户是下一局庄家
+      if (this.atIndex(p) === nextZhuangIndex) {
+        // 如果用户连庄
+        if (nextZhuangIndex === currentZhuangIndex) {
+          p.fanShu += 8;
+        } else {
+          p.fanShu = 16;
+        }
+      } else {
+        p.fanShu = 8;
+      }
+
+      playerFanShus.push({index: this.atIndex(p), fanShu: p.fanShu});
+    }
+
+    console.warn("playerFanShus-%s", JSON.stringify(playerFanShus));
+
     return this.players[nextZhuangIndex]
   }
 
-  // 处理杠分
+  // 计算盘数
   calcGangScore() {
-    const gangScore = this.players.length - 1
     this.players.forEach(playerToResolve => {
-      const buGang = (playerToResolve.events.buGang || []).length
-      const numAnGang = (playerToResolve.events.anGang || []).length
-      const gangExtraGainsPerPlayer = numAnGang * 2 + buGang
+      const mingGang = playerToResolve.events.mingGang || [];
+      const AnGang = playerToResolve.events.anGang || [];
+      let mingGangCount = 0;
+      let ziMingGangCount = 0;
+      let anGangCount = 0;
+      let ziAnGangCount = 0;
+      let playerShuiShu = 0;
 
-      for (const player of this.players) {
-        playerToResolve.winFrom(player, gangExtraGainsPerPlayer)
+      for (const gang of mingGang) {
+        if (gang < Enums.dong) {
+          mingGangCount++;
+        }
+
+        if (gang >= Enums.dong && gang <= Enums.bai) {
+          ziMingGangCount++;
+        }
       }
 
-      for (const gangFrom of playerToResolve.gangFrom) {
-        playerToResolve.winFrom(gangFrom, gangScore)
+      const mingGangScore = mingGangCount * config.xmmj.mingGangShui;
+      const ziMingGangScore = ziMingGangCount * config.xmmj.ziMingGangShui;
+      playerShuiShu += (mingGangScore + ziMingGangScore);
+
+      for (const gang of AnGang) {
+        if (gang < Enums.dong) {
+          anGangCount++;
+        }
+
+        if (gang >= Enums.dong && gang <= Enums.bai) {
+          ziAnGangCount++;
+        }
       }
+
+      const anGangScore = anGangCount * config.xmmj.anGangShui;
+      const ziAnGangScore = ziAnGangCount * config.xmmj.ziAnGangShui;
+      playerShuiShu += (anGangScore + ziAnGangScore);
+
+      // 计算金牌盘数
+      const goldScore = playerToResolve.cards[this.caishen];
+      playerShuiShu += goldScore;
+
+      // 计算花牌盘数
+      let huaScore = 0;
+      for (let i = Enums.spring; i <= Enums.ju; i++) {
+        huaScore += playerToResolve.cards[i];
+      }
+      playerShuiShu += huaScore;
+
+      //计算花牌春夏秋冬或梅兰竹菊一套
+      let huaSetScore = 0;
+      let flag = true;
+      for (let i = Enums.spring; i <= Enums.winter; i++) {
+        if (playerToResolve.cards[i] === 0) {
+          flag = false;
+        }
+      }
+      if (flag) {
+        huaSetScore = config.xmmj.huaSetShui;
+        playerShuiShu += huaSetScore;
+      }
+
+      flag = true;
+      for (let i = Enums.mei; i <= Enums.ju; i++) {
+        if (playerToResolve.cards[i] === 0) {
+          flag = false;
+        }
+      }
+      if (flag) {
+        huaSetScore += config.xmmj.huaSetShui;
+        playerShuiShu += huaSetScore;
+      }
+
+      // 计算序数牌暗刻
+      let anKeScore = 0;
+      for (let i = Enums.wanzi1; i <= Enums.tongzi9; i++) {
+        if (playerToResolve.cards[i] >= 3) {
+          anKeScore += config.xmmj.anKeShui;
+        }
+      }
+      playerShuiShu += anKeScore;
+
+      // 计算序数牌暗刻
+      let ziAnKeScore = 0;
+      for (let i = Enums.dong; i <= Enums.bai; i++) {
+        if (playerToResolve.cards[i] >= 3) {
+          ziAnKeScore += config.xmmj.ziAnKeShui;
+        }
+      }
+      playerShuiShu += ziAnKeScore;
+
+      // 计算字牌碰盘数
+      const pengs = playerToResolve.events.peng || [];
+      let pengScore = 0;
+
+      for (const peng of pengs) {
+        if (peng >= Enums.dong && peng <= Enums.bai) {
+          pengScore += config.xmmj.ziPengShui;
+        }
+      }
+      playerShuiShu += pengScore;
+
+      // 记录用户最终盘数
+      playerToResolve.shuiShu = playerShuiShu;
+
+      console.warn("index-%s, mingGangScore-%s, ziMingGangScore-%s, anGangScore-%s, ziAnGangScore-%s, goldScore-%s, huaScore-%s, huaSetScore-%s, anKeScore-%s, ziAnKeScore-%s, pengScore-%s, shuiShu-%s",
+        this.atIndex(playerToResolve), mingGangScore, ziMingGangScore, anGangScore, ziAnGangScore, goldScore, huaScore, huaSetScore, anKeScore, ziAnKeScore, pengScore, playerToResolve.shuiShu);
     })
   }
 
@@ -1128,31 +1244,13 @@ class TableState implements Serializable {
 
       // await this.room.charge()
 
-      const nextZhuang = this.nextZhuang()
-      // const niaos = await this.generateNiao()
-      // this.assignNiaos()
-      this.niaos = []
+      // 计算下一局庄家，计算底分
+      const nextZhuang = this.nextZhuang();
 
-      const huPlayers = this.players
-        .filter(p => p.huPai())
-      let diFen;
-      huPlayers
-        .forEach(huPlayer => {
-          const losers = this.players.filter(p => p.events[Enums.dianPao] || p.events[Enums.taJiaZiMo])
-          if (huPlayer.zhuang) {
-            // 连庒一次翻倍
-            diFen = Math.pow(2, this.room.zhuangCounter - 1);
-          } else {
-            diFen = 1;
-          }
-          const wins = huPlayer.winScore(diFen)
-          for (const loser of losers) {
-            huPlayer.winFrom(loser, wins)
-          }
-        })
-      if (huPlayers.length > 0) {
-        this.calcGangScore()
-      }
+      // 计算用户盘数
+      this.calcGangScore();
+
+      const huPlayers = this.players.filter(p => p.huPai());
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
       await this.recordRubyReward();
       for (const state1 of states) {
@@ -1165,8 +1263,6 @@ class TableState implements Serializable {
           state1.rubyReward = 0;
           // 是否破产
           state1.isBroke = player.isBroke;
-          // mvp 次数
-          state1.mvpTimes = 0;
         } else {
           state1.score = this.players[i].balance * this.rule.diFen
         }
@@ -1179,13 +1275,9 @@ class TableState implements Serializable {
       await this.room.updateBigWinner();
       await this.room.charge();
       // 是否游金
-      const isYouJin = huPlayers.filter(
-        item => item.events.hu.filter(value => value.isYouJin).length > 0
-      ).length > 0
+      const isYouJin = huPlayers.filter(item => item.events.hu.filter(value => value.isYouJin).length > 0).length > 0
       // 是否3金倒
-      const isSanJinDao = huPlayers.filter(
-        item => item.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0
-      ).length > 0
+      const isSanJinDao = huPlayers.filter(item => item.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0).length > 0
       const gameOverMsg = {
         niaos: [],
         creator: this.room.creator.model._id,
@@ -1207,7 +1299,6 @@ class TableState implements Serializable {
       this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       await this.room.gameOver(nextZhuang.model._id, states)
     }
-    // this.logger.close()
   }
 
   dissolve() {

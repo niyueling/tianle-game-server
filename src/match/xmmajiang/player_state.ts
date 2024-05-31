@@ -217,6 +217,12 @@ class PlayerState implements Serializable {
   // 可以吃的牌
   chiCombol: any[] = [];
 
+  // 番数
+  fanShu: number = 0;
+
+  // 水数
+  shuiShu: number = 0;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -254,6 +260,8 @@ class PlayerState implements Serializable {
     this.alreadyTakenCard = false
     this.flowerList = [];
     this.chiCombol = [];
+    this.fanShu = 0;
+    this.shuiShu = 0;
   }
 
   get youJinTimes() {
