@@ -434,8 +434,8 @@ class TableState implements Serializable {
   }
 
   async fapai(payload) {
-    this.shuffle()
-    this.sleepTime = 1500
+    this.shuffle();
+    this.sleepTime = 1500;
     // 金牌
     this.caishen = this.randGoldCard();
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
@@ -449,10 +449,9 @@ class TableState implements Serializable {
       this.testMoCards = payload.moCards;
     }
 
-    for (let i = 0, iMax = this.players.length; i < iMax; i++) {
+    for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : []);
-      // this.logger.info('fapai player-%s :%s', i, result.cards);
       p.flowerList = result.flowerList;
       cardList.push(result);
 
@@ -472,7 +471,7 @@ class TableState implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       // this.players[i].fanShu = this.players[i].zhuang ? 16 : 8;
       this.players[i].onShuffle(restCards, this.caishen, this.restJushu, cardList[i].cards, i, this.room.game.juIndex,
-        needShuffle, cardList[i].flowerList, allFlowerList)
+        needShuffle, cardList[i].flowerList, allFlowerList);
       // 记录发牌
       await this.room.auditManager.playerTakeCardList(this.players[i].model._id, cardList[i].cards);
     }
