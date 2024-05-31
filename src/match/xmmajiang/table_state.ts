@@ -632,11 +632,11 @@ class TableState implements Serializable {
 
     player.on("mayQiaoXiang", () => {
       player.sendMessage("game/mayQiaoXiang", {info: '可以敲响'})
-      this.logger.info('mayQiaoXiang player %s', index)
+      // this.logger.info('mayQiaoXiang player %s', index)
     })
 
     player.on("qiaoXiang", ({qiao}) => {
-      this.logger.info('qiaoXiang player-%s qiao :%s ', index, qiao)
+      // this.logger.info('qiaoXiang player-%s qiao :%s ', index, qiao)
       if (qiao) {
         player.setQiaoXiang()
         this.room.broadcast('game/otherQiaoXiang', {player: index})
