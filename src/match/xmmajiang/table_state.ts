@@ -1140,31 +1140,28 @@ class TableState implements Serializable {
 
       // 计算花牌盘数
       let huaScore = playerToResolve.flowerList.length;
-      playerShuiShu += huaScore;
 
       //计算花牌春夏秋冬或梅兰竹菊一套
-      let huaSetScore = 0;
       let flag = true;
       for (let i = Enums.spring; i <= Enums.winter; i++) {
         if (!playerToResolve.flowerList.includes(i)) {
           flag = false;
         }
       }
-      if (flag) {
-        huaSetScore += config.xmmj.huaSetShui;
-        playerShuiShu += huaSetScore;
-      }
-
-      flag = true;
+      let flag1 = true;
       for (let i = Enums.mei; i <= Enums.ju; i++) {
         if (!playerToResolve.flowerList.includes(i)) {
-          flag = false;
+          flag1 = false;
         }
       }
-      if (flag) {
-        huaSetScore += config.xmmj.huaSetShui;
-        playerShuiShu += huaSetScore;
+      if ((flag && !flag1) || (!flag && flag1)) {
+        huaScore = config.xmmj.huaSetShui;
       }
+
+      if (flag && flag1) {
+        huaScore = config.xmmj.allHuaShui;
+      }
+      playerShuiShu += huaScore;
 
       // 计算序数牌暗刻
       let anKeScore = 0;
@@ -1198,8 +1195,17 @@ class TableState implements Serializable {
       // 记录用户最终盘数
       playerToResolve.shuiShu = playerShuiShu;
 
-      console.warn("index-%s, mingGangScore-%s, ziMingGangScore-%s, anGangScore-%s, ziAnGangScore-%s, goldScore-%s, huaScore-%s, huaSetScore-%s, anKeScore-%s, ziAnKeScore-%s, pengScore-%s, shuiShu-%s",
-        this.atIndex(playerToResolve), mingGangScore, ziMingGangScore, anGangScore, ziAnGangScore, goldScore, huaScore, huaSetScore, anKeScore, ziAnKeScore, pengScore, playerToResolve.shuiShu);
+      playerToResolve.panInfo = {
+        gangScore: mingGangScore + ziMingGangScore + anGangScore + ziAnGangScore,
+        goldScore,
+        huaScore: huaScore,
+        anKeScore: anKeScore + ziAnKeScore,
+        pengScore,
+        shuiShu: playerToResolve.shuiShu
+      }
+
+      console.warn("index-%s, mingGangScore-%s, ziMingGangScore-%s, anGangScore-%s, ziAnGangScore-%s, goldScore-%s, huaScore-%s, anKeScore-%s, ziAnKeScore-%s, pengScore-%s, shuiShu-%s",
+        this.atIndex(playerToResolve), mingGangScore, ziMingGangScore, anGangScore, ziAnGangScore, goldScore, huaScore, anKeScore, ziAnKeScore, pengScore, playerToResolve.shuiShu);
     })
   }
 
@@ -1254,6 +1260,7 @@ class TableState implements Serializable {
     const fan = this.huTypeScore(huPlayer);
     huPlayer.panShu = (huPlayer.fanShu + huPlayer.shuiShu) * fan;
     huPlayer.shuiShu = huPlayer.panShu;
+    huPlayer.panInfo["shuiShu"] = huPlayer.shuiShu;
 
     // 计算输家盘数
     const loserPlayers = this.players.filter(p => !p.huPai());

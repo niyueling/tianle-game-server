@@ -226,6 +226,9 @@ class PlayerState implements Serializable {
   // 最终盘数
   panShu: number = 0;
 
+  // 结算盘数详细信息
+  panInfo: object = {}
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -266,6 +269,7 @@ class PlayerState implements Serializable {
     this.fanShu = 0;
     this.shuiShu = 0;
     this.panShu = 0;
+    this.panInfo = {};
   }
 
   get youJinTimes() {
@@ -1203,12 +1207,10 @@ class PlayerState implements Serializable {
       anGangCount: this.eventCount('anGang'),
       buGangCount: this.eventCount('buGang'),
       fangGangCount: this.fangGangCount,
-      // 金豆房奖励
-      rubyReward: 0,
       events,
       model: this.model,
       isBroke: false,
-      mvpTimes: 0,
+      panInfo: this.panInfo
     }
   }
 
