@@ -1333,7 +1333,6 @@ class TableState implements Serializable {
         if (this.room.isPublic) {
           // 金豆房
           state1.score = player.balance;
-          state1.rubyReward = 0;
           // 是否破产
           state1.isBroke = player.isBroke;
         } else {
