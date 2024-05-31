@@ -1274,12 +1274,12 @@ class TableState implements Serializable {
       loser.panShu = loserPanCount;
 
       // 计算输家最终积分
-      loser.balance = -huPlayer.panShu - loser.panShu;
+      loser.balance = -huPlayer.panShu + loser.panShu;
 
       // 如果输家是庄家，则需要额外扣除庄家得分
       if (loser.zhuang) {
         const zhuangDiFen = loser.fanShu - 8;
-        loser.balance - zhuangDiFen * fan;
+        loser.balance -= zhuangDiFen * fan;
       }
 
       // 计算赢家最终积分
