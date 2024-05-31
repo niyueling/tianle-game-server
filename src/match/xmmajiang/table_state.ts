@@ -1091,7 +1091,7 @@ class TableState implements Serializable {
       playerFanShus.push({index: this.atIndex(p), fanShu: p.fanShu});
     }
 
-    console.warn("playerFanShus-%s", JSON.stringify(playerFanShus));
+    // console.warn("playerFanShus-%s", JSON.stringify(playerFanShus));
 
     return this.players[nextZhuangIndex]
   }
@@ -1251,17 +1251,13 @@ class TableState implements Serializable {
   }
 
   async calcGameScore() {
-    const huPlayers = this.players.filter(p => p.huPai());
+    const huPlayer = this.players.filter(p => p.huPai())[0];
     const playerPanShus = [];
 
     // 计算赢家盘数
-    for (let i = 0; i < huPlayers.length; i++) {
-      // 计算胡牌类型倍数
-      const fan = this.huTypeScore(huPlayers[i]);
-      huPlayers[i].panShu = (huPlayers[i].fanShu + huPlayers[i].shuiShu) * fan;
-      huPlayers[i].shuiShu = huPlayers[i].panShu;
-      playerPanShus.push({index: huPlayers[i].seatIndex, panShu: huPlayers[i].panShu});
-    }
+    const fan = this.huTypeScore(huPlayer);
+    huPlayer.panShu = (huPlayer.fanShu + huPlayer.shuiShu) * fan;
+    huPlayer.shuiShu = huPlayer.panShu;
 
     // 计算输家盘数
     const loserPlayers = this.players.filter(p => !p.huPai());
@@ -1277,10 +1273,24 @@ class TableState implements Serializable {
         }
       }
 
-      // 计算用户的净赢盘数
+      // 计算输家的净赢盘数
       loser.panShu = loserPanCount;
-      playerPanShus.push({index: loser.seatIndex, panShu: loser.panShu});
+
+      // 计算输家最终积分
+      loser.balance = -huPlayer.panShu - loser.panShu;
+
+      // 如果输家是庄家，则需要额外扣除庄家得分
+      if (loser.zhuang) {
+        const zhuangDiFen = loser.fanShu - 8;
+        loser.balance - zhuangDiFen * fan;
+      }
+
+      // 计算赢家最终积分
+      huPlayer.balance -= loser.balance;
+      playerPanShus.push({index: loser.seatIndex, panShu: loser.panShu, balance: loser.balance});
     }
+
+    playerPanShus.push({index: huPlayer.seatIndex, panShu: huPlayer.panShu, balance: huPlayer.balance});
 
     console.warn("playerPanShus-%s", JSON.stringify(playerPanShus));
   }
