@@ -382,19 +382,11 @@ class Room extends RoomBase {
 
   async recordGameRecord(table, states) {
     const {players} = table
-    const club = this.clubId && await Club.findOne({_id: this.clubId})
 
     for (let index = 0; index < states.length; index++) {
       const state = states[index]
       const id = state.model._id
       const score = state.score
-      if (club && this.gameRule.useClubGold) {
-        state.model.clubGold += score;
-        if (state) {
-          await this.adjustPlayerClubGold(club, score, state.model._id, "游戏输赢，房间号：" + this._id)
-        }
-      }
-
       if (this.playerGainRecord[id]) {
         this.playerGainRecord[id] += score
       } else {
@@ -404,7 +396,7 @@ class Room extends RoomBase {
 
     const playerArray = states.map(state => {
       return {
-        name: state.model.name,
+        name: state.model.nickname,
         score: state.score,
       }
     })
@@ -489,7 +481,7 @@ class Room extends RoomBase {
       roomRecord.club = this.clubId;
     }
 
-    logger.info('roomState:', roomState);
+    // logger.info('roomState:', roomState);
 
     RoomRecord
       .update({room: this.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})

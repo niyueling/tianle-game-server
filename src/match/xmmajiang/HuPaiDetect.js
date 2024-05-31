@@ -1309,7 +1309,7 @@ const HuPaiDetect = {
       } else if (result.youJinTimes === 2) {
         fan *= 8;
       } else if (result.youJinTimes > 2) {
-        fan *= 12;
+        fan *= 16;
       }
     }
 

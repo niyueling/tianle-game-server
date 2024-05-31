@@ -223,6 +223,9 @@ class PlayerState implements Serializable {
   // 水数
   shuiShu: number = 0;
 
+  // 最终盘数
+  panShu: number = 0;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -262,6 +265,7 @@ class PlayerState implements Serializable {
     this.chiCombol = [];
     this.fanShu = 0;
     this.shuiShu = 0;
+    this.panShu = 0;
   }
 
   get youJinTimes() {

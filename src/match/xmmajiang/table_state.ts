@@ -1227,6 +1227,64 @@ class TableState implements Serializable {
     // await this.room.recordRoomScore('dissolve')
   }
 
+  huTypeScore(p) {
+    const events = p.events;
+
+    if (events.hu.filter(value => value.isYouJin && value.youJinTimes === 3).length > 0) {
+      return 16;
+    }
+    if (events.hu.filter(value => value.isYouJin && value.youJinTimes === 2).length > 0) {
+      return 8;
+    }
+    if (events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0 || events.tianHu || events.hu.filter(value => value.isYouJin && value.youJinTimes === 1).length > 0) {
+      return 4;
+    }
+    if (events.qiangGang) {
+      return 3;
+    }
+    if (events.zimo) {
+      return 2;
+    }
+    if (events.jiePao) {
+      return 1;
+    }
+  }
+
+  async calcGameScore() {
+    const huPlayers = this.players.filter(p => p.huPai());
+    const playerPanShus = [];
+
+    // 计算赢家盘数
+    for (let i = 0; i < huPlayers.length; i++) {
+      // 计算胡牌类型倍数
+      const fan = this.huTypeScore(huPlayers[i]);
+      huPlayers[i].panShu = (huPlayers[i].fanShu + huPlayers[i].shuiShu) * fan;
+      huPlayers[i].shuiShu = huPlayers[i].panShu;
+      playerPanShus.push({index: huPlayers[i].seatIndex, panShu: huPlayers[i].panShu});
+    }
+
+    // 计算输家盘数
+    const loserPlayers = this.players.filter(p => !p.huPai());
+    for (let i = 0; i < loserPlayers.length; i++) {
+      const loser = loserPlayers[i];
+      let loserPanCount = 0;
+
+      for (let j = 0; j < loserPlayers.length; j++) {
+        const anotherLoser = loserPlayers[j];
+
+        if (loser._id.toString() !== anotherLoser._id.toString()) {
+          loserPanCount += (loser.shuiShu - anotherLoser.shuiShu);
+        }
+      }
+
+      // 计算用户的净赢盘数
+      loser.panShu = loserPanCount;
+      playerPanShus.push({index: loser.seatIndex, panShu: loser.panShu});
+    }
+
+    console.warn("playerPanShus-%s", JSON.stringify(playerPanShus));
+  }
+
   async gameOver() {
     if (this.state !== stateGameOver) {
       this.state = stateGameOver
@@ -1243,13 +1301,14 @@ class TableState implements Serializable {
       this.room.removeListener('reconnect', this.onReconnect)
       this.room.removeListener('empty', this.onRoomEmpty)
 
-      // await this.room.charge()
-
       // 计算下一局庄家，计算底分
       const nextZhuang = this.nextZhuang();
 
       // 计算用户盘数
       this.calcGangScore();
+
+      // 计算用户最终得分
+      await this.calcGameScore();
 
       const huPlayers = this.players.filter(p => p.huPai());
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
@@ -1272,9 +1331,6 @@ class TableState implements Serializable {
 
       await this.room.recordGameRecord(this, states)
       await this.room.recordRoomScore()
-      // 更新大赢家
-      await this.room.updateBigWinner();
-      await this.room.charge();
       // 是否游金
       const isYouJin = huPlayers.filter(item => item.events.hu.filter(value => value.isYouJin).length > 0).length > 0
       // 是否3金倒
