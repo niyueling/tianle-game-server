@@ -470,6 +470,7 @@ class TableState implements Serializable {
     const allFlowerList = [];
     cardList.map(value => allFlowerList.push(value.flowerList));
     for (let i = 0; i < this.players.length; i++) {
+      // this.players[i].fanShu = this.players[i].zhuang ? 16 : 8;
       this.players[i].onShuffle(restCards, this.caishen, this.restJushu, cardList[i].cards, i, this.room.game.juIndex,
         needShuffle, cardList[i].flowerList, allFlowerList)
       // 记录发牌
