@@ -1301,14 +1301,14 @@ class TableState implements Serializable {
       this.room.removeListener('reconnect', this.onReconnect)
       this.room.removeListener('empty', this.onRoomEmpty)
 
-      // 计算下一局庄家，计算底分
-      const nextZhuang = this.nextZhuang();
-
       // 计算用户盘数
       this.calcGangScore();
 
       // 计算用户最终得分
       await this.calcGameScore();
+
+      // 计算下一局庄家，计算底分
+      const nextZhuang = this.nextZhuang();
 
       const huPlayers = this.players.filter(p => p.huPai());
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
