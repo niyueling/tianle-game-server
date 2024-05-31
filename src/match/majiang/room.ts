@@ -579,6 +579,7 @@ class Room extends RoomBase {
       model: newModel,
       medalId,
       headerBorderId,
+      isGameRunning: !!this.gameState,
       isZhuang: newJoinPlayer.zhuang,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,

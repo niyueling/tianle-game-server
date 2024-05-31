@@ -578,6 +578,7 @@ class Room extends RoomBase {
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),
+      isGameRunning: !!this.gameState,
       location: newJoinPlayer.location,
       owner: this.ownerId,
       score: this.getScore(newJoinPlayer),
