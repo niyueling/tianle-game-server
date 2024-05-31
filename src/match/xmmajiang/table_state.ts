@@ -1140,28 +1140,25 @@ class TableState implements Serializable {
       playerShuiShu += goldScore;
 
       // 计算花牌盘数
-      let huaScore = 0;
-      for (let i = Enums.spring; i <= Enums.ju; i++) {
-        huaScore += playerToResolve.cards[i];
-      }
+      let huaScore = playerToResolve.flowerList.length;
       playerShuiShu += huaScore;
 
       //计算花牌春夏秋冬或梅兰竹菊一套
       let huaSetScore = 0;
       let flag = true;
       for (let i = Enums.spring; i <= Enums.winter; i++) {
-        if (playerToResolve.cards[i] === 0) {
+        if (!playerToResolve.flowerList.includes(i)) {
           flag = false;
         }
       }
       if (flag) {
-        huaSetScore = config.xmmj.huaSetShui;
+        huaSetScore += config.xmmj.huaSetShui;
         playerShuiShu += huaSetScore;
       }
 
       flag = true;
       for (let i = Enums.mei; i <= Enums.ju; i++) {
-        if (playerToResolve.cards[i] === 0) {
+        if (!playerToResolve.flowerList.includes(i)) {
           flag = false;
         }
       }
