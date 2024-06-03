@@ -439,6 +439,15 @@ class TableState implements Serializable {
     // 金牌
     this.caishen = this.randGoldCard();
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
+
+    // 测试发牌
+    payload.cards = [
+      [this.caishen, this.caishen, this.caishen],
+      [],
+      [],
+      []
+    ]
+
     // 总牌数扣掉每人16张
     let restCards = this.remainCards - (this.rule.playerCount * 16);
     const needShuffle = this.room.shuffleData.length > 0;
@@ -450,14 +459,12 @@ class TableState implements Serializable {
     }
 
     for (let i = 0; i < this.players.length; i++) {
-      const p = this.players[i]
-      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : []);
-      p.flowerList = result.flowerList;
-      cardList.push(result);
+      const p = this.players[i];
 
       // 如果客户端指定发牌
       if (this.rule.test && payload.cards && payload.cards[i].length > 0) {
         for (let j = 0; j < payload.cards[i].length; j++) {
+          // 将指定发牌从牌堆中移除
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
           this.remainCards--;
           const card = this.cards[cardIndex];
@@ -465,7 +472,13 @@ class TableState implements Serializable {
           this.lastTakeCard = card;
         }
       }
+
+      // 补发牌到16张
+      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : []);
+      p.flowerList = result.flowerList;
+      cardList.push(result);
     }
+
     const allFlowerList = [];
     cardList.map(value => allFlowerList.push(value.flowerList));
     for (let i = 0; i < this.players.length; i++) {
