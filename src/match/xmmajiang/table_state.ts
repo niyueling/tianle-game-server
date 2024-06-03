@@ -1575,6 +1575,24 @@ class TableState implements Serializable {
       return
     }
 
+    // 获取大牌
+    const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id);
+    if (bigCardList.length > 0 && bigCardList.indexOf(card) === -1) {
+      // 没出大牌
+      player.sendMessage('game/daReply', {
+        ok: false,
+        info: TianleErrorCode.notDaThisCard,
+        data: {
+          index: this.atIndex(player),
+          daIndex: this.atIndex(this.stateData[Enums.da]),
+          card,
+          bigCardList,
+          state: this.state
+        }
+      })
+      return ;
+    }
+
     const ok = await player.daPai(card)
     if (ok) {
       this.lastDa = player
