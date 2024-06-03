@@ -416,7 +416,7 @@ class TableState implements Serializable {
         flowerList.push(card);
       }
 
-      cards.push(card)
+      cards.push(card);
     }
     return {cards, flowerList}
   }
