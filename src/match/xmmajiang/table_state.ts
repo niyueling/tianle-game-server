@@ -494,7 +494,7 @@ class TableState implements Serializable {
       }
     }
 
-    setTimeout(flowerResetCard, 1500);
+    setTimeout(flowerResetCard, 2000);
 
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
@@ -574,7 +574,7 @@ class TableState implements Serializable {
       }
       // 检查手里有没有要打的大牌
       let bigCard = 0;
-      const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player.model._id);
+      const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards);
       if (bigCardList.length > 0) {
         // 从大牌中随机选第一个
         bigCard = bigCardList[0];
@@ -649,7 +649,6 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.chi, async (turn, card, shunZiList) => {
-      // console.warn("shunZiList-%s", JSON.stringify(shunZiList));
       const cardList = shunZiList.filter(value => value !== card);
       const otherCard1 = cardList[0]
       const otherCard2 = cardList[1]
@@ -1581,7 +1580,7 @@ class TableState implements Serializable {
     }
 
     // 获取大牌
-    const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id);
+    const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards);
     if (bigCardList.length > 0 && bigCardList.indexOf(card) === -1) {
       // 没出大牌
       player.sendMessage('game/daReply', {
@@ -1824,7 +1823,7 @@ class TableState implements Serializable {
     const cards = player.cards.slice();
     if (cards[lastTakeCard] > 0) cards[lastTakeCard]--;
     // 检查手里有没有要打的大牌
-    const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player.model._id);
+    const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards);
     if (bigCardList.length > 0) {
       // 从大牌中随机选第一个
       return bigCardList[0];

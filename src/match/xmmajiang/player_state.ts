@@ -857,7 +857,7 @@ class PlayerState implements Serializable {
       }
     }
     // 获取大牌
-    const bigCardList = await this.room.auditManager.getBigCardByPlayerId(this.model._id);
+    const bigCardList = await this.room.auditManager.getBigCardByPlayerId(this._id, this.seatIndex, this.cards);
     if (bigCardList.length > 0 && bigCardList.indexOf(card) === -1) {
       // 没出大牌
       console.warn('要先出', JSON.stringify(bigCardList));
