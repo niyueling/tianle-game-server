@@ -36,21 +36,6 @@ export class RobotManager extends NewRobotManager {
     }
   }
 
-  checkIsRobot(player) {
-    const keys = Object.keys(this.disconnectPlayers);
-    let proxy;
-    let flag = false;
-    for (const key of keys) {
-      proxy = this.disconnectPlayers[key];
-      if (proxy.model._id === player._id) {
-        flag = true;
-        break;
-      }
-    }
-
-    return flag;
-  }
-
   // 出牌
   async playCard() {
     if (!this.room.gameState) {

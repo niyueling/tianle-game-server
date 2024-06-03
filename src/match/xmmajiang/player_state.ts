@@ -1295,12 +1295,12 @@ class PlayerState implements Serializable {
 
   reconnect(msgDispatcher) {
     this.msgDispatcher = msgDispatcher
-    this.onDeposit = false
+    this.onDeposit = false;
     this.listenDispatcher(msgDispatcher)
   }
 
   deposit(callback) {
-    let minutes = 15 * 1000
+    let minutes = 150 * 1000
 
     // if (!this.room.isPublic) {
     //   return

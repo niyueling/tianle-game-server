@@ -112,7 +112,7 @@ export class NewRobotManager {
     // 更新出牌时间
     await this.updateWaitPlayTime();
     // 添加离线机器人
-    await this.addOfflineRobot();
+    // await this.addOfflineRobot();
     // 添加公共房机器人
     await this.addRobotForPublicRoom();
 
@@ -145,7 +145,7 @@ export class NewRobotManager {
     let isOk;
     await this.updateOfflineTime();
     await this.updateWaitPlayTime();
-    await this.addOfflineRobot();
+    // await this.addOfflineRobot();
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐

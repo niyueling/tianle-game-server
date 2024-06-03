@@ -1020,7 +1020,7 @@ class Room extends RoomBase {
     this.gameState.dissolve()
     this.gameState = null
 
-    if (this.isRoomAllOver()) {
+    if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
       this.broadcast('room/allOver', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
@@ -1029,7 +1029,6 @@ class Room extends RoomBase {
   }
 
   allOverMessage(): any {
-
     const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode}
     this.snapshot
       .filter(p => p)
