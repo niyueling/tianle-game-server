@@ -40,7 +40,7 @@ class Rule {
   }
 
   get test() {
-    return this.ro.test || true;
+    return true;
   }
 
   get juShu() {
