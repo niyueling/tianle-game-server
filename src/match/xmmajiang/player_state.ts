@@ -875,12 +875,23 @@ class PlayerState implements Serializable {
       this.emitter.emit('lastDa')
       this.record('da', card)
       this.recordGameSingleEvent(Enums.lastPlayerDaCard, card);
+
+      if (!this.events[Enums.youJinTimes]) {
+        this.recordGameSingleEvent(Enums.youJinTimes, 0);
+      }
+
       // 检查是否是游金
       const isOk = manager.isCanYouJin(this.cards, this.caiShen);
       if (isOk) {
         if (card === this.caiShen) {
+          // 如果起手双金，打出金牌则是双游
+          if (this.cards[card] > 0 && this.events[Enums.youJinTimes] === 0) {
+            this.recordGameSingleEvent(Enums.youJinTimes, this.events[Enums.youJinTimes] + 1);
+          }
           // 打的金牌,游金次数 + 1
           this.recordGameSingleEvent(Enums.youJinTimes, this.events[Enums.youJinTimes] + 1);
+
+          console.warn("card-%s, caiShen-%s, isYouJin-%s, youJinTimes", card, this.caiShen, isOk, this.events[Enums.youJinTimes]);
         } else {
           // 第一次游金
           this.recordGameSingleEvent(Enums.youJinTimes, 1);

@@ -441,12 +441,15 @@ class TableState implements Serializable {
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
 
     // 测试发牌
+    this.caishen = Enums.shuzi1;
     payload.cards = [
-      [this.caishen, this.caishen, this.caishen],
+      [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
       [],
       [],
       []
     ]
+    payload.moCards = [Enums.wanzi5];
+
 
     // 总牌数扣掉每人16张
     let restCards = this.remainCards - (this.rule.playerCount * 16);
@@ -466,10 +469,13 @@ class TableState implements Serializable {
         for (let j = 0; j < payload.cards[i].length; j++) {
           // 将指定发牌从牌堆中移除
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
-          this.remainCards--;
-          const card = this.cards[cardIndex];
-          this.cards.splice(cardIndex, 1);
-          this.lastTakeCard = card;
+          if (cardIndex !== -1) {
+            this.remainCards--;
+            const card = this.cards[cardIndex];
+            this.cards.splice(cardIndex, 1);
+            this.lastTakeCard = card;
+          }
+
         }
       }
 
@@ -1681,7 +1687,7 @@ class TableState implements Serializable {
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, xiajia.msgDispatcher)
     })
 
-    if (check[Enums.hu]) {
+    if (check[Enums.hu] && !this.isSomeOne2youOr3you()) {
       for (const p of check[Enums.hu]) {
         this.actionResolver.appendAction(p, 'hu', p.huInfo)
       }
@@ -1719,7 +1725,7 @@ class TableState implements Serializable {
       }
     }
 
-    if (check[Enums.chi] || check[Enums.pengGang] || check[Enums.hu]) {
+    if (check[Enums.chi] || check[Enums.pengGang] || (check[Enums.hu] && !this.isSomeOne2youOr3you())) {
       this.state = stateWaitAction;
       this.stateData = check;
       this.stateData.hangUp = [];
