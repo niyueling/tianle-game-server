@@ -374,7 +374,7 @@ class TableState implements Serializable {
     if (notifyFlower && this.isFlower(card)) {
       // 拿到花以后,重新发牌
       player.flowerList.push(card);
-      this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: player.seatIndex, remainCards: this.remainCards}})
+
       if (player) {
         player.cards[card]++;
         // 花牌记录
@@ -394,7 +394,7 @@ class TableState implements Serializable {
         }
       }
 
-      setTimeout(getFlowerCard, 500);
+      setTimeout(getFlowerCard, 700);
     }
 
     return card
@@ -1660,7 +1660,7 @@ class TableState implements Serializable {
     const xiajia = this.players[(index + 1) % this.players.length]
 
     if (xiajia.contacted(this.lastDa) < 2) {
-      check = xiajia.checkChi(card, check)
+      check = xiajia.checkChi(card, check);
     }
 
     for (let j = 1; j < this.players.length; j++) {

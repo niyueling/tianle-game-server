@@ -462,6 +462,14 @@ class PlayerState implements Serializable {
     }
 
     this.sendMessage('game/TakeCard', {ok: true, data: msg})
+
+    if (this.room.gameState.isFlower(card)) {
+      const takeFlower = async() => {
+        this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: this.seatIndex, remainCards: this.room.gameState.remainCards}})
+      }
+      setTimeout(takeFlower, 500);
+    }
+
     this.emitter.emit('waitForDa', msg)
 
     this.alreadyTakenCard = true

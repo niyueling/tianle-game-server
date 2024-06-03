@@ -36,7 +36,7 @@ class Rule {
   }
 
   get ruleType() {
-    return this.ro.ruleType || Enums.ruleType.lobby4Player;
+    return this.ro.ruleType || Enums.ruleType.xmmajiang;
   }
 
   get test() {
@@ -75,20 +75,8 @@ class Rule {
     return !!this.ro.diFen
   }
 
-  get maiDiTimes() {
-    return 2
-  }
-
   get useCaiShen() {
     return this.ro.useCaiShen
-  }
-
-  get feiNiao(): number {
-    return this.ro.feiNiao || 0
-  }
-
-  get quanFei(): number {
-    return this.ro.quanFei || 0
   }
 
   get keJiePao(): boolean {
