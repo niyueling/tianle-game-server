@@ -851,6 +851,7 @@ class PlayerState implements Serializable {
     const forbidCards = this.forbidCards || []
     if (this.getCardsArray().length > 2) {
       if (forbidCards.indexOf(card) !== -1 && this.cards[card] < 1 && card !== this.freeCard) {
+        console.warn("自己吃的牌，且手里没有相同的牌，不能打")
         // 自己吃的牌，且手里没有相同的牌，不能打
         return false;
       }
@@ -859,7 +860,7 @@ class PlayerState implements Serializable {
     const bigCardList = await this.room.auditManager.getBigCardByPlayerId(this.model._id);
     if (bigCardList.length > 0 && bigCardList.indexOf(card) === -1) {
       // 没出大牌
-      console.error('要先出', JSON.stringify(bigCardList));
+      console.warn('要先出', JSON.stringify(bigCardList));
       return false;
     }
     if (this.cards[card] > 0) {
@@ -891,7 +892,7 @@ class PlayerState implements Serializable {
       // console.debug('check you jin 检查游金', isOk, 'times', this.events[Enums.youJinTimes], 'shortId', this.model.shortId);
       return true
     }
-    console.error('no such card', card)
+    console.warn('no such card', card)
     return false
   }
 

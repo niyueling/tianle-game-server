@@ -435,7 +435,7 @@ class TableState implements Serializable {
 
   async fapai(payload) {
     this.shuffle();
-    this.sleepTime = 1500;
+    this.sleepTime = 2500;
     // 金牌
     this.caishen = this.randGoldCard();
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
@@ -469,7 +469,6 @@ class TableState implements Serializable {
     const allFlowerList = [];
     cardList.map(value => allFlowerList.push(value.flowerList));
     for (let i = 0; i < this.players.length; i++) {
-      // this.players[i].fanShu = this.players[i].zhuang ? 16 : 8;
       this.players[i].onShuffle(restCards, this.caishen, this.restJushu, cardList[i].cards, i, this.room.game.juIndex,
         needShuffle, cardList[i].flowerList, allFlowerList);
       // 记录发牌
@@ -484,12 +483,18 @@ class TableState implements Serializable {
           const result = await this.takeFlowerResetCards(p);
           restCards -= p.flowerList.length;
 
+          result.forEach(x => {
+            if (!this.isFlower(x)) {
+              p.cards[x]++;
+            }
+          });
+
           p.sendMessage('game/flowerResetCard', {ok: true, data: {restCards, flowerList: p.flowerList, index: i, cards: result}})
         }
       }
     }
 
-    setTimeout(flowerResetCard, 500);
+    setTimeout(flowerResetCard, 1500);
 
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
