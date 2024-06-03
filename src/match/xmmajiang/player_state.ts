@@ -362,34 +362,6 @@ class PlayerState implements Serializable {
     })
   }
 
-  // buCard(turn, card) {
-  //   this.takeCard(turn, card)
-  // }
-
-  // checkTingPai(gangCard) {
-  //   const count = this.cards[gangCard]
-  //   if (count === 4) {
-  //     this.recordGameEvent(Enums.anGang, gangCard)
-  //   } else if (count === 3) {
-  //     this.recordGameEvent(Enums.mingGang, gangCard)
-  //   } else if (count === 1) {
-  //     this.recordGameEvent(Enums.mingGang, gangCard)
-  //     this.removeGameEvent(Enums.peng, gangCard)
-  //   }
-  //   this.cards[gangCard] = 0
-  //   const ting = HuPaiDetect.checkTingPai(this.cards, this.events, this.rule)
-  //   this.cards[gangCard] = count
-  //   if (count === 4) {
-  //     this.removeGameEvent(Enums.anGang, gangCard)
-  //   } else if (count === 3) {
-  //     this.removeGameEvent(Enums.mingGang, gangCard)
-  //   } else if (count === 1) {
-  //     this.removeGameEvent(Enums.mingGang, gangCard)
-  //     this.recordGameEvent(Enums.peng, gangCard)
-  //   }
-  //   return ting
-  // }
-
   @recordChoiceAfterTakeCard
   async takeCard(turn: number, card: number, gangGuo: boolean = false, afterQiaoXiang = false) {
     // this.gang = gangGuo  // fanmeng 计算杠上开花

@@ -306,17 +306,17 @@ class TableState implements Serializable {
 
     for (const [i, p] of this.players.entries()) {
       p.resume(tableStateJson.gameState.players[i])
-      if (this.lastDa && this.lastDa._id === p._id) {
+      if (this.lastDa && this.lastDa._id.toString() === p._id.toString()) {
         this.lastDa = p;
       }
-      if (this.zhuang && this.zhuang._id === p._id) {
+      if (this.zhuang && this.zhuang._id.toString() === p._id.toString()) {
         this.lastDa = p;
       }
 
       const stateDataName = ['player', 'pengGang', 'HangUpPeng', 'gangPlayer', 'hangUpBu', 'HangUpGang', 'whom',
         'who', 'HangUpChi']
       for (const name of stateDataName) {
-        if (this.stateData[name] && this.stateData[name]._id === p._id) {
+        if (this.stateData[name] && this.stateData[name]._id.toString() === p._id.toString()) {
           this.stateData[name] = p;
         }
       }
