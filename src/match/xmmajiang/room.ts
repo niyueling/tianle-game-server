@@ -555,17 +555,28 @@ class Room extends RoomBase {
     }
 
     if (!this.gameState) {
-      await this.announcePlayerJoin(reconnectPlayer)
+      console.warn("gameState is dissolve");
+      if (this.isPublic) {
+        await this.forceDissolve();
+        return ;
+      } else {
+        await this.announcePlayerJoin(reconnectPlayer);
+      }
     }
-    // Fixme the index may be wrong
-    const i = this.snapshot.findIndex(p => p._id === reconnectPlayer._id)
-    this.emit('reconnect', reconnectPlayer, i)
-    await this.broadcastRejoin(reconnectPlayer)
-    if (this.dissolveTimeout) {
-      this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
+
+    const i = this.snapshot.findIndex(p => p._id.toString() === reconnectPlayer._id.toString())
+    await this.broadcastRejoin(reconnectPlayer);
+
+    const reconnectFunc = async () => {
+      this.emit('reconnect', reconnectPlayer, i);
+      if (this.dissolveTimeout) {
+        this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
+      }
     }
-    return true
-    // }
+
+    setTimeout(reconnectFunc, 500);
+
+    return true;
   }
 
   async broadcastRejoin(reconnectPlayer) {
