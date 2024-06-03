@@ -441,14 +441,14 @@ class TableState implements Serializable {
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
 
     // 测试发牌
-    this.caishen = Enums.shuzi1;
-    payload.cards = [
-      [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
-      [],
-      [],
-      []
-    ]
-    payload.moCards = [Enums.wanzi5];
+    // this.caishen = Enums.shuzi1;
+    // payload.cards = [
+    //   [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
+    //   [],
+    //   [],
+    //   []
+    // ]
+    // payload.moCards = [Enums.wanzi5];
 
 
     // 总牌数扣掉每人16张
@@ -1261,7 +1261,8 @@ class TableState implements Serializable {
     if (events.hu.filter(value => value.isYouJin && value.youJinTimes === 2).length > 0) {
       return 8;
     }
-    if (events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0 || events.tianHu || events.hu.filter(value => value.isYouJin && value.youJinTimes === 1).length > 0) {
+    if (events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0 || events.hu.filter(value => value.tianHu).length > 0
+      || events.hu.filter(value => value.isYouJin && value.youJinTimes === 1).length > 0) {
       return 4;
     }
     if (events.qiangGang) {
