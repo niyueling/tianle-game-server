@@ -1869,6 +1869,20 @@ class TableState implements Serializable {
   async onPlayerDa(player, turn, card) {
     const index = this.players.indexOf(player);
     let from
+    if (this.state === stateQiangJin) {
+      player.sendMessage('game/daReply', {
+        ok: false,
+        info: TianleErrorCode.qiangJinNotDa,
+        data: {
+          index: player.seatIndex,
+          daIndex: this.stateData[Enums.da].seatIndex,
+          card,
+          turn,
+          state: this.state
+        }
+      })
+      return
+    }
     if (this.state !== stateWaitDa) {
       player.sendMessage('game/daReply', {
         ok: false,
