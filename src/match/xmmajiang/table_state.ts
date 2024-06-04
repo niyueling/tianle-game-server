@@ -1243,6 +1243,8 @@ class TableState implements Serializable {
           if (!huSanJinDao) {
             player.events.hu[0].huType = Enums.qiangJin;
             player.events.hu[0].qiangJin = true;
+            // 将金牌放入手牌参与水数计算
+            player.cards[card]++;
           }
 
           // 如果胡天胡，取消天胡
@@ -1250,7 +1252,7 @@ class TableState implements Serializable {
             delete player.events.hu[0].tianHu;
           }
 
-          // 抢金和三金倒取消胡牌显示
+          // 抢金，三金倒不下发胡的牌
           delete player.events.zimo;
 
           this.stateData = {};
