@@ -532,13 +532,14 @@ class TableState implements Serializable {
     }
 
     const nextDo = async () => {
-      const nextCard = await this.consumeCard(this.zhuang);
-      const msg = await this.zhuang.takeCard(this.turn, nextCard);
-      const index = 0
-      this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
-
+      const nextCard = await this.consumeCard(this.zhuang, false, true);
+      const msg = await this.zhuang.takeCard(this.turn, nextCard, false);
       // 庄家摸到牌，判断是否可以抢金
       this.qiangJinData = await this.checkPlayerQiangJin();
+      msg.qiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex) !== -1;
+      this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg})
+      const index = 0
+      this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
 
       if (this.qiangJinData.length) {
         for (let i = 0; i < this.qiangJinData.length; i++) {

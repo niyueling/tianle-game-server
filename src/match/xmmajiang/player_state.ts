@@ -344,13 +344,13 @@ class PlayerState implements Serializable {
 
   // 杠完取牌
   async gangTakeCard(turn, card) {
-    return this.takeCard(turn, card, true)
+    return this.takeCard(turn, card)
   }
 
   async stashPopTakeCard() {
     if (this.takeCardStash) {
       const {turn, card, gangGuo} = this.takeCardStash
-      await this.takeCard(turn, card, gangGuo, true)
+      await this.takeCard(turn, card, gangGuo)
       this.takeCardStash = null
     }
   }
@@ -363,7 +363,7 @@ class PlayerState implements Serializable {
   }
 
   @recordChoiceAfterTakeCard
-  async takeCard(turn: number, card: number, gangGuo: boolean = false, afterQiaoXiang = false) {
+  async takeCard(turn: number, card: number, gangGuo: boolean = false, send = true) {
     // this.gang = gangGuo  // fanmeng 计算杠上开花
     let canTake = true
     this.emitter.emit('willTakeCard', () => {
@@ -386,7 +386,7 @@ class PlayerState implements Serializable {
       this.cards[card]++
     }
 
-    const msg = {card, turn, gang: null, hu: false, huInfo: null}
+    const msg = {card, turn, gang: null, hu: false, huInfo: null, qiangJin: false}
     this.recorder.recordUserEvent(this, 'moPai', card)
     this.recordGameSingleEvent(Enums.lastPlayerTakeCard, card);
 
@@ -433,13 +433,15 @@ class PlayerState implements Serializable {
       this.freeCard = card
     }
 
-    this.sendMessage('game/TakeCard', {ok: true, data: msg})
+    if (send) {
+      this.sendMessage('game/TakeCard', {ok: true, data: msg})
 
-    if (this.room.gameState.isFlower(card)) {
-      const takeFlower = async() => {
-        this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: this.seatIndex, remainCards: this.room.gameState.remainCards}})
+      if (this.room.gameState.isFlower(card)) {
+        const takeFlower = async() => {
+          this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: this.seatIndex, remainCards: this.room.gameState.remainCards}})
+        }
+        setTimeout(takeFlower, 500);
       }
-      setTimeout(takeFlower, 500);
     }
 
     this.emitter.emit('waitForDa', msg)
