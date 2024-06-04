@@ -266,6 +266,9 @@ class TableState implements Serializable {
   // 测试工具自定义摸牌
   testMoCards: any[] = [];
 
+  // 抢金用户
+  qiangJinData: any[] = [];
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -290,6 +293,7 @@ class TableState implements Serializable {
     this.setGameRecorder(new GameRecorder(this))
     this.stateData = {}
     this.testMoCards = [];
+    this.qiangJinData = [];
   }
 
   toJSON() {
@@ -525,9 +529,15 @@ class TableState implements Serializable {
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
 
       // 庄家摸到牌，判断是否可以抢金
-      const playerIndexs = await this.checkPlayerQiangJin();
+      this.qiangJinData = await this.checkPlayerQiangJin();
 
-      if (!this.isFlower(nextCard) && !playerIndexs.length) {
+      if (this.qiangJinData.length) {
+        for (let i = 0; i < this.qiangJinData.length; i++) {
+          this.players[i].sendMessage("game/qiangJin", {ok: true, data: this.qiangJinData});
+        }
+      }
+
+      if (!this.isFlower(nextCard)) {
         this.state = stateWaitDa;
         this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
       }
