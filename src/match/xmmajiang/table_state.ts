@@ -1581,9 +1581,6 @@ class TableState implements Serializable {
     huPlayer.panShu = (huPlayer.fanShu + huPlayer.shuiShu) * fan;
     huPlayer.shuiShu = huPlayer.panShu;
     huPlayer.panInfo["shuiShu"] = huPlayer.shuiShu;
-    if (huPlayer.events.hu.filter(huInfo => huInfo.huType === Enums.qiangJin)) {
-      huPlayer.cards[this.caishen]--;
-    }
 
     // 计算输家盘数
     const loserPlayers = this.players.filter(p => !p.huPai());
@@ -1625,6 +1622,9 @@ class TableState implements Serializable {
     if (this.state !== stateGameOver) {
       this.state = stateGameOver
       const winner = this.players.filter(x => x.events.jiePao)[0]
+      if (winner.events.hu.filter(huInfo => huInfo.huType === Enums.qiangJin).length > 0) {
+        winner.cards[this.caishen]--;
+      }
 
       // 没胡牌 也没放冲
       if (winner) {
