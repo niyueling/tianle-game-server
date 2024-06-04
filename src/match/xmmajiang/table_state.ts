@@ -1250,6 +1250,10 @@ class TableState implements Serializable {
             delete player.events.hu[0].tianHu;
           }
 
+          if (huSanJinDao) {
+            delete player.events.zimo;
+          }
+
           this.stateData = {};
           this.room.broadcast('game/showHuType', {
             ok: true,
