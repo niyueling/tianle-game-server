@@ -539,10 +539,6 @@ class TableState implements Serializable {
 
       // 庄家摸到牌，判断是否可以抢金
       this.qiangJinData = await this.checkPlayerQiangJin();
-      const isQiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex && p.qiangJin) !== -1;
-      msg.qiangJin = isQiangJin;
-      msg.hu = isQiangJin;
-      this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
 
       // 判断是否可以天胡
       const ind = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex);
@@ -553,6 +549,14 @@ class TableState implements Serializable {
           this.qiangJinData.push({index: this.zhuang.seatIndex, zhuang: this.zhuang.zhuang, card: this.lastTakeCard, tianHu: true, calc: false});
         }
       }
+
+      const isQiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex && p.qiangJin) !== -1;
+      msg.qiangJin = isQiangJin;
+      if (!msg.hu) {
+        msg.hu = isQiangJin;
+      }
+      this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
+
       const index = 0
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
 
@@ -1048,7 +1052,7 @@ class TableState implements Serializable {
     player.on(Enums.hu, async (turn, card) => {
       const recordCard = this.stateData.card;
       const isJiePao = this.state === stateWaitAction && recordCard === card && this.stateData[Enums.hu].contains(player);
-      const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card;
+      const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && player.checkZiMo();
       const isQiangJin = this.state === stateQiangJin;
       if (isJiePao && this.isSomeOne2youOr3you()) {
         player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.youJinNotHu});
