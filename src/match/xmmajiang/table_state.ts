@@ -686,7 +686,7 @@ class TableState implements Serializable {
               player.emitter.emit(Enums.hu, this.turn, takenCard)
               break
             default:
-              if (this.state === stateQiangJin && this.qiangJinData.findIndex(p => p.index === player.seatIndex)) {
+              if (this.state === stateQiangJin && this.qiangJinData.findIndex(p => p.index === player.seatIndex) !== -1) {
                 // 抢金(金豆房)
                 if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
                   this.qiangJinPlayer.push(player._id.toString());
@@ -723,7 +723,7 @@ class TableState implements Serializable {
               break
           }
         } else {
-          if (this.state === stateQiangJin && this.qiangJinData.findIndex(p => p.index === player.seatIndex)) {
+          if (this.state === stateQiangJin && this.qiangJinData.findIndex(p => p.index === player.seatIndex) !== -1) {
             // 抢金(金豆房)
             if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
               this.qiangJinPlayer.push(player._id.toString());
