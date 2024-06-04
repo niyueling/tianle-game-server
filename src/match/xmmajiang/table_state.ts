@@ -1581,7 +1581,9 @@ class TableState implements Serializable {
     huPlayer.panShu = (huPlayer.fanShu + huPlayer.shuiShu) * fan;
     huPlayer.shuiShu = huPlayer.panShu;
     huPlayer.panInfo["shuiShu"] = huPlayer.shuiShu;
-    huPlayer.cards[this.caishen]--;
+    if (huPlayer.events.hu.filter(huInfo => huInfo.huType === Enums.qiangJin)) {
+      huPlayer.cards[this.caishen]--;
+    }
 
     // 计算输家盘数
     const loserPlayers = this.players.filter(p => !p.huPai());
