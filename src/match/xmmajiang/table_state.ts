@@ -1250,9 +1250,8 @@ class TableState implements Serializable {
             delete player.events.hu[0].tianHu;
           }
 
-          if (huSanJinDao) {
-            delete player.events.zimo;
-          }
+          // 抢金和三金倒取消胡牌显示
+          delete player.events.zimo;
 
           this.stateData = {};
           this.room.broadcast('game/showHuType', {
