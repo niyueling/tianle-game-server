@@ -1642,8 +1642,8 @@ class TableState implements Serializable {
       const huPlayers = this.players.filter(p => p.huPai());
 
       // 如果抢金移除抢到的金
-      const index = huPlayers.findIndex(item => item.events.hu.filter(value => value.huType === Enums.qiangJin).length > 0);
-      huPlayers[index].cards[this.caishen]--;
+      const index = states.findIndex(item => item.events.hu.filter(value => value.huType === Enums.qiangJin).length > 0);
+      states[index].cards[this.caishen]--;
 
       await this.recordRubyReward();
       for (const state1 of states) {
