@@ -1622,8 +1622,9 @@ class TableState implements Serializable {
     if (this.state !== stateGameOver) {
       this.state = stateGameOver
       const winner = this.players.filter(x => x.events.jiePao)[0]
-      if (winner.events.hu.filter(huInfo => huInfo.huType === Enums.qiangJin).length > 0) {
-        winner.cards[this.caishen]--;
+      const qiangJinPlayer = winner.events.hu.filter(huInfo => huInfo.huType === Enums.qiangJin)[0];
+      if (qiangJinPlayer) {
+        qiangJinPlayer.cards[this.caishen]--;
       }
 
       // 没胡牌 也没放冲
