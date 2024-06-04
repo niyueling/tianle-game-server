@@ -456,14 +456,13 @@ class TableState implements Serializable {
     // 测试发牌
     this.caishen = Enums.shuzi1;
     payload.cards = [
-      [],
       [Enums.wanzi6, Enums.wanzi6, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
+      [this.caishen, this.caishen, this.caishen],
       [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
         Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
-      // [],
       []
     ]
-    payload.moCards = [Enums.wanzi9, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
+    payload.moCards = [Enums.wanzi5, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
 
     // 总牌数扣掉每人16张
     let restCards = this.remainCards - (this.rule.playerCount * 16);
@@ -1241,8 +1240,13 @@ class TableState implements Serializable {
           // 是否3金倒
           player.events.hu[0].huType = Enums.qiangJin;
           player.events.hu[0].qiangJin = true;
-          const huSanJinDao = player.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0;
 
+          // 如果胡天胡，取消天胡
+          if (player.events.hu[0].tianHu) {
+            delete player.events.hu[0].tianHu;
+          }
+
+          const huSanJinDao = player.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0;
           this.stateData = {};
           this.room.broadcast('game/showHuType', {
             ok: true,
@@ -1543,7 +1547,7 @@ class TableState implements Serializable {
       return 8;
     }
     if (events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0 || events.hu.filter(value => value.tianHu).length > 0
-      || events.hu.filter(value => value.isYouJin && value.youJinTimes === 1).length > 0) {
+      || events.hu.filter(value => value.isYouJin && value.youJinTimes === 1).length > 0 || events.hu.filter(value => value.huType === Enums.qiangJin).length > 0) {
       return 4;
     }
     if (events.qiangGang) {

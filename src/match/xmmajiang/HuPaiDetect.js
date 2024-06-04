@@ -145,9 +145,9 @@ const HuPaiDetect = {
 
     //有牌型的  13不靠 qifeng luanfeng 不需要
     if (result.huCards) {
-      checkPengPengHuAndAssignProps()
+      // checkPengPengHuAndAssignProps()
       const flatCards = clearCaiShenHolder2Flat()
-      this.checkQingYiSe(flatCards.slice(), events, result, caiShen)
+      // this.checkQingYiSe(flatCards.slice(), events, result, caiShen)
       if (result.huType === Enums.pingHu) {
         this.checkYiTiaoLong(result)
         // this.checkQuanQiuRen(originCountMap.slice(), events, result)
@@ -159,11 +159,11 @@ const HuPaiDetect = {
         }
       }
       // 闲家抓牌就胡
-      if (turn === 2) {
-        if (takeSelfCard) {
-          result.diHu = true
-        }
-      }
+      // if (turn === 2) {
+      //   if (takeSelfCard) {
+      //     result.diHu = true
+      //   }
+      // }
 
       // if (first) {
       //   if (takeSelfCard) {
@@ -1052,10 +1052,10 @@ const HuPaiDetect = {
   },
 
   checkQingYiSe(flatCards, events, resMap, caiShen) {
-    if (this.isQingYiSe(flatCards, events, true, caiShen)) {
-      resMap.qingYiSe = true
-      return true;
-    }
+    // if (this.isQingYiSe(flatCards, events, true, caiShen)) {
+    //   resMap.qingYiSe = true
+    //   return true;
+    // }
     return false;
   },
 
@@ -1146,13 +1146,13 @@ const HuPaiDetect = {
 
   getPropertiesAndTimes(rule){
     return [
-      {prop: Enums.qingYiSe, times: 4},
+      // {prop: Enums.qingYiSe, times: 4},
       {prop: Enums.tianHu, times: 4},
-      {prop: Enums.diHu, times: 4},
+      // {prop: Enums.diHu, times: 4},
       // 3金倒
       {prop: Enums.sanCaiShen, times: 4},
       {prop: Enums.qiangGang, times: 2},
-      {prop: Enums.pengPengHu, times: 2},
+      // {prop: Enums.pengPengHu, times: 2},
     ];
   },
 
