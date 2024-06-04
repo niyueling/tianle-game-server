@@ -1304,7 +1304,7 @@ class PlayerState implements Serializable {
   }
 
   deposit(callback) {
-    let minutes = 150 * 1000
+    let minutes = 15 * 1000
 
     // if (!this.room.isPublic) {
     //   return
