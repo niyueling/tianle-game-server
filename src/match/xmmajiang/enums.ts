@@ -87,6 +87,7 @@ const enums = {
   zimo: 'zimo',
   da: 'da',
   pengGang: 'pengGang',
+  qiangJin: 'qiangJin',
 
   guo: 'guo',
   gangByOtherDa: 'gangByOtherDa',
@@ -103,6 +104,8 @@ const enums = {
   lastPlayerTakeCard: 'lastPlayerTakeCard',
   // 游金次数
   youJinTimes: 'youJinTimes',
+  // 抢金胡
+  qiangJinHu: 'qiangJinHu',
 
   // 胡牌类型
   hunhun: 'hunhun',

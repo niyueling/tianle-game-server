@@ -51,7 +51,9 @@ export class RobotManager extends NewRobotManager {
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const isHu = proxy.playerState.checkZiMo();
-      if (isHu.hu) {
+      if (this.room.gameState.state === 10) {
+        await proxy.choice(Enums.qiangJin)
+      } else if (isHu.hu) {
         await proxy.choice(Enums.hu)
       } else if (AnGangIndex) {
         await proxy.gang(Enums.anGang, AnGangIndex)

@@ -1008,6 +1008,10 @@ class PlayerState implements Serializable {
       this.cancelTimeout()
       this.emitter.emit(Enums.chi, msg.turn, msg.card, msg.combol)
     })
+    playerSocket.on(Enums.qiangJinHu, msg => {
+      this.cancelTimeout()
+      this.emitter.emit(Enums.qiangJinHu)
+    })
     playerSocket.on('game/yaoHaiDi', msg => {
       this.cancelTimeout()
       this.emitter.emit('yaoHaiDi', msg.turn)

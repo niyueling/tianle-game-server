@@ -50,6 +50,9 @@ const exportObj = {
   'game/huTakeCard': (player, msg) => {
     player.emit('game/huTakeCard', msg);
   },
+  'game/qiangJinHu': (player, msg) => {
+    player.emit('game/qiangJinHu', msg);
+  },
   'game/restoreGame': (player, msg) => {
     player.emit('game/restoreGame', msg);
   },
