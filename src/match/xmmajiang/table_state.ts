@@ -456,10 +456,11 @@ class TableState implements Serializable {
     // 测试发牌
     this.caishen = Enums.shuzi1;
     payload.cards = [
-      [Enums.wanzi6, Enums.wanzi6, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
       [],
+      [Enums.wanzi6, Enums.wanzi6, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
       [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
         Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
+      // [],
       []
     ]
     payload.moCards = [Enums.wanzi9, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
@@ -1052,8 +1053,11 @@ class TableState implements Serializable {
     player.on(Enums.hu, async (turn, card) => {
       const recordCard = this.stateData.card;
       const isJiePao = this.state === stateWaitAction && recordCard === card && this.stateData[Enums.hu].contains(player);
-      const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && player.checkZiMo();
+      const huResult = player.checkZiMo()
+      const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && huResult.hu;
       const isQiangJin = this.state === stateQiangJin;
+
+      console.warn("jiePao-%s, ziMo-%s, qiangJin-%s", isJiePao, isZiMo, isQiangJin);
       if (isJiePao && this.isSomeOne2youOr3you()) {
         player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.youJinNotHu});
         return;
@@ -1117,6 +1121,7 @@ class TableState implements Serializable {
       } else if (isZiMo) {
         // 天胡(金豆房)
         const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
+        console.warn("qiangJinData-%s, seatIndex-%s, qiangDataIndex-%s, cards-%s", JSON.stringify(this.qiangJinData), player.seatIndex, qiangDataIndex, JSON.stringify(this.getCardArray(player.cards)));
         if (qiangDataIndex !== -1) {
           if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
             this.qiangJinPlayer.push(player._id.toString());
@@ -1373,6 +1378,9 @@ class TableState implements Serializable {
     const playerFanShus = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
+      // 记录上一局番数
+      p.lastFanShu = p.fanShu;
+
       // 如果用户是下一局庄家
       if (this.atIndex(p) === nextZhuangIndex) {
         // 如果用户连庄
@@ -1619,9 +1627,8 @@ class TableState implements Serializable {
 
       // 计算下一局庄家，计算底分
       const nextZhuang = this.nextZhuang();
-
-      const huPlayers = this.players.filter(p => p.huPai());
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
+      const huPlayers = this.players.filter(p => p.huPai());
       await this.recordRubyReward();
       for (const state1 of states) {
         const i = states.indexOf(state1);
@@ -2060,7 +2067,23 @@ class TableState implements Serializable {
     } else if (qiangJinPlayer) {
       // 抢金
       const qiangJinData = this.qiangJinData.filter(value => value.action === Enums.qiangJin);
-      const data = qiangJinPlayer > 1 ? qiangJinData[1] : qiangJinData[0];
+      let data = qiangJinData[0];
+      const zhuangFlag = this.qiangJinData.filter(value => value.zhuang).length > 0;
+
+      if (zhuangFlag && qiangJinPlayer > 1) {
+        data = qiangJinData[1];
+      }
+
+      // 如果是庄家，移除一张牌
+      if (this.players[data.index].zhuang) {
+        this.players[data.index].cards[data.delCard]--;
+      }
+
+      // 插入一张财神牌
+      this.players[data.index].cards[this.caishen]++;
+
+      console.warn("data-%s, cards-%s", JSON.stringify(data), JSON.stringify(this.getCardArray(this.players[data.index].cards)));
+
       this.players[data.index].emitter.emit(Enums.hu, this.turn, data.card);
       msgs.push({type: Enums.hu, card: data.card, index: data.index});
       data.calc = true;
@@ -2079,6 +2102,21 @@ class TableState implements Serializable {
     }
 
     setTimeout(huReply, 500);
+  }
+
+  getCardArray(cards) {
+    const cardArray = []
+    const pushN = (c, n) => {
+      for (let i = 0; i < n; i++) {
+        cardArray.push(c)
+      }
+    }
+
+    cards.forEach((v, c) => {
+      pushN(c, v)
+    })
+
+    return cardArray
   }
 
   async recordRubyReward() {

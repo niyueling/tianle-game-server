@@ -220,6 +220,9 @@ class PlayerState implements Serializable {
   // 番数
   fanShu: number = 0;
 
+  // 上一局番数
+  lastFanShu: number = 0;
+
   // 水数
   shuiShu: number = 0;
 
@@ -270,6 +273,7 @@ class PlayerState implements Serializable {
     this.shuiShu = 0;
     this.panShu = 0;
     this.panInfo = {};
+    this.lastFanShu = 0;
   }
 
   get youJinTimes() {
@@ -1203,7 +1207,7 @@ class PlayerState implements Serializable {
       buGangCount: this.eventCount('buGang'),
       fangGangCount: this.fangGangCount,
       events,
-      fanShu: this.fanShu,
+      fanShu: this.lastFanShu,
       model: this.model,
       isBroke: false,
       panInfo: this.panInfo
