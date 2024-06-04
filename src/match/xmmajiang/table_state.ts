@@ -2057,7 +2057,7 @@ class TableState implements Serializable {
       const data = qiangJinPlayer > 1 ? qiangJinData[1] : qiangJinData[0];
       this.players[data.index].emitter.emit(Enums.hu, this.turn, data.card);
       msgs.push({type: Enums.hu, card: data.card, index: data.index});
-      this.qiangJinData[data.index].calc = true;
+      data.calc = true;
     }
 
     for (let i = 0; i < this.qiangJinData.length; i++) {
