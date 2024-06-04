@@ -2086,9 +2086,10 @@ class TableState implements Serializable {
       const qiangDataIndex = this.qiangJinData.findIndex(value => value.action === Enums.sanJinDao);
       if (qiangDataIndex !== -1) {
         // 闲家三金倒少一张牌，所以从牌堆插入一张牌
-        this.players[this.qiangJinData[qiangDataIndex].index].cards[this.cards[0]]++;
-        this.players[this.qiangJinData[qiangDataIndex].index].emitter.emit(Enums.hu, this.turn, this.cards[0]);
-        msgs.push({type: Enums.hu, card: this.cards[0], index: this.qiangJinData[qiangDataIndex].index});
+        const cardIndex = this.cards.findIndex(c => !this.isFlower(c));
+        this.players[this.qiangJinData[qiangDataIndex].index].cards[this.cards[cardIndex]]++;
+        this.players[this.qiangJinData[qiangDataIndex].index].emitter.emit(Enums.hu, this.turn, this.cards[cardIndex]);
+        msgs.push({type: Enums.hu, card: this.cards[cardIndex], index: this.qiangJinData[qiangDataIndex].index});
         this.qiangJinData[qiangDataIndex].calc = true;
       }
     } else if (tianHuPlayer) {
