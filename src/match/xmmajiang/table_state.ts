@@ -539,7 +539,9 @@ class TableState implements Serializable {
 
       // 庄家摸到牌，判断是否可以抢金
       this.qiangJinData = await this.checkPlayerQiangJin();
-      msg.qiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex && p.qiangJin) !== -1;
+      const isQiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex && p.qiangJin) !== -1;
+      msg.qiangJin = isQiangJin;
+      msg.hu = isQiangJin;
       this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
 
       // 判断是否可以天胡
