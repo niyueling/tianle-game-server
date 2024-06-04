@@ -457,12 +457,12 @@ class TableState implements Serializable {
     this.caishen = Enums.shuzi1;
     payload.cards = [
       [Enums.wanzi6, Enums.wanzi6, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
-      [this.caishen, this.caishen, this.caishen],
+      [],
       [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
         Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
       []
     ]
-    payload.moCards = [Enums.wanzi5, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
+    payload.moCards = [Enums.wanzi9, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
 
     // 总牌数扣掉每人16张
     let restCards = this.remainCards - (this.rule.playerCount * 16);
@@ -691,8 +691,39 @@ class TableState implements Serializable {
               break
           }
         } else {
-          const card = await this.promptWithPattern(player, this.lastTakeCard);
-          player.emitter.emit(Enums.da, this.turn, card)
+          if (this.state === stateQiangJin) {
+            // 抢金(金豆房)
+            if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
+              this.qiangJinPlayer.push(player._id.toString());
+              this.setQiangJinAction(player, Enums.qiangJin);
+              player.sendMessage("game/chooseQiangJin", {
+                ok: true,
+                data: {action: Enums.qiangJin, index: player.seatIndex}
+              })
+
+              return;
+            }
+
+            // 抢金(好友房)
+            if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic) {
+              this.qiangJinPlayer.push(player._id.toString());
+              this.setQiangJinAction(player, Enums.qiangJin);
+              player.sendMessage("game/chooseQiangJin", {
+                ok: true,
+                data: {action: Enums.qiangJin, index: player.seatIndex}
+              })
+
+              if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+                this.isRunQiangJin = true;
+                player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+              }
+
+              return;
+            }
+          } else {
+            const card = await this.promptWithPattern(player, this.lastTakeCard);
+            player.emitter.emit(Enums.da, this.turn, card)
+          }
         }
       })
     })
@@ -1048,32 +1079,34 @@ class TableState implements Serializable {
       } else if (isZiMo) {
         // 天胡(金豆房)
         const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
-        if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
-          this.qiangJinPlayer.push(player._id.toString());
-          this.setQiangJinAction(player, Enums.tianHu);
-          player.sendMessage("game/chooseQiangJin", {
-            ok: true,
-            data: {action: Enums.tianHu, index: player.seatIndex}
-          })
+        if (qiangDataIndex !== -1) {
+          if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
+            this.qiangJinPlayer.push(player._id.toString());
+            this.setQiangJinAction(player, Enums.tianHu);
+            player.sendMessage("game/chooseQiangJin", {
+              ok: true,
+              data: {action: Enums.tianHu, index: player.seatIndex}
+            })
 
-          return;
-        }
-
-        // 天胡(好友房)
-        if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
-          this.qiangJinPlayer.push(player._id.toString());
-          this.setQiangJinAction(player, Enums.tianHu);
-          player.sendMessage("game/chooseQiangJin", {
-            ok: true,
-            data: {action: Enums.tianHu, index: player.seatIndex}
-          })
-
-          if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
-            this.isRunQiangJin = true;
-            player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+            return;
           }
 
-          return;
+          // 天胡(好友房)
+          if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
+            this.qiangJinPlayer.push(player._id.toString());
+            this.setQiangJinAction(player, Enums.tianHu);
+            player.sendMessage("game/chooseQiangJin", {
+              ok: true,
+              data: {action: Enums.tianHu, index: player.seatIndex}
+            })
+
+            if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+              this.isRunQiangJin = true;
+              player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+            }
+
+            return;
+          }
         }
 
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
@@ -1998,7 +2031,7 @@ class TableState implements Serializable {
     for (let i = 0; i < this.qiangJinData.length; i++) {
       // 处理过牌
       if (!this.qiangJinData[i].calc) {
-        this.players[this.qiangJinData[i].index].emitter.emit(Enums.guo, this.turn, this.qiangJinData[i].card);
+        // this.players[this.qiangJinData[i].index].emitter.emit(Enums.guo, this.turn, this.qiangJinData[i].card);
         msgs.push({type: Enums.guo, card: this.qiangJinData[i].card, index: this.qiangJinData[i].index});
       }
     }
