@@ -4788,6 +4788,7 @@ class TableState implements Serializable {
       juShu: this.restJushu,
       juIndex: this.room.game.juIndex,
       states,
+      gameType: GameType.xueliu,
       records: scoreRecords,
       ruleType: this.rule.ruleType,
       isPublic: this.room.isPublic,

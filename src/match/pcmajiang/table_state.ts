@@ -19,7 +19,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {TianleErrorCode} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1640,6 +1640,7 @@ class TableState implements Serializable {
         juIndex: this.room.game.juIndex,
         useKun: this.rule.useKun,
         states,
+        gameType: GameType.pcmj,
         // 金豆奖池
         rubyReward: 0,
         ruleType: this.rule.ruleType,

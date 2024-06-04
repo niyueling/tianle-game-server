@@ -14,7 +14,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {RobotStep, TianleErrorCode} from "@fm/common/constants";
+import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -456,9 +456,10 @@ class TableState implements Serializable {
     // 测试发牌
     this.caishen = Enums.shuzi1;
     payload.cards = [
-      [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
-      [],
-      [],
+      [Enums.wanzi6, Enums.wanzi6, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
+      [this.caishen, this.caishen, this.caishen],
+      [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
+        Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
       []
     ]
     payload.moCards = [Enums.wanzi5, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
@@ -1581,6 +1582,7 @@ class TableState implements Serializable {
         states,
         isYouJin,
         isSanJinDao,
+        gameType: GameType.xmmj,
         // 金豆奖池
         rubyReward: 0,
         ruleType: this.rule.ruleType,
