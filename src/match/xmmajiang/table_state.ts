@@ -1238,15 +1238,18 @@ class TableState implements Serializable {
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
         if (ok && player.daHuPai(card, null)) {
           // 是否3金倒
-          player.events.hu[0].huType = Enums.qiangJin;
-          player.events.hu[0].qiangJin = true;
+          const huSanJinDao = player.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0;
+
+          if (!huSanJinDao) {
+            player.events.hu[0].huType = Enums.qiangJin;
+            player.events.hu[0].qiangJin = true;
+          }
 
           // 如果胡天胡，取消天胡
           if (player.events.hu[0].tianHu) {
             delete player.events.hu[0].tianHu;
           }
 
-          const huSanJinDao = player.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0;
           this.stateData = {};
           this.room.broadcast('game/showHuType', {
             ok: true,
