@@ -1253,7 +1253,9 @@ class TableState implements Serializable {
           }
 
           // 抢金，三金倒不下发胡的牌
-          delete player.events.zimo;
+          if (huSanJinDao) {
+            delete player.events.zimo;
+          }
 
           this.stateData = {};
           this.room.broadcast('game/showHuType', {
@@ -1627,9 +1629,6 @@ class TableState implements Serializable {
             x.events.hunhun = winner.events.hu
           })
       }
-      this.players.forEach(x => x.gameOver())
-      this.room.removeListener('reconnect', this.onReconnect)
-      this.room.removeListener('empty', this.onRoomEmpty)
 
       // 计算用户盘数
       this.calcGangScore();
@@ -1641,6 +1640,11 @@ class TableState implements Serializable {
       const nextZhuang = this.nextZhuang();
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
       const huPlayers = this.players.filter(p => p.huPai());
+
+      // 如果抢金移除抢到的金
+      const index = huPlayers.findIndex(item => item.events.hu.filter(value => value.huType === Enums.qiangJin).length > 0);
+      huPlayers[index].cards[this.caishen]--;
+
       await this.recordRubyReward();
       for (const state1 of states) {
         const i = states.indexOf(state1);
@@ -1659,6 +1663,9 @@ class TableState implements Serializable {
 
       await this.room.recordGameRecord(this, states)
       await this.room.recordRoomScore()
+      this.players.forEach(x => x.gameOver())
+      this.room.removeListener('reconnect', this.onReconnect)
+      this.room.removeListener('empty', this.onRoomEmpty)
       // 是否游金
       const isYouJin = huPlayers.filter(item => item.events.hu.filter(value => value.isYouJin).length > 0).length > 0
       // 是否3金倒
