@@ -283,7 +283,7 @@ class TableState implements Serializable {
       this.listenPlayer(p)
     }
     this.turn = 1
-    this.state = stateWaitDa
+    this.state = stateWaitAction
     this.lastDa = null
     this.logger = winston;
 
