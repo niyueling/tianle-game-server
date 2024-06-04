@@ -571,7 +571,7 @@ class TableState implements Serializable {
             p.cards[i]++;
 
             if (tingPai) {
-              playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen});
+              playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, delCard: i});
               break;
             }
           }
@@ -1106,6 +1106,61 @@ class TableState implements Serializable {
           }
 
           return;
+        }
+
+        // 抢金
+        const ok = player.zimo(card, turn === 1, this.remainCards === 0);
+        if (ok && player.daHuPai(card, null)) {
+          // 是否3金倒
+          player.events.hu[0].huType = Enums.qiangJin;
+          player.events.hu[0].qiangJin = true;
+          const huSanJinDao = player.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0;
+
+          this.stateData = {};
+          this.room.broadcast('game/showHuType', {
+            ok: true,
+            data: {
+              index,
+              from: index,
+              cards: [card],
+              daCards: [],
+              huCards: [],
+              card,
+              type: Enums.qiangJin
+            }
+          });
+
+          const gameOver = async() => {
+            await this.gameOver();
+          }
+
+          const huReply = async() => {
+            await player.sendMessage('game/huReply', {
+              ok: true,
+              data: {
+                card,
+                from: player.seatIndex,
+                type: Enums.qiangJin,
+                turn,
+                youJinTimes: player.events[Enums.youJinTimes] || 0,
+                // 是否3金倒
+                isSanJinDao: huSanJinDao,
+              }
+            });
+
+            this.room.broadcast('game/oppoQiangJin', {ok: true, data: {
+                turn,
+                card,
+                index,
+                youJinTimes: player.events[Enums.youJinTimes] || 0,
+                // 是否3金倒
+                isSanJinDao: huSanJinDao
+              }}, player.msgDispatcher);
+
+            setTimeout(gameOver, 1000);
+          }
+
+          setTimeout(huReply, 1000);
         }
       }
     });
@@ -1875,13 +1930,21 @@ class TableState implements Serializable {
 
       // 处理胡牌
       if (this.qiangJinData[i].action === Enums.qiangJin) {
+        // 如果是庄家，移除一张牌
+        if (this.players[this.qiangJinData[i].index].zhuang) {
+          this.players[this.qiangJinData[i].index].cards[this.qiangJinData[i].delCard]--;
+        }
+
+        // 插入一张财神牌
+        this.players[this.qiangJinData[i].index].cards[this.caishen]++;
+
         this.players[this.qiangJinData[i].index].emitter.emit(Enums.hu, this.turn, this.qiangJinData[i].card);
-        msgs.push({type: Enums.guo, card: this.qiangJinData[i].card, index: this.qiangJinData[i].index});
+        msgs.push({type: Enums.hu, card: this.qiangJinData[i].card, index: this.qiangJinData[i].index});
       }
     }
 
     const huReply = async () => {
-      this.room.broadcast("game/qiangJinHuReply", {ok: true, data: {manyHuArray: this.qiangJinData, msg: msgs}});
+      this.room.broadcast("game/qiangJinHuReply", {ok: true, data: {qiangJinData: this.qiangJinData, msg: msgs}});
     }
 
     setTimeout(huReply, 500);
