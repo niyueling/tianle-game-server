@@ -1163,14 +1163,11 @@ class PlayerState implements Serializable {
 
   genGameStatus(index) {
     const cards = []
-    let huaCardCount = 0;
     for (let i = 0; i < this.cards.length; i++) {
       const c = this.cards[i]
       for (let j = 0; j < c; j++) {
         if (i < 40) {
           cards.push(i)
-        } else {
-          huaCardCount++;
         }
       }
     }
@@ -1200,6 +1197,7 @@ class PlayerState implements Serializable {
       buGangCount: this.eventCount('buGang'),
       fangGangCount: this.fangGangCount,
       events,
+      fanShu: this.fanShu,
       model: this.model,
       isBroke: false,
       panInfo: this.panInfo

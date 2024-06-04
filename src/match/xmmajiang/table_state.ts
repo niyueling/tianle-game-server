@@ -1116,8 +1116,6 @@ class TableState implements Serializable {
       playerFanShus.push({index: this.atIndex(p), fanShu: p.fanShu});
     }
 
-    // console.warn("playerFanShus-%s", JSON.stringify(playerFanShus));
-
     return this.players[nextZhuangIndex]
   }
 
