@@ -534,24 +534,31 @@ class TableState implements Serializable {
     const nextDo = async () => {
       const nextCard = await this.consumeCard(this.zhuang, false, true);
       const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
+      this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
+
       // 庄家摸到牌，判断是否可以抢金
       this.qiangJinData = await this.checkPlayerQiangJin();
-      msg.qiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex) !== -1;
-      this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg})
+      msg.qiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex && p.qiangJin) !== -1;
+      this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
+
+      // 判断是否可以天胡
+      const ind = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex);
+      if (msg.hu) {
+        if (ind !== -1) {
+          this.qiangJinData[ind].tianHu = true;
+        } else {
+          this.qiangJinData.push({index: this.zhuang.seatIndex, zhuang: this.zhuang.zhuang, card: this.lastTakeCard, tianHu: true});
+        }
+      }
       const index = 0
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
 
       if (this.qiangJinData.length) {
         this.state = stateQiangJin;
-
-        // for (let i = 0; i < this.qiangJinData.length; i++) {
-        //   this.players[i].sendMessage("game/qiangJin", {ok: true, data: this.qiangJinData});
-        // }
       }
 
       if (!this.isFlower(nextCard) && !this.qiangJinData.length) {
         this.state = stateWaitDa;
-        this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
       }
     }
 
@@ -573,16 +580,27 @@ class TableState implements Serializable {
             p.cards[i]++;
 
             if (tingPai) {
-              playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, delCard: i});
+              playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, delCard: i, qiangJin: true});
               break;
             }
           }
         }
       } else {
-        // 非庄家直接判断是否听牌
+        // 非庄家直接判断是否听牌(抢金)
         const tingPai = p.isTing();
         if (tingPai) {
-          playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen});
+          playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, qiangJin: true});
+        }
+
+        // 判断是否三金倒
+        if (p.cards[this.caishen] === 3) {
+          const index = playerIndexs.findIndex(p1 => p1.index === p.seatIndex);
+
+          if (index !== -1) {
+            playerIndexs[index].sanJinDao = true;
+          } else {
+            playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, sanJinDao: true});
+          }
         }
       }
     }
@@ -964,10 +982,10 @@ class TableState implements Serializable {
     player.on(Enums.hu, async (turn, card) => {
       const recordCard = this.stateData.card;
       const isJiePao = this.state === stateWaitAction && recordCard === card && this.stateData[Enums.hu].contains(player);
-      const isZiMo = this.state === stateWaitDa && recordCard === card;
+      const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card;
       const isQiangJin = this.state === stateQiangJin;
       if (isJiePao && this.isSomeOne2youOr3you()) {
-        player.sendMessage('ame/huReply', {ok: false, info: TianleErrorCode.youJinNotHu});
+        player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.youJinNotHu});
         return;
       }
 
@@ -1027,6 +1045,36 @@ class TableState implements Serializable {
         )
         await this.actionResolver.tryResolve()
       } else if (isZiMo) {
+        // 天胡(金豆房)
+        const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
+        if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
+          this.qiangJinPlayer.push(player._id.toString());
+          this.setQiangJinAction(player, Enums.tianHu);
+          player.sendMessage("game/chooseQiangJin", {
+            ok: true,
+            data: {action: Enums.tianHu, index: player.seatIndex}
+          })
+
+          return;
+        }
+
+        // 天胡(好友房)
+        if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
+          this.qiangJinPlayer.push(player._id.toString());
+          this.setQiangJinAction(player, Enums.tianHu);
+          player.sendMessage("game/chooseQiangJin", {
+            ok: true,
+            data: {action: Enums.tianHu, index: player.seatIndex}
+          })
+
+          if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+            this.isRunQiangJin = true;
+            player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+          }
+
+          return;
+        }
+
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
         if (ok && player.daHuPai(card, null)) {
           // 是否3金倒
@@ -1081,7 +1129,7 @@ class TableState implements Serializable {
           player.emitter.emit(Enums.da, this.turn, card);
         }
       } else if (isQiangJin) {
-        // 一炮多响(金豆房)
+        // 抢金(金豆房)
         if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
           this.setQiangJinAction(player, Enums.qiangJin);
@@ -1093,7 +1141,7 @@ class TableState implements Serializable {
           return;
         }
 
-        // 一炮多响(好友房)
+        // 抢金(好友房)
         if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
           this.setQiangJinAction(player, Enums.qiangJin);
@@ -1906,42 +1954,50 @@ class TableState implements Serializable {
     // 判断是否同时存在抢金
     let huIndex = [];
     for (let i = 0; i < this.qiangJinData.length; i++) {
-      if (this.qiangJinData[i].action === Enums.qiangJin) {
+      if ([Enums.qiangJin, Enums.sanJinDao, Enums.tianHu].includes(this.qiangJinData[i].action)) {
         huIndex.push(this.qiangJinData[i]);
       }
     }
 
+    // 三金倒人数
+    const sanJinDaoPlayer = this.qiangJinData.filter(value => value.action === Enums.sanJinDao).length > 0;
+    // 天胡人数
+    const tianHuPlayer = this.qiangJinData.filter(value => value.action === Enums.tianHu).length > 0;
+    // 抢金人数
+    const qiangJinPlayer = this.qiangJinData.filter(value => value.action === Enums.qiangJin).length;
+
+    //闲家三金倒优先级最高
+    if (sanJinDaoPlayer) {
+      const qiangDataIndex = this.qiangJinData.findIndex(value => value.action === Enums.sanJinDao);
+      if (qiangDataIndex !== -1) {
+        // 闲家三金倒少一张牌，所以从牌堆插入一张牌
+        this.players[this.qiangJinData[qiangDataIndex].index].cards[this.cards[0]]++;
+        this.players[this.qiangJinData[qiangDataIndex].index].emitter.emit(Enums.hu, this.turn, this.cards[0]);
+        msgs.push({type: Enums.hu, card: this.cards[0], index: this.qiangJinData[qiangDataIndex].index});
+        this.qiangJinData[qiangDataIndex].calc = true;
+      }
+    } else if (tianHuPlayer) {
+      // 庄家天胡
+      const qiangDataIndex = this.qiangJinData.findIndex(value => value.action === Enums.tianHu);
+      if (qiangDataIndex !== -1) {
+        this.players[this.qiangJinData[qiangDataIndex].index].emitter.emit(Enums.hu, this.turn, this.lastTakeCard);
+        msgs.push({type: Enums.hu, card: this.lastTakeCard, index: this.qiangJinData[qiangDataIndex].index});
+        this.qiangJinData[qiangDataIndex].calc = true;
+      }
+    } else if (qiangJinPlayer) {
+      // 抢金
+      const qiangJinData = this.qiangJinData.filter(value => value.action === Enums.qiangJin);
+      const data = qiangJinPlayer > 1 ? qiangJinData[1] : qiangJinData[0];
+      this.players[data.index].emitter.emit(Enums.hu, this.turn, data.card);
+      msgs.push({type: Enums.hu, card: data.card, index: data.index});
+      this.qiangJinData[data.index].calc = true;
+    }
+
     for (let i = 0; i < this.qiangJinData.length; i++) {
       // 处理过牌
-      if (this.qiangJinData[i].action === Enums.guo || huIndex.length > 1) {
-        if (this.qiangJinData[i].action === Enums.guo) {
-          this.players[this.qiangJinData[i].index].emitter.emit(Enums.guo, this.turn, this.qiangJinData[i].card);
-          msgs.push({type: Enums.guo, card: this.qiangJinData[i].card, index: this.qiangJinData[i].index});
-        }
-
-        // 如果不是第一位闲家抢金，则其他抢金用户直接过牌
-        if (huIndex.length > 1) {
-          for (let z = 0; z < huIndex.length; z++) {
-            if (z !== 1) {
-              this.players[huIndex[z].index].emitter.emit(Enums.guo, this.turn, huIndex[z].card);
-              msgs.push({type: Enums.guo, card: huIndex[z].card, index: huIndex[z].index});
-            }
-          }
-        }
-      }
-
-      // 处理胡牌
-      if (this.qiangJinData[i].action === Enums.qiangJin) {
-        // 如果是庄家，移除一张牌
-        if (this.players[this.qiangJinData[i].index].zhuang) {
-          this.players[this.qiangJinData[i].index].cards[this.qiangJinData[i].delCard]--;
-        }
-
-        // 插入一张财神牌
-        this.players[this.qiangJinData[i].index].cards[this.caishen]++;
-
-        this.players[this.qiangJinData[i].index].emitter.emit(Enums.hu, this.turn, this.qiangJinData[i].card);
-        msgs.push({type: Enums.hu, card: this.qiangJinData[i].card, index: this.qiangJinData[i].index});
+      if (!this.qiangJinData[i].calc) {
+        this.players[this.qiangJinData[i].index].emitter.emit(Enums.guo, this.turn, this.qiangJinData[i].card);
+        msgs.push({type: Enums.guo, card: this.qiangJinData[i].card, index: this.qiangJinData[i].index});
       }
     }
 
@@ -2041,19 +2097,22 @@ class TableState implements Serializable {
       case Enums.qiangJin:
         // 抢金
         if (this.state === stateQiangJin) {
-          // 一炮多响
-          if (!this.qiangJinPlayer.includes(this.zhuang._id.toString()) && this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex) !== -1) {
+          const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex);
+          // 抢金，如果庄家未操作，则机器人禁止操作
+          if (!this.qiangJinPlayer.includes(this.zhuang._id.toString()) && qiangDataIndex !== -1) {
             console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
             return;
           }
 
-          // console.warn("manyHuPlayers-%s canManyHuPlayers-%s manyHuArray-%s playerId-%s flag-%s todo-%s isRunMultiple-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers),
-          //   JSON.stringify(this.manyHuArray), player._id, this.manyHuPlayers.includes(player._id.toString()), todo, this.isRunMultiple);
-
           // 如果机器人没有操作，则push到数组
-          if (!this.qiangJinPlayer.includes(player._id.toString()) && this.qiangJinData.findIndex(p => p.index === player.seatIndex) !== -1) {
+          const xianQiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
+          // 闲家可以三金倒
+          if (!this.qiangJinPlayer.includes(player._id.toString()) && xianQiangDataIndex !== -1 && this.qiangJinData[xianQiangDataIndex].sanJinDao) {
             this.qiangJinPlayer.push(player._id.toString());
-            this.setQiangJinAction(player, todo);
+            this.setQiangJinAction(player, Enums.sanJinDao);
+          } else if (!this.qiangJinPlayer.includes(player._id.toString()) && xianQiangDataIndex !== -1 && this.qiangJinData[xianQiangDataIndex].qiangJin) {
+            this.qiangJinPlayer.push(player._id.toString());
+            this.setQiangJinAction(player, Enums.qiangJin);
           }
 
           if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
