@@ -533,7 +533,7 @@ class TableState implements Serializable {
 
     const nextDo = async () => {
       const nextCard = await this.consumeCard(this.zhuang, false, true);
-      const msg = await this.zhuang.takeCard(this.turn, nextCard, false);
+      const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
       // 庄家摸到牌，判断是否可以抢金
       this.qiangJinData = await this.checkPlayerQiangJin();
       msg.qiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex) !== -1;
@@ -542,10 +542,11 @@ class TableState implements Serializable {
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
 
       if (this.qiangJinData.length) {
-        for (let i = 0; i < this.qiangJinData.length; i++) {
-          this.state = stateQiangJin;
-          this.players[i].sendMessage("game/qiangJin", {ok: true, data: this.qiangJinData});
-        }
+        this.state = stateQiangJin;
+
+        // for (let i = 0; i < this.qiangJinData.length; i++) {
+        //   this.players[i].sendMessage("game/qiangJin", {ok: true, data: this.qiangJinData});
+        // }
       }
 
       if (!this.isFlower(nextCard) && !this.qiangJinData.length) {
