@@ -696,10 +696,12 @@ class TableState implements Serializable {
           this.state = stateWaitDa;
           this.stateData = {da: player};
           const gangSelection = player.getAvailableGangs()
+          const from = this.atIndex(this.lastDa)
 
           player.sendMessage('game/chiReply', {ok: true, data: {
               turn: this.turn,
               card,
+              from,
               suit: [card, otherCard1, otherCard2].sort(),
               gang: gangSelection.length > 0,
               gangSelection,
@@ -708,6 +710,7 @@ class TableState implements Serializable {
           this.room.broadcast('game/oppoChi', {ok: true, data: {
               card,
               turn,
+              from,
               index,
               suit: [card, otherCard1, otherCard2].sort(),
             }}, player.msgDispatcher);
