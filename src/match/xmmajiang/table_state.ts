@@ -450,7 +450,6 @@ class TableState implements Serializable {
     ]
     payload.moCards = [Enums.wanzi5, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
 
-
     // 总牌数扣掉每人16张
     let restCards = this.remainCards - (this.rule.playerCount * 16);
     const needShuffle = this.room.shuffleData.length > 0;
@@ -475,7 +474,6 @@ class TableState implements Serializable {
             this.cards.splice(cardIndex, 1);
             this.lastTakeCard = card;
           }
-
         }
       }
 
@@ -523,17 +521,53 @@ class TableState implements Serializable {
     const nextDo = async () => {
       const nextCard = await this.consumeCard(this.zhuang);
       const msg = await this.zhuang.takeCard(this.turn, nextCard);
-
       const index = 0
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
 
-      if (!this.isFlower(nextCard)) {
+      // 庄家摸到牌，判断是否可以抢金
+      const playerIndexs = await this.checkPlayerQiangJin();
+
+      if (!this.isFlower(nextCard) && !playerIndexs.length) {
         this.state = stateWaitDa;
         this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
       }
     }
 
     setTimeout(nextDo, this.sleepTime)
+  }
+
+  async checkPlayerQiangJin() {
+    const playerIndexs = [];
+
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+
+      // 如果是庄家，去除任意一张牌，可以听牌，则可以抢金
+      if (p.zhuang) {
+        for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
+          if (p.cards[i] > 0) {
+            p.cards[i]--;
+            const tingPai = p.isTing();
+            p.cards[i]++;
+
+            if (tingPai) {
+              playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang});
+              break;
+            }
+          }
+        }
+      } else {
+        // 非庄家直接判断是否听牌
+        const tingPai = p.isTing();
+        if (tingPai) {
+          playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang});
+        }
+      }
+    }
+
+    console.warn("qiangJin playerIndexs-%s", JSON.stringify(playerIndexs));
+
+    return playerIndexs;
   }
 
   atIndex(player: PlayerState) {

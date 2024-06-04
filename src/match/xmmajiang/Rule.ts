@@ -7,16 +7,6 @@ class Rule {
   ro: any
 
   constructor(ruleObj: any) {
-    // ignore ruleType
-    // if (ruleObj.ruleType) {
-    //   if (ruleObj.ruleType === Enums.ruleType.lobby4Player) {
-    //     ruleObj.playerCount = 4
-    //   } else if (ruleObj.ruleType === Enums.ruleType.lobby3Player) {
-    //     ruleObj.playerCount = 3
-    //   } else if (ruleObj.ruleType === Enums.ruleType.lobby2Player) {
-    //     ruleObj.playerCount = 2
-    //   }
-    // }
     this.ro = ruleObj;
   }
 
