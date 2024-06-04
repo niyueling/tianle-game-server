@@ -441,14 +441,14 @@ class TableState implements Serializable {
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
 
     // 测试发牌
-    // this.caishen = Enums.shuzi1;
-    // payload.cards = [
-    //   [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
-    //   [],
-    //   [],
-    //   []
-    // ]
-    // payload.moCards = [Enums.wanzi5];
+    this.caishen = Enums.shuzi1;
+    payload.cards = [
+      [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
+      [],
+      [],
+      []
+    ]
+    payload.moCards = [Enums.wanzi5, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
 
 
     // 总牌数扣掉每人16张
