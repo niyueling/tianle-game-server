@@ -37,6 +37,14 @@ class Rule {
     return this.ro.juShu
   }
 
+  get juScore() {
+    return 100;
+  }
+
+  get gameJuCount() {
+    return Enums.yiKe;
+  }
+
   get hzlz_option() {
     return this.ro.hzlz_option
   }
@@ -98,7 +106,7 @@ class Rule {
   // 3金倒必起手
   get sanJinMustQiShou() {
     let sanJinMustQiShou = !!this.ro.sanJinMustQiShou;
-    if (this.ro.isPublic) sanJinMustQiShou = false;
+    if (this.ro.isPublic) sanJinMustQiShou = true;
     return sanJinMustQiShou
   }
 

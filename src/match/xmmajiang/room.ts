@@ -298,7 +298,7 @@ class Room extends RoomBase {
 
   initScore(player) {
     if (this.scoreMap[player._id] === undefined) {
-      this.scoreMap[player._id] = this.game.rule.initScore
+      this.scoreMap[player._id] = this.game.rule.juScore
     }
   }
 
@@ -1025,7 +1025,7 @@ class Room extends RoomBase {
     }
     this.sortPlayer(nextZhuang)
     this.clearReady()
-    await this.delPlayerBless();
+    // await this.delPlayerBless();
     // 下一局
     await this.robotManager.nextRound();
     // await this.recordRoomScore()

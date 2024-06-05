@@ -134,6 +134,12 @@ const enums = {
   pingHu: 'pingHu',
   // 清一色，一条龙
   yiTiaoLong: 'yiTiaoLong',
+  // 局数1刻
+  yiKe: '1ke',
+  // 局数2圈
+  liangQuan: '2quan',
+  // 局数4圈
+  siQuan: '4quan',
 };
 
 enums.sameType = (card1, card2) =>

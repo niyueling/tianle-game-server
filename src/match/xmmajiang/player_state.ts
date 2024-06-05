@@ -232,6 +232,9 @@ class PlayerState implements Serializable {
   // 结算盘数详细信息
   panInfo: object = {}
 
+  // 初始携带积分
+  juScore: number = 0;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -240,7 +243,6 @@ class PlayerState implements Serializable {
     this.model = userSocket.model
     this.emitter = new EventEmitter()
     this.cards = new SourceCardMap(Enums.finalCard).fill(0)
-    this.score = room.getScore(userSocket)
     this.disconnectCallBack = player => {
       if (player === this.msgDispatcher) {
         this.onDisconnect()
@@ -274,6 +276,7 @@ class PlayerState implements Serializable {
     this.panShu = 0;
     this.panInfo = {};
     this.lastFanShu = 0;
+    this.score = room.getScore(userSocket)
   }
 
   get youJinTimes() {
