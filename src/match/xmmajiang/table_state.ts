@@ -474,7 +474,7 @@ class TableState implements Serializable {
       [],
       [],
     ]
-    payload.moCards = [this.caishen, Enums.tongzi1, Enums.tongzi2, Enums.tongzi3, Enums.wanzi5];
+    payload.moCards = [this.caishen, Enums.tongzi1, Enums.tongzi2, Enums.tongzi3, Enums.wanzi4, Enums.wanzi5];
 
     // 总牌数扣掉每人16张
     let restCards = this.remainCards - (this.rule.playerCount * 16);
