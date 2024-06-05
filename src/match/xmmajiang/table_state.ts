@@ -503,6 +503,8 @@ class TableState implements Serializable {
         }
       }
 
+      console.warn("remainCards-%s", this.remainCards);
+
       // 补发牌到16张
       const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : []);
       p.flowerList = result.flowerList;
