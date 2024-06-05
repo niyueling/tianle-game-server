@@ -393,7 +393,7 @@ class PlayerState implements Serializable {
       this.cards[card]++
     }
 
-    const msg = {card, turn, gang: null, hu: false, huInfo: null, qiangJin: false}
+    const msg = {card, turn, gang: null, hu: false, huInfo: null, qiangJin: false, bigCardList: []}
     this.recorder.recordUserEvent(this, 'moPai', card)
     this.recordGameSingleEvent(Enums.lastPlayerTakeCard, card);
 
@@ -439,6 +439,9 @@ class PlayerState implements Serializable {
     if (gangGuo) {
       this.freeCard = card
     }
+
+    // 判断是否有大牌需要先打
+    msg.bigCardList = await this.room.auditManager.getBigCardByPlayerId(this._id, this.seatIndex, this.cards);
 
     if (send) {
       this.sendMessage('game/TakeCard', {ok: true, data: msg})
