@@ -1622,14 +1622,15 @@ class TableState implements Serializable {
     if (this.state !== stateGameOver) {
       this.state = stateGameOver
       const winner = this.players.filter(x => x.events.jiePao)[0]
-      const index = this.players.findIndex(p => {
-        console.warn(p.events)
-      });
-      // const qiangJinPlayer = this.players[index];
-      // console.warn("events-%s", JSON.stringify(qiangJinPlayer.events));
-      // if (qiangJinPlayer) {
-      //   qiangJinPlayer.cards[this.caishen]--;
-      // }
+      const index = this.players.findIndex(p => p.events.hu && p.events.hu[0].huType === Enums.qiangJin);
+      if (index !== -1) {
+        const qiangJinPlayer = this.players[index];
+        console.warn("events-%s", JSON.stringify(qiangJinPlayer.events));
+        if (qiangJinPlayer) {
+          qiangJinPlayer.cards[this.caishen]--;
+        }
+      }
+
 
       // 没胡牌 也没放冲
       if (winner) {
