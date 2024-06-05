@@ -454,17 +454,17 @@ class TableState implements Serializable {
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
 
     // 测试发牌
-    // this.caishen = Enums.shuzi1;
-    // payload.cards = [
-    //   // [Enums.wanzi6, Enums.wanzi6, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
-    //   [this.caishen, this.caishen, this.caishen],
-    //   // [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
-    //   //   Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
-    //   [],
-    //   [],
-    //   []
-    // ]
-    // payload.moCards = [Enums.wanzi9, Enums.shuzi2, Enums.shuzi2, Enums.shuzi2, this.caishen];
+    this.caishen = Enums.shuzi3;
+    payload.cards = [
+      // [Enums.wanzi6, Enums.wanzi6, Enums.wanzi1, Enums.wanzi1, Enums.wanzi1, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.wanzi5, Enums.wanzi5],
+      [],
+      // [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
+      //   Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
+      [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi3, Enums.wanzi5, Enums.shuzi1, Enums.shuzi5, Enums.shuzi6, Enums.shuzi9, Enums.tongzi1, Enums.tongzi2, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.nan],
+      [],
+      []
+    ]
+    payload.moCards = [];
 
     // 总牌数扣掉每人16张
     let restCards = this.remainCards - (this.rule.playerCount * 16);
