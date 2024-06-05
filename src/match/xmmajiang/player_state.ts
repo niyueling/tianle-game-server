@@ -765,13 +765,18 @@ class PlayerState implements Serializable {
   isTing() {
     const caiShen = this.caiShen
 
-    this.cards.caiShen = caiShen
+    this.cards.caiShen = caiShen;
     this.cards[caiShen]++
     this.cards.turn = this.room.gameState.turn;
-    const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
-    this.cards[caiShen]--
+    const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
+    this.cards[caiShen]--;
+    console.warn("checkResult-%s", JSON.stringify(checkResult));
+    let huState = checkResult.hu;
+    if (this.cards[this.caiShen] === 2) {
+      huState = false;
+    }
 
-    return checkResult.hu
+    return huState;
   }
 
   isRobotTing(cards) {
