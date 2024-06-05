@@ -562,6 +562,7 @@ class TableState implements Serializable {
       const index = 0
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
 
+      // 判断抢金和非庄家三金倒为抢金状态
       if (this.qiangJinData.length) {
         this.state = stateQiangJin;
       }
@@ -1881,18 +1882,23 @@ class TableState implements Serializable {
     const index = this.players.indexOf(player);
     let from
     if (this.state === stateQiangJin) {
-      player.sendMessage('game/daReply', {
-        ok: false,
-        info: TianleErrorCode.qiangJinNotDa,
-        data: {
-          index: player.seatIndex,
-          daIndex: this.stateData[Enums.da].seatIndex,
-          card,
-          turn,
-          state: this.state
-        }
-      })
-      return
+      const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
+      // 如果用户无法天胡，三金倒，抢金，或者闲家可以抢金，三金倒，则不能打牌
+      if (qiangDataIndex === -1 || this.qiangJinData.length > 1) {
+        player.sendMessage('game/daReply', {
+          ok: false,
+          info: TianleErrorCode.qiangJinNotDa,
+          data: {
+            index: player.seatIndex,
+            daIndex: this.stateData[Enums.da].seatIndex,
+            card,
+            turn,
+            state: this.state
+          }
+        })
+
+        return;
+      }
     }
     if (this.state !== stateWaitDa) {
       player.sendMessage('game/daReply', {
