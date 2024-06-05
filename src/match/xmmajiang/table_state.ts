@@ -720,7 +720,7 @@ class TableState implements Serializable {
 
                   if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
                     this.isRunQiangJin = true;
-                    player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+                    player.emitter.emit(Enums.qiangJinHu);
                   }
 
                   return;
@@ -757,7 +757,7 @@ class TableState implements Serializable {
 
               if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
                 this.isRunQiangJin = true;
-                player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+                player.emitter.emit(Enums.qiangJinHu);
               }
 
               return;
@@ -1149,7 +1149,7 @@ class TableState implements Serializable {
 
               if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
                 this.isRunQiangJin = true;
-                player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+                player.emitter.emit(Enums.qiangJinHu);
               }
 
               return;
@@ -1221,12 +1221,12 @@ class TableState implements Serializable {
           }
           player.sendMessage("game/chooseQiangJin", {
             ok: true,
-            data: {action: Enums.qiangJin, index: player.seatIndex}
+            data: {action: huResult.hu && huResult.huType === Enums.qiShouSanCai ? Enums.sanJinDao : Enums.qiangJin, index: player.seatIndex}
           })
 
           if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
             this.isRunQiangJin = true;
-            player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+            player.emitter.emit(Enums.qiangJinHu);
           }
 
           return;
@@ -1243,7 +1243,7 @@ class TableState implements Serializable {
 
           if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
             this.isRunQiangJin = true;
-            player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+            player.emitter.emit(Enums.qiangJinHu);
           }
 
           return;
@@ -2108,11 +2108,18 @@ class TableState implements Serializable {
     if (sanJinDaoPlayer) {
       const qiangDataIndex = this.qiangJinData.findIndex(value => value.action === Enums.sanJinDao);
       if (qiangDataIndex !== -1) {
+        let cardIndex = this.cards.findIndex(c => !this.isFlower(c));
+
         // 闲家三金倒少一张牌，所以从牌堆插入一张牌
-        const cardIndex = this.cards.findIndex(c => !this.isFlower(c));
-        this.players[this.qiangJinData[qiangDataIndex].index].cards[this.cards[cardIndex]]++;
-        this.players[this.qiangJinData[qiangDataIndex].index].emitter.emit(Enums.hu, this.turn, this.cards[cardIndex]);
-        msgs.push({type: Enums.hu, card: this.cards[cardIndex], index: this.qiangJinData[qiangDataIndex].index});
+        if (!this.players[this.qiangJinData[qiangDataIndex].index].zhuang) {
+          cardIndex = this.cards[cardIndex];
+          this.players[this.qiangJinData[qiangDataIndex].index].cards[cardIndex]++;
+        } else {
+          cardIndex = this.qiangJinData[qiangDataIndex].card;
+        }
+
+        this.players[this.qiangJinData[qiangDataIndex].index].emitter.emit(Enums.hu, this.turn, cardIndex);
+        msgs.push({type: Enums.hu, card: cardIndex, index: this.qiangJinData[qiangDataIndex].index});
         this.qiangJinData[qiangDataIndex].calc = true;
       }
     } else if (tianHuPlayer) {
