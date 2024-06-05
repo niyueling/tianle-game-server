@@ -38,7 +38,7 @@ class Rule {
   }
 
   get juScore() {
-    return this.ro.juScore;
+    return this.ro.juScore || 100;
   }
 
   get gameJuCount() {

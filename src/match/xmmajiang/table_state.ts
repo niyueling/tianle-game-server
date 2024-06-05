@@ -1624,6 +1624,11 @@ class TableState implements Serializable {
         loser.balance -= zhuangDiFen * fan;
       }
 
+      // 如果是好友房，计算积分是否足够扣
+      if (loser.score < Math.abs(loser.balance)) {
+        loser.balance = -loser.score;
+      }
+
       // 计算赢家最终积分
       huPlayer.balance -= loser.balance;
       playerPanShus.push({index: loser.seatIndex, panShu: loser.panShu, balance: loser.balance});
