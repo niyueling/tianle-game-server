@@ -1267,8 +1267,8 @@ class TableState implements Serializable {
             delete player.events.hu[0].tianHu;
           }
 
-          // 抢金，三金倒不下发胡的牌
-          if (huSanJinDao) {
+          // 闲家三金倒不下发胡的牌
+          if (huSanJinDao && !player.zhuang) {
             delete player.events.zimo;
           }
 
@@ -1705,7 +1705,7 @@ class TableState implements Serializable {
         ruleType: this.rule.ruleType,
         isPublic: this.room.isPublic,
         caiShen: this.caishen,
-        base: this.room.currentBase,
+        zhuangCount: this.room.zhuangCounter,
         maiDi: this.rule.maiDi
       }
 
