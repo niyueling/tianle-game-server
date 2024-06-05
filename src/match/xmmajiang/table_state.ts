@@ -1059,7 +1059,7 @@ class TableState implements Serializable {
       const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && huResult.hu;
       const isQiangJin = this.state === stateQiangJin;
 
-      console.warn("jiePao-%s, ziMo-%s, qiangJin-%s", isJiePao, isZiMo, isQiangJin);
+      console.warn("jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s", isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult));
       if (isJiePao && this.isSomeOne2youOr3you()) {
         player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.youJinNotHu});
         return;
