@@ -235,6 +235,9 @@ class PlayerState implements Serializable {
   // 初始携带积分
   juScore: number = 0;
 
+  // 坐庄次数
+  zhuangCount: number = 0;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -277,6 +280,7 @@ class PlayerState implements Serializable {
     this.panInfo = {};
     this.lastFanShu = 0;
     this.score = room.getScore(userSocket)
+    this.zhuangCount = 0;
   }
 
   get youJinTimes() {

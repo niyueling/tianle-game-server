@@ -280,7 +280,8 @@ class TableState implements Serializable {
     this.restJushu = restJushu
     this.rule = rule
     const players = room.players.map(playerSocket => new PlayerState(playerSocket, room, rule))
-    players[0].zhuang = true
+    players[0].zhuang = true;
+    players[0].zhuangCount++;
 
     this.cards = generateCards(rule.noBigCard)
     this.room = room
