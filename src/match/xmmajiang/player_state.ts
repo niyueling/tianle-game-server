@@ -1212,7 +1212,7 @@ class PlayerState implements Serializable {
     }
     return {
       index,
-      score: 0,
+      score: this.score,
       cards,
       huaCardCount: this.flowerList.length,
       flowerList: this.flowerList,
