@@ -116,9 +116,13 @@ export class AuditManager {
   // 获取手上的大牌
   async getBigCardByPlayerId(playerId, seatIndex = 0, cards = []) {
     const cardList = []
-    for (let i = Enums.dong; i < Enums.bai; i++) {
+    for (let i = Enums.dong; i <= Enums.bai; i++) {
       // 忽略金牌, TODO 是否忽略白板
       if (this.model.cardUsed[i] > 0 && this.model.goldCard !== i) {
+        if (this.model.goldCard < Enums.dong && i === Enums.bai) {
+          continue;
+        }
+
         // 已经出过了, 检查自己有没有一张这种牌
         if (cards[i] === 1) {
           // console.warn("card-%s, cardCount-%s, cardCount1-%s, seatIndex-%s, playerCardList-%s", i, this.model.playerCardList[playerId][i], cards[i], seatIndex, JSON.stringify(this.model.playerCardList[playerId]));
