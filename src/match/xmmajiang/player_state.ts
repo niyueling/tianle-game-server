@@ -772,7 +772,7 @@ class PlayerState implements Serializable {
     this.cards[caiShen]--;
     console.warn("checkResult-%s", JSON.stringify(checkResult));
     let huState = checkResult.hu;
-    if (this.cards[this.caiShen] === 2) {
+    if (checkResult.hu && checkResult.huType === Enums.qiShouSanCai && this.cards[this.caiShen] === 2) {
       huState = false;
     }
 
