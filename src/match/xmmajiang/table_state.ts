@@ -1213,6 +1213,10 @@ class TableState implements Serializable {
         if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
           this.setQiangJinAction(player, Enums.qiangJin);
+          const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
+          if (qiangDataIndex !== -1 && (huResult.hu && huResult.huType === Enums.qiShouSanCai)) {
+            this.qiangJinData[qiangDataIndex].card = card;
+          }
           player.sendMessage("game/chooseQiangJin", {
             ok: true,
             data: {action: Enums.qiangJin, index: player.seatIndex}
