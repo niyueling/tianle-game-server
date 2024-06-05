@@ -1131,7 +1131,7 @@ class TableState implements Serializable {
         )
         await this.actionResolver.tryResolve()
       } else if (isZiMo) {
-        if (this.state !== stateQiangJin) {
+        if (this.state === stateQiangJin) {
           // 天胡(金豆房)
           const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
           console.warn("qiangJinData-%s, seatIndex-%s, qiangDataIndex-%s, cards-%s", JSON.stringify(this.qiangJinData), player.seatIndex, qiangDataIndex, JSON.stringify(this.getCardArray(player.cards)));
