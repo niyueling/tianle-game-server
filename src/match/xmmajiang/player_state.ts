@@ -533,10 +533,10 @@ class PlayerState implements Serializable {
     const check = this.checkHuState(card)
     let canHu;
     let newHuForbidCards = []
-    if (ignore && check.hu) {
+    if (ignore && check.hu && this.cards[this.caiShen] === 0) {
       canHu = true
     } else {
-      canHu = check.hu && check.fan > this.huForbiddenFan
+      canHu = check.hu && check.fan > this.huForbiddenFan && this.cards[this.caiShen] === 0
     }
     // 检查金牌是不是大于2
     const isHu = this.isDoubleGoldCardForYouJin(check);
@@ -575,7 +575,7 @@ class PlayerState implements Serializable {
       return checkResult.fan > 1
     }
 
-    return checkResult.hu && checkResult.fan > this.huForbiddenFan
+    return checkResult.hu && checkResult.fan > this.huForbiddenFan && this.cards[this.caiShen] === 0
   }
 
   checkHuState(card) {
@@ -802,7 +802,7 @@ class PlayerState implements Serializable {
     const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
     this.cards[card]--
     const isHu = this.isDoubleGoldCardForYouJin(checkResult);
-    if (checkResult.hu && isHu) {
+    if (checkResult.hu && isHu && this.cards[this.caiShen] === 0) {
       checkResult.zhuang = this.zhuang || dianPaoPlayer.zhuang
       this.recordGameEvent(Enums.jiePao, card)
       this.recordGameEvent(Enums.hu, checkResult)
