@@ -770,7 +770,6 @@ class PlayerState implements Serializable {
     this.cards.turn = this.room.gameState.turn;
     const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
     this.cards[caiShen]--;
-    console.warn("checkResult-%s", JSON.stringify(checkResult));
     let huState = checkResult.hu;
     if (checkResult.hu && checkResult.huType === Enums.qiShouSanCai && this.cards[this.caiShen] === 2) {
       huState = false;
