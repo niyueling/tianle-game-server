@@ -1141,8 +1141,8 @@ const HuPaiDetect = {
       if (cards.indexOf(card) > -1) {
         long.push(card)
       }
-      if (card % 10 == 9) {
-        found = (long.length == 9);
+      if (card % 10 === 9) {
+        found = (long.length === 9);
         if (found) {
           result['yiTiaoLong'] = true
           break
@@ -1187,7 +1187,7 @@ const HuPaiDetect = {
     const qiDuiQiaoXiangCards = Object.assign([], sourceCards)
     let canAddCard = -1
     for (let i = 1; i < Enums.bai; i++) {
-      if (qiDuiQiaoXiangCards[i] == 0 && !caiShen.includes(i)) {
+      if (qiDuiQiaoXiangCards[i] === 0 && !caiShen.includes(i)) {
         canAddCard = i
         break
       }
