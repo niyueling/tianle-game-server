@@ -1007,7 +1007,8 @@ class Room extends RoomBase {
   }
 
   isRoomAllOver(): boolean {
-    return this.game.juShu <= 0
+    const loserPlayer = this.players.findIndex(x => x != null && x.score <= 0);
+    return loserPlayer !== -1;
   }
 
   async gameOver(nextZhuangId, states) {
