@@ -1217,6 +1217,11 @@ class TableState implements Serializable {
             data: {action: Enums.qiangJin, index: player.seatIndex}
           })
 
+          if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+            this.isRunQiangJin = true;
+            player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+          }
+
           return;
         }
 
