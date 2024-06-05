@@ -1900,7 +1900,7 @@ class TableState implements Serializable {
         return;
       }
     }
-    if (this.state !== stateWaitDa) {
+    if (this.state === stateWaitAction) {
       player.sendMessage('game/daReply', {
         ok: false,
         info: TianleErrorCode.cardDaError,
