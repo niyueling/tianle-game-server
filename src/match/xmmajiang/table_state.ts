@@ -1268,7 +1268,7 @@ class TableState implements Serializable {
               daCards: [],
               huCards: [],
               card,
-              type: Enums.qiangJin
+              type: huSanJinDao ? Enums.sanJinDao : Enums.qiangJin
             }
           });
 
@@ -1282,7 +1282,7 @@ class TableState implements Serializable {
               data: {
                 card,
                 from: player.seatIndex,
-                type: Enums.qiangJin,
+                type: huSanJinDao ? Enums.sanJinDao : Enums.qiangJin,
                 turn,
                 youJinTimes: player.events[Enums.youJinTimes] || 0,
                 // 是否3金倒
