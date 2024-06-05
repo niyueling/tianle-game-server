@@ -1122,36 +1122,38 @@ class TableState implements Serializable {
         )
         await this.actionResolver.tryResolve()
       } else if (isZiMo) {
-        // 天胡(金豆房)
-        const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
-        console.warn("qiangJinData-%s, seatIndex-%s, qiangDataIndex-%s, cards-%s", JSON.stringify(this.qiangJinData), player.seatIndex, qiangDataIndex, JSON.stringify(this.getCardArray(player.cards)));
-        if (qiangDataIndex !== -1) {
-          if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
-            this.qiangJinPlayer.push(player._id.toString());
-            this.setQiangJinAction(player, Enums.tianHu);
-            player.sendMessage("game/chooseQiangJin", {
-              ok: true,
-              data: {action: Enums.tianHu, index: player.seatIndex}
-            })
+        if (this.state !== stateQiangJin) {
+          // 天胡(金豆房)
+          const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
+          console.warn("qiangJinData-%s, seatIndex-%s, qiangDataIndex-%s, cards-%s", JSON.stringify(this.qiangJinData), player.seatIndex, qiangDataIndex, JSON.stringify(this.getCardArray(player.cards)));
+          if (qiangDataIndex !== -1) {
+            if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
+              this.qiangJinPlayer.push(player._id.toString());
+              this.setQiangJinAction(player, Enums.tianHu);
+              player.sendMessage("game/chooseQiangJin", {
+                ok: true,
+                data: {action: Enums.tianHu, index: player.seatIndex}
+              })
 
-            return;
-          }
-
-          // 天胡(好友房)
-          if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
-            this.qiangJinPlayer.push(player._id.toString());
-            this.setQiangJinAction(player, Enums.tianHu);
-            player.sendMessage("game/chooseQiangJin", {
-              ok: true,
-              data: {action: Enums.tianHu, index: player.seatIndex}
-            })
-
-            if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
-              this.isRunQiangJin = true;
-              player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+              return;
             }
 
-            return;
+            // 天胡(好友房)
+            if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
+              this.qiangJinPlayer.push(player._id.toString());
+              this.setQiangJinAction(player, Enums.tianHu);
+              player.sendMessage("game/chooseQiangJin", {
+                ok: true,
+                data: {action: Enums.tianHu, index: player.seatIndex}
+              })
+
+              if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+                this.isRunQiangJin = true;
+                player.emitter.emit(Enums.qiangJinHu, this.turn, this.stateData.card);
+              }
+
+              return;
+            }
           }
         }
 
