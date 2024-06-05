@@ -1158,6 +1158,11 @@ class TableState implements Serializable {
           }
         }
 
+        // 解决机器人有时候自摸找不到牌的bug
+        if (!card) {
+          card = this.lastTakeCard;
+        }
+
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
         if (ok && player.daHuPai(card, null)) {
           // 是否3金倒
@@ -1633,6 +1638,7 @@ class TableState implements Serializable {
 
       // 计算赢家最终积分
       huPlayer.balance -= loser.balance;
+      huPlayer.score -= loser.balance;
       playerPanShus.push({index: loser.seatIndex, panShu: loser.panShu, balance: loser.balance});
     }
 
