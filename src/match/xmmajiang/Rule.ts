@@ -106,7 +106,7 @@ class Rule {
   // 3金倒必起手
   get sanJinMustQiShou() {
     let sanJinMustQiShou = !!this.ro.sanJinMustQiShou;
-    if (this.ro.isPublic) sanJinMustQiShou = true;
+    if (this.ro.isPublic) sanJinMustQiShou = false;
     return sanJinMustQiShou
   }
 
