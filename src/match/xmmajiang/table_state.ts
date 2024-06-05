@@ -545,7 +545,7 @@ class TableState implements Serializable {
     }
 
     const nextDo = async () => {
-      const nextCard = await this.consumeCard(this.zhuang, false, true);
+      const nextCard = await this.consumeCard(this.zhuang, false, true, true);
       const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
       this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
 
