@@ -1057,7 +1057,7 @@ class TableState implements Serializable {
       const isJiePao = this.state === stateWaitAction && recordCard === card && this.stateData[Enums.hu].contains(player);
       const huResult = player.checkZiMo()
       const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && huResult.hu;
-      const isQiangJin = this.state === stateQiangJin;
+      const isQiangJin = this.state === stateQiangJin || [Enums.qiShouSanCai, Enums.qiangJin].includes(huResult.huType);
 
       console.warn("jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s", isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult));
       if (isJiePao && this.isSomeOne2youOr3you()) {
