@@ -1013,13 +1013,10 @@ class Room extends RoomBase {
   async gameOver(nextZhuangId, states) {
     // 清除洗牌
     this.shuffleData = []
-    const nextZhuang = this.players.find(x => x != null && x._id === nextZhuangId)
-    if (nextZhuang === this.players[0]) {
-      // const zhuangState = states.filter( state => state.model._id === nextZhuangId)[0]
+    const nextZhuang = this.players.find(x => x != null && x._id.toString() === nextZhuangId.toString())
+    if (nextZhuang._id.toString() === this.players[0]._id.toString()) {
       this.zhuangCounter += 1
-      this.currentBase += 1
     } else {
-      this.currentBase = this.initBase
       this.zhuangCounter = 1
       this.changeZhuang()
     }
@@ -1028,8 +1025,6 @@ class Room extends RoomBase {
     // await this.delPlayerBless();
     // 下一局
     await this.robotManager.nextRound();
-    // await this.recordRoomScore()
-    // this.recordGameRecord(states, this.gameState.recorder.getEvents())
 
     this.gameState.dissolve()
     this.gameState = null

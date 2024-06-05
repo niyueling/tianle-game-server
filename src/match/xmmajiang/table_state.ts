@@ -1405,7 +1405,7 @@ class TableState implements Serializable {
       p.lastFanShu = p.fanShu;
 
       // 如果用户是下一局庄家
-      if (this.atIndex(p) === nextZhuangIndex) {
+      if (p.seatIndex === nextZhuangIndex) {
         // 如果用户连庄
         if (nextZhuangIndex === currentZhuangIndex) {
           p.fanShu += 8;
@@ -1633,12 +1633,10 @@ class TableState implements Serializable {
       const index = this.players.findIndex(p => p.events.hu && p.events.hu[0].huType === Enums.qiangJin);
       if (index !== -1) {
         const qiangJinPlayer = this.players[index];
-        console.warn("events-%s", JSON.stringify(qiangJinPlayer.events));
         if (qiangJinPlayer) {
           qiangJinPlayer.cards[this.caishen]--;
         }
       }
-
 
       // 没胡牌 也没放冲
       if (winner) {
@@ -1704,8 +1702,8 @@ class TableState implements Serializable {
         maiDi: this.rule.maiDi
       }
 
-      this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
-      await this.room.gameOver(nextZhuang.model._id, states)
+      this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg});
+      await this.room.gameOver(nextZhuang.model._id, states);
     }
   }
 
