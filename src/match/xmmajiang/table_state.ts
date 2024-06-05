@@ -1629,6 +1629,8 @@ class TableState implements Serializable {
         loser.balance = -loser.score;
       }
 
+      loser.score += loser.balance;
+
       // 计算赢家最终积分
       huPlayer.balance -= loser.balance;
       playerPanShus.push({index: loser.seatIndex, panShu: loser.panShu, balance: loser.balance});
