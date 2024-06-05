@@ -1214,7 +1214,7 @@ class TableState implements Serializable {
         // 抢金(金豆房)
         if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
-          this.setQiangJinAction(player, Enums.qiangJin);
+          this.setQiangJinAction(player, huResult.hu && huResult.huType === Enums.qiShouSanCai ? Enums.sanJinDao : Enums.qiangJin);
           const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
           if (qiangDataIndex !== -1 && (huResult.hu && huResult.huType === Enums.qiShouSanCai)) {
             this.qiangJinData[qiangDataIndex].card = card;
