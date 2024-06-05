@@ -1296,7 +1296,8 @@ class TableState implements Serializable {
                 index,
                 youJinTimes: player.events[Enums.youJinTimes] || 0,
                 // 是否3金倒
-                isSanJinDao: huSanJinDao
+                isSanJinDao: huSanJinDao,
+                type: huSanJinDao ? Enums.sanJinDao : Enums.qiangJin,
               }}, player.msgDispatcher);
 
             setTimeout(gameOver, 1000);
