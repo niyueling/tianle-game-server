@@ -340,7 +340,7 @@ class TableState implements Serializable {
         if (this.stateData[name]) {
           for (let j = 0; j < this.stateData[name].length; j++) {
             if (this.stateData[name][j]._id.toString() === p._id.toString()) {
-              console.log(name, ` <= name ${p.model.name}, shortId  `, p.model.shortId)
+              console.log(name, ` <= name ${p.model.nickname}, shortId  `, p.model.shortId)
             }
             if (this.stateData[name][j]._id.toString() === p._id.toString()) {
               this.stateData[name][j] = p

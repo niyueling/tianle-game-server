@@ -465,8 +465,8 @@ class Room extends RoomBase {
       if (player) {
         scores.push({
           score: this.playerGainRecord[player.model._id] || 0,
-          name: player.model.name,
-          headImgUrl: player.model.headImgUrl,
+          name: player.model.nickname,
+          headImgUrl: player.model.avatar,
           shortId: player.model.shortId
         })
       }
@@ -475,9 +475,6 @@ class Room extends RoomBase {
     //   roomState = 'zero_ju'
     // }
     const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
-    if (this.isPayClubGold(roomState)) {
-      await this.updatePlayerClubGold();
-    }
 
     const roomRecord = {
       players, scores,
