@@ -803,7 +803,7 @@ class TableState implements Serializable {
       })
     })
     player.on('willTakeCard', async denyFunc => {
-      if (this.remainCards < (this.rule.noBigCard ? 16 : 0)) {
+      if (this.remainCards < (this.rule.noBigCard ? 0 : 16)) {
         denyFunc()
         await this.gameOver()
         return
