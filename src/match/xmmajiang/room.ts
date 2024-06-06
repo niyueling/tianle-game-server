@@ -1015,7 +1015,8 @@ class Room extends RoomBase {
   async gameOver(nextZhuangId, states) {
     // 清除洗牌
     this.shuffleData = []
-    const nextZhuang = this.players.find(x => x != null && x._id.toString() === nextZhuangId.toString())
+    const nextZhuang = this.players.find(x => x != null && x._id.toString() === nextZhuangId.toString());
+    console.warn(nextZhuang.seatIndex);
     if (nextZhuang._id.toString() === this.players[0]._id.toString()) {
       this.zhuangCounter += 1
     } else {
@@ -1031,8 +1032,8 @@ class Room extends RoomBase {
     this.gameState.dissolve()
     this.gameState = null
 
-    const message = this.allOverMessage()
-    this.broadcast('room/gameAllOver', {ok: true, data: message});
+    // const message = this.allOverMessage()
+    // this.broadcast('room/gameAllOver', {ok: true, data: message});
 
     if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
