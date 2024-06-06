@@ -496,13 +496,13 @@ class TableState implements Serializable {
         for (let j = 0; j < payload.cards[i].length; j++) {
           // 将指定发牌从牌堆中移除
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
-          console.warn("test card-%s, cardIndex-%s, remainCards-%s", payload.cards[i][j], cardIndex, this.remainCards);
           if (cardIndex !== -1) {
             this.remainCards--;
             const card = this.cards[cardIndex];
             this.cards.splice(cardIndex, 1);
             this.lastTakeCard = card;
           }
+          console.warn("test card-%s, cardIndex-%s, remainCards-%s", payload.cards[i][j], cardIndex, this.remainCards);
         }
       }
 
