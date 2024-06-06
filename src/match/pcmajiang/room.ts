@@ -1016,7 +1016,6 @@ class Room extends RoomBase {
     this.shuffleData = []
     const nextZhuang = this.players.find(x => x != null && x._id === nextZhuangId)
     if (nextZhuang === this.players[0]) {
-
       const zhuangState = states.filter(state => state.model._id === nextZhuangId)[0]
 
       if (zhuangState.events.hu && zhuangState.events.hu.length > 0) {

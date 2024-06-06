@@ -1200,6 +1200,7 @@ class Room extends RoomBase {
       }
       this.players = playersCopy
       this.playersOrder = newOrders
+      console.warn("players-%s, playersOrder-%s", JSON.stringify(this.players), JSON.stringify(this.playersOrder));
     }
   }
 
