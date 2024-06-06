@@ -30,7 +30,9 @@ class Rule {
   }
 
   get test() {
-    return this.ro.test;
+    if (this.ro.isPublic) return true;
+
+      return this.ro.test;
   }
 
   get juShu() {
