@@ -274,13 +274,10 @@ class PlayerState implements Serializable {
     this.alreadyTakenCard = false
     this.flowerList = [];
     this.chiCombol = [];
-    this.fanShu = 0;
     this.shuiShu = 0;
     this.panShu = 0;
     this.panInfo = {};
-    this.lastFanShu = 0;
     this.score = room.getScore(userSocket)
-    this.zhuangCount = 0;
   }
 
   get youJinTimes() {
