@@ -278,6 +278,7 @@ class PlayerState implements Serializable {
     this.panShu = 0;
     this.panInfo = {};
     this.score = room.getScore(userSocket)
+    this.fanShu = room.getFanShu(userSocket)
   }
 
   get youJinTimes() {
@@ -607,8 +608,8 @@ class PlayerState implements Serializable {
 
   // 添加花牌
   onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList) {
-    if (juIndex === 1) {
-      this.fanShu = this.zhuang ? 16 : 8;
+    if (juIndex === 1 && this.zhuang) {
+      this.fanShu = 16;
     }
     cards.forEach(x => {
       if (!this.room.gameState.isFlower(x)) {

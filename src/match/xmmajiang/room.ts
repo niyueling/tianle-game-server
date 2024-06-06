@@ -73,6 +73,9 @@ class Room extends RoomBase {
   scoreMap: any
 
   @autoSerialize
+  fanShuMap: any
+
+  @autoSerialize
   disconnected: any[] = []
 
   @autoSerialize
@@ -302,6 +305,12 @@ class Room extends RoomBase {
     }
   }
 
+  initFanShu(player) {
+    if (this.fanShuMap[player._id] === undefined) {
+      this.fanShuMap[player._id] = 8;
+    }
+  }
+
   clearScore(playerId) {
     if (!this.isPublic) {
       delete this.scoreMap[playerId]
@@ -378,6 +387,10 @@ class Room extends RoomBase {
 
   getScore(player) {
     return this.scoreMap[player._id]
+  }
+
+  getFanShu(player) {
+    return this.fanShuMap[player._id]
   }
 
   async recordGameRecord(table, states) {
@@ -638,6 +651,7 @@ class Room extends RoomBase {
     this.mergeOrder()
 
     this.initScore(newJoinPlayer)
+    this.initFanShu(newJoinPlayer)
 
     this.emit('join')
     await this.announcePlayerJoin(newJoinPlayer)

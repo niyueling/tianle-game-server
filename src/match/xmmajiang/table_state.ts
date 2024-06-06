@@ -291,7 +291,7 @@ class TableState implements Serializable {
     this.zhuang = players[0]
     for (let i = 0; i < players.length; i++) {
       const p = players[i];
-      console.warn("_id-%s, seatIndex-%s, fanShu-%s", p._id, p.seatIndex, p.fanShu);
+      console.warn("_id-%s, fanShu-%s, zhuang-%s", p._id, p.fanShu, p.zhuang);
       this.listenPlayer(p);
     }
     this.turn = 1
@@ -1435,7 +1435,8 @@ class TableState implements Serializable {
         p.fanShu = 8;
       }
 
-      playerFanShus.push({index: p.seatIndex, fanShu: p.fanShu});
+      this.room.fanShuMap[p._id] = p.fanShu;
+      playerFanShus.push({index: p.seatIndex, fanShu: this.room.fanShuMap[p._id]});
     }
 
     console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
