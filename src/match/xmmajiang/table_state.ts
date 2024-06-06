@@ -392,7 +392,7 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
-    console.warn("consume card-%s, cardIndex-%s, remainCards-%s", card, cardIndex, this.remainCards);
+    // console.warn("consume card-%s, cardIndex-%s, remainCards-%s", card, cardIndex, this.remainCards);
 
     // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
@@ -499,7 +499,7 @@ class TableState implements Serializable {
             this.cards.splice(cardIndex, 1);
             this.lastTakeCard = card;
           }
-          console.warn("test card-%s, cardIndex-%s, remainCards-%s", payload.cards[i][j], cardIndex, this.remainCards);
+          // console.warn("test card-%s, cardIndex-%s, remainCards-%s", payload.cards[i][j], cardIndex, this.remainCards);
         }
       }
 
