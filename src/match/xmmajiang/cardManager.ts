@@ -498,7 +498,7 @@ class CardManager {
     cardMap[goldCard] = 0;
 
     // 如果金牌非字牌，白板换成金牌参与计算
-    if (goldCard < Enums.dong) {
+    if (goldCard < Enums.dong && cardMap[Enums.bai] > 0) {
       baiCount = cardMap[Enums.bai];
       cardMap[Enums.bai] = 0;
       cardMap[goldCard] = baiCount;
