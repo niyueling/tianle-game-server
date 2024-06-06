@@ -1401,7 +1401,7 @@ class TableState implements Serializable {
 
   nextZhuang(): PlayerState {
     // 获取本局庄家位置
-    const currentZhuangIndex = this.atIndex(this.zhuang);
+    const currentZhuangIndex = this.zhuang.seatIndex;
 
     // 获取本局胡牌用户数据
     const huPlayers = this.players.filter(p => p.huPai());
@@ -1409,7 +1409,7 @@ class TableState implements Serializable {
     // 计算下一局庄家位置
     let nextZhuangIndex = currentZhuangIndex;
     if (huPlayers.length === 1) {
-      nextZhuangIndex = this.atIndex(huPlayers[0])
+      nextZhuangIndex = huPlayers[0].seatIndex;
     } else if (huPlayers.length > 1) {
       const loser = this.players.find(p => p.events[Enums.dianPao]);
       nextZhuangIndex = this.atIndex(loser);
@@ -1434,12 +1434,11 @@ class TableState implements Serializable {
         p.fanShu = 8;
       }
 
-      playerFanShus.push({index: this.atIndex(p), fanShu: p.fanShu});
+      playerFanShus.push({index: p.seatIndex, fanShu: p.fanShu});
     }
 
-    console.warn("nextFan-%s", JSON.stringify(playerFanShus));
-
-    return this.players[nextZhuangIndex]
+    console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
+    return this.players[nextZhuangIndex];
   }
 
   // 计算盘数
