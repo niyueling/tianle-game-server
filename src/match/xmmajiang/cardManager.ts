@@ -514,7 +514,10 @@ class CardManager {
       false
     );
     cardMap[goldCard] = goldCount;
-    cardMap[Enums.bai] = baiCount;
+    if (baiCount > 0) {
+      cardMap[Enums.bai] = baiCount;
+    }
+
     // 是否胡游金
     return result.hu;
   }
