@@ -2410,7 +2410,11 @@ class TableState implements Serializable {
   }
 
   checkUserBigCard(cards) {
-    for (let i = Enums.dong; i < Enums.bai; i++) {
+    for (let i = Enums.dong; i <= Enums.bai; i++) {
+      if (this.caishen < Enums.dong && i === Enums.bai) {
+        continue;
+      }
+
       if (cards[i] === 1 && i !== this.caishen) {
         return {code: true, index: i};
       }
