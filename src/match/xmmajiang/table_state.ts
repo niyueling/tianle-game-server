@@ -1430,6 +1430,7 @@ class TableState implements Serializable {
           p.fanShu += 8;
         } else {
           p.fanShu = 16;
+          p.zhuangCount = 0;
         }
       } else {
         p.fanShu = 8;

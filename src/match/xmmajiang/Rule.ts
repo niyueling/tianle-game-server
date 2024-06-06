@@ -36,7 +36,7 @@ class Rule {
   }
 
   get juShu() {
-    return this.ro.juShu
+    return this.ro.juShu || 8
   }
 
   get juScore() {
@@ -44,7 +44,7 @@ class Rule {
   }
 
   get gameJuCount() {
-    return Enums.yiKe;
+    return this.ro.gameJuCount || Enums.yiKe;
   }
 
   get hzlz_option() {
