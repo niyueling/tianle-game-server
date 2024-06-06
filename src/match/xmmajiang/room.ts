@@ -1027,7 +1027,7 @@ class Room extends RoomBase {
       return x != null && this.getScore(x) <= 0;
     });
     console.warn("score-%s, juShu-%s, index-%s", loserPlayer !== -1 ? this.getScore(states[loserPlayer].model) : 0, this.game.juShu, loserPlayer);
-    const gameOver = this.game.juShu < -1;
+    const gameOver = this.game.juShu <= 0;
     return loserPlayer !== -1 || gameOver;
   }
 
