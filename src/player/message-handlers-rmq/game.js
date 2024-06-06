@@ -53,6 +53,9 @@ const exportObj = {
   'game/qiangJinHu': (player, msg) => {
     player.emit('game/qiangJinHu', msg);
   },
+  'game/flowerList': (player, msg) => {
+    player.emit('game/flowerList', msg);
+  },
   'game/restoreGame': (player, msg) => {
     player.emit('game/restoreGame', msg);
   },

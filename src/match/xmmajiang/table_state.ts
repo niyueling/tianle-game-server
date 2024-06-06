@@ -824,6 +824,15 @@ class TableState implements Serializable {
       player.stashPopTakeCard()
     })
 
+    player.on('flowerList', async () => {
+      const flowerLists = [];
+
+      for (let i = 0; i < this.players.length; i++) {
+        flowerLists.push({index: this.players[i].seatIndex, flowerList: player.flowerList, flowerCount: player.flowerList.length});
+      }
+      player.sendMessage("game/flowerLists", {ok: true, data: flowerLists})
+    })
+
     player.on(Enums.chi, async (turn, card, shunZiList) => {
       const cardList = shunZiList.filter(value => value !== card);
       const otherCard1 = cardList[0]
