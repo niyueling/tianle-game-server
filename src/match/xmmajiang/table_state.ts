@@ -1692,11 +1692,13 @@ class TableState implements Serializable {
           })
       }
 
-      // 计算用户盘数
-      this.calcGangScore();
+      if (this.players.filter(x => x.huPai()).length > 0) {
+        // 计算用户盘数
+        this.calcGangScore();
 
-      // 计算用户最终得分
-      await this.calcGameScore();
+        // 计算用户最终得分
+        await this.calcGameScore();
+      }
 
       // 计算下一局庄家，计算底分
       const nextZhuang = this.nextZhuang();
