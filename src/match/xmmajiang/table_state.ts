@@ -494,6 +494,7 @@ class TableState implements Serializable {
         for (let j = 0; j < payload.cards[i].length; j++) {
           // 将指定发牌从牌堆中移除
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
+          console.warn("card-%s, cardIndex-%s, remainCards-%s", payload.cards[i][j], cardIndex, this.remainCards);
           if (cardIndex !== -1) {
             this.remainCards--;
             const card = this.cards[cardIndex];
@@ -502,8 +503,6 @@ class TableState implements Serializable {
           }
         }
       }
-
-      console.warn("remainCards-%s", this.remainCards);
 
       // 补发牌到16张
       const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : []);
