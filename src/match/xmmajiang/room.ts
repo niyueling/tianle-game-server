@@ -163,6 +163,7 @@ class Room extends RoomBase {
     this.readyPlayers = []
     this.gameState = null
     this.scoreMap = {}
+    this.fanShuMap = {}
     this.disconnected = []
     this.counterMap = {}
     this.charged = false
