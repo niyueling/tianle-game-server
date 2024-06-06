@@ -33,8 +33,8 @@ export class GameApi extends BaseApi {
   @addApi({
     rule: {
       roomId: "number", // 房间号
-      gameReason: "number?", // 游戏原因
-      otherReason: "number?", // 其他原因
+      gameReason: "array", // 游戏原因
+      otherReason: "array", // 其他原因
       juShu: "number", // 局数
       gameType: "string", // 游戏类型
       expectateGame: "string?", // 期待玩法
