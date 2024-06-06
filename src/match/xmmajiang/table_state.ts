@@ -477,8 +477,6 @@ class TableState implements Serializable {
     ]
     payload.moCards = [this.caishen, Enums.tongzi1, Enums.tongzi2, Enums.tongzi3, Enums.wanzi4, Enums.wanzi5];
 
-    // 总牌数扣掉每人16张
-    let restCards = this.remainCards - (this.rule.playerCount * 16);
     const needShuffle = this.room.shuffleData.length > 0;
     let cardList = [];
 
@@ -514,7 +512,7 @@ class TableState implements Serializable {
     const allFlowerList = [];
     cardList.map(value => allFlowerList.push(value.flowerList));
     for (let i = 0; i < this.players.length; i++) {
-      this.players[i].onShuffle(restCards, this.caishen, this.restJushu, cardList[i].cards, i, this.room.game.juIndex,
+      this.players[i].onShuffle(this.remainCards, this.caishen, this.restJushu, cardList[i].cards, i, this.room.game.juIndex,
         needShuffle, cardList[i].flowerList, allFlowerList);
       // 记录发牌
       await this.room.auditManager.playerTakeCardList(this.players[i].model._id, cardList[i].cards);
@@ -526,7 +524,6 @@ class TableState implements Serializable {
         const p = this.players[i];
         if (p.flowerList.length) {
           const result = await this.takeFlowerResetCards(p);
-          restCards -= p.flowerList.length;
 
           result.forEach(x => {
             if (!this.isFlower(x)) {
@@ -534,7 +531,7 @@ class TableState implements Serializable {
             }
           });
 
-          p.sendMessage('game/flowerResetCard', {ok: true, data: {restCards, flowerList: p.flowerList, index: i, cards: result}})
+          this.room.broadcast('game/flowerResetCard', {ok: true, data: {restCards: this.remainCards, flowerList: p.flowerList, index: i, cards: result}})
         }
       }
     }
