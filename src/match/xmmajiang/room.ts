@@ -1031,6 +1031,9 @@ class Room extends RoomBase {
     this.gameState.dissolve()
     this.gameState = null
 
+    const message = this.allOverMessage()
+    this.broadcast('room/gameAllOver', {ok: true, data: message});
+
     if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
       this.broadcast('room/allOver', {ok: true, data: message})
