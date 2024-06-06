@@ -841,14 +841,17 @@ class PlayerState implements Serializable {
         // 如果是游金，记录游金
         // console.warn("zimo checkResult-%s", JSON.stringify(checkResult));
         if (checkResult.isYouJin && checkResult.youJinTimes === 1) {
+          this.recordGameEvent(Enums.youJin, card);
           this.room.recordPlayerEvent('youJin', this.model._id);
         }
 
         if (checkResult.isYouJin && checkResult.youJinTimes === 2) {
+          this.recordGameEvent(Enums.shuangYou, card);
           this.room.recordPlayerEvent('shuangYou', this.model._id);
         }
 
         if (checkResult.isYouJin && checkResult.youJinTimes === 3) {
+          this.recordGameEvent(Enums.sanYou, card);
           this.room.recordPlayerEvent('sanYou', this.model._id);
         }
 

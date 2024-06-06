@@ -106,6 +106,9 @@ const enums = {
   youJinTimes: 'youJinTimes',
   // 抢金胡
   qiangJinHu: 'qiangJinHu',
+  youJin: 'youJin',
+  shuangYou: 'shuangYou',
+  sanYou: 'sanYou',
 
   // 胡牌类型
   hunhun: 'hunhun',

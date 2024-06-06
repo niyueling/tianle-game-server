@@ -291,7 +291,7 @@ class TableState implements Serializable {
     this.zhuang = players[0]
     for (let i = 0; i < players.length; i++) {
       const p = players[i];
-      console.warn("_id-%s, fanShu-%s, zhuang-%s", p._id, p.fanShu, p.zhuang);
+      // console.warn("_id-%s, fanShu-%s, zhuang-%s", p._id, p.fanShu, p.zhuang);
       this.listenPlayer(p);
     }
     this.turn = 1

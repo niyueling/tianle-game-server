@@ -1021,7 +1021,7 @@ class Room extends RoomBase {
 
   isRoomAllOver(states): boolean {
     const loserPlayer = states.findIndex(x => {
-      return x != null && this.getScore(x) <= 0;
+      return x != null && this.getScore(x.model) <= 0;
     });
     console.warn("score-%s, juShu-%s, index-%s", loserPlayer !== -1 ? this.getScore(states[loserPlayer].model) : 0, this.game.juShu, loserPlayer);
     const gameOver = this.game.juShu <= 0;
@@ -1213,7 +1213,7 @@ class Room extends RoomBase {
       }
       this.players = playersCopy
       this.playersOrder = newOrders
-      console.warn("players-%s, playersOrder-%s", JSON.stringify(this.players), JSON.stringify(this.playersOrder));
+      // console.warn("players-%s, playersOrder-%s", JSON.stringify(this.players), JSON.stringify(this.playersOrder));
     }
   }
 
