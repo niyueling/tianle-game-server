@@ -393,6 +393,8 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
 
+    console.warn("consume card-%s, cardIndex-%s, remainCards-%s", card, cardIndex, this.remainCards);
+
     // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
       // 拿到花以后,重新发牌
@@ -494,7 +496,7 @@ class TableState implements Serializable {
         for (let j = 0; j < payload.cards[i].length; j++) {
           // 将指定发牌从牌堆中移除
           const cardIndex = this.cards.findIndex(c => c === payload.cards[i][j]);
-          console.warn("card-%s, cardIndex-%s, remainCards-%s", payload.cards[i][j], cardIndex, this.remainCards);
+          console.warn("test card-%s, cardIndex-%s, remainCards-%s", payload.cards[i][j], cardIndex, this.remainCards);
           if (cardIndex !== -1) {
             this.remainCards--;
             const card = this.cards[cardIndex];
