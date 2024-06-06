@@ -370,14 +370,13 @@ class TableState implements Serializable {
       cardIndex = this.cards.findIndex(c => !this.isFlower(c));
     }
 
-    // 客户端指定摸牌不能被摸到
-    // if (this.testMoCards.length > 0 && this.testMoCards.includes(this.cards[cardIndex]) && !isHelp) {
-    //   const moIndex = this.cards.findIndex(card => !this.testMoCards.includes(card));
-    //   if (moIndex !== -1) {
-    //     cardIndex = moIndex;
-    //     this.testMoCards.splice(0, 1);
-    //   }
-    // }
+    // 客户端指定摸牌发牌时不能被摸到
+    if (this.testMoCards.length > 0 && this.testMoCards.includes(this.cards[cardIndex]) && !isHelp) {
+      const moIndex = this.cards.findIndex(card => !this.testMoCards.includes(card));
+      if (moIndex !== -1) {
+        cardIndex = moIndex;
+      }
+    }
 
     // 客户端指定摸牌
     if (this.testMoCards.length > 0 && isHelp) {
