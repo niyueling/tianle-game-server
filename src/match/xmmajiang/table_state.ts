@@ -1193,6 +1193,9 @@ class TableState implements Serializable {
               daCards: [],
               huCards: [],
               card,
+              youJin: huResult.isYouJin && player.events[Enums.youJinTimes] === 1,
+              shuangYou: huResult.isYouJin && player.events[Enums.youJinTimes] === 2,
+              sanYou: huResult.isYouJin && player.events[Enums.youJinTimes] === 3,
               type: "zimo",
             }
           });
@@ -1209,6 +1212,9 @@ class TableState implements Serializable {
                 from: this.atIndex(player),
                 type: "zimo",
                 turn,
+                youJin: huResult.isYouJin && player.events[Enums.youJinTimes] === 1,
+                shuangYou: huResult.isYouJin && player.events[Enums.youJinTimes] === 2,
+                sanYou: huResult.isYouJin && player.events[Enums.youJinTimes] === 3,
                 youJinTimes: player.events[Enums.youJinTimes] || 0,
                 // 是否3金倒
                 isSanJinDao: huSanJinDao,
