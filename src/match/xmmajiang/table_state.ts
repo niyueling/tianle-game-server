@@ -1142,8 +1142,6 @@ class TableState implements Serializable {
                 ok: true,
                 data: {action: Enums.tianHu, index: player.seatIndex}
               })
-
-              return;
             }
 
             // 天胡(好友房)
@@ -1154,14 +1152,14 @@ class TableState implements Serializable {
                 ok: true,
                 data: {action: Enums.tianHu, index: player.seatIndex}
               })
-
-              if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
-                this.isRunQiangJin = true;
-                player.emitter.emit(Enums.qiangJinHu);
-              }
-
-              return;
             }
+
+            if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+              this.isRunQiangJin = true;
+              player.emitter.emit(Enums.qiangJinHu);
+            }
+
+            return;
           }
         }
 
