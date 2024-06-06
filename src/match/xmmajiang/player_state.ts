@@ -251,7 +251,7 @@ class PlayerState implements Serializable {
         this.onDisconnect()
       }
     }
-    this._id = this.model._id
+    this._id = this.model._id.toString()
     this.listenDispatcher(userSocket)
     this.msgDispatcher = userSocket
     this.events = {}
