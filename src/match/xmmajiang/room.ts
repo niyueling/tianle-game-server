@@ -790,7 +790,7 @@ class Room extends RoomBase {
     return false
   }
 
-  leave(player) {
+  leave(player, dissolve = false) {
     if (this.gameState || !player) {
       console.warn("player is disconnect in room %s", this._id)
       // 游戏已开始 or 玩家不存在
@@ -807,7 +807,7 @@ class Room extends RoomBase {
       return true
     }
 
-    if (this.game.juIndex > 0 && !this.game.isAllOver()) {
+    if (this.game.juIndex > 0 && !this.game.isAllOver() && !dissolve) {
       console.warn("room %s is not finish", this._id)
       return false
     }
@@ -1053,7 +1053,7 @@ class Room extends RoomBase {
     if (this.isRoomAllOver(states) && !this.isPublic) {
       const message = this.allOverMessage()
       this.broadcast('room/allOver', {ok: true, data: message})
-      this.players.forEach(x => x && this.leave(x))
+      this.players.forEach(x => x && this.leave(x, true))
       this.emit('empty', this.disconnected)
     }
   }
