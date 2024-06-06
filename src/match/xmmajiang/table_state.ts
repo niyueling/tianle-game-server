@@ -1692,11 +1692,11 @@ class TableState implements Serializable {
           })
       }
 
-      if (this.players.filter(x => x.huPai()).length > 0) {
-        // 计算用户盘数
-        this.calcGangScore();
+      // 计算用户盘数
+      this.calcGangScore();
 
-        // 计算用户最终得分
+      // 计算用户最终得分
+      if (this.players.filter(x => x.huPai()).length > 0) {
         await this.calcGameScore();
       }
 
