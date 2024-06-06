@@ -1681,7 +1681,6 @@ class TableState implements Serializable {
 
       // 计算下一局庄家，计算底分
       const nextZhuang = this.nextZhuang();
-      console.warn(nextZhuang._id, nextZhuang.seatIndex);
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
       const huPlayers = this.players.filter(p => p.huPai());
