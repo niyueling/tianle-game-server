@@ -1026,7 +1026,7 @@ class Room extends RoomBase {
     const loserPlayer = states.findIndex(x => {
       return x != null && this.getScore(x) <= 0;
     });
-    console.warn("score-%s, juShu-%s, index-%s", this.getScore(states[loserPlayer]), this.game.juShu, loserPlayer);
+    console.warn("score-%s, juShu-%s, index-%s", loserPlayer !== -1 ? this.getScore(states[loserPlayer].model) : 0, this.game.juShu, loserPlayer);
     const gameOver = this.game.juShu < -1;
     return loserPlayer !== -1 || gameOver;
   }
