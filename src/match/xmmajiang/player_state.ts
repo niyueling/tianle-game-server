@@ -840,6 +840,9 @@ class PlayerState implements Serializable {
         this.room.recordPlayerEvent('ziMo', this.model._id)
         this.room.recordPlayerEvent(`fan${checkResult.fan}`, this.model._id)
 
+        // 如果是游金，记录游金
+        console.warn("zimo checkResult-%s", JSON.stringify(checkResult));
+
         this.record('ziMo', card)
         return true
       }
