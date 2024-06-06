@@ -1023,10 +1023,10 @@ class Room extends RoomBase {
   }
 
   isRoomAllOver(states): boolean {
-    const loserPlayer = this.players.findIndex(x => {
+    const loserPlayer = states.findIndex(x => {
       return x != null && this.getScore(x) <= 0;
     });
-    console.warn("score-%s, juShu-%s, index-%s", this.getScore(this.players[loserPlayer]), this.game.juShu, loserPlayer);
+    console.warn("score-%s, juShu-%s, index-%s", this.getScore(states[loserPlayer]), this.game.juShu, loserPlayer);
     const gameOver = this.game.juShu < -1;
     return loserPlayer !== -1 || gameOver;
   }
