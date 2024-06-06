@@ -894,11 +894,11 @@ class TableState implements Serializable {
         return
       }
 
-      if (this.isSomeOne2youOr3you()) {
-        // 游金中，只能自摸
-        player.emitter.emit(Enums.guo, turn, card);
-        return;
-      }
+      // if (this.isSomeOne2youOr3you()) {
+      //   // 游金中，只能自摸
+      //   player.emitter.emit(Enums.guo, turn, card);
+      //   return;
+      // }
 
       this.actionResolver.requestAction(player, 'peng', async () => {
         const ok = await player.pengPai(card, this.lastDa);
@@ -965,11 +965,11 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.guo, turn, card);
         return
       }
-      if (this.isSomeOne2youOr3you()) {
-        // 游金中，只能自摸
-        player.emitter.emit(Enums.guo, turn, card);
-        return;
-      }
+      // if (this.isSomeOne2youOr3you()) {
+      //   // 游金中，只能自摸
+      //   player.emitter.emit(Enums.guo, turn, card);
+      //   return;
+      // }
 
       this.actionResolver.requestAction(
         player, 'gang',
@@ -1026,10 +1026,10 @@ class TableState implements Serializable {
       if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() !== player.model._id.toString()) {
         return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
       }
-      if (this.isSomeOne2youOr3you()) {
-        // 游金中，只能自摸
-        return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.youJinNotHu});
-      }
+      // if (this.isSomeOne2youOr3you()) {
+      //   // 游金中，只能自摸
+      //   return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.youJinNotHu});
+      // }
       const isAnGang = player.cards[card] >= 3
       gangIndex = this.atIndex(player)
       const from = gangIndex
