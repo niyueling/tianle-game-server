@@ -1059,7 +1059,7 @@ class Room extends RoomBase {
   }
 
   allOverMessage(): any {
-    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode}
+    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.xmmj}
     this.snapshot
       .filter(p => p)
       .forEach(player => {

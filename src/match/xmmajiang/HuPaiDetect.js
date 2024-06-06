@@ -624,8 +624,7 @@ const HuPaiDetect = {
       sum += PAI[i];
     }
     return sum;
-  }
-  ,
+  },
 
   checkDaSiXi(countMap) {
     for (let i = 1; i < Enums.maxValidCard; i++) {
@@ -634,8 +633,7 @@ const HuPaiDetect = {
       }
     }
     return false;
-  }
-  ,
+  },
 
   checkBanBanHu(countMap) {
     for (let i = 1; i < Enums.maxValidCard; i++) {
@@ -644,8 +642,7 @@ const HuPaiDetect = {
       }
     }
     return true;
-  }
-  ,
+  },
 
   checkQueYiSe(countMap) {
     let type0 = false;

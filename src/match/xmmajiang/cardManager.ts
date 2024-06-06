@@ -494,7 +494,16 @@ class CardManager {
     }
     // 金牌先清空
     const goldCount = cardMap[goldCard];
+    let baiCount = 0;
     cardMap[goldCard] = 0;
+
+    // 如果金牌非字牌，白板换成金牌参与计算
+    if (goldCard < Enums.dong) {
+      baiCount = cardMap[Enums.bai];
+      cardMap[Enums.bai] = 0;
+      cardMap[goldCard] = baiCount;
+    }
+
     // 剩下是否全是刻子，顺子
     const result: any = {};
     huPaiDetect.huRecur(cardMap.slice(),
@@ -505,6 +514,7 @@ class CardManager {
       false
     );
     cardMap[goldCard] = goldCount;
+    cardMap[Enums.bai] = baiCount;
     // 是否胡游金
     return result.hu;
   }
