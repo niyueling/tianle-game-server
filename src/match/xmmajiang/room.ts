@@ -611,16 +611,13 @@ class Room extends RoomBase {
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
+      .filter(x => x !== null && x._id !== newJoinPlayer._id)) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
 
   indexOf(player) {
-    return this.playersOrder.findIndex(playerOrder => {
-      console.warn("playerOrder-%s, player-%s", JSON.stringify(playerOrder), JSON.stringify(player));
-      return playerOrder && playerOrder._id === player._id
-    })
+    return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder._id === player._id)
   }
 
   async join(newJoinPlayer) {
@@ -1015,10 +1012,11 @@ class Room extends RoomBase {
     return loserPlayer !== -1 || gameOver;
   }
 
-  async gameOver(nextZhuang, states) {
+  async gameOver(nextZhuangId, states) {
     // 清除洗牌
     this.shuffleData = []
-    console.warn("nextZhuangId-%s, nextZhuang-%s", nextZhuang._id, JSON.stringify(nextZhuang));
+    const nextZhuang = this.players.find(x => x != null && x._id.toString() === nextZhuangId.toString());
+    console.warn("nextZhuangId-%s, nextZhuang-%s, player[0]-%s", nextZhuangId, JSON.stringify(nextZhuang), JSON.stringify(this.players[0]));
     if (nextZhuang._id.toString() === this.players[0]._id.toString()) {
       this.zhuangCounter += 1
     } else {
