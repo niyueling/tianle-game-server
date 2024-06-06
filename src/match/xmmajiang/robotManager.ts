@@ -109,12 +109,20 @@ export class RobotManager extends NewRobotManager {
 
   // 是不是能过
   isPlayerGuo(playerId) {
-    const actionList = [Enums.chi];
+    const actionList = [Enums.hu, Enums.peng, Enums.chi];
     for (const action of actionList) {
-      if (this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
+      if ([Enums.peng, Enums.chi].includes(action)
+        && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return true;
       }
+      if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
+        this.room.gameState.stateData[action].length > 0) {
+        if (playerId.toString() === (Array.isArray(this.room.gameState.stateData[action]) ?
+          this.room.gameState.stateData[action][0]._id.toString()
+          : this.room.gameState.stateData[action]._id.toString())) return true;
+      }
     }
+
     return false;
   }
 
