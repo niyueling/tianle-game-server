@@ -4,6 +4,7 @@ import * as config from "../../config";
 import {service} from "../../service/importService";
 import {BaseApi} from "./baseApi";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
+import GameFeedback from "../../database/models/GameFeedback";
 
 // 游戏
 export class GameApi extends BaseApi {
@@ -26,6 +27,40 @@ export class GameApi extends BaseApi {
   async getPublicRoomOpenDouble(msg) {
     const resp = await service.gameConfig.getPublicRoomOpenDouble(msg.categoryId);
     this.replySuccess(resp);
+  }
+
+  // 解散反馈
+  @addApi({
+    rule: {
+      roomId: "number", // 房间号
+      gameReason: "number?", // 游戏原因
+      otherReason: "number?", // 其他原因
+      juShu: "number", // 局数
+      gameType: "string", // 游戏类型
+      expectateGame: "string?", // 期待玩法
+      wechatId: "string?", // 微信号
+    }
+  })
+  async dissolveFeedback(msg) {
+    const recordCount = await GameFeedback.count({roomId: msg.roomId});
+    if (recordCount) {
+      return this.replyFail(TianleErrorCode.recordIsExists);
+    }
+
+    const data = {
+      playerId: this.player._id,
+      gameReason: msg.gameReason,
+      otherReason: msg.otherReason,
+      juShu: msg.juShu,
+      roomId: msg.roomId,
+      gameType: msg.gameType,
+      expectateGame: msg.expectateGame,
+      wechatId: msg.wechatId
+    }
+
+    await GameFeedback.create(data);
+
+    this.replySuccess(data);
   }
 
   // 战绩
