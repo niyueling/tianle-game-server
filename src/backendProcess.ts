@@ -280,6 +280,9 @@ export class BackendProcess {
       }
 
       await theCreator.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, cardTableId}})
+
+      // 创建者即庄家，设置底分16分
+      room.fanShuMap[theCreator._id] = 16;
       await roomProxy.joinAsCreator(theCreator)
       // 第一次进房间,保存信息
       await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId)

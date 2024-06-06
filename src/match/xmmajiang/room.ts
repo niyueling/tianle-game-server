@@ -1035,7 +1035,6 @@ class Room extends RoomBase {
     // 清除洗牌
     this.shuffleData = []
     const nextZhuang = this.players.find(x => x != null && x._id.toString() === nextZhuangId.toString());
-    console.warn("nextZhuangId-%s, nextZhuang-%s, player[0]-%s", nextZhuangId, JSON.stringify(nextZhuang), JSON.stringify(this.players[0]));
     if (nextZhuang._id.toString() === this.players[0]._id.toString()) {
       this.zhuangCounter += 1
     } else {
