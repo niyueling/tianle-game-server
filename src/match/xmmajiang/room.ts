@@ -607,6 +607,7 @@ class Room extends RoomBase {
       location: newJoinPlayer.location,
       owner: this.ownerId,
       score: this.getScore(newJoinPlayer),
+      fanShu: this.getFanShu(newJoinPlayer),
       base: this.currentBase,
       zhuangCounter: this.zhuangCounter,
       juIndex: this.game.juIndex,
@@ -1021,8 +1022,11 @@ class Room extends RoomBase {
     this.lunZhuangCount -= 1
   }
 
-  isRoomAllOver(): boolean {
-    const loserPlayer = this.players.findIndex(x => x != null && x.score <= 0);
+  isRoomAllOver(states): boolean {
+    const loserPlayer = this.players.findIndex(x => {
+      console.warn("x-%s", JSON.stringify(x));
+      return x != null && this.getScore(x) <= 0;
+    });
     const gameOver = this.game.juShu < -1;
     return loserPlayer !== -1 || gameOver;
   }
@@ -1050,7 +1054,7 @@ class Room extends RoomBase {
     // const message = this.allOverMessage()
     // this.broadcast('room/gameAllOver', {ok: true, data: message});
 
-    if (this.isRoomAllOver() && !this.isPublic) {
+    if (this.isRoomAllOver(states) && !this.isPublic) {
       const message = this.allOverMessage()
       this.broadcast('room/allOver', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
