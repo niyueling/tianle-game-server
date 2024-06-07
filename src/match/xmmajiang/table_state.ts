@@ -829,7 +829,7 @@ class TableState implements Serializable {
 
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
-        flowerLists.push({nickname: p.model.nickname, avatar: p.model.avatar, shortId: p.model.shortId, index: p.seatIndex, flowerList: player.flowerList, flowerCount: player.flowerList.length});
+        flowerLists.push({nickname: p.model.nickname, avatar: p.model.avatar, shortId: p.model.shortId, index: p.seatIndex, flowerList: p.flowerList, flowerCount: p.flowerList.length});
       }
       player.sendMessage("game/flowerLists", {ok: true, data: flowerLists})
     })
