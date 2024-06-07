@@ -279,6 +279,8 @@ class PlayerState implements Serializable {
     this.panInfo = {};
     this.score = room.getScore(userSocket)
     this.fanShu = room.getFanShu(userSocket)
+
+    // if (this.zhuang && this.fanShu === 8)
   }
 
   get youJinTimes() {
