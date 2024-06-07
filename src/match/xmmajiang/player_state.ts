@@ -1386,6 +1386,10 @@ class PlayerState implements Serializable {
     // if (!this.room.isPublic) {
     //   return
     // }
+
+    if (!this.room.isPublic && !this.rule.ro.autoCommit) {
+      return ;
+    }
     if (!this.room.isPublic && this.rule.ro.autoCommit) {
       minutes = (this.rule.ro.autoCommit + 1) * 1000
     }
