@@ -71,7 +71,6 @@ const HuPaiDetect = {
     const {caiShen, lastTakeCard, takeSelfCard, turn} = sourceCardMap
 
     const lastTakeCardAndCaiShen = {lastTakeCard, caiShen, takeSelfCard, turn}
-    console.warn(lastTakeCardAndCaiShen);
     const checkHuFuncArray = [
       {func: this.checkSanJinDao, args: [sourceCardMap, events, result, seatIndex, rule]},
       {func: this.checkPingHu, args: [sourceCardMap, lastTakeCardAndCaiShen, result]},
