@@ -28,6 +28,13 @@ function getType(card) {
   return Math.floor(card / 10);
 }
 
+const changShaMajiangCards =
+    [
+      1, 2, 3, 4, 5, 6, 7, 8, 9,
+      11, 12, 13, 14, 15, 16, 17, 18, 19,
+      21, 22, 23, 24, 25, 26, 27, 28, 29,
+    ];
+
 // 替换金牌、白板
 function spreadCardAndCaiShen(countMap) {
   // 金牌
@@ -70,8 +77,7 @@ const HuPaiDetect = {
     let maybes = []
     const {caiShen, lastTakeCard, takeSelfCard, turn} = sourceCardMap
 
-    const lastTakeCardAndCaiShen = {lastTakeCard, caiShen, takeSelfCard, turn, seatIndex, rule, sourceCardMap}
-    console.warn("lastTakeCardAndCaiShen-%s", JSON.stringify(lastTakeCardAndCaiShen))
+    const lastTakeCardAndCaiShen = {lastTakeCard, caiShen, takeSelfCard, turn,}
     const checkHuFuncArray = [
       {func: this.checkSanJinDao, args: [sourceCardMap, events, result, seatIndex, rule]},
       {func: this.checkPingHu, args: [sourceCardMap, lastTakeCardAndCaiShen, result]},
@@ -100,21 +106,28 @@ const HuPaiDetect = {
   },
 
   maxHuResult(originCountMap, events, maybes, rule) {
+    // const usable = rule.ro.kehu || []
     const sorter = (a, b) => b.fan - a.fan
     const sortedResult = maybes
-      .map(r => this.combineOtherProps(originCountMap, events, r))
-      .map(r => {
-        r.fan = this.calFan(Object.assign(r, {takeSelfCard: originCountMap.takeSelfCard}), rule)
-        return r
-      })
-      .sort(sorter)
+        // .filter(r => !(r.qiShouSanCai && usable.indexOf(Enums.qiShouSanCai) === -1))
+        .map(r => this.combineOtherProps(originCountMap, events, r))
+        .map(r => {
+          r.fan = this.calFan(Object.assign(r, {takeSelfCard: originCountMap.takeSelfCard}), rule)
+          return r
+        })
+        .sort(sorter)
 
+    const maxResult = sortedResult[0] || {hu: false}
+    if (maxResult.fan >= 16) {
+      maxResult.fan = 16
+    }
 
-    return sortedResult[0] || {hu: false}
+    return maxResult
   },
 
   combineOtherProps(originCountMap, events, result) {
     const {turn, first, alreadyTakenCard, haiDi, takeSelfCard, gang, qiangGang, qiaoXiang, caiShen} = originCountMap
+    // const caiCount = originCountMap[caiShen]
     // 替换金牌
     const clearCaiShenHolder2Flat = () => {
       let flatCards = []
@@ -142,9 +155,9 @@ const HuPaiDetect = {
 
     //有牌型的  13不靠 qifeng luanfeng 不需要
     if (result.huCards) {
-      // checkPengPengHuAndAssignProps()
+      checkPengPengHuAndAssignProps()
       const flatCards = clearCaiShenHolder2Flat()
-      // this.checkQingYiSe(flatCards.slice(), events, result, caiShen)
+      this.checkQingYiSe(flatCards.slice(), events, result, caiShen)
       if (result.huType === Enums.pingHu) {
         this.checkYiTiaoLong(result)
         // this.checkQuanQiuRen(originCountMap.slice(), events, result)
@@ -156,11 +169,11 @@ const HuPaiDetect = {
         }
       }
       // 闲家抓牌就胡
-      // if (turn === 2) {
-      //   if (takeSelfCard) {
-      //     result.diHu = true
-      //   }
-      // }
+      if (turn === 2) {
+        if (takeSelfCard) {
+          result.diHu = true
+        }
+      }
 
       // if (first) {
       //   if (takeSelfCard) {
@@ -190,6 +203,24 @@ const HuPaiDetect = {
       result.qiangGang = true
     }
 
+    // if (result.wuCai === undefined) {
+    //   result.wuCai = true
+    // }
+
+    // if (result.guiWeiCount > 0) {
+    //   result.caiShenGuiWei = true
+    //   if (result.guiWeiCount === 2) {
+    //     result.shuangCaiGuiWei = true
+    //     delete result.caiShenGuiWei
+    //   } else if (result.guiWeiCount === 3) {
+    //     result.sanCaiGuiWei = true
+    //     delete result.caiShenGuiWei
+    //   }
+    // }
+
+    // if (caiCount === 3) {
+    //   result.sanCaiShen = true
+    // }
     if (result.huType === Enums.qiShouSanCai) {
       // 统计刻子等
       const keZi = manager.getKeZi(originCountMap);
@@ -506,7 +537,7 @@ const HuPaiDetect = {
 
     //   顺牌组合，注意是从前往后组合！
     if (countMap[i] && i % 10 !== 8 && i % 10 !== 9 &&       //   排除数值为8和9的牌
-      countMap[i + 1] && countMap[i + 2]) {            //   如果后面有连续两张牌
+        countMap[i + 1] && countMap[i + 2]) {            //   如果后面有连续两张牌
       countMap[i]--;
       countMap[i + 1]--;
       countMap[i + 2]--;                                     //   各牌数减1
@@ -621,7 +652,8 @@ const HuPaiDetect = {
       sum += PAI[i];
     }
     return sum;
-  },
+  }
+  ,
 
   checkDaSiXi(countMap) {
     for (let i = 1; i < Enums.maxValidCard; i++) {
@@ -630,7 +662,8 @@ const HuPaiDetect = {
       }
     }
     return false;
-  },
+  }
+  ,
 
   checkBanBanHu(countMap) {
     for (let i = 1; i < Enums.maxValidCard; i++) {
@@ -639,7 +672,8 @@ const HuPaiDetect = {
       }
     }
     return true;
-  },
+  }
+  ,
 
   checkQueYiSe(countMap) {
     let type0 = false;
@@ -800,7 +834,7 @@ const HuPaiDetect = {
       resMap.huType = 'luanFeng'
       return true
     }
-    return color === 0
+    return color == 0
   }
   ,
 
@@ -1043,13 +1077,14 @@ const HuPaiDetect = {
     type2 && (se++);
 
     return se === 1;
-  },
+  }
+  ,
 
   checkQingYiSe(flatCards, events, resMap, caiShen) {
-    // if (this.isQingYiSe(flatCards, events, true, caiShen)) {
-    //   resMap.qingYiSe = true
-    //   return true;
-    // }
+    if (this.isQingYiSe(flatCards, events, true, caiShen)) {
+      resMap.qingYiSe = true
+      return true;
+    }
     return false;
   },
 
@@ -1073,14 +1108,37 @@ const HuPaiDetect = {
     for (let i = 0; i < countMap.length; i++) {
       this.backup[i] = countMap[i];
     }
-  },
+  }
+  ,
 
   recoverCards(countMap) {
     const mapRef = countMap;
     for (let i = 0; i < this.backup.length; i++) {
       mapRef[i] = this.backup[i];
     }
-  },
+  }
+  ,
+
+  // checkTingPai(countMap_, events, rule) {
+  //   const countMap = countMap_;
+  //   for (let i = changShaMajiangCards.length - 1; i >= 0; i--) {
+  //     const supposed = changShaMajiangCards[i];
+  //     if (countMap[supposed] < 4) {
+  //       countMap[supposed]++;
+  //       this.backUpCards(countMap);
+  //       const hu = this.checkQiDui(countMap, events)
+  //         || this.checkJiangJiangHu(countMap, events)
+  //         || this.checkPengPengHu(countMap, events)
+  //         || this.huRecur(countMap, false, rule);
+  //       this.recoverCards(countMap);
+  //       countMap[supposed]--;
+  //       if (hu) {
+  //         return true;
+  //       }
+  //     }
+  //   }
+  //   return false;
+  // },
 
   checkYiTiaoLong(result) {
     const cards = result.huCards.shunZi
@@ -1099,7 +1157,8 @@ const HuPaiDetect = {
       }
     }
     return found;
-  },
+  }
+  ,
 
   // 3金倒
   checkSanJinDao(countMap, events, result, seatIndex, rule) {
@@ -1114,7 +1173,6 @@ const HuPaiDetect = {
         return false
       }
     }
-    // console.warn("caishen-%s, caiCount-%s", countMap.caiShen, countMap[countMap.caiShen]);
     // 3金倒不必起手
     if (countMap[countMap.caiShen] >= 3) {
       result.hu = true;
@@ -1124,6 +1182,39 @@ const HuPaiDetect = {
     }
     return false;
   },
+
+  // mayCaiShenTou(sourceCards) {
+  //   const {cards, caiCount} = spreadCardAndCaiShen(sourceCards)
+  //   if (caiCount < 2) return false
+  //   const qiDuiResult = {}
+  //   this.checkQiDui(sourceCards, qiDuiResult)
+  //
+  //   return this.huRecur(cards, true, caiCount - 2, {
+  //     lastTakeCard: sourceCards.lastTakeCard,
+  //     caiShen: sourceCards.caishen
+  //   }, {}) || qiDuiResult.caiShenTou
+  // }
+  // ,
+  // checkQiaoXiang(sourceCards) {
+  //   const {cards, caiShen, caiCount} = spreadCardAndCaiShen(sourceCards)
+  //   const qiDuiQiaoXiangCards = Object.assign([], sourceCards)
+  //   let canAddCard = -1
+  //   for (let i = 1; i < Enums.bai; i++) {
+  //     if (qiDuiQiaoXiangCards[i] === 0 && i !== caiShen) {
+  //       canAddCard = i
+  //       break
+  //     }
+  //   }
+  //   //加任意牌能胡
+  //   qiDuiQiaoXiangCards[canAddCard] += 1
+  //
+  //   const pingHuQiaoXiang = this.huRecur(cards, true, caiCount - 1, {
+  //     lastTakeCard: sourceCards.lastTakeCard,
+  //     caiShen: sourceCards.caishen
+  //   }, {})
+  //   return pingHuQiaoXiang || this.checkQiDui(qiDuiQiaoXiangCards, {})
+  // }
+  // ,
 
   checkPropertiesAndGetHitsWithFan(result, propsTimesArr) {
     let hits = 0
@@ -1139,18 +1230,77 @@ const HuPaiDetect = {
 
   getPropertiesAndTimes(rule){
     return [
-      // {prop: Enums.qingYiSe, times: 4},
-      {prop: Enums.tianHu, times: 4},
-      // {prop: Enums.diHu, times: 4},
+      {prop: 'qingYiSe', times: 4},
+      {prop: 'tianHu', times: 4},
+      {prop: 'diHu', times: 4},
       // 3金倒
       {prop: Enums.sanCaiShen, times: 4},
-      {prop: Enums.qiangGang, times: 2},
-      // {prop: Enums.pengPengHu, times: 2},
+      {prop: 'qiangGang', times: 2},
+      {prop: 'pengPengHu', times: 2},
     ];
+    // if(!rule.useCaiShen || rule.hzlz_option === 'all'){
+    //   return [
+    //     {prop: 'qingYiSe', times: 4},
+    //     {prop: 'tianHu', times: 4},
+    //     {prop: 'diHu', times: 4},
+    //     // {prop: 'quanQiuRen', times: 4},
+    //     // {prop: '13buKao', times: 1},
+    //     // {prop: 'qiFeng', times: 2},
+    //     // {prop: 'luanFeng', times: 8},
+    //     // {prop: 'caiShenTou', times: 4},
+    //     // {prop: 'sanCaiYiKe', times: 4},
+    //     // {prop: 'gangBao', times: 4},
+    //     {prop: 'qiShouSanCai', times: 4},
+    //     // {prop: 'gangShangKaiHua', times: 2},
+    //     // {prop: 'gangShangPao', times: 2},
+    //     // {prop: 'haiDiLaoYue', times: 2},
+    //     // {prop: 'haiDiPao', times: 2},
+    //     // {prop: 'caiShenGuiWei', times: 2},
+    //     // {prop: 'shuangCaiGuiWei', times: 4},
+    //     // {prop: 'sanCaiGuiWei', times: 8},
+    //     {prop: 'qiangGang', times: 2},
+    //     {prop: 'pengPengHu', times: 2},
+    //     // {prop: 'qiDui', times: 2},
+    //     // {prop: 'haoQi', times: 4},
+    //   ]
+    // }
+    // if(rule.hzlz_option === 'qidui'){
+    //   return [
+    //     {prop: 'qiDui', times: 2},
+    //     {prop: 'haoQi', times: 4},
+    //   ]
+    // }
+    // return []
   },
 
+  // calculateWuCaiEffectGroup(result, rule) {
+  //   const keHu = rule.ro.kehu || []
+  //   const specialTimes = (t) => t
+  //
+  //   const propertiesAndTimes = rule.useCaiShen ? [] : [
+  //     {prop: 'pengPengHu', times: 2},
+  //     {prop: 'qiDui', times: 2},
+  //     {prop: 'haoQi', times: 4},
+  //   ]
+  //   let {hits, fan} = this.checkPropertiesAndGetHitsWithFan(result, propertiesAndTimes)
+  //
+  //   if (hits > 0 && result.wuCai) {
+  //     // fan *= specialTimes(2)
+  //   }
+  //   return fan
+  // },
+
   calculateNormalGroup(result, rule) {
+    // const keHu = rule.ro.kehu || []
+    // const specialTimes = (t) => t
+
     const propertiesAndTimes = this.getPropertiesAndTimes(rule)
+
+    // if (result.qiDuiZiBaoTou) {
+    //   delete result.baoTou
+    //   delete result.qiDui
+    //   delete result.haoQi
+    // }
 
     let {fan} = this.checkPropertiesAndGetHitsWithFan(result, propertiesAndTimes)
     if (result.isYouJin) {
