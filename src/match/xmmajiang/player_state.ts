@@ -495,7 +495,7 @@ class PlayerState implements Serializable {
             check.chiCombol = list;
             break;
           } else {
-            list.splice(i, 1);
+            // list.splice(i, 1);
           }
         }
       } else {
