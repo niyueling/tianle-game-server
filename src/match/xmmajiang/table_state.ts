@@ -468,7 +468,7 @@ class TableState implements Serializable {
     // 测试发牌
     this.caishen = Enums.tongzi9;
     payload.cards = [
-      [this.caishen, this.caishen, Enums.shuzi1, Enums.shuzi2, Enums.shuzi3, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.shuzi4, Enums.shuzi5],
+      [this.caishen, this.caishen, Enums.shuzi1, Enums.shuzi2, Enums.shuzi3, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.shuzi4, Enums.shuzi4],
       // [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
       //   Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
       // [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi3, Enums.wanzi5, Enums.shuzi1, Enums.shuzi5, Enums.shuzi6, Enums.shuzi9, Enums.tongzi1, Enums.tongzi2, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.nan],
