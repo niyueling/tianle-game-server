@@ -2130,6 +2130,36 @@ class TableState implements Serializable {
   }
 
   async onPlayerGuo(player, playTurn, playCard) {
+    // 天胡(金豆房)
+    const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
+    if (qiangDataIndex !== -1) {
+      if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
+        this.qiangJinPlayer.push(player._id.toString());
+        this.setQiangJinAction(player, Enums.guo);
+        player.sendMessage("game/chooseQiangJin", {
+          ok: true,
+          data: {action: Enums.guo, index: player.seatIndex}
+        })
+      }
+
+      // 天胡(好友房)
+      if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic) {
+        this.qiangJinPlayer.push(player._id.toString());
+        this.setQiangJinAction(player, Enums.guo);
+        player.sendMessage("game/chooseQiangJin", {
+          ok: true,
+          data: {action: Enums.guo, index: player.seatIndex}
+        })
+      }
+
+      if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+        this.isRunQiangJin = true;
+        player.emitter.emit(Enums.qiangJinHu);
+      }
+
+      return;
+    }
+
     if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
       player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceState});
     } else {
