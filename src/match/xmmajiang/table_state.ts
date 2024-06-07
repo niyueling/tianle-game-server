@@ -479,7 +479,7 @@ class TableState implements Serializable {
     //   [],
     //   [],
     // ]
-    payload.moCards = [this.caishen, Enums.tongzi1, Enums.tongzi2, Enums.tongzi3, Enums.wanzi4, Enums.wanzi5];
+    // payload.moCards = [this.caishen, Enums.tongzi1, Enums.tongzi2, Enums.tongzi3, Enums.wanzi4, Enums.wanzi5];
 
     const needShuffle = this.room.shuffleData.length > 0;
     let cardList = [];
