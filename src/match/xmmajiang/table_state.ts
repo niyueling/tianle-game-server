@@ -619,8 +619,6 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("qiangJin playerIndexs-%s", JSON.stringify(playerIndexs));
-
     return playerIndexs;
   }
 
@@ -1278,6 +1276,8 @@ class TableState implements Serializable {
           return;
         }
 
+        console.warn("1 cards-%s", JSON.stringify(player.cards));
+
         // 抢金
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
         if (ok && player.daHuPai(card, null)) {
@@ -1314,6 +1314,8 @@ class TableState implements Serializable {
               type: huSanJinDao ? Enums.sanJinDao : Enums.qiangJin
             }
           });
+
+          console.warn("2 cards-%s", JSON.stringify(player.cards));
 
           const gameOver = async() => {
             await this.gameOver();
@@ -1457,7 +1459,7 @@ class TableState implements Serializable {
       playerFanShus.push({index: p.seatIndex, fanShu: this.room.fanShuMap[p._id]});
     }
 
-    console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
+    // console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
     return this.players[nextZhuangIndex];
   }
 
@@ -1570,8 +1572,8 @@ class TableState implements Serializable {
         shuiShu: playerToResolve.shuiShu
       }
 
-      console.warn("index-%s, mingGangScore-%s, ziMingGangScore-%s, anGangScore-%s, ziAnGangScore-%s, goldScore-%s, huaScore-%s, anKeScore-%s, ziAnKeScore-%s, pengScore-%s, shuiShu-%s",
-        this.atIndex(playerToResolve), mingGangScore, ziMingGangScore, anGangScore, ziAnGangScore, goldScore, huaScore, anKeScore, ziAnKeScore, pengScore, playerToResolve.shuiShu);
+      // console.warn("index-%s, mingGangScore-%s, ziMingGangScore-%s, anGangScore-%s, ziAnGangScore-%s, goldScore-%s, huaScore-%s, anKeScore-%s, ziAnKeScore-%s, pengScore-%s, shuiShu-%s",
+      //   this.atIndex(playerToResolve), mingGangScore, ziMingGangScore, anGangScore, ziAnGangScore, goldScore, huaScore, anKeScore, ziAnKeScore, pengScore, playerToResolve.shuiShu);
     })
   }
 
@@ -1670,7 +1672,7 @@ class TableState implements Serializable {
 
     playerPanShus.push({index: huPlayer.seatIndex, panShu: huPlayer.panShu, balance: huPlayer.balance});
 
-    console.warn("playerPanShus-%s", JSON.stringify(playerPanShus));
+    // console.warn("playerPanShus-%s", JSON.stringify(playerPanShus));
   }
 
   async gameOver() {
