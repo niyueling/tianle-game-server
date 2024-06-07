@@ -477,11 +477,15 @@ class PlayerState implements Serializable {
           const cardList = list[i];
           const cardMap = this.cards.slice();
 
+          // 从手牌删除吃牌
           for (let j = 0; j < cardList.length - 1; j++) {
             if (cardList[i] !== card) {
               cardMap[cardList[i]]--;
             }
           }
+
+          // 提前删除一张金牌，判断是否可以游金
+          cardMap[this.caiShen]--;
 
           const isOk = manager.isCanYouJin(cardMap, this.caiShen);
           if (isOk) {
