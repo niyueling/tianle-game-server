@@ -188,7 +188,7 @@ const HuPaiDetect = {
 
     if (qiangGang) {
       result.qiangGang = true
-    }ci
+    }
 
     if (result.huType === Enums.qiShouSanCai) {
       // 统计刻子等
