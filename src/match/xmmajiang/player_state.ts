@@ -910,23 +910,19 @@ class PlayerState implements Serializable {
           }
           // 打的金牌,游金次数 + 1
           this.recordGameSingleEvent(Enums.youJinTimes, this.events[Enums.youJinTimes] + 1);
-
-          // console.warn("card-%s, caiShen-%s, isYouJin-%s, youJinTimes", card, this.caiShen, isOk, this.events[Enums.youJinTimes]);
         } else {
           // 第一次游金
           this.recordGameSingleEvent(Enums.youJinTimes, 1);
         }
-
-        // 设置状态为游金状态
       } else {
         // 非游金，重置次数
         this.recordGameSingleEvent(Enums.youJinTimes, 0);
       }
-      // console.debug('check you jin 检查游金', isOk, 'times', this.events[Enums.youJinTimes], 'shortId', this.model.shortId);
-      return true
+
+      return true;
     }
-    console.warn('no such card', card)
-    return false
+    console.warn('no such card', card);
+    return false;
   }
 
   daHuPai(card, daPlayer) {
