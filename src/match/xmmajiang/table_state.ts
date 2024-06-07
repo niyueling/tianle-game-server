@@ -578,6 +578,14 @@ class TableState implements Serializable {
       // 判断抢金和非庄家三金倒为抢金状态
       if (this.qiangJinData.length) {
         this.state = stateQiangJin;
+
+        for (let i = 1; i < this.players.length; i++) {
+          const p = this.players[i];
+          const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === p.seatIndex);
+          if (qiangDataIndex !== -1) {
+            p.sendMessage("game/canDoQiangJin", {ok: true, data: {index: p.seatIndex, data: this.qiangJinData[qiangDataIndex]}});
+          }
+        }
       }
 
       if (!this.isFlower(nextCard) && !this.qiangJinData.length) {
