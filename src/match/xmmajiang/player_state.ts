@@ -479,8 +479,8 @@ class PlayerState implements Serializable {
 
           // 从手牌删除吃牌
           for (let j = 0; j < cardList.length - 1; j++) {
-            if (cardList[i] !== card) {
-              cardMap[cardList[i]]--;
+            if (cardList[j] !== card) {
+              cardMap[cardList[j]]--;
             }
           }
 
