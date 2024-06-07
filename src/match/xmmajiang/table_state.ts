@@ -1262,10 +1262,14 @@ class TableState implements Serializable {
         // 抢金(好友房)
         if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
-          this.setQiangJinAction(player, Enums.qiangJin);
+          this.setQiangJinAction(player, huResult.hu && huResult.huType === Enums.qiShouSanCai ? Enums.sanJinDao : Enums.qiangJin);
+          const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
+          if (qiangDataIndex !== -1 && (huResult.hu && huResult.huType === Enums.qiShouSanCai)) {
+            this.qiangJinData[qiangDataIndex].card = card;
+          }
           player.sendMessage("game/chooseQiangJin", {
             ok: true,
-            data: {action: Enums.qiangJin, index: player.seatIndex}
+            data: {action: huResult.hu && huResult.huType === Enums.qiShouSanCai ? Enums.sanJinDao : Enums.qiangJin, index: player.seatIndex}
           })
 
           if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
@@ -1275,8 +1279,6 @@ class TableState implements Serializable {
 
           return;
         }
-
-        console.warn("1 cards-%s", JSON.stringify(player.cards));
 
         // 抢金
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
@@ -1314,8 +1316,6 @@ class TableState implements Serializable {
               type: huSanJinDao ? Enums.sanJinDao : Enums.qiangJin
             }
           });
-
-          console.warn("2 cards-%s", JSON.stringify(player.cards));
 
           const gameOver = async() => {
             await this.gameOver();
