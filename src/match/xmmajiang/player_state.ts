@@ -489,7 +489,7 @@ class PlayerState implements Serializable {
           cardMap[this.caiShen]--;
 
           const isOk = manager.isCanYouJin(cardMap, this.caiShen);
-          console.warn("cards-%s, ok-%s, cardList-%s", JSON.stringify(cardMap), isOk, JSON.stringify(cardList));
+          console.warn("list-%s, ok-%s, cardList-%s", JSON.stringify(list), isOk, JSON.stringify(cardList));
           if (isOk) {
             chiLists.push(cardList);
             // 可以吃
