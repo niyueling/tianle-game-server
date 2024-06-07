@@ -1020,7 +1020,7 @@ class TableState implements Serializable {
 
     player.on(Enums.gangBySelf, async (turn, card) => {
       let gangIndex;
-      if (this.state !== stateWaitDa) {
+      if (![stateWaitDa, stateQiangJin].includes(this.state)) {
         return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamStateInvaid});
       }
       if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() !== player.model._id.toString()) {
