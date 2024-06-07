@@ -70,7 +70,8 @@ const HuPaiDetect = {
     let maybes = []
     const {caiShen, lastTakeCard, takeSelfCard, turn} = sourceCardMap
 
-    const lastTakeCardAndCaiShen = {lastTakeCard, caiShen, takeSelfCard, turn}
+    const lastTakeCardAndCaiShen = {lastTakeCard, caiShen, takeSelfCard, turn, seatIndex, rule, sourceCardMap}
+    console.warn("lastTakeCardAndCaiShen-%s", JSON.stringify(lastTakeCardAndCaiShen))
     const checkHuFuncArray = [
       {func: this.checkSanJinDao, args: [sourceCardMap, events, result, seatIndex, rule]},
       {func: this.checkPingHu, args: [sourceCardMap, lastTakeCardAndCaiShen, result]},
