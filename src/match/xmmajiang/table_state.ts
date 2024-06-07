@@ -463,10 +463,10 @@ class TableState implements Serializable {
     this.sleepTime = 2500;
     // 金牌
     this.caishen = this.randGoldCard();
-    await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
     if (this.rule.test && payload.goldCard) {
       this.caishen = payload.goldCard;
     }
+    await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
 
     // 测试发牌
     // this.caishen = Enums.tongzi9;
