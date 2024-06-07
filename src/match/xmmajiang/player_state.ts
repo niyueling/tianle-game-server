@@ -238,6 +238,9 @@ class PlayerState implements Serializable {
   // 坐庄次数
   zhuangCount: number = 0;
 
+  // 是否游金状态
+  isYouJin: boolean = false;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -279,8 +282,7 @@ class PlayerState implements Serializable {
     this.panInfo = {};
     this.score = room.getScore(userSocket)
     this.fanShu = room.getFanShu(userSocket)
-
-    // if (this.zhuang && this.fanShu === 8)
+    this.isYouJin = false;
   }
 
   get youJinTimes() {
@@ -880,6 +882,7 @@ class PlayerState implements Serializable {
       console.warn('要先出', JSON.stringify(bigCardList));
       return false;
     }
+
     if (this.cards[card] > 0) {
       this.cards[card]--
       this.dropped.push(card)
@@ -913,6 +916,8 @@ class PlayerState implements Serializable {
           // 第一次游金
           this.recordGameSingleEvent(Enums.youJinTimes, 1);
         }
+
+        // 设置状态为游金状态
       } else {
         // 非游金，重置次数
         this.recordGameSingleEvent(Enums.youJinTimes, 0);
