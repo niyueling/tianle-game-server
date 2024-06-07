@@ -95,12 +95,17 @@ const HuPaiDetect = {
         }
       }
     }
-
-    console.warn("maybes-%s", JSON.stringify(maybes));
     return maybes;
   },
 
   maxHuResult(originCountMap, events, maybes, rule) {
+    let sanJinDaoData = maybes[0];
+
+    if (maybes[0].huType === Enums.qiShouSanCai) {
+      sanJinDaoData = maybes[0];
+      maybes.splice(0, 1);
+    }
+
     const sorter = (a, b) => b.fan - a.fan
     const sortedResult = maybes
       .map(r => this.combineOtherProps(originCountMap, events, r))
@@ -110,74 +115,34 @@ const HuPaiDetect = {
       })
       .sort(sorter)
 
+    let huInfo = {hu: false};
 
-    return sortedResult[0] || {hu: false}
+    if (sortedResult[0]) {
+      huInfo = sortedResult[0];
+
+      if (huInfo.huType === Enums.pingHu && sanJinDaoData.huType === Enums.qiShouSanCai) {
+        huInfo.huType = Enums.qiShouSanCai;
+        huInfo.sanCaiShen = true;
+      }
+    }
+
+    return huInfo;
   },
 
   combineOtherProps(originCountMap, events, result) {
-    const {turn, first, alreadyTakenCard, haiDi, takeSelfCard, gang, qiangGang, qiaoXiang, caiShen} = originCountMap
-    // 替换金牌
-    const clearCaiShenHolder2Flat = () => {
-      let flatCards = []
-      for (let groupName in result.huCards) {
-        let cardGroup = result.huCards[groupName]
-        let idx = -1
-        while ((idx = cardGroup.indexOf(CAISHEN_HOLDER)) !== -1) {
-          cardGroup.splice(idx, 1)
-        }
-        flatCards = flatCards.concat(cardGroup)
-      }
-      return flatCards
-    }
-
-    const checkPengPengHuAndAssignProps = () => {
-      const shunZi = result.huCards.shunZi
-      const extras = events[Enums.chi]
-      if (shunZi && shunZi.length === 0 && !extras) {
-        result.huType = 'pengPengHu'
-        result.pengPengHu = true
-      }
-    }
-
-    // result.baoTou = qiaoXiang
+    const {turn, takeSelfCard, gang, qiangGang} = originCountMap;
 
     //有牌型的  13不靠 qifeng luanfeng 不需要
     if (result.huCards) {
-      // checkPengPengHuAndAssignProps()
-      const flatCards = clearCaiShenHolder2Flat()
-      // this.checkQingYiSe(flatCards.slice(), events, result, caiShen)
-      if (result.huType === Enums.pingHu) {
-        this.checkYiTiaoLong(result)
-        // this.checkQuanQiuRen(originCountMap.slice(), events, result)
-      }
       // 庄家抓牌就胡
       if (turn === 1) {
         if (takeSelfCard) {
           result.tianHu = true
         }
       }
-      // 闲家抓牌就胡
-      // if (turn === 2) {
-      //   if (takeSelfCard) {
-      //     result.diHu = true
-      //   }
-      // }
-
-      // if (first) {
-      //   if (takeSelfCard) {
-      //     result.tianHu = true
-      //   }
-      //   if (alreadyTakenCard === false) {
-      //     result.diHu = true
-      //   }
-      // }
     }
 
-    // if (haiDi && takeSelfCard) {
-    //   // result.haiDiLaoYue = true
-    // }
-
-
+    // 杠上开花
     if (gang) {
       if (result.baoTou) {
         result.baoTou = false
@@ -196,11 +161,12 @@ const HuPaiDetect = {
       const keZi = manager.getKeZi(originCountMap);
       result.huCards = { keZi };
     }
+
     // 添加游金次数
     if (result.isYouJin) {
       result[Enums.youJinTimes] = events[Enums.youJinTimes] || 0;
     }
-    return result
+    return result;
   },
 
   checkPingHu(countMap, lastTakeCardAndCaiShen, result) {
@@ -1081,25 +1047,6 @@ const HuPaiDetect = {
     for (let i = 0; i < this.backup.length; i++) {
       mapRef[i] = this.backup[i];
     }
-  },
-
-  checkYiTiaoLong(result) {
-    const cards = result.huCards.shunZi
-    let long = [], found = false
-    for (let card = 0; card < Enums.maxValidCard; card++) {
-      if (cards.indexOf(card) > -1) {
-        long.push(card)
-      }
-      if (card % 10 === 9) {
-        found = (long.length === 9);
-        if (found) {
-          result[Enums.yiTiaoLong] = true
-          break
-        }
-        long = []
-      }
-    }
-    return found;
   },
 
   // 3金倒
