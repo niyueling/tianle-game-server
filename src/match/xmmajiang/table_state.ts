@@ -1677,7 +1677,7 @@ class TableState implements Serializable {
 
   async gameOver() {
     if (this.state !== stateGameOver) {
-      this.state = stateGameOver
+      this.state = stateGameOver;
       const winner = this.players.filter(x => x.events.jiePao)[0]
       const index = this.players.findIndex(p => p.events.hu && p.events.hu[0].huType === Enums.qiangJin);
       if (index !== -1) {
@@ -2124,34 +2124,36 @@ class TableState implements Serializable {
   }
 
   async onPlayerGuo(player, playTurn, playCard) {
-    // 天胡(金豆房)
-    const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
-    if (qiangDataIndex !== -1) {
-      if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
-        this.qiangJinPlayer.push(player._id.toString());
-        this.setQiangJinAction(player, Enums.guo);
-        player.sendMessage("game/chooseQiangJin", {
-          ok: true,
-          data: {action: Enums.guo, index: player.seatIndex}
-        })
-      }
+    if (this.state === stateQiangJin) {
+      // 天胡(金豆房)
+      const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
+      if (qiangDataIndex !== -1) {
+        if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
+          this.qiangJinPlayer.push(player._id.toString());
+          this.setQiangJinAction(player, Enums.guo);
+          player.sendMessage("game/chooseQiangJin", {
+            ok: true,
+            data: {action: Enums.guo, index: player.seatIndex}
+          })
+        }
 
-      // 天胡(好友房)
-      if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic) {
-        this.qiangJinPlayer.push(player._id.toString());
-        this.setQiangJinAction(player, Enums.guo);
-        player.sendMessage("game/chooseQiangJin", {
-          ok: true,
-          data: {action: Enums.guo, index: player.seatIndex}
-        })
-      }
+        // 天胡(好友房)
+        if (!this.qiangJinPlayer.includes(player._id) && !this.room.isPublic) {
+          this.qiangJinPlayer.push(player._id.toString());
+          this.setQiangJinAction(player, Enums.guo);
+          player.sendMessage("game/chooseQiangJin", {
+            ok: true,
+            data: {action: Enums.guo, index: player.seatIndex}
+          })
+        }
 
-      if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
-        this.isRunQiangJin = true;
-        player.emitter.emit(Enums.qiangJinHu);
-      }
+        if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+          this.isRunQiangJin = true;
+          player.emitter.emit(Enums.qiangJinHu);
+        }
 
-      return;
+        return;
+      }
     }
 
     if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
