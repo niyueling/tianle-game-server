@@ -99,9 +99,9 @@ const HuPaiDetect = {
   },
 
   maxHuResult(originCountMap, events, maybes, rule) {
-    let sanJinDaoData = maybes[0];
+    let sanJinDaoData = maybes[0] || {};
 
-    if (maybes[0].huType === Enums.qiShouSanCai) {
+    if (maybes.length && maybes[0].huType === Enums.qiShouSanCai) {
       sanJinDaoData = maybes[0];
       maybes.splice(0, 1);
     }
