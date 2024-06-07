@@ -462,24 +462,8 @@ class TableState implements Serializable {
     this.shuffle();
     this.sleepTime = 2500;
     // 金牌
-    this.caishen = this.randGoldCard();
-    if (this.rule.test && payload.goldCard) {
-      this.caishen = payload.goldCard;
-    }
+    this.caishen = this.randGoldCard(this.rule.test, payload.goldCard);
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
-
-    // 测试发牌
-    // this.caishen = Enums.tongzi9;
-    // payload.cards = [
-    //   [this.caishen, this.caishen, Enums.shuzi1, Enums.shuzi2, Enums.shuzi3, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.shuzi4, Enums.shuzi5],
-    //   // [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
-    //   //   Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
-    //   // [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi3, Enums.wanzi5, Enums.shuzi1, Enums.shuzi5, Enums.shuzi6, Enums.shuzi9, Enums.tongzi1, Enums.tongzi2, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.nan],
-    //   [],
-    //   [],
-    //   [],
-    // ]
-    // payload.moCards = [this.caishen, Enums.tongzi1, Enums.tongzi2, Enums.tongzi3, Enums.wanzi4, Enums.wanzi5];
 
     const needShuffle = this.room.shuffleData.length > 0;
     let cardList = [];
@@ -503,7 +487,6 @@ class TableState implements Serializable {
             this.cards.splice(cardIndex, 1);
             this.lastTakeCard = card;
           }
-          // console.warn("test card-%s, cardIndex-%s, remainCards-%s", payload.cards[i][j], cardIndex, this.remainCards);
         }
       }
 
@@ -2787,17 +2770,22 @@ class TableState implements Serializable {
     return {index: 0, count: 0};
   }
 
-  randGoldCard() {
+  randGoldCard(test, goldCard) {
     const index = manager.randGoldCard();
     // 金牌
-    const card = this.cards[this.cards.length - 1 - index];
+    let card = this.cards[this.cards.length - 1 - index];
+
+    if (test && goldCard) {
+      card = goldCard;
+    }
     // 检查金牌不是花
     if (this.isFlower(card)) {
       // 重新发
-      return this.randGoldCard();
+      return this.randGoldCard(test, goldCard);
     }
     // 剔除这张牌，只保留3张金
-    this.cards.splice(this.cards.length - 1 - index, 1);
+    const cardIndex = this.cards.findIndex(c => c === card);
+    this.cards.splice(cardIndex, 1);
     this.remainCards--;
     return card;
   }
