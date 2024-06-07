@@ -473,6 +473,7 @@ class PlayerState implements Serializable {
       // 如果是双游中，三游中状态
       if (this.isYouJin) {
         // 检测吃牌后是否可以游金（可能多种选择）
+        const chiLists = [];
         for (let i = 0; i < list.length; i++) {
           const cardList = list[i];
           const cardMap = this.cards.slice();
@@ -490,12 +491,11 @@ class PlayerState implements Serializable {
           const isOk = manager.isCanYouJin(cardMap, this.caiShen);
           console.warn("cards-%s, ok-%s, cardList-%s", JSON.stringify(cardMap), isOk, JSON.stringify(cardList));
           if (isOk) {
+            chiLists.push(cardList);
             // 可以吃
             check[Enums.chi] = this;
-            check.chiCombol = list;
+            check.chiCombol = chiLists;
             break;
-          } else {
-            // list.splice(i, 1);
           }
         }
       } else {
