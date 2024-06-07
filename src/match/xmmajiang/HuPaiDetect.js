@@ -109,12 +109,8 @@ const HuPaiDetect = {
       })
       .sort(sorter)
 
-    const maxResult = sortedResult[0] || {hu: false}
-    if (maxResult.fan >= 16) {
-      maxResult.fan = 16
-    }
 
-    return maxResult
+    return sortedResult[0] || {hu: false}
   },
 
   combineOtherProps(originCountMap, events, result) {
@@ -192,7 +188,7 @@ const HuPaiDetect = {
 
     if (qiangGang) {
       result.qiangGang = true
-    }
+    }ci
 
     if (result.huType === Enums.qiShouSanCai) {
       // 统计刻子等
