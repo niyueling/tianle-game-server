@@ -849,12 +849,12 @@ class TableState implements Serializable {
         return
       }
 
-      if (this.isSomeOne2youOr3you()) {
-        // 游金中，只能自摸
-        player.emitter.emit(Enums.guo, turn, card);
-        player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.youJinNotHu})
-        return;
-      }
+      // if (this.isSomeOne2youOr3you()) {
+      //   // 游金中，只能自摸
+      //   player.emitter.emit(Enums.guo, turn, card);
+      //   player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.youJinNotHu})
+      //   return;
+      // }
 
       this.actionResolver.requestAction(player, 'chi', async () => {
         const ok = await player.chiPai(card, otherCard1, otherCard2, this.lastDa);
