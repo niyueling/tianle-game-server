@@ -70,7 +70,8 @@ const HuPaiDetect = {
     let maybes = []
     const {caiShen, lastTakeCard, takeSelfCard, turn} = sourceCardMap
 
-    const lastTakeCardAndCaiShen = {lastTakeCard, caiShen, takeSelfCard, turn,}
+    const lastTakeCardAndCaiShen = {lastTakeCard, caiShen, takeSelfCard, turn}
+    console.warn(lastTakeCardAndCaiShen);
     const checkHuFuncArray = [
       {func: this.checkSanJinDao, args: [sourceCardMap, events, result, seatIndex, rule]},
       {func: this.checkPingHu, args: [sourceCardMap, lastTakeCardAndCaiShen, result]},
@@ -1076,8 +1077,7 @@ const HuPaiDetect = {
     for (let i = 0; i < countMap.length; i++) {
       this.backup[i] = countMap[i];
     }
-  }
-  ,
+  },
 
   recoverCards(countMap) {
     const mapRef = countMap;
@@ -1103,8 +1103,7 @@ const HuPaiDetect = {
       }
     }
     return found;
-  }
-  ,
+  },
 
   // 3金倒
   checkSanJinDao(countMap, events, result, seatIndex, rule) {
@@ -1119,7 +1118,7 @@ const HuPaiDetect = {
         return false
       }
     }
-    console.warn("caishen-%s, caiCount-%s", countMap.caiShen, countMap[countMap.caiShen]);
+    // console.warn("caishen-%s, caiCount-%s", countMap.caiShen, countMap[countMap.caiShen]);
     // 3金倒不必起手
     if (countMap[countMap.caiShen] >= 3) {
       result.hu = true;
