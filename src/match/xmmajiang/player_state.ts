@@ -808,7 +808,7 @@ class PlayerState implements Serializable {
     const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
     this.cards[caiShen]--;
     let huState = checkResult.hu;
-    if (checkResult.hu && checkResult.huType === Enums.qiShouSanCai && this.cards[this.caiShen] === 2) {
+    if (checkResult.hu && checkResult.huType === Enums.qiShouSanCai) {
       huState = false;
     }
 
