@@ -76,8 +76,6 @@ const HuPaiDetect = {
       {func: this.checkPingHu, args: [sourceCardMap, lastTakeCardAndCaiShen, result]},
     ]
 
-    console.warn("checkHuFuncArray-%s", JSON.stringify(checkHuFuncArray));
-
     const clear = (m) => {
       for (let v in m) {
         m[v] = null
@@ -97,6 +95,8 @@ const HuPaiDetect = {
         }
       }
     }
+
+    console.warn("maybes-%s", JSON.stringify(maybes));
     return maybes;
   },
 
