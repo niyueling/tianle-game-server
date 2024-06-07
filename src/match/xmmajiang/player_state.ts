@@ -470,9 +470,33 @@ class PlayerState implements Serializable {
   checkChi(card, check) {
     const list = manager.isCanChi(card, this.caiShen, this.cards);
     if (list.length > 0) {
-      // 可以吃
-      check[Enums.chi] = this;
-      check.chiCombol = list;
+      // 如果是双游中，三游中状态
+      if (this.isYouJin) {
+        // 检测吃牌后是否可以游金（可能多种选择）
+        for (let i = 0; i < list.length; i++) {
+          const cardList = list[i];
+          const cardMap = this.cards.slice();
+
+          for (let j = 0; j < cardList.length - 1; j++) {
+            if (cardList[i] !== card) {
+              cardMap[cardList[i]]--;
+            }
+          }
+
+          const isOk = manager.isCanYouJin(cardMap, this.caiShen);
+          if (isOk) {
+            // 可以吃
+            check[Enums.chi] = this;
+            check.chiCombol = list;
+            break;
+          }
+        }
+      } else {
+        // 可以吃
+        check[Enums.chi] = this;
+        check.chiCombol = list;
+      }
+
     }
     return check
   }
@@ -910,13 +934,18 @@ class PlayerState implements Serializable {
           }
           // 打的金牌,游金次数 + 1
           this.recordGameSingleEvent(Enums.youJinTimes, this.events[Enums.youJinTimes] + 1);
+
+          // 如果用户处于双游中，设置游金状态
+          this.isYouJin = true;
         } else {
           // 第一次游金
           this.recordGameSingleEvent(Enums.youJinTimes, 1);
+          this.isYouJin = false;
         }
       } else {
         // 非游金，重置次数
         this.recordGameSingleEvent(Enums.youJinTimes, 0);
+        this.isYouJin = false;
       }
 
       return true;
