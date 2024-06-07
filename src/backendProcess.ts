@@ -208,6 +208,8 @@ export class BackendProcess {
       //   await room.join(playerRmqProxy);
       // }
 
+      room.fanShuMap[playerRmqProxy._id] = 16;
+
       await roomProxy.joinAsCreator(playerRmqProxy);
 
       // 第一次进房间,保存信息
