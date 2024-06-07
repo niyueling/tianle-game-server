@@ -1819,22 +1819,24 @@ class TableState implements Serializable {
 
     switch (this.state) {
       case stateWaitDa: {
-        const daPlayer = this.stateData[Enums.da]
+        this.state = stateWaitDa;
+        const daPlayer = this.stateData[Enums.da];
         if (daPlayer._id.toString() === player._id.toString()) {
           console.warn("reconnect msg-%s", JSON.stringify(this.stateData.msg));
           pushMsg.current = {
             index,
             state: 'waitDa',
-            msg: this.stateData.msg,
+            msg: this.stateData.msg
           }
         } else {
-          pushMsg.current = {index: daPlayer.seatIndex, state: 'waitDa'}
+          pushMsg.current = {index: daPlayer.seatIndex, state: 'waitDa'};
         }
         break
       }
       case stateWaitAction: {
         const actions = this.actionResolver.allOptions && this.actionResolver.allOptions(player)
         if (actions) {
+          this.state = stateWaitAction;
           pushMsg.current = {
             index, state: 'waitAction',
             msg: actions
