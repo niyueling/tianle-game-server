@@ -103,7 +103,10 @@ const HuPaiDetect = {
 
     if (maybes.length && maybes[0].huType === Enums.qiShouSanCai) {
       sanJinDaoData = maybes[0];
-      maybes.splice(0, 1);
+
+      if (maybes.length > 1) {
+        maybes.splice(0, 1);
+      }
     }
 
     const sorter = (a, b) => b.fan - a.fan
