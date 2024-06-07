@@ -469,17 +469,17 @@ class TableState implements Serializable {
     }
 
     // 测试发牌
-    this.caishen = Enums.tongzi9;
-    payload.cards = [
-      [this.caishen, this.caishen, Enums.shuzi1, Enums.shuzi2, Enums.shuzi3, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.shuzi4, Enums.shuzi5],
-      // [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
-      //   Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
-      // [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi3, Enums.wanzi5, Enums.shuzi1, Enums.shuzi5, Enums.shuzi6, Enums.shuzi9, Enums.tongzi1, Enums.tongzi2, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.nan],
-      [],
-      [],
-      [],
-    ]
-    payload.moCards = [this.caishen, Enums.tongzi1, Enums.tongzi2, Enums.tongzi3, Enums.wanzi4, Enums.wanzi5];
+    // this.caishen = Enums.tongzi9;
+    // payload.cards = [
+    //   [this.caishen, this.caishen, Enums.shuzi1, Enums.shuzi2, Enums.shuzi3, Enums.wanzi2, Enums.wanzi2, Enums.wanzi2, Enums.wanzi3, Enums.wanzi3, Enums.wanzi3, Enums.wanzi4, Enums.wanzi4, Enums.wanzi4, Enums.shuzi4, Enums.shuzi5],
+    //   // [Enums.tongzi1, Enums.tongzi1, Enums.tongzi1, Enums.tongzi2, Enums.tongzi2, Enums.tongzi2, Enums.tongzi3, Enums.tongzi3,
+    //   //   Enums.tongzi3, Enums.tongzi4, Enums.tongzi4, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.tongzi5, Enums.tongzi6],
+    //   // [this.caishen, this.caishen, Enums.wanzi1, Enums.wanzi1, Enums.wanzi3, Enums.wanzi5, Enums.shuzi1, Enums.shuzi5, Enums.shuzi6, Enums.shuzi9, Enums.tongzi1, Enums.tongzi2, Enums.tongzi4, Enums.tongzi5, Enums.tongzi5, Enums.nan],
+    //   [],
+    //   [],
+    //   [],
+    // ]
+    // payload.moCards = [this.caishen, Enums.tongzi1, Enums.tongzi2, Enums.tongzi3, Enums.wanzi4, Enums.wanzi5];
 
     const needShuffle = this.room.shuffleData.length > 0;
     let cardList = [];
@@ -1186,6 +1186,7 @@ class TableState implements Serializable {
         if (ok && player.daHuPai(card, null)) {
           // 是否3金倒
           const huSanJinDao = player.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0;
+          const huTianHu = player.events.hu.filter(value => value.tianHu).length > 0;
 
           this.stateData = {};
           this.room.broadcast('game/showHuType', {
@@ -1197,6 +1198,7 @@ class TableState implements Serializable {
               daCards: [],
               huCards: [],
               card,
+              tianHu: huTianHu,
               youJin: huResult.isYouJin && player.events[Enums.youJinTimes] === 1,
               shuangYou: huResult.isYouJin && player.events[Enums.youJinTimes] === 2,
               sanYou: huResult.isYouJin && player.events[Enums.youJinTimes] === 3,
@@ -1216,6 +1218,7 @@ class TableState implements Serializable {
                 from: this.atIndex(player),
                 type: "zimo",
                 turn,
+                huTianHu,
                 youJin: huResult.isYouJin && player.events[Enums.youJinTimes] === 1,
                 shuangYou: huResult.isYouJin && player.events[Enums.youJinTimes] === 2,
                 sanYou: huResult.isYouJin && player.events[Enums.youJinTimes] === 3,
