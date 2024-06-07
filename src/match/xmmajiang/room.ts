@@ -391,7 +391,6 @@ class Room extends RoomBase {
   }
 
   getFanShu(player) {
-    console.warn("zhuang-%s", player.zhuang)
     return this.fanShuMap[player._id]
   }
 
