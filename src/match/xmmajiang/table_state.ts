@@ -1813,6 +1813,7 @@ class TableState implements Serializable {
     const pushMsg = {
       index,
       status: [],
+      caishen: this.caishen,
       remainCards: this.remainCards,
       base: this.room.currentBase,
       juIndex: this.room.game.juIndex,
