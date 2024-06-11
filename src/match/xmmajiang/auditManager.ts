@@ -125,7 +125,7 @@ export class AuditManager {
 
         // 已经出过了, 检查自己有没有一张这种牌
         if (cards[i] === 1 && this.model.playerCardList[playerId][i] === 1) {
-          // console.warn("card-%s, cardCount-%s, cardCount1-%s, seatIndex-%s, playerCardList-%s", i, this.model.playerCardList[playerId][i], cards[i], seatIndex, JSON.stringify(this.model.playerCardList[playerId]));
+          console.warn("card-%s, cardCount-%s, cardCount1-%s, seatIndex-%s, cardUsed-%s", i, this.model.playerCardList[playerId][i], cards[i], seatIndex, this.model.cardUsed[i]);
           cardList.push(i);
         }
       }
