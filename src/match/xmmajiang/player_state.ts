@@ -1341,6 +1341,7 @@ class PlayerState implements Serializable {
     }
     // 删除游金次数
     delete events.youJinTimes;
+    this.cards['caiShen'] = this.caiShen;
     return {
       index,
       cards,
@@ -1367,6 +1368,7 @@ class PlayerState implements Serializable {
     const events = Object.assign({}, this.events);
     // 删除游金次数
     delete events.youJinTimes;
+    this.cards['caiShen'] = this.caiShen;
     return {
       index,
       cardCount,
