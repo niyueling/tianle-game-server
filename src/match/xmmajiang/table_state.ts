@@ -1074,8 +1074,15 @@ class TableState implements Serializable {
       const isQiangJin = this.state === stateQiangJin || (huResult.hu && huResult.huType === Enums.qiShouSanCai);
 
       console.warn("jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s", isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult));
+      //双游只能自摸
       if (isJiePao && this.isSomeOne2youOr3you()) {
         player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.youJinNotHu});
+        return;
+      }
+
+      // 三游只能杠上开花
+      if (isZiMo && !huResult.gangShangKaiHua && this.isSomeOne3you(player)) {
+        player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.youJin3NotHu});
         return;
       }
 
@@ -2800,6 +2807,12 @@ class TableState implements Serializable {
   // 是否有玩家在2游，3游
   isSomeOne2youOr3you() {
     const list = this.players.filter(value => value.youJinTimes > 1)
+    return list.length > 0;
+  }
+
+  // 是否有玩家在3游
+  isSomeOne3you(player) {
+    const list = this.players.filter(value => value.youJinTimes === 3 && player._id.toString() !== value._id.toString())
     return list.length > 0;
   }
 }

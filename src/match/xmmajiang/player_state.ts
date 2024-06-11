@@ -13,6 +13,7 @@ import {DummyRecorder, IGameRecorder} from './GameRecorder'
 import HuPaiDetect from './HuPaiDetect'
 import Room from './room'
 import Rule from './Rule'
+import {TianleErrorCode} from "@fm/common/constants";
 
 export class SourceCardMap extends Array<number> {
   first: boolean
@@ -441,6 +442,10 @@ class PlayerState implements Serializable {
       msg.huInfo = huResult
       msg.hu = true
       this.huForbiddenCards = []
+
+      if (!huResult.gangShangKaiHua && this.room.gameState.isSomeOne3you(this)) {
+        huResult.hu = false;
+      }
     }
     if (gangGuo) {
       this.freeCard = card
@@ -448,6 +453,7 @@ class PlayerState implements Serializable {
 
     // 判断是否有大牌需要先打
     msg.bigCardList = await this.room.auditManager.getBigCardByPlayerId(this._id, this.seatIndex, this.cards);
+
 
     if (send) {
       this.sendMessage('game/TakeCard', {ok: true, data: msg})
