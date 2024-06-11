@@ -1765,11 +1765,11 @@ class TableState implements Serializable {
   }
 
   listenRoom(room) {
-    room.on('reconnect', this.onReconnect = (playerMsgDispatcher, index) => {
+    room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       const player = this.players[index];
       player.onDeposit = false;
       player.reconnect(playerMsgDispatcher)
-      player.sendMessage('game/reconnect', {ok: true, data: this.generateReconnectMsg(index)})
+      player.sendMessage('game/reconnect', {ok: true, data: await this.generateReconnectMsg(index)})
     })
 
     room.once('empty', this.onRoomEmpty = () => {
@@ -1779,20 +1779,20 @@ class TableState implements Serializable {
     })
   }
 
-  restoreMessageForPlayer(player: PlayerState) {
+  async restoreMessageForPlayer(player: PlayerState) {
     const index = this.atIndex(player)
-    return this.generateReconnectMsg(index)
+    return await this.generateReconnectMsg(index)
   }
 
-  onRefresh(index) {
+  async onRefresh(index) {
     const player = this.players[index]
     if (!player) {
       return
     }
-    player.sendMessage('room/refresh', {ok: true, data: this.restoreMessageForPlayer(player)})
+    player.sendMessage('room/refresh', {ok: true, data: await this.restoreMessageForPlayer(player)})
   }
 
-  generateReconnectMsg(index) {
+  async generateReconnectMsg(index) {
     const player = this.players[index]
     let redPocketsData = null
     let validPlayerRedPocket = null
@@ -1812,7 +1812,8 @@ class TableState implements Serializable {
       zhuangCounter: this.room.zhuangCounter,
       isGameRunning: !!this.room.gameState,
       redPocketsData,
-      validPlayerRedPocket
+      validPlayerRedPocket,
+      bigCardList: await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards)
     }
     for (let i = 0; i < this.players.length; i++) {
       if (i === index) {
