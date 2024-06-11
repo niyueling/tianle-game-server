@@ -495,7 +495,7 @@ class PlayerState implements Serializable {
           cardMap[this.caiShen]--;
 
           const isOk = manager.isCanYouJin(cardMap, this.caiShen);
-          console.warn("list-%s, ok-%s, cardList-%s", JSON.stringify(list), isOk, JSON.stringify(cardList));
+          // console.warn("list-%s, ok-%s, cardList-%s", JSON.stringify(list), isOk, JSON.stringify(cardList));
           if (isOk) {
             chiLists.push(cardList);
             // 可以吃
@@ -643,8 +643,7 @@ class PlayerState implements Serializable {
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
     const result = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
-    console.warn(this.cards);
-    console.warn("cards-%s, huResult-%s", JSON.stringify(this.getCardsArray()), JSON.stringify(result));
+    console.warn("cards-%s, caiShen-%, huResult-%s", JSON.stringify(this.getCardsArray()), this.cards.caiShen, JSON.stringify(result));
     result.hu = this.isDoubleGoldCardForYouJin(result);
     return result;
   }
