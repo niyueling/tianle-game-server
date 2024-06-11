@@ -1809,7 +1809,7 @@ class TableState implements Serializable {
       redPocketsData = this.room.redPockets;
       validPlayerRedPocket = this.room.vaildPlayerRedPocketArray;
     }
-    // console.warn("state-%s", this.state);
+    console.warn("state-%s", this.state);
     const pushMsg = {
       index,
       status: [],
