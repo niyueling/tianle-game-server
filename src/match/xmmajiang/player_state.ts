@@ -956,6 +956,10 @@ class PlayerState implements Serializable {
 
           // 如果用户处于双游中，设置游金状态
           this.isYouJin = true;
+
+          if (this.events[Enums.youJinTimes] >= 2) {
+            this.sendMessage("game/startYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
+          }
         } else {
           // 第一次游金
           this.recordGameSingleEvent(Enums.youJinTimes, 1);
@@ -969,6 +973,7 @@ class PlayerState implements Serializable {
 
       return true;
     }
+
     console.warn('no such card', card);
     return false;
   }
