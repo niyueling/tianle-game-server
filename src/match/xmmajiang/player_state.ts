@@ -442,10 +442,10 @@ class PlayerState implements Serializable {
       msg.huInfo = huResult
       msg.hu = true
       this.huForbiddenCards = []
-      console.warn("seatIndex-%s, gangShangKaiHua-%s, is3You-%s, youJinTimes-%s", this.seatIndex, huResult.gangShangKaiHua, this.room.gameState.isSomeOne3you(this), this.youJinTimes);
+      // console.warn("seatIndex-%s, gangShangKaiHua-%s, is3You-%s, youJinTimes-%s", this.seatIndex, huResult.gangShangKaiHua, this.room.gameState.isSomeOne3you(this), this.youJinTimes);
 
       if (!huResult.gangShangKaiHua && this.room.gameState.isSomeOne3you(this)) {
-        huResult.hu = false;
+        msg.hu = false;
       }
     }
     if (gangGuo) {
