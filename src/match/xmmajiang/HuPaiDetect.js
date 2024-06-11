@@ -1070,7 +1070,7 @@ const HuPaiDetect = {
         return false
       }
     }
-    console.warn("caishen-%s, caiCount-%s", countMap.caiShen, countMap[countMap.caiShen]);
+    // console.warn("caishen-%s, caiCount-%s", countMap.caiShen, countMap[countMap.caiShen]);
     // 3金倒不必起手
     if (countMap[countMap.caiShen] >= 3) {
       result.hu = true;
