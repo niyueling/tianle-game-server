@@ -2408,13 +2408,13 @@ class TableState implements Serializable {
     const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards);
     if (bigCardList.length > 0) {
       // 从大牌中随机选第一个
-      daCard = bigCardList[0];
+      return bigCardList[0];
     }
 
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
-      if (player.cards[lastTakeCard] > 0 && lastTakeCard !== this.caishen) daCard = lastTakeCard;
+      if (player.cards[lastTakeCard] > 0 && lastTakeCard !== this.caishen) return lastTakeCard;
     }
 
     // 有大牌，非单张，先打大牌
