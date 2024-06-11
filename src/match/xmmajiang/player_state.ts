@@ -966,6 +966,7 @@ class PlayerState implements Serializable {
           this.isYouJin = false;
         }
       } else {
+        this.room.broadcast("game/endYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
         // 非游金，重置次数
         this.recordGameSingleEvent(Enums.youJinTimes, 0);
         this.isYouJin = false;
