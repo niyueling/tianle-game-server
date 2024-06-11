@@ -1138,7 +1138,7 @@ class TableState implements Serializable {
         if (this.state === stateQiangJin && !this.isRunQiangJin) {
           // 天胡(金豆房)
           const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
-          console.warn("qiangJinData-%s, seatIndex-%s, qiangDataIndex-%s, cards-%s", JSON.stringify(this.qiangJinData), player.seatIndex, qiangDataIndex, JSON.stringify(this.getCardArray(player.cards)));
+          // console.warn("qiangJinData-%s, seatIndex-%s, qiangDataIndex-%s, cards-%s", JSON.stringify(this.qiangJinData), player.seatIndex, qiangDataIndex, JSON.stringify(this.getCardArray(player.cards)));
           if (qiangDataIndex !== -1) {
             if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
               this.qiangJinPlayer.push(player._id.toString());
@@ -1795,14 +1795,14 @@ class TableState implements Serializable {
   }
 
   async generateReconnectMsg(index) {
-    const player = this.players[index]
+    const player = this.players[index];
     let redPocketsData = null
     let validPlayerRedPocket = null
     if (this.room.isHasRedPocket) {
       redPocketsData = this.room.redPockets;
       validPlayerRedPocket = this.room.vaildPlayerRedPocketArray;
     }
-    console.warn("state-%s", this.state);
+    // console.warn("state-%s", this.state);
     const pushMsg = {
       index,
       status: [],
@@ -2231,7 +2231,7 @@ class TableState implements Serializable {
       // 插入一张财神牌
       this.players[data.index].cards[this.caishen]++;
 
-      console.warn("data-%s, cards-%s", JSON.stringify(data), JSON.stringify(this.getCardArray(this.players[data.index].cards)));
+      // console.warn("data-%s, cards-%s", JSON.stringify(data), JSON.stringify(this.getCardArray(this.players[data.index].cards)));
 
       this.players[data.index].emitter.emit(Enums.hu, this.turn, data.card);
       msgs.push({type: Enums.hu, card: data.card, index: data.index});
@@ -2360,7 +2360,7 @@ class TableState implements Serializable {
           const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex);
           // 抢金，如果庄家未操作，则机器人禁止操作
           if (!this.qiangJinPlayer.includes(this.zhuang._id.toString()) && qiangDataIndex !== -1) {
-            console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
+            // console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
             return;
           }
 
@@ -2378,7 +2378,7 @@ class TableState implements Serializable {
           if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
             this.isRunQiangJin = true;
             player.emitter.emit(Enums.qiangJinHu);
-            console.warn("qiangJinPlayer-%s qiangJinData-%s isRunQiangJin-%s can many hu", JSON.stringify(this.qiangJinPlayer), JSON.stringify(this.qiangJinData), this.isRunQiangJin);
+            // console.warn("qiangJinPlayer-%s qiangJinData-%s isRunQiangJin-%s can many hu", JSON.stringify(this.qiangJinPlayer), JSON.stringify(this.qiangJinData), this.isRunQiangJin);
           }
 
           return;
