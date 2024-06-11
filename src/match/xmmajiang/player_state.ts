@@ -1246,10 +1246,10 @@ class PlayerState implements Serializable {
   genGameStatus(index) {
     const cards = []
     for (let i = 0; i < this.cards.length; i++) {
-      const c = this.cards[i]
+      const c = this.cards[i];
       for (let j = 0; j < c; j++) {
         if (i < 40) {
-          cards.push(i)
+          cards.push(i);
         }
       }
     }
@@ -1273,6 +1273,7 @@ class PlayerState implements Serializable {
       score: 0,
       residueScore: this.score,
       cards,
+      cardArray: this.cards,
       huaCardCount: this.flowerList.length,
       flowerList: this.flowerList,
       jieGangCount: this.gangFrom.length,
