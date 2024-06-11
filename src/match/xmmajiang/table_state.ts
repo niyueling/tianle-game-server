@@ -2400,6 +2400,7 @@ class TableState implements Serializable {
 
   // 托管模式出牌
   async promptWithPattern(player: PlayerState, lastTakeCard) {
+    let daCard = 0;
     // 获取摸牌前的卡牌
     const cards = player.cards.slice();
     if (cards[lastTakeCard] > 0) cards[lastTakeCard]--;
@@ -2407,58 +2408,64 @@ class TableState implements Serializable {
     const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards);
     if (bigCardList.length > 0) {
       // 从大牌中随机选第一个
-      return bigCardList[0];
+      daCard = bigCardList[0];
     }
 
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
-      if (player.cards[lastTakeCard] > 0 && lastTakeCard !== this.caishen) return lastTakeCard;
+      if (player.cards[lastTakeCard] > 0 && lastTakeCard !== this.caishen) daCard = lastTakeCard;
     }
 
     // 有大牌，非单张，先打大牌
     const middleCard = this.checkUserBigCard(player.cards);
-    if (middleCard.code) return middleCard.index;
+    if (middleCard.code) daCard = middleCard.index;
 
     // 有1,9孤牌打1,9孤牌
     const lonelyCard = this.getCardOneOrNoneLonelyCard(player);
-    if (lonelyCard.code && lonelyCard.index !== this.caishen) return lonelyCard.index;
+    if (lonelyCard.code && lonelyCard.index !== this.caishen) daCard = lonelyCard.index;
 
     // 有2,8孤牌打2,8孤牌
     const twoEightLonelyCard = this.getCardTwoOrEightLonelyCard(player);
-    if (twoEightLonelyCard.code && twoEightLonelyCard.index !== this.caishen) return twoEightLonelyCard.index;
+    if (twoEightLonelyCard.code && twoEightLonelyCard.index !== this.caishen) daCard = twoEightLonelyCard.index;
 
     // 有普通孤牌打普通孤牌
     const otherLonelyCard = this.getCardOtherLonelyCard(player);
-    if (otherLonelyCard.code && otherLonelyCard.index !== this.caishen) return otherLonelyCard.index;
+    if (otherLonelyCard.code && otherLonelyCard.index !== this.caishen) daCard = otherLonelyCard.index;
 
     // 有1,9卡张打1,9卡张
     const oneNineCard = this.getCardOneOrNineCard(player);
-    if (oneNineCard.code && oneNineCard.index !== this.caishen) return oneNineCard.index;
+    if (oneNineCard.code && oneNineCard.index !== this.caishen) daCard = oneNineCard.index;
 
     // 有2,8卡张打2,8卡张
     const twoEightCard = this.getCardTwoOrEightCard(player);
-    if (twoEightCard.code && twoEightCard.index !== this.caishen) return twoEightCard.index;
+    if (twoEightCard.code && twoEightCard.index !== this.caishen) daCard = twoEightCard.index;
 
     // 有普通卡张打普通卡张
     const otherCard = this.getCardOtherCard(player);
-    if (otherCard.code && otherCard.index !== this.caishen) return otherCard.index;
+    if (otherCard.code && otherCard.index !== this.caishen) daCard = otherCard.index;
 
     // 有1,9多张打1,9多张
-    // const oneNineManyCard = this.getCardOneOrNineManyCard(player);
-    // if(oneNineManyCard.code) return oneNineManyCard.index;
+    const oneNineManyCard = this.getCardOneOrNineManyCard(player);
+    if(oneNineManyCard.code) daCard = oneNineManyCard.index;
     //
     // //有2,8多张打2,8多张
-    // const twoEightManyCard = this.getCardTwoOrEightManyCard(player);
-    // if(twoEightManyCard.code) return twoEightManyCard.index;
+    const twoEightManyCard = this.getCardTwoOrEightManyCard(player);
+    if(twoEightManyCard.code) daCard = twoEightManyCard.index;
     //
     // //有普通多张打普通多张
-    // const otherManyCard = this.getCardOtherMayCard(player);
-    // if(otherManyCard.code) return otherManyCard.index;
+    const otherManyCard = this.getCardOtherMayCard(player);
+    if(otherManyCard.code) daCard = otherManyCard.index;
 
     // 从卡牌随机取一张牌
     const randCard = this.getCardRandCard(player);
-    if (randCard.code) return randCard.index;
+    if (randCard.code) daCard = randCard.index;
+
+    if (player.cards[daCard] <= 0) {
+      daCard = player.cards.findIndex(cardCount => cardCount > 0);
+    }
+
+    return daCard;
   }
 
   checkUserBigCard(cards) {
