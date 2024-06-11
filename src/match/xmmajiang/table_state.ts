@@ -863,6 +863,7 @@ class TableState implements Serializable {
               from,
               suit: [card, otherCard1, otherCard2].sort(),
               gang: gangSelection.length > 0,
+              bigCardList: await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards),
               gangSelection,
               forbidCards: player.forbidCards
             }});
@@ -916,7 +917,8 @@ class TableState implements Serializable {
               card,
               from,
               gang: gangSelection.length > 0,
-              gangSelection
+              gangSelection,
+              bigCardList: await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards),
             }})
 
           this.room.broadcast('game/oppoPeng', {ok: true, data: {
