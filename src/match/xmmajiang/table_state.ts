@@ -1832,6 +1832,7 @@ class TableState implements Serializable {
     }
 
     switch (this.state) {
+      case stateQiangJin:
       case stateWaitDa: {
         this.state = stateWaitDa;
         const daPlayer = this.stateData[Enums.da];
