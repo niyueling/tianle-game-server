@@ -105,20 +105,16 @@ export class PublicRoom extends Room {
     //   totalRuby -= conf.roomRate;
     // }
     // this.scoreMap[playerId] += totalRuby
-    let restoreRuby = v
-    if (!conf.isOpenDouble) {
-      // 不让翻
-      restoreRuby = 0
-    }
+    let restoreRuby = 0
     await service.playerService.updateRoomRuby(this._id.toString(), findPlayer.model._id.toString(), findPlayer.model.shortId, restoreRuby)
     const model = await this.updatePlayer(playerId, v);
     if (findPlayer.isPublicRobot) {
       // 金豆机器人,自动加金豆
-      if (model.ruby < conf.minAmount) {
+      if (model.gold < conf.minAmount) {
         // 金豆不足，添加金豆
         const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
         const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
-        model.ruby = service.utils.randomIntBetweenNumber(conf.minAmount, max);
+        model.gold = service.utils.randomIntBetweenNumber(conf.minAmount, max);
         await model.save();
       }
       return;
@@ -135,16 +131,16 @@ export class PublicRoom extends Room {
       return;
     }
     // 添加金豆
-    if (model.ruby + addRuby <= 0) {
-      model.ruby = 0;
+    if (model.gold + addRuby <= 0) {
+      model.gold = 0;
     } else {
-      model.ruby += addRuby;
+      model.gold += addRuby;
     }
     // 添加房卡
-    if (model.gem + addGem <= 0) {
-      model.gem = 0;
+    if (model.diamond + addGem <= 0) {
+      model.diamond = 0;
     } else {
-      model.gem += addGem;
+      model.diamond += addGem;
     }
     await model.save();
     return model;

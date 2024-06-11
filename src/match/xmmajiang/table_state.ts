@@ -1715,7 +1715,7 @@ class TableState implements Serializable {
       for (const state1 of states) {
         const i = states.indexOf(state1);
         const player = this.players[i];
-        state1.model.played += 1
+        state1.model.played += 1;
         if (this.room.isPublic) {
           // 金豆房
           state1.score = player.balance;
