@@ -1850,6 +1850,7 @@ class TableState implements Serializable {
         break
       }
       case stateWaitAction: {
+        this.state = stateWaitAction;
         const actions = this.actionResolver.allOptions && this.actionResolver.allOptions(player)
         if (actions) {
           this.state = stateWaitAction;
