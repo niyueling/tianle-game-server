@@ -134,7 +134,6 @@ const HuPaiDetect = {
 
   combineOtherProps(originCountMap, events, result) {
     const {turn, takeSelfCard, gang, qiangGang} = originCountMap;
-    console.warn({turn, takeSelfCard, gang, qiangGang});
 
     //有牌型的  13不靠 qifeng luanfeng 不需要
     if (result.huCards) {
