@@ -1813,13 +1813,12 @@ class TableState implements Serializable {
       isGameRunning: !!this.room.gameState,
       redPocketsData,
       validPlayerRedPocket,
-      bigCardList: await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards)
     }
     for (let i = 0; i < this.players.length; i++) {
       if (i === index) {
-        pushMsg.status.push(this.players[i].genSelfStates(i))
+        pushMsg.status.push(await this.players[i].genSelfStates(i))
       } else {
-        pushMsg.status.push(this.players[i].genOppoStates(i))
+        pushMsg.status.push(await this.players[i].genOppoStates(i))
       }
     }
 

@@ -1294,7 +1294,7 @@ class PlayerState implements Serializable {
     return 0
   }
 
-  genSelfStates(index) {
+  async genSelfStates(index) {
     const cards = []
     for (let i = 0; i < this.cards.length; i++) {
       if (this.room.gameState.isFlower(i)) {
@@ -1335,11 +1335,12 @@ class PlayerState implements Serializable {
       caiShen: [this.caiShen],
       rule: this.rule,
       room: this.room._id,
+      bigCardList: await this.room.auditManager.getBigCardByPlayerId(this._id, this.seatIndex, this.cards),
       flowerList: this.room.auditManager.getFlowerList(this.model._id),
     }
   }
 
-  genOppoStates(index) {
+  async genOppoStates(index) {
     const cardCount = HuPaiDetect.remain(this.cards)
     // 排序吃牌
     const events = Object.assign({}, this.events);
@@ -1360,6 +1361,7 @@ class PlayerState implements Serializable {
       caiShen: [this.caiShen],
       rule: this.rule,
       room: this.room._id,
+      bigCardList: await this.room.auditManager.getBigCardByPlayerId(this._id, this.seatIndex, this.cards),
       flowerList: this.room.auditManager.getFlowerList(this.model._id),
     }
   }
