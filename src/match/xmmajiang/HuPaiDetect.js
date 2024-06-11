@@ -1,5 +1,6 @@
 import Enums from './enums';
 import {manager} from "./cardManager";
+import {LotterySource} from "@fm/common/constants";
 
 const cloneHuResult = function (obj) {
   const option = Object.assign({}, obj)
@@ -94,6 +95,10 @@ const HuPaiDetect = {
           maybes.push(Object.assign({}, result))
         }
       }
+    }
+
+    if (maybes.length) {
+      console.warn("maybes-%s", JSON.stringify(maybes));
     }
     return maybes;
   },
