@@ -442,6 +442,7 @@ class PlayerState implements Serializable {
       msg.huInfo = huResult
       msg.hu = true
       this.huForbiddenCards = []
+      console.warn("seatIndex-%s, gangShangKaiHua-%s, is3You-%s, youJinTimes-%s", this.seatIndex, huResult.gangShangKaiHua, this.room.gameState.isSomeOne3you(this), this.youJinTimes);
 
       if (!huResult.gangShangKaiHua && this.room.gameState.isSomeOne3you(this)) {
         huResult.hu = false;
@@ -453,7 +454,6 @@ class PlayerState implements Serializable {
 
     // 判断是否有大牌需要先打
     msg.bigCardList = await this.room.auditManager.getBigCardByPlayerId(this._id, this.seatIndex, this.cards);
-
 
     if (send) {
       this.sendMessage('game/TakeCard', {ok: true, data: msg})
