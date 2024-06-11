@@ -98,7 +98,7 @@ const HuPaiDetect = {
     }
 
     if (maybes.length) {
-      console.warn("maybes-%s", JSON.stringify(maybes));
+      // console.warn("maybes-%s", JSON.stringify(maybes));
     }
     return maybes;
   },

@@ -2815,7 +2815,7 @@ class TableState implements Serializable {
   // 是否有玩家在3游
   isSomeOne3you(player) {
     const list = this.players.filter(value => value.youJinTimes === 3 && player._id.toString() !== value._id.toString())
-    console.warn(list.length);
+    // console.warn(list.length);
     return list.length > 0;
   }
 }
