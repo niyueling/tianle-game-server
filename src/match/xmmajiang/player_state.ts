@@ -664,6 +664,7 @@ class PlayerState implements Serializable {
   @triggerAfterAction
   async chiPai(card, otherCard1, otherCard2, daPlayer) {
     if (this.cards[otherCard1] > 0 && this.cards[otherCard2] > 0) {
+      this.cards.gang = false;
       this.cards[otherCard1]--
       this.cards[otherCard2]--
       // 第一张是被吃的，记录吃牌
@@ -701,6 +702,7 @@ class PlayerState implements Serializable {
   @triggerAfterAction
   async pengPai(card, daPlayer) {
     if (this.cards[card] >= 2) {
+      this.cards.gang = false;
       this.cards[card] -= 2
       this.recordGameEvent(Enums.peng, card)
       if (daPlayer) {
@@ -721,6 +723,7 @@ class PlayerState implements Serializable {
   // gangByOtherDa
   async gangByPlayerDa(card: number, daPlayer: this) {
     if (this.cards[card] >= 3) {
+      this.cards.gang = true;
       this.cards[card] -= 3
       this.recordGameEvent(Enums.mingGang, card)
       daPlayer.consumeDropped()
@@ -743,6 +746,7 @@ class PlayerState implements Serializable {
     if (this.events.peng && this.events.peng.contains(card)) {
       // 补杠
       if (this.cards[card] === 1) {
+        this.cards.gang = true;
         this.cards[card] = 0
         this.removeGameEvent(Enums.peng, card)
         this.recordGameEvent(Enums.mingGang, card)
@@ -757,6 +761,7 @@ class PlayerState implements Serializable {
     } else {
       if (this.cards[card] === 4) {
         // 暗杠
+        this.cards.gang = true;
         this.cards[card] = 0
         info.type = 3
         this.recordGameEvent(Enums.anGang, card)
@@ -915,6 +920,7 @@ class PlayerState implements Serializable {
     }
 
     if (this.cards[card] > 0) {
+      this.cards.gang = false;
       this.cards[card]--
       this.dropped.push(card)
       this.lastDa = true
