@@ -1847,11 +1847,11 @@ class TableState implements Serializable {
         } else {
           pushMsg.current = {index: daPlayer.seatIndex, state: 'waitDa'};
         }
-        break
+        break;
       }
       case stateWaitAction: {
-        this.state = stateWaitAction;
-        const actions = this.actionResolver.allOptions && this.actionResolver.allOptions(player)
+        const actions = this.actionResolver && this.actionResolver.allOptions && this.actionResolver.allOptions(player);
+        console.warn("state-%s, actions-%s", this.state, JSON.stringify(actions));
         if (actions) {
           this.state = stateWaitAction;
           pushMsg.current = {
@@ -1859,7 +1859,7 @@ class TableState implements Serializable {
             msg: actions
           }
         }
-        break
+        break;
       }
       case stateWaitGangShangHua: {
         if (this.stateData.player === player) {
