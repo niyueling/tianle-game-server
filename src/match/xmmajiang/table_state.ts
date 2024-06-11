@@ -1759,7 +1759,8 @@ class TableState implements Serializable {
         isPublic: this.room.isPublic,
         caiShen: this.caishen,
         zhuangCount: this.room.zhuangCounter,
-        maiDi: this.rule.maiDi
+        maiDi: this.rule.maiDi,
+        caishen: [this.caishen]
       }
 
       this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg});
