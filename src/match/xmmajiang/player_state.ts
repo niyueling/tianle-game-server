@@ -958,7 +958,7 @@ class PlayerState implements Serializable {
           this.isYouJin = true;
 
           if (this.events[Enums.youJinTimes] >= 2) {
-            this.sendMessage("game/startYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
+            this.room.broadcast("game/startYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
           }
         } else {
           // 第一次游金

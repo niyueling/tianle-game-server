@@ -566,7 +566,7 @@ class TableState implements Serializable {
           const p = this.players[i];
           const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === p.seatIndex);
           if (qiangDataIndex !== -1) {
-            p.sendMessage("game/canDoQiangJin", {ok: true, data: {index: p.seatIndex, data: this.qiangJinData[qiangDataIndex]}});
+            p.sendMessage("game/canDoQiangJin", {ok: true, data: this.qiangJinData[qiangDataIndex]});
           }
         }
       }
