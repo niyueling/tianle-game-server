@@ -72,7 +72,7 @@ export class NewRobotManager {
 
   // 每秒开始监控
   startMonit() {
-    console.log('monit start ', this.room._id);
+    console.log('monit start ', JSON.stringify(this.room));
     this.watchTimer = setInterval(async () => {
       if (this.isWatching) {
         // 上次还没处理完
