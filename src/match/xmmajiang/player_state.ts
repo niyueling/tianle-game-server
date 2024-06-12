@@ -647,7 +647,7 @@ class PlayerState implements Serializable {
     result.hu = this.isDoubleGoldCardForYouJin(result);
 
     if (this.getCardCount() % 3 !== 2) {
-      result.hu = true;
+      result.hu = false;
     }
     return result;
   }
