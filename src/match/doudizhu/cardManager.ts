@@ -46,7 +46,7 @@ export class CardManager {
       // 随机发牌
       algorithm.shuffle(newCardTags);
       let count = this.playerCardCount;
-      console.warn("playerCardCount-%s, cardCount-%s", this.playerCardCount, this.cardTags.length);
+      console.warn("playerCardCount-%s, cardCount-%s", this.playerCardCount, newCardTags.length);
       while (count > 0) {
         // 每个玩家取一张牌
         for (const pc of playerCards) {
