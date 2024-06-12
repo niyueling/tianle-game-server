@@ -157,6 +157,7 @@ abstract class Table implements Serializable {
     const allPlayerCards = this.cardManager.genCardForEachPlayer();
     this.cards = this.cardManager.allCards();
     this.stateData = {}
+    const restCards = this.cardManager.cardTags.length - (this.rule.playerCount * 13)
     const needShuffle = this.room.shuffleData.length > 0;
     for (let i = 0; i < this.players.length; i++) {
       const initCards = this.cardManager.getCardTypesFromTag(allPlayerCards[i]);
@@ -166,9 +167,20 @@ abstract class Table implements Serializable {
         player: p._id, shortId: p.model.shortId, username: p.model.name, cardLists: initCards, createAt: new Date(),
         room: this.room._id, juIndex: this.room.game.juIndex, game: GameType.ddz
       });
-      p.onShuffle(this.restJushu, initCards, i, this.room.game.juIndex, needShuffle)
+      p.onShuffle(restCards, this.restJushu, initCards, i,
+        this.room.game.juIndex, needShuffle)
     }
   }
+  //
+  // evictPlayer(evictPlayer: PlayerState) {
+  //   remove(this.players, p => eqlModelId(p, evictPlayer))
+  //   this.removeRoomListenerIfEmpty()
+  // }
+  // removeRoomListenerIfEmpty() {
+  //   if (this.empty) {
+  //     this.removeRoomListener()
+  //   }
+  // }
 
   removeRoomListener() {
     this.room.removeListener('reconnect', this.onReconnect)

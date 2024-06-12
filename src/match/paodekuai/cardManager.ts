@@ -18,12 +18,19 @@ export class CardManager {
   // 所有牌
   init() {
     this.cardTags = [...hearts, ...clubs, ...spades, ...diamonds];
-    // 添加大小王
-    this.cardTags.push(CardTag.bigJoker);
-    this.cardTags.push(CardTag.littleJoker);
-
-    // 每个用户摸的牌数
-    this.playerCardCount = (this.cardTags.length - 3) / this.playerCount;
+    if (this.playerCount === 2 || this.playerCount === 3) {
+      // 删除 3个2，1个a
+      this.excludeCardByTag(this.cardTags, CardTag.c2, CardTag.s2, CardTag.d2, CardTag.da)
+    } else if (this.playerCount === 4) {
+      // 删除方块2
+      this.excludeCardByTag(CardTag.d2);
+      // 添加一张大王
+      this.cardTags.push(CardTag.bigJoker);
+    }
+    this.playerCardCount = this.cardTags.length / this.playerCount
+    if (this.playerCount === 2) {
+      this.playerCardCount = this.cardTags.length / 3;
+    }
 
     this.consumeCardTags = this.cardTags.slice();
   }
@@ -64,6 +71,19 @@ export class CardManager {
       }
       // 剩下的扑克
       newCardTags = randomList.slice(this.playerCount * this.playerCardCount);
+    }
+    if (this.playerCount === 2) {
+      // 必须下发一个黑桃3
+      const index = newCardTags.indexOf(CardTag.s3);
+      if (index !== -1) {
+        // 随机选一个玩家， 给他加黑桃3
+        const randIndex = service.utils.randomIntLessMax(this.playerCount);
+        const remainCard = playerCards[randIndex].pop();
+        playerCards[randIndex].push(CardTag.s3);
+        // 放回黑桃3
+        this.excludeCardByTag(newCardTags, CardTag.s3);
+        newCardTags.push(remainCard);
+      }
     }
 
     this.remainCardTags = newCardTags;
