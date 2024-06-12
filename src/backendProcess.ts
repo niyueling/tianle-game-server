@@ -11,7 +11,7 @@ import {PlayerRmqProxy} from "./match/PlayerRmqProxy"
 import RoomProxy, {recoverFunc} from "./match/roomRmqProxy"
 import {service} from "./service/importService";
 import createClient from "./utils/redis";
-import { TianleErrorCode } from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 import GameCategory from "./database/models/gameCategory";
 import PlayerCardTable from "./database/models/PlayerCardTable";
 
@@ -208,7 +208,9 @@ export class BackendProcess {
       //   await room.join(playerRmqProxy);
       // }
 
-      room.fanShuMap[playerRmqProxy._id] = 16;
+      if (room.rule.ro.gameType === GameType.xmmj) {
+        room.fanShuMap[playerRmqProxy._id] = 16;
+      }
 
       await roomProxy.joinAsCreator(playerRmqProxy);
 
@@ -284,7 +286,10 @@ export class BackendProcess {
       await theCreator.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, cardTableId}})
 
       // 创建者即庄家，设置底分16分
-      room.fanShuMap[theCreator._id] = 16;
+      if (room.rule.ro.gameType === GameType.xmmj) {
+        room.fanShuMap[theCreator._id] = 16;
+      }
+
       await roomProxy.joinAsCreator(theCreator)
       // 第一次进房间,保存信息
       await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId)

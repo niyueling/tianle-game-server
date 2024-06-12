@@ -315,7 +315,7 @@ class PlayerState implements Serializable {
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
         this.onDeposit = true;
-        this.sendMessage('game/startDeposit', {});
+        this.sendMessage('game/startDepositReply', {ok: true, data: {}})
         callback();
         this.timeoutTask = null;
       }, minutes);
@@ -333,7 +333,7 @@ class PlayerState implements Serializable {
     this.onDeposit = false;
     const cards = this.cards
     this.clearDepositTask();
-    this.sendMessage('game/cancelDeposit-ok', {cards});
+    this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
   }
 
   // // 是否存在该卡
