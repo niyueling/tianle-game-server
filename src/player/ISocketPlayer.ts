@@ -3,6 +3,7 @@ export interface IPlayerModel {
   nickname: string,
   gold: number,
   diamond: number,
+  voucher: number,
   shortId: number
 }
 
@@ -14,7 +15,7 @@ export interface ISocketPlayer {
 
   sendMessage(name: 'room/leaveReply', message: { _id: string });
 
-  sendMessage(name: 'resources/updateGold', message: { gold: number });
+  sendMessage(name: 'resource/update', message: { gold: number, diamond: number, voucher: number });
 
   sendMessage(name: 'resources/updateGem', message: { gem: number });
 

@@ -237,7 +237,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
       let g = this.model.gold
       g += v
       this.model.gold = g
-      this.sendMessage('resources/updateGold', {gold: g})
+      this.sendMessage('resource/update', {gold: g, diamond: this.model.diamond, voucher: this.model.voucher})
       PlayerModel.update({_id: this.model._id}, {$set: {gold: g}}, err => {
           if (err) {
             logger.error(err)
@@ -367,7 +367,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
             this.currentRoom = messageBody.payload.data._id
           }
 
-          if (messageBody.name === 'resources/updateGold') {
+          if (messageBody.name === 'resource/update') {
             this.updateGoldGemRuby({gold: messageBody.payload.gold})
           }
           if (messageBody.name === 'resource/createRoomUsedGem') {
@@ -388,7 +388,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
   updateGoldGemRuby(data) {
     if (this.model) {
       this.model.gold += data.gold || 0
-      this.model.diamond += data.gem || 0
+      this.model.diamond += data.diamond || 0
     }
   }
 
