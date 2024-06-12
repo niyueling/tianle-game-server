@@ -440,7 +440,13 @@ class Room extends RoomBase {
     }
 
     if (!this.gameState) {
-      this.announcePlayerJoin(reconnectPlayer)
+      console.warn("gameState is dissolve");
+      if (this.isPublic) {
+        await this.forceDissolve();
+        return ;
+      } else {
+        await this.announcePlayerJoin(reconnectPlayer);
+      }
     }
     // Fixme the index may be wrong
     console.log('room:', this._id, 'snapshot', JSON.stringify(this.snapshot))
