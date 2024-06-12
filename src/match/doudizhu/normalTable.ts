@@ -102,12 +102,12 @@ export default class NormalTable extends Table {
 
   broadcastFirstDa() {
     this.tableState = ''
-    this.room.broadcast('game/startDa', {index: this.currentPlayerStep})
+    this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
   }
 
   broadcastQiangLong(player) {
     this.startQiangLongTouTime = new Date().getTime();
-    this.room.broadcast('game/startQiang', {index: player.seatIndex, startTime: this.startQiangLongTouTime})
+    this.room.broadcast('game/startQiang', {ok: true, data: {index: player.seatIndex, startTime: this.startQiangLongTouTime}})
     player.isQiangLongTou = true;
     setTimeout(() => {
       if (new Date().getTime() - this.startQiangLongTouTime >= 10 * 1000 && player.longTouState === -1) {
@@ -230,10 +230,10 @@ export default class NormalTable extends Table {
     this.players.forEach(ps => {
       ps.foundFriend = true
     })
-    this.room.broadcast('game/showFriend', {
-      homeTeam: this.homeTeamPlayers().map(p => p.index),
-      awayTeam: this.awayTeamPlayers().map(p => p.index)
-    })
+    this.room.broadcast('game/showFriend', {ok: true, data: {
+        homeTeam: this.homeTeamPlayers().map(p => p.index),
+        awayTeam: this.awayTeamPlayers().map(p => p.index)
+      }})
   }
 
   private playerAfter(p: PlayerState) {
@@ -313,7 +313,7 @@ export default class NormalTable extends Table {
       awayTeam: this.awayTeamPlayers().map(p => p.index),
       creator: this.room.creator.model._id,
     }
-    this.room.broadcast('game/game-over', gameOverMsg)
+    this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
     this.stateData.gameOver = gameOverMsg
 
     let firstPlayer = this.players.find(p => p.cards.length === 0)

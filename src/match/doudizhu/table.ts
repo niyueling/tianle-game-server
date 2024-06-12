@@ -12,7 +12,7 @@ import {PlayManager} from "./playManager";
 import Room from './room'
 import Rule from './Rule'
 import GameCardRecord from "../../database/models/gameCardRecord";
-import {GameType} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 
 export enum Team {
   HomeTeam = 0,
@@ -202,7 +202,7 @@ abstract class Table implements Serializable {
     player.msgDispatcher.on('game/guo', () => this.onPlayerGuo(player))
     player.msgDispatcher.on('game/cancelDeposit', () => this.onCancelDeposit(player))
     player.msgDispatcher.on('game/refresh', () => {
-      player.sendMessage('room/refresh', this.restoreMessageForPlayer(player));
+      player.sendMessage('room/refresh', {ok: true, data: this.restoreMessageForPlayer(player)});
     })
   }
 
@@ -245,7 +245,7 @@ abstract class Table implements Serializable {
     if (player.cleaned) {
       return
     }
-    this.room.broadcast('game/cleanCards', {index: player.index})
+    this.room.broadcast('game/cleanCards', {ok: true, data: {index: player.index}})
     player.cleaned = true
   }
 
@@ -257,19 +257,19 @@ abstract class Table implements Serializable {
     return this.currentPlayerStep === player.seatIndex
   }
 
-  daPaiFail(player, info = '不是您的阶段') {
-    player.sendMessage('game/daReply', {ok: false, info})
+  daPaiFail(player, info = TianleErrorCode.systemError) {
+    player.sendMessage('game/daCardReply', {ok: false, info})
   }
 
-  guoPaiFail(player, info = '不是您的阶段') {
-    player.sendMessage('game/guoReply', {ok: false, info})
+  guoPaiFail(player, info = TianleErrorCode.systemError) {
+    player.sendMessage('game/guoCardReply', {ok: false, info})
   }
 
   abstract findFullMatchedPattern(cards: Card[]): IPattern
 
   async onPlayerDa(player: PlayerState, {cards: plainCards}) {
     if (!this.isCurrentStep(player)) {
-      this.daPaiFail(player)
+      this.daPaiFail(player, TianleErrorCode.notDaRound);
       return
     }
     // 转换成 Card 类型
@@ -309,20 +309,20 @@ abstract class Table implements Serializable {
       teamMateCards = this.teamMateCards(player)
     }
     this.moveToNext()
-    player.sendMessage('game/daReply', {ok: true, remains, teamMateCards, onDeposit: player.onDeposit})
+    player.sendMessage('game/daCardReply', {ok: true, data: {remains, teamMateCards, onDeposit: player.onDeposit}})
     const isGameOver = this.isGameOver(player)
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
 
-    this.room.broadcast('game/otherDa', {
-      cards,
-      remains,
-      index: player.seatIndex,
-      next: nextPlayer,
-      pattern: this.status.lastPattern,
-      fen: this.status.fen,
-      bomb: this.bombScorer(pattern),
-      newBombScore: player.bombScore(this.bombScorer)
-    })
+    this.room.broadcast('game/otherDa', {ok: true, data: {
+        cards,
+        remains,
+        index: player.seatIndex,
+        next: nextPlayer,
+        pattern: this.status.lastPattern,
+        fen: this.status.fen,
+        bomb: this.bombScorer(pattern),
+        newBombScore: player.bombScore(this.bombScorer)
+      }})
     this.notifyTeamMateWhenTeamMateWin(player, cards)
 
     if (this.players[nextPlayer]) {
@@ -368,9 +368,9 @@ abstract class Table implements Serializable {
         playersCard.push([p.seatIndex, p.cards])
       }
     })
-    this.room.broadcast('game/gameOverPlayerCards', {
-      playersCard
-    })
+    this.room.broadcast('game/gameOverPlayerCards', {ok: true, data: {
+        playersCard
+      }})
   }
 
   abstract findMatchedPatternByPattern(currentPattern: IPattern, cards: Card[]): Card[][];
@@ -399,9 +399,9 @@ abstract class Table implements Serializable {
   abstract isGameOver(player: PlayerState): boolean
 
   cannotDaPai(player, cards) {
-    player.sendMessage('game/daReply', {
+    player.sendMessage('game/daCardReply', {
       ok: false,
-      info: '打牌错误',
+      info: TianleErrorCode.cardDaError,
       daCards: cards,
       inHandle: player.cards
     })
@@ -413,12 +413,12 @@ abstract class Table implements Serializable {
 
   onPlayerGuo(player) {
     if (!this.isCurrentStep(player)) {
-      this.guoPaiFail(player)
+      this.guoPaiFail(player, TianleErrorCode.notDaRound)
       return
     }
 
     if (!this.canGuo()) {
-      player.sendMessage("game/guoReply", {ok: false, info: '不能过'})
+      player.sendMessage("game/guoCardReply", {ok: false, info: TianleErrorCode.guoError});
       return
     }
 
@@ -434,26 +434,26 @@ abstract class Table implements Serializable {
 
   guoPai(player: PlayerState) {
     player.guo()
-    player.sendMessage("game/guoReply", {ok: true})
+    player.sendMessage("game/guoCardReply", {ok: true, data: {}})
     this.moveToNext()
     if (!this.status.lastPattern) {
       const zhuaFenPlayer = this.players[this.status.from]
       zhuaFenPlayer.zhua(this.status.fen)
 
-      this.room.broadcast('game/zhuaFen', {
-        index: this.status.from,
-        win: this.status.fen,
-        zhuaFen: zhuaFenPlayer.zhuaFen
-      })
+      this.room.broadcast('game/zhuaFen', {ok: true, data: {
+          index: this.status.from,
+          win: this.status.fen,
+          zhuaFen: zhuaFenPlayer.zhuaFen
+        }})
 
       this.status.fen = 0
     }
-    this.room.broadcast("game/otherGuo", {
-      index: player.seatIndex,
-      next: this.currentPlayerStep,
-      pattern: this.status.lastPattern,
-      fen: this.status.fen
-    })
+    this.room.broadcast("game/otherGuo", {ok: true, data: {
+        index: player.seatIndex,
+        next: this.currentPlayerStep,
+        pattern: this.status.lastPattern,
+        fen: this.status.fen
+      }})
   }
 
   get isLastMatch() {
@@ -522,7 +522,7 @@ abstract class Table implements Serializable {
       creator: this.room.creator.model._id,
     }
 
-    this.room.broadcast('game/game-over', gameOverMsg)
+    this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
     this.stateData.gameOver = gameOverMsg
     await this.roomGameOver(states, '')
   }
@@ -542,7 +542,7 @@ abstract class Table implements Serializable {
 
       const content = this.reconnectContent(index, player)
 
-      player.sendMessage('game/reconnect', content)
+      player.sendMessage('game/reconnect', {ok: true, data: content})
     })
 
     room.once('empty',
@@ -598,7 +598,7 @@ abstract class Table implements Serializable {
   private notifyTeamMateWhenTeamMateWin(player: PlayerState, daCards: Card[]) {
     const teamMate = this.players[player.teamMate]
     if (teamMate && teamMate.cards.length === 0) {
-      teamMate.sendMessage('game/teamMateCards', {cards: player.cards, daCards})
+      teamMate.sendMessage('game/teamMateCards', {ok: true, data: {cards: player.cards, daCards}})
     }
   }
 

@@ -18,7 +18,7 @@ import Game from './game'
 import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
 import Table from "./table"
-import {GameType} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 import {service} from "../../service/importService";
 
 const ObjectId = mongoose.Types.ObjectId
@@ -131,7 +131,7 @@ class Room extends RoomBase {
     this.roomState = ''
     this.players.forEach(player => {
       if (player) {
-        player.sendMessage('room/dissolve', {})
+        player.sendMessage('room/dissolve', {ok: true, data: {}})
         player.room = null
       }
     })
@@ -495,7 +495,7 @@ class Room extends RoomBase {
       }
     }
     this.broadcast('room/dissolveReq',
-      {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
+      {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
@@ -509,7 +509,7 @@ class Room extends RoomBase {
         item.type = 'offline'
       }
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   playerDisconnect(player) {
@@ -533,7 +533,7 @@ class Room extends RoomBase {
       this.updateDisconnectPlayerDissolveInfoAndBroadcast(player)
     }
 
-    this.broadcast('room/playerDisconnect', {index: this.players.indexOf(player)}, player.msgDispatcher)
+    this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
     this.removePlayer(player)
     this.disconnected.push([player._id, index])
     this.emit('disconnect', p._id)
@@ -599,7 +599,7 @@ class Room extends RoomBase {
         await this.updateClubGoldByScore(stateScore);
       }
       const message = this.allOverMessage(lowScoreTimes)
-      this.broadcast('room/allOver', message)
+      this.broadcast('room/allOver', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
       this.emit('empty', this.disconnected)
       // 更新大赢家
@@ -646,13 +646,13 @@ class Room extends RoomBase {
   }
 
   applyAgain(player) {
-    if (player !== this.creator) {
-      player.sendMessage('room/againReply', {ok: false, info: '不是房主'})
+    if (player._id.toString() !== this.creator._id.toString()) {
+      player.sendMessage('room/againReply', {ok: false, info: TianleErrorCode.playerIsNotCreator})
       return
     }
 
     if (!this.enoughCurrency(player)) {
-      player.sendMessage('room/againReply', {ok: false, info: '余额不足'})
+      player.sendMessage('room/againReply', {ok: false, info: TianleErrorCode.diamondInsufficient})
       return
     }
 
@@ -660,7 +660,7 @@ class Room extends RoomBase {
   }
 
   enoughCurrency(player) {
-    return player.model.gem >= this.privateRoomFee()
+    return player.model.diamond >= this.privateRoomFee()
   }
 
   playAgain() {
@@ -673,7 +673,7 @@ class Room extends RoomBase {
 
   noticeAnother() {
     const excludeCreator = this.inRoomPlayers.filter(s => s !== this.creator)
-    excludeCreator.forEach(pSocket => pSocket.sendMessage('room/inviteAgain', {}))
+    excludeCreator.forEach(pSocket => pSocket.sendMessage('room/inviteAgain', {ok: true, data: {}}))
   }
 
   playerOnExit(player) {
