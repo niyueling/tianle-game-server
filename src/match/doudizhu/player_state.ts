@@ -38,7 +38,7 @@ class DetailBalance {
 class PlayerState implements Serializable {
   timeoutTask: Timer;
 
-  canDeposit: boolean = false;
+  canDeposit: boolean = true;
 
   @autoSerialize
   lastAction: 'da' | 'guo' = null;
