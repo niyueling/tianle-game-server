@@ -1836,7 +1836,7 @@ class TableState implements Serializable {
     switch (this.state) {
       case stateQiangJin:
       case stateWaitDa: {
-        this.state = stateWaitDa;
+        const state = this.state;
         const daPlayer = this.stateData[Enums.da];
         if (daPlayer._id.toString() === player._id.toString()) {
           console.warn("reconnect msg-%s", JSON.stringify(this.stateData.msg));
@@ -1848,6 +1848,8 @@ class TableState implements Serializable {
         } else {
           pushMsg.current = {index: daPlayer.seatIndex, state: 'waitDa'};
         }
+
+        this.state = state;
         break;
       }
       case stateWaitAction: {
