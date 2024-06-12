@@ -6,7 +6,10 @@ import {service} from "../../service/importService";
 import {getPlayerRmqProxy} from "../PlayerRmqProxy";
 import {autoSerializePropertyKeys} from "../serializeDecorator";
 import Room from "./room";
-import TableState from "./table_state";
+import NormalTable from "./normalTable"
+import {GameTypes} from "../gameTypes";
+
+const gameType: GameTypes = GameType.ddz
 
 // 金豆房
 export class PublicRoom extends Room {
@@ -17,43 +20,36 @@ export class PublicRoom extends Room {
   }
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
-    const room = new PublicRoom(json.gameRule)
-    const gameAutoKeys = autoSerializePropertyKeys(room.game)
-    Object.assign(room.game, pick(json.game, gameAutoKeys))
-    const keys = autoSerializePropertyKeys(room)
-    Object.assign(room, pick(json, keys))
 
-    for (const [index, playerId] of json.playersOrder.entries()) {
-      if (playerId) {
-        const playerRmq = await getPlayerRmqProxy(playerId, repository.channel, GameType.guobiao);
-        playerRmq.room = room;
-        if (json.players[index]) {
-          room.players[index] = playerRmq
-        }
-        room.playersOrder[index] = playerRmq;
-      }
-    }
+    const room = new PublicRoom(json.gameRule);
+    const gameAutoKeys = autoSerializePropertyKeys(room.game);
+    Object.assign(room.game, pick(json.game, gameAutoKeys));
 
+    const keys = autoSerializePropertyKeys(room);
+    Object.assign(room, pick(json, keys));
     for (const [index, playerId] of json.snapshot.entries()) {
-      room.snapshot[index] = await getPlayerRmqProxy(playerId, repository.channel, GameType.guobiao);
+      room.playersOrder[index] = room.players[index] = room.snapshot[index] = await getPlayerRmqProxy(playerId,
+        repository.channel, gameType);
+    }
+    room.creator = await getPlayerRmqProxy(json.creator, repository.channel, gameType);
+
+    if (json.gameState) {
+      room.gameState = new NormalTable(room, room.rule, room.game.juShu);
+      room.gameState.resume(json);
     }
 
     if (room.clubMode) {
-      room.clubOwner = await getPlayerRmqProxy(room.clubOwner, repository.channel, GameType.guobiao);
+      room.clubOwner = await getPlayerRmqProxy(room.clubOwner, repository.channel, gameType);
     }
-    room.creator = await getPlayerRmqProxy(room.creator, repository.channel, GameType.guobiao);
-    if (json.gameState) {
-      room.gameState = new TableState(room, room.rule, room.game.juShu)
-      room.gameState.resume(json)
-    }
+
     if (room.roomState === 'dissolve') {
       const delayTime = room.dissolveTime + 180 * 1000 - Date.now();
       room.dissolveTimeout = setTimeout(() => {
         room.forceDissolve()
       }, delayTime)
     }
-    await room.init();
-    return room
+
+    return room;
   }
 
   leave(player) {
@@ -69,7 +65,7 @@ export class PublicRoom extends Room {
     this.removePlayer(player)
     this.removeReadyPlayer(player.model._id.toString())
     player.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player._id.toString(), roomId: this._id}})
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player.model._id.toString(), roomId: this._id}})
     this.clearScore(player.model._id.toString())
 
     return true
@@ -194,9 +190,9 @@ export class PublicRoom extends Room {
     })
   }
 
-  async shuffleDataApply(payload) {
+  async shuffleDataApply(playload) {
     if (this.allReady && !this.gameState) {
-      return await this.startGame(payload);
+      return await this.startGame(playload);
     }
   }
 
@@ -221,7 +217,6 @@ export class PublicRoom extends Room {
     }
   }
   async reconnect(reconnectPlayer) {
-    // console.warn("public reconnect")
     // 检查最少金豆是否够
     const resp = await service.gameConfig.rubyRequired(
       reconnectPlayer.model._id.toString(),
@@ -229,8 +224,9 @@ export class PublicRoom extends Room {
     if (resp.isNeedRuby) {
       // 等待金豆补充，退出房间
       this.forceDissolve();
-      return;
+      return ;
     }
+
     return super.reconnect(reconnectPlayer);
   }
 }
