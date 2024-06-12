@@ -1289,8 +1289,10 @@ class TableState implements Serializable {
           return;
         }
 
+        console.warn("qiangJin");
+
         // 抢金
-        const ok = player.zimo(card, turn === 1, this.remainCards === 0);
+        const ok = player.zimo(card, turn === 1, this.remainCards === 0, true);
         if (ok && player.daHuPai(card, null)) {
           // 是否3金倒
           const huSanJinDao = player.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0;

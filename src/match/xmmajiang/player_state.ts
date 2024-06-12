@@ -866,7 +866,7 @@ class PlayerState implements Serializable {
   }
 
   // Enums.hu 胡牌
-  zimo(card, first, haiDi) {
+  zimo(card, first, haiDi, qiangJin = false) {
     if (this.cards[card] > 0) {
       this.cards.first = first
       this.cards.haiDi = haiDi
@@ -876,7 +876,10 @@ class PlayerState implements Serializable {
       this.cards.alreadyTakenCard = this.alreadyTakenCard
       this.cards.turn = this.room.gameState.turn;
       const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
-      const isHu = this.isDoubleGoldCardForYouJin(checkResult);
+      let isHu = true;
+      if (!qiangJin) {
+        isHu = this.isDoubleGoldCardForYouJin(checkResult);
+      }
       if (checkResult.hu && isHu) {
         checkResult.zhuang = this.zhuang
         this.recordGameEvent(Enums.hu, checkResult)
