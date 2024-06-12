@@ -65,7 +65,7 @@ class Room extends RoomBase {
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
 
-    const room = new Room(json.gameRule)
+    const room = new Room(json.gameRule, json._id)
     // Object.assign(room.game.rule.ro, json.game.rule.ro)
     //
     const gameAutoKeys = autoSerializePropertyKeys(room.game)
@@ -97,12 +97,13 @@ class Room extends RoomBase {
     return room
   }
 
-  constructor(rule: any) {
+  constructor(rule: any, roomNum: number) {
     super()
     this.uid = ObjectId().toString()
     this.game = new Game(rule)
     this.isPublic = rule.isPublic
     this.gameRule = rule
+    this._id = roomNum;
 
     this.initPlayers()
 

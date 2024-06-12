@@ -14,14 +14,14 @@ const gameType: GameTypes = GameType.ddz
 // 金豆房
 export class PublicRoom extends Room {
 
-  constructor(rule) {
-    super(rule);
+  constructor(rule, roomNum) {
+    super(rule, roomNum);
     this.isPublic = true;
   }
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
 
-    const room = new PublicRoom(json.gameRule);
+    const room = new PublicRoom(json.gameRule, json._id);
     const gameAutoKeys = autoSerializePropertyKeys(room.game);
     Object.assign(room.game, pick(json.game, gameAutoKeys));
 
