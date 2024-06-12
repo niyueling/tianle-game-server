@@ -1289,7 +1289,12 @@ class TableState implements Serializable {
           return;
         }
 
-        console.warn("qiangJin");
+        const huType = huResult.hu && huResult.huType === Enums.qiShouSanCai ? Enums.sanJinDao : Enums.qiangJin;
+        if (huType === Enums.qiangJin) {
+          player.cards[this.caishen]++;
+        }
+
+        // console.warn("qiangJin");
 
         // 抢金
         const ok = player.zimo(card, turn === 1, this.remainCards === 0, true);
@@ -2239,13 +2244,13 @@ class TableState implements Serializable {
         data = qiangJinData[1];
       }
 
-      // 如果是庄家，移除一张牌
+      // 如果是庄家，移除一张牌换成金牌
       if (this.players[data.index].zhuang) {
         this.players[data.index].cards[data.delCard]--;
       }
 
       // 插入一张财神牌
-      this.players[data.index].cards[this.caishen]++;
+      // this.players[data.index].cards[this.caishen]++;
 
       console.warn("data-%s, cards-%s", JSON.stringify(data), JSON.stringify(this.getCardArray(this.players[data.index].cards)));
 
