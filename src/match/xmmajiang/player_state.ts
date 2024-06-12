@@ -656,7 +656,7 @@ class PlayerState implements Serializable {
     let count = 0;
 
     for (let i = 0; i < this.cards.length; i++) {
-      if (this.cards[i] > 0) {
+      if (this.cards[i] > 0 && i < Enums.maxValidCard) {
         count += this.cards[i];
       }
     }
