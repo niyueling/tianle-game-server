@@ -645,7 +645,23 @@ class PlayerState implements Serializable {
     const result = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
     // console.warn("cards-%s, caiShen-%, huResult-%s", JSON.stringify(this.getCardsArray()), this.cards.caiShen, JSON.stringify(result));
     result.hu = this.isDoubleGoldCardForYouJin(result);
+
+    if (this.getCardCount() % 3 !== 2) {
+      result.hu = true;
+    }
     return result;
+  }
+
+  getCardCount() {
+    let count = 0;
+
+    for (let i = 0; i < this.cards.length; i++) {
+      if (this.cards[i] > 0) {
+        count += this.cards[i];
+      }
+    }
+
+    return count;
   }
 
   // 添加花牌
