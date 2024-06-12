@@ -97,13 +97,6 @@ class PlayerState implements Serializable {
   cleaned: boolean = false;
   foundFriend: boolean = false;
 
-  // 用户是否有补助资格
-  isHelp: boolean = false
-  // 补助的棋牌
-  helpCards: any[] = []
-  // 用户补助信息
-  helpInfo: {}
-
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -124,6 +117,8 @@ class PlayerState implements Serializable {
 
     this.isOperated = false
     this.recorder = new DummyRecorder()
+
+    this.onDeposit = true;
   }
 
   getCardsArray(): Card[] {
