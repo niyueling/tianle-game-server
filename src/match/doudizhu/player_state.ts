@@ -307,7 +307,7 @@ class PlayerState implements Serializable {
     //   return;
     // }
 
-    console.warn("canDeposit-%s", this.canDeposit);
+    console.warn("canDeposit-%s, timeoutTask-%s", this.canDeposit, !!this.timeoutTask);
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {

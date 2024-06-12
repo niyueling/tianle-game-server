@@ -85,19 +85,13 @@ export default class NormalTable extends Table {
       // 找黑桃 3，或者抢龙头
       for (const [i, p]of this.players.entries()) {
         if (p.cards.find(c => Card.compare(c, Enums.s3) === 0)) {
-          if (this.rule.longTou) {
-            this.tableState = 'qiangLongTou'
-            this.broadcastQiangLong(p)
-          } else {
-            this.setFirstDa(i)
-          }
+          this.setFirstDa(i)
           break
         }
       }
     }
-    if (!this.rule.longTou) {
-      this.broadcastFirstDa()
-    }
+
+    this.broadcastFirstDa()
   }
 
   broadcastFirstDa() {

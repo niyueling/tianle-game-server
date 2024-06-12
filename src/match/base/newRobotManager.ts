@@ -1,9 +1,8 @@
-import {GameType, RobotStep} from "@fm/common/constants";
+import {RobotStep} from "@fm/common/constants";
 import * as config from '../../config'
 import {RobotMangerModel} from '../../database/models/robotManager';
 import {service} from "../../service/importService";
 import { RobotRmqProxy } from "./robotRmqProxy";
-import Enums from "../majiang/enums";
 
 // 机器人出牌
 export class NewRobotManager {
