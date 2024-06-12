@@ -19,6 +19,7 @@ import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
 import Table from "./table"
 import {GameType} from "@fm/common/constants";
+import {service} from "../../service/importService";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -246,7 +247,7 @@ class Room extends RoomBase {
 
       const positions = this.players.map(p => p && p.model)
 
-      this.broadcast('room/playersPosition', {positions});
+      this.broadcast('room/playersPosition', {ok: true, data: {positions}});
     }
   }
   async updatePlayerClubGold() {
@@ -400,6 +401,21 @@ class Room extends RoomBase {
     }
   }
 
+  async broadcastStartGame(payload) {
+    let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
+
+    const startGame = async() => {
+      this.broadcast('room/startGame', {ok: true, data: {
+          juIndex: this.game.juIndex,
+          playersPosition: this.players.filter(x => x).map(x => x.model),
+          // 获取底分
+          diFen: conf ? conf.Ante : 1,
+        }})
+    }
+
+    setTimeout(startGame, 500)
+  }
+
   async reconnect(reconnectPlayer) {
     const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer._id))
     // if (disconnectedItem) {
@@ -438,6 +454,7 @@ class Room extends RoomBase {
     return {
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
+      _id: this._id,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
       owner: this.ownerId,

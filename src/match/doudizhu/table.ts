@@ -6,7 +6,6 @@ import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, seria
 import {AuditPdk} from "./auditPdk";
 import Card, {CardType} from "./card"
 import {CardManager} from "./cardManager";
-import Enums from './enums'
 import {IPattern, PatterNames, patternCompare} from "./patterns/base"
 import PlayerState from './player_state'
 import {PlayManager} from "./playManager";
@@ -21,30 +20,6 @@ export enum Team {
   NoTeam = 2,
 }
 
-export const genFullyCards = (useJoker: boolean = true, playerCount = 3) => {
-  const types = [CardType.Club, CardType.Diamond, CardType.Heart, CardType.Spades]
-  const cards = []
-
-  types.forEach((type: CardType) => {
-    for (let v = 3; v <= 13; v += 1) {
-      cards.push(new Card(type, v))
-    }
-  })
-
-  cards.push(new Card(CardType.Heart, 2))
-  cards.push(new Card(CardType.Spades, 1))
-  cards.push(new Card(CardType.Heart, 1))
-  cards.push(new Card(CardType.Club, 1))
-  if (playerCount === 4) {
-    cards.push(new Card(CardType.Diamond, 1))
-    cards.push(new Card(CardType.Spades, 2))
-    cards.push(new Card(CardType.Club, 2))
-    cards.push(Enums.j2)
-  }
-
-  return cards
-}
-
 class Status {
   current = {seatIndex: 0, step: 1}
   lastCards: Card[] = []
@@ -55,9 +30,6 @@ class Status {
   winOrder = 0
   fen = 0
 }
-//
-// const triplePlusXMatcher = new TriplePlusXMatcher()
-// const straightTriplesPlusXMatcher = new StraightTriplesPlusXMatcher()
 
 abstract class Table implements Serializable {
 
@@ -65,10 +37,6 @@ abstract class Table implements Serializable {
   turn: number
 
   cards: Card[]
-  //
-  // @autoSerialize
-  // remainCards: number
-
   @serialize
   players: PlayerState[]
   zhuang: PlayerState
@@ -119,7 +87,6 @@ abstract class Table implements Serializable {
     this.status = new Status()
     this.listenRoom(room)
 
-    this.initCards()
     this.initPlayers()
     this.setGameRecorder(new GameRecorder(this))
     this.cardManager = new CardManager(rule.playerCount);
@@ -177,15 +144,9 @@ abstract class Table implements Serializable {
     this.players = players
   }
 
-  initCards() {
-    // this.cards = genFullyCards(this.rule.useJoker, this.rule.playerCount)
-    // this.remainCards = this.cards.length
-  }
-
   shuffle() {
     alg.shuffle(this.cards)
     this.turn = 1
-    // this.remainCards = this.cards.length
   }
 
   // 发牌
@@ -198,11 +159,10 @@ abstract class Table implements Serializable {
     this.stateData = {}
     const restCards = this.cardManager.cardTags.length - (this.rule.playerCount * 13)
     const needShuffle = this.room.shuffleData.length > 0;
-    for (let i = 0, iMax = this.players.length; i < iMax; i++) {
+    for (let i = 0; i < this.players.length; i++) {
       const initCards = this.cardManager.getCardTypesFromTag(allPlayerCards[i]);
-      const p = this.players[i]
+      const p = this.players[i];
       this.audit.saveRemainCards(p.model.shortId, initCards);
-      // 记录发牌日志
       await GameCardRecord.create({
         player: p._id, shortId: p.model.shortId, username: p.model.name, cardLists: initCards, createAt: new Date(),
         room: this.room._id, juIndex: this.room.game.juIndex, game: GameType.ddz
