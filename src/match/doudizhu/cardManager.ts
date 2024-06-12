@@ -17,10 +17,7 @@ export class CardManager {
 
   // 所有牌
   init() {
-    this.cardTags = [...hearts, ...clubs, ...spades, ...diamonds];
-    // 添加大小王
-    this.cardTags.push(CardTag.bigJoker);
-    this.cardTags.push(CardTag.littleJoker);
+    this.cardTags = [...hearts, ...clubs, ...spades, ...diamonds, ...[CardTag.bigJoker, CardTag.littleJoker]];
 
     // 每个用户摸的牌数
     this.playerCardCount = (this.cardTags.length - 3) / this.playerCount;
@@ -49,7 +46,7 @@ export class CardManager {
       // 随机发牌
       algorithm.shuffle(newCardTags);
       let count = this.playerCardCount;
-      console.warn("playerCardCount-%s", this.playerCardCount);
+      console.warn("playerCardCount-%s, cardCount-%s", this.playerCardCount, this.cardTags.length);
       while (count > 0) {
         // 每个玩家取一张牌
         for (const pc of playerCards) {
