@@ -1857,6 +1857,12 @@ class TableState implements Serializable {
           }
         } else {
           pushMsg.current = {index: daPlayer.seatIndex, state: 'waitDa'};
+
+          // 如果抢金状态并且非打牌玩家，下发抢金消息
+          const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
+          if (state === stateQiangJin && !this.qiangJinPlayer.includes(player._id.toString()) && qiangDataIndex !== -1) {
+            player.sendMessage("game/canDoQiangJin", {ok: true, data: this.qiangJinData[qiangDataIndex]});
+          }
         }
 
         this.state = state;
