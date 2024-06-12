@@ -118,7 +118,7 @@ class PlayerState implements Serializable {
     this.isOperated = false
     this.recorder = new DummyRecorder()
 
-    this.onDeposit = true;
+    this.onDeposit = false;
   }
 
   getCardsArray(): Card[] {
