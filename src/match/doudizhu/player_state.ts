@@ -114,7 +114,7 @@ class PlayerState implements Serializable {
     this.cards = []
     this.score = room.getScoreBy(userSocket)
     this.disconnectCallBack = player => {
-      if (player === this.msgDispatcher) {
+      if (player._id.toString() === this.msgDispatcher._id.toString()) {
         this.onDisconnect()
       }
     }
@@ -311,6 +311,8 @@ class PlayerState implements Serializable {
     if (!this.msgDispatcher) {
       return;
     }
+
+    console.warn("canDeposit-%s", this.canDeposit);
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
