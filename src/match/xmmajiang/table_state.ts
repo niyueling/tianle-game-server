@@ -2242,20 +2242,21 @@ class TableState implements Serializable {
       // 插入一张财神牌
       this.players[data.index].cards[this.caishen]++;
 
-      // console.warn("data-%s, cards-%s", JSON.stringify(data), JSON.stringify(this.getCardArray(this.players[data.index].cards)));
+      console.warn("data-%s, cards-%s", JSON.stringify(data), JSON.stringify(this.getCardArray(this.players[data.index].cards)));
 
       this.players[data.index].emitter.emit(Enums.hu, this.turn, data.card);
       msgs.push({type: Enums.hu, card: data.card, index: data.index});
       data.calc = true;
     }
 
-    for (let i = 0; i < this.qiangJinData.length; i++) {
-      // 处理过牌
-      if (!this.qiangJinData[i].calc) {
-        // this.players[this.qiangJinData[i].index].emitter.emit(Enums.guo, this.turn, this.qiangJinData[i].card);
-        msgs.push({type: Enums.guo, card: this.qiangJinData[i].card, index: this.qiangJinData[i].index});
-      }
-    }
+    // for (let i = 0; i < this.qiangJinData.length; i++) {
+    //   // 处理过牌
+    //   if (!this.qiangJinData[i].calc) {
+    //     // this.qiangJinData[i].calc = true;
+    //     // this.players[this.qiangJinData[i].index].emitter.emit(Enums.guo, this.turn, this.qiangJinData[i].card);
+    //     msgs.push({type: Enums.guo, card: this.qiangJinData[i].card, index: this.qiangJinData[i].index});
+    //   }
+    // }
 
     const huReply = async () => {
       this.state = stateWaitDa;
