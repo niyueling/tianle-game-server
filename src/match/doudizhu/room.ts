@@ -250,6 +250,13 @@ class Room extends RoomBase {
       this.broadcast('room/playersPosition', {ok: true, data: {positions}});
     }
   }
+
+  async shuffleDataApply(payload) {
+    if (this.allReady && !this.gameState) {
+      return await this.startGame(payload);
+    }
+  }
+
   async updatePlayerClubGold() {
     let score;
     let p;
