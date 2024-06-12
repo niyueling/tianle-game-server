@@ -15,6 +15,7 @@ import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
 import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
+import GameCategory from "../../database/models/gameCategory";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1818,8 +1819,10 @@ class TableState implements Serializable {
       validPlayerRedPocket = this.room.vaildPlayerRedPocketArray;
     }
     console.warn("state-%s", this.state);
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
     const pushMsg = {
       index,
+      category,
       status: [],
       caishen: this.caishen,
       remainCards: this.remainCards,
