@@ -134,7 +134,6 @@ abstract class Table implements Serializable {
   initPlayers() {
     const room = this.room
     const rule = this.rule
-    console.log('player order on', room._id, JSON.stringify(room.playersOrder));
     const players = room.playersOrder
       .map(playerSocket => new PlayerState(playerSocket, room, rule))
 
@@ -362,7 +361,6 @@ abstract class Table implements Serializable {
   }
 
   abstract findMatchedPatternByPattern(currentPattern: IPattern, cards: Card[]): Card[][];
-
   // 托管
   depositForPlayer(nextPlayerState: PlayerState) {
     nextPlayerState.deposit(async () => {

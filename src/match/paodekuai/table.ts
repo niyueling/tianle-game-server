@@ -377,14 +377,15 @@ abstract class Table implements Serializable {
 
   // 托管
   depositForPlayer(nextPlayerState: PlayerState) {
+    console.warn(111);
     nextPlayerState.deposit(async () => {
+      console.warn(222);
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards)
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
         this.onPlayerGuo(nextPlayerState)
       }
-
     })
   }
 

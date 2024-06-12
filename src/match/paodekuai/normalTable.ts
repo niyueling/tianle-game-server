@@ -97,7 +97,7 @@ export default class NormalTable extends Table {
   broadcastFirstDa() {
     this.tableState = ''
     this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}});
-    this.depositForPlayer(this.players[this.currentPlayerStep])
+    this.depositForPlayer(this.players[this.currentPlayerStep]);
   }
 
   broadcastQiangLong(player) {
