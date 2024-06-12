@@ -401,7 +401,7 @@ class TableState implements Serializable {
       player.flowerList.push(card);
 
       if (player) {
-        player.cards[card]++;
+        // player.cards[card]++;
         // 花牌记录
         await this.room.auditManager.playerTakeCard(player.model._id, card);
       }
