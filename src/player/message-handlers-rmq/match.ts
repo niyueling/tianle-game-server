@@ -10,7 +10,7 @@ export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
 }
 
-const allGameName = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj, GameType.xmmj]
+const allGameName = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj, GameType.xmmj, GameType.ddz]
 
 export function createHandler(redisClient: AsyncRedisClient) {
   return {
