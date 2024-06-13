@@ -6,8 +6,7 @@ import {groupBy, IMatcher, IPattern, last, PatterNames} from "./base";
 export default class StraightDoublesMatcher implements IMatcher {
   name: string = PatterNames.doubles;
   verify(cards: Card[]): IPattern | null {
-    if (cards.length >= 4 && cards.length % 2 === 0) {
-
+    if (cards.length >= 6 && cards.length % 2 === 0) {
       const sortedGroups = groupBy(cards.slice(), card => card.point)
         .sort((grp1, grp2) => {
           return grp1[0].point - grp2[0].point

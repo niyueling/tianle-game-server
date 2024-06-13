@@ -22,10 +22,10 @@ const firstCardPatternOrder = [
     cards:  Array.from({ length: 8 }),
   },
   {
-    // 连对(4张)
+    // 连对(6张)
     name: PatterNames.doubles,
     score: 0,
-    cards:  Array.from({ length: 4 }),
+    cards:  Array.from({ length: 6 }),
   },
   {
     // 顺子(5)
@@ -52,12 +52,6 @@ const firstCardPatternOrder = [
     cards: [],
   },
   {
-    // 4带3
-    name: PatterNames.quadPlus3,
-    score: 0,
-    cards: [],
-  },
-  {
     // 对子
     name: PatterNames.double,
     score: 0,
@@ -73,12 +67,6 @@ const firstCardPatternOrder = [
     // 炸弹
     name: PatterNames.bomb,
     score: 0,
-    cards: [],
-  },
-  {
-    // aaa 炸弹
-    name: PatterNames.bomb,
-    score: 413,
     cards: [],
   },
 ]
@@ -135,7 +123,6 @@ export class PlayManager {
   getCardByPattern(pattern: IPattern, remainCards: Card[]): Card[][] {
     // 如果本轮轮到自己出牌，默认出单张
     const cards = this.firstPlayCard(remainCards);
-    console.warn("cards-%s", JSON.stringify(cards));
     if (!pattern) return [cards];
 
     const prompts = [];

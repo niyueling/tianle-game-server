@@ -347,7 +347,7 @@ abstract class Table implements Serializable {
   depositForPlayer(nextPlayerState: PlayerState) {
     nextPlayerState.deposit(async () => {
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
-      console.warn("prompts-%s", JSON.stringify(prompts));
+      // console.warn("prompts-%s", JSON.stringify(prompts));
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
@@ -357,7 +357,7 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMode(player, msg) {
-    console.warn("index-%s, msg-%s", player.index, JSON.stringify(msg));
+    // console.warn("index-%s, msg-%s", player.index, JSON.stringify(msg));
     let mode = msg.mode;
     if (mode === enums.landlord) {
       this.multiple *= 2;
