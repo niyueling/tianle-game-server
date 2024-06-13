@@ -41,15 +41,8 @@ export default class NormalTable extends Table {
     if (rule.guanPai) {
       this.settler = this.guanPaiSettler
     }
-    // 抢龙头
-    if (rule.longTou) {
-      this.settler = this.longTouSettler
-    }
-    if (this.rule.playerCount === 4) {
-      this.findFullMatchedPatternImp = findFullMatchedPattern4
-      this.findMatchedPatternByPatternImp = findMatchedPatternByPattern4
-    }
 
+    console.warn("settler-%s", JSON.stringify(this.settler));
   }
 
   resume(json) {
@@ -301,31 +294,6 @@ export default class NormalTable extends Table {
             break;
           }
         }
-      }
-    }
-    // 炸弹分
-    this.updateBoomScore();
-  }
-
-  private longTouSettler() {
-    if (!this.players.some(p => p.longTouState > 0)) {
-      if (this.rule.guanPai) {
-        return this.guanPaiSettler()
-      }
-      return this.shangYouSettler()
-    }
-    if (this.players.some(p => p.longTouState > 0 && p.cards.length === 0)) {
-      const winner = this.players.find(p => p.longTouState === 1)
-      const losers = this.players.filter(p => p.longTouState !== 1)
-      for (const loser of losers) {
-        winner.winFrom(loser, 32)
-      }
-    } else {
-      // 剩下2个人赢了
-      const winners = this.players.filter(p => p.longTouState !== 1)
-      const loser = this.players.find(p => p.longTouState === 1)
-      for (const winner of winners) {
-        winner.winFrom(loser, 32)
       }
     }
     // 炸弹分
