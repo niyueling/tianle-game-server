@@ -720,13 +720,9 @@ abstract class Table implements Serializable {
     player.removeListenersByNames(this.listenerOn)
   }
 
-  removeAllPlayerListeners() {
-    this.players.forEach(p => p.removeListenersByNames(this.listenerOn))
-  }
-
   destroy() {
     this.removeRoomListener()
-    this.removeAllPlayerListeners()
+    // this.removeAllPlayerListeners()
     this.players = [];
   }
 
