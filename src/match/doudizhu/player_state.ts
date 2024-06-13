@@ -10,6 +10,7 @@ import {IPattern} from "./patterns/base";
 import Room from './room'
 import Rule from './Rule'
 import {default as Table} from "./table";
+import enums from "./enums";
 
 const removeCard = (src, odst) => {
   const dst = odst.slice()
@@ -122,7 +123,13 @@ class PlayerState implements Serializable {
   }
 
   listenDispatcher(socket) {
-    return;
+    socket.on('game/chooseMode', msg => {
+      this.emitter.emit(enums.chooseMode, msg);
+    })
+
+    socket.on('game/chooseMultiple', msg => {
+      this.emitter.emit(enums.chooseMultiple, msg);
+    })
   }
 
   setGameRecorder(r) {
@@ -326,6 +333,7 @@ class PlayerState implements Serializable {
     this.clearDepositTask();
     this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
   }
+
 
   // // 是否存在该卡
   // isCardExists(cardList: Card[]) {

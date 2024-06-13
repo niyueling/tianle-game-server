@@ -41,6 +41,12 @@ const exportObj = {
   'game/broke': (player, msg) => {
     player.emit('game/broke', msg);
   },
+  'game/chooseMode': (player, msg) => {
+    player.emit('game/chooseMode', msg);
+  },
+  'game/chooseMultiple': (player, msg) => {
+    player.emit('game/chooseMultiple', msg);
+  },
   'game/openCard': (player, msg) => {
     player.emit('game/openCard', msg);
   },

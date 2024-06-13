@@ -177,9 +177,11 @@ abstract class Table implements Serializable {
   }
 
   listenPlayer(player: PlayerState) {
-    this.listenerOn = ['game/da', 'game/guo', 'game/refresh']
+    this.listenerOn = ['game/da', 'game/guo', 'game/refresh', 'game/chooseMode', 'game/chooseMultiple']
 
     player.msgDispatcher.on('game/da', msg => this.onPlayerDa(player, msg))
+    player.msgDispatcher.on('game/chooseMode', msg => this.onPlayerChooseMode(player, msg))
+    player.msgDispatcher.on('game/chooseMultiple', msg => this.onPlayerChooseMultiple(player, msg))
     player.msgDispatcher.on('game/guo', () => this.onPlayerGuo(player))
     player.msgDispatcher.on('game/cancelDeposit', () => this.onCancelDeposit(player))
     player.msgDispatcher.on('game/refresh', () => {
@@ -365,8 +367,84 @@ abstract class Table implements Serializable {
       } else {
         this.onPlayerGuo(nextPlayerState)
       }
-
     })
+  }
+
+  onPlayerChooseMode(player, msg) {
+    let mode = msg.mode;
+    if (mode === enums.landlord) {
+      this.multiple *= 2;
+
+      // 如果用户已经选择叫地主，则重置其他用户为农民
+      if (player.mode !== enums.unknown) {
+        for (let i = 0; i < this.players.length; i++) {
+          if (this.players[i]._id.toString() !== player._id.toString()) {
+            this.players[i].mode = enums.farmer;
+          }
+        }
+      }
+    }
+
+    player.mode = mode;
+    this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple}});
+    this.moveToNext();
+
+    // 如果所有人都选择模式
+    let cIndex = this.players.findIndex(p => p.mode === enums.unknown);
+    let landlordCount = this.players.filter(p => p.mode === enums.landlord).length;
+    // 找到第一个选择地主重新选择
+    const firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
+    let nextPlayer = this.currentPlayerStep;
+
+    // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
+    if (cIndex === -1 && landlordCount === 1) {
+      // 将地主牌发给用户
+      const cards = this.cardManager.getLandlordCard();
+      this.players[this.currentPlayerStep].cards = [...this.players[this.currentPlayerStep].cards, ...cards];
+      this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[this.currentPlayerStep].index, landlordCards: cards, cards: this.players[this.currentPlayerStep].cards}});
+
+      const startDaFunc = async() => {
+        this.status.current.seatIndex = this.players[firstLandlordIndex].index;
+
+        // 下发开始翻倍消息
+        this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
+
+        // 托管状态自动选择不翻倍
+        this.players.map(p => this.depositForPlayerChooseMultiple(p));
+      }
+
+      setTimeout(startDaFunc, 500);
+      return ;
+    }
+
+    // 所有人都选择模式，并且没人选择地主,则重新发牌
+    if (cIndex === -1 && landlordCount === 0) {
+      this.players.map(p => p.mode = enums.unknown);
+      this.start();
+      return ;
+    }
+
+    // 有多人选择地主,让第一个用户重新选择模式
+    if (cIndex === -1 && landlordCount > 1) {
+      if (firstLandlordIndex !== -1) {
+        nextPlayer = firstLandlordIndex;
+      }
+    }
+
+    if (this.players[nextPlayer]) {
+      const nextPlayerState = this.players[nextPlayer];
+      this.room.broadcast('game/startChooseMode', {ok: true, data: {index: nextPlayer}})
+
+      const nextChoose = async() => {
+        this.depositForPlayerChooseMode(nextPlayerState);
+      }
+
+      setTimeout(nextChoose, 500);
+    }
+  }
+
+  onPlayerChooseMultiple(player, msg) {
+
   }
 
   // 托管选择地主
@@ -382,14 +460,14 @@ abstract class Table implements Serializable {
         if (player.mode !== enums.unknown) {
           for (let i = 0; i < this.players.length; i++) {
             if (this.players[i]._id.toString() !== player._id.toString()) {
-              this.players[i].mode = enums.unknown;
+              this.players[i].mode = enums.farmer;
             }
           }
         }
       }
 
       player.mode = mode;
-      this.room.broadcast("game/chooseMode", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple}});
+      this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple}});
       this.moveToNext();
 
       // 如果所有人都选择模式
@@ -440,7 +518,13 @@ abstract class Table implements Serializable {
       // console.warn("nextPlayerIndex-%s", nextPlayer);
       if (this.players[nextPlayer]) {
         const nextPlayerState = this.players[nextPlayer];
-        this.depositForPlayerChooseMode(nextPlayerState);
+        this.room.broadcast('game/startChooseMode', {ok: true, data: {index: nextPlayer}})
+
+        const nextChoose = async() => {
+          this.depositForPlayerChooseMode(nextPlayerState);
+        }
+
+        setTimeout(nextChoose, 500);
       }
     })
   }
@@ -450,7 +534,7 @@ abstract class Table implements Serializable {
     player.deposit(async () => {
       player.isMultiple = true;
       player.double = false;
-      this.room.broadcast("game/chooseMode", {ok: true, data: {seatIndex: player.index, multiple: this.multiple, isMultiple: player.isMultiple, double: player.double}});
+      this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, multiple: this.multiple, isMultiple: player.isMultiple, double: player.double}});
 
       const isAllChoose = this.players.filter(value => value.isMultiple).length >= this.rule.playerCount;
 

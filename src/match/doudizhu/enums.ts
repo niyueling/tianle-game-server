@@ -15,6 +15,9 @@ const enums = {
   landlord: "landlord",
   farmer: "farmer",
 
+  chooseMode: "chooseMode",
+  chooseMultiple: "chooseMultiple",
+
   h1: new Card(CardType.Heart, 1),
   h2: new Card(CardType.Heart, 2),
   h3: new Card(CardType.Heart, 3),
