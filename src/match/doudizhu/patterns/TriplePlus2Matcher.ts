@@ -12,6 +12,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       const groups = groupBy(cards, (card: Card) => card.point).sort((grp1, grp2) => {
         return grp2.length - grp1.length
       })
+      console.warn("groups-%s", JSON.stringify(groups));
       if (groups[0].length >= 3) {
         return {
           name: this.name,
