@@ -136,7 +136,6 @@ export default class NormalTable extends Table {
       currentPlayer: currentPlayerIndex,
       lastPattern: this.status.lastPattern,
       lastIndex: this.status.lastIndex,
-      startQiangLongTouTime: this.startQiangLongTouTime,
       fen: this.status.fen,
       from: this.status.from,
       foundFriend: this.foundFriend,
@@ -222,11 +221,7 @@ export default class NormalTable extends Table {
     this.stateData.gameOver = gameOverMsg
 
     let firstPlayer = this.players.find(p => p.cards.length === 0)
-    if (!firstPlayer && this.players.some(p => p.longTouState > 0)) {
-      const loserPlayer = this.players.find(p => p.seatIndex > 0)
-      const firstPlayerIndex = (loserPlayer.seatIndex + 1) % this.playerCount
-      firstPlayer = this.players.find(p => p.seatIndex === firstPlayerIndex)
-    }
+
     await this.roomGameOver(states, firstPlayer._id);
   }
 

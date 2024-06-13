@@ -14,6 +14,7 @@ import Rule from './Rule'
 import GameCardRecord from "../../database/models/gameCardRecord";
 import {GameType, TianleErrorCode} from "@fm/common/constants";
 import enums from "./enums";
+import Enums from "../xmmajiang/enums";
 
 class Status {
   current = {seatIndex: 0, step: 1}
@@ -376,6 +377,15 @@ abstract class Table implements Serializable {
       if (player.mode !== enums.farmer && index === -1) {
         mode = enums.landlord;
         this.multiple *= 2;
+
+        // 如果用户已经选择叫地主，则重置其他用户为农民
+        if (player.mode !== enums.unknown) {
+          for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i]._id.toString() !== player._id.toString()) {
+              this.players[i].mode = enums.unknown;
+            }
+          }
+        }
       }
 
       player.mode = mode;
@@ -401,8 +411,12 @@ abstract class Table implements Serializable {
 
         const startDaFunc = async() => {
           this.status.current.seatIndex = this.players[firstLandlordIndex].index;
-          this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
-          this.depositForPlayer(this.players[this.currentPlayerStep]);
+
+          // 下发开始翻倍消息
+          this.room.broadcast('game/startChooseMultiple', {ok: true, data: {index: this.currentPlayerStep}});
+
+          // 托管状态自动选择不翻倍
+          this.players.map(p => this.depositForPlayerChooseMultiple(p));
         }
 
         setTimeout(startDaFunc, 500);
@@ -423,10 +437,30 @@ abstract class Table implements Serializable {
         }
       }
 
-      console.warn("nextPlayerIndex-%s", nextPlayer);
+      // console.warn("nextPlayerIndex-%s", nextPlayer);
       if (this.players[nextPlayer]) {
         const nextPlayerState = this.players[nextPlayer];
         this.depositForPlayerChooseMode(nextPlayerState);
+      }
+    })
+  }
+
+  // 托管选择翻倍
+  depositForPlayerChooseMultiple(player: PlayerState) {
+    player.deposit(async () => {
+      player.isMultiple = true;
+      player.double = false;
+      this.room.broadcast("game/chooseMode", {ok: true, data: {seatIndex: player.index, multiple: this.multiple, isMultiple: player.isMultiple, double: player.double}});
+
+      const isAllChoose = this.players.filter(value => value.isMultiple).length >= this.rule.playerCount;
+
+      if (isAllChoose) {
+        const startDa = async() => {
+          this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
+          this.depositForPlayer(this.players[this.currentPlayerStep]);
+        }
+
+        setTimeout(startDa, 500);
       }
     })
   }
@@ -511,40 +545,22 @@ abstract class Table implements Serializable {
   }
 
   async gameOver() {
-    const playersInWinOrder = this.players.slice().sort((p1, p2) => p1.winOrder - p2.winOrder)
-    const teamOrder = playersInWinOrder.map(p => p.team)
-    const winTeam = teamOrder[0]
-    let score;
-    if (teamOrder[0] === teamOrder[1]) {
-      score = 2
-      if (playersInWinOrder.slice(2).some(loser => loser.zhuaFen > 100)) {
-        score = 1
-      }
-    } else {
-      const firstTeamZhuaFen = this.players.filter(p => p.team === winTeam)
-        .reduce((fen, p) => p.zhuaFen + fen, 0)
-      if (firstTeamZhuaFen > 100) {
-        score = 1
-      } else {
-        score = -1
-      }
-
-    }
-    const winTeamPlayers = this.players.filter(p => p.team === winTeam)
-    const loseTeamPlayers = this.players.filter(p => p.team !== winTeam)
-
-    for (let i = 0; i < 2; i++) {
-      const winner = winTeamPlayers[i]
-      const loser = loseTeamPlayers[i]
-      winner.winFrom(loser, score)
-    }
-
+    // this.audit.print();
     const states = this.players.map(p => {
+      const auditInfo = this.audit.currentRound[p.model.shortId];
       return {
         model: p.model,
         index: p.index,
         score: p.balance,
         detail: p.detailBalance,
+        // 统计信息
+        audit: {
+          remainCards: auditInfo.remainCards,
+          orderList: auditInfo.orderList,
+          springScore: auditInfo.springScore,
+          antSpringScore: auditInfo.antSpringScore,
+          boomTimes: auditInfo.boomTimes,
+        },
       }
     })
 
@@ -556,10 +572,12 @@ abstract class Table implements Serializable {
       juIndex: this.room.game.juIndex,
       creator: this.room.creator.model._id,
     }
-
     this.room.broadcast('game/gameOveReply', {ok: true, data: gameOverMsg})
     this.stateData.gameOver = gameOverMsg
-    await this.roomGameOver(states, '')
+
+    let firstPlayer = this.players.find(p => p.cards.length === 0)
+
+    await this.roomGameOver(states, firstPlayer._id);
   }
 
   getScoreBy(playerId) {

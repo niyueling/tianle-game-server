@@ -79,12 +79,6 @@ class PlayerState implements Serializable {
   @autoSerialize
   index = 0
 
-  @autoSerialize
-  longTouState: number = -1
-
-  @autoSerialize
-  isQiangLongTou: false
-
   teamMate: number = -1;
   // foundTeamMate: boolean = false;
   zhuaFen = 0
@@ -95,6 +89,9 @@ class PlayerState implements Serializable {
   lastPattern: IPattern = null
   cleaned: boolean = false;
   foundFriend: boolean = false;
+
+  isMultiple: boolean = false;
+  double: boolean = false;
 
   constructor(userSocket, room, rule) {
     this.room = room
@@ -254,7 +251,6 @@ class PlayerState implements Serializable {
       score: this.room.getScoreBy(this._id),
       remains: this.cards.length,
       lastPattern: this.lastPattern,
-      isQiangLongTou: this.isQiangLongTou,
       lastAction: this.lastAction,
       bombScore: this.bombScore(table.bombScorer)
     }
