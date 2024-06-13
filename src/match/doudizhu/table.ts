@@ -371,6 +371,7 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMode(player, msg) {
+    console.warn("index-%s, msg-%s", player.index, JSON.stringify(msg));
     let mode = msg.mode;
     if (mode === enums.landlord) {
       this.multiple *= 2;
