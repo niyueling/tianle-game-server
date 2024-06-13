@@ -6,7 +6,6 @@ import * as logger from 'winston'
 import Club from '../../database/models/club'
 import DissolveRecord from '../../database/models/dissolveRecord'
 import GameRecord from '../../database/models/gameRecord'
-import PlayerModel from '../../database/models/player'
 import RoomRecord from '../../database/models/roomRecord'
 import {getPlayerRmqProxy} from "../../player/PlayerRmqProxy"
 import '../../utils/algorithm'
@@ -375,30 +374,8 @@ class Room extends RoomBase {
   }
 
   addScore(player, v) {
-    switch (typeof player) {
-      case 'string':
-        const p = this.getPlayerById(player)
-        const gains = v
-        this.scoreMap[player] += gains
-
-        if (p) {
-          p.addGold(gains)
-        } else {
-          PlayerModel.update({_id: player}, {$inc: {gold: v}},
-            err => {
-              if (err) {
-                logger.error(err)
-              }
-            })
-        }
-        break
-      case 'object':
-        player.addGold(v)
-        this.scoreMap[player._id] = ((player && player.gold) || 0) - v
-        break
-      default:
-        break
-    }
+    const p = this.getPlayerById(player);
+    this.scoreMap[player] += v;
   }
 
   removeDisconnected(item) {

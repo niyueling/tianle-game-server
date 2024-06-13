@@ -1,10 +1,7 @@
 import Card, {CardType} from "./card"
-import Enums from './enums'
 import {
   findFullMatchedPattern,
-  findFullMatchedPattern4,
   findMatchedPatternByPattern,
-  findMatchedPatternByPattern4
 } from "./patterns"
 import {IPattern, PatterNames} from "./patterns/base"
 import PlayerState from "./player_state"
@@ -330,7 +327,8 @@ export default class NormalTable extends Table {
   private shangYouSettler() {
     const winner = this.players.find(p => p.cards.length === 0)
     const losers = this.players.filter(p => p.cards.length > 0)
-      .sort((p1, p2) => p2.cards.length - p1.cards.length)
+      .sort((p1, p2) => p2.cards.length - p1.cards.length);
+    console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
     let factor = 1
     if (this.players.length === 4) {
       if (losers[0].cards.length === 13) {
