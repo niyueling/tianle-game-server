@@ -391,12 +391,13 @@ abstract class Table implements Serializable {
 
       // 如果所有人都选择模式
       let cIndex = this.players.findIndex(p => p.mode === enums.unknown);
-      const landlordCount = this.players.findIndex(p => p.mode === enums.landlord);
+      let landlordCount = 0;
+      this.players.map(p => p.mode === enums.landlord && landlordCount++);
       // 找到第一个选择地主重新选择
       const firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
       let nextPlayer = this.currentPlayerStep;
 
-      console.warn("unknownCount-%s, landlordCount-%s, landlordCount-%s, nextPlayer-%s", cIndex, landlordCount, firstLandlordIndex, nextPlayer);
+      console.warn("unknownCount-%s, landlordCount-%s, firstLandlordIndex-%s, nextPlayer-%s", cIndex, landlordCount, firstLandlordIndex, nextPlayer);
 
       // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
       if (cIndex === -1 && landlordCount === 1) {
