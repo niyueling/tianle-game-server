@@ -56,7 +56,7 @@ export default class Game implements Serializable {
   }
 
   isAllOver(): boolean {
-    return this.juShu === 0
+    return this.juShu <= 0
   }
 
   // 保存上局赢家的位置

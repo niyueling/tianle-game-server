@@ -38,8 +38,6 @@ export default class NormalTable extends Table {
     if (rule.guanPai) {
       this.settler = this.guanPaiSettler
     }
-
-    console.warn("settler-%s", JSON.stringify(this.settler));
   }
 
   resume(json) {
@@ -47,7 +45,6 @@ export default class NormalTable extends Table {
   }
 
   toJSON() {
-    // return Object.assign(superJSON, {test: 'test1'})
     return super.toJSON()
   }
 
@@ -97,12 +94,8 @@ export default class NormalTable extends Table {
     this.audit.setFirstPlay(this.players[startPlayerIndex].model.shortId);
   }
 
-  isGameOver(player: PlayerState): boolean {
-    if (this.rule.longTou && this.players.some(p => p.longTouState > 0) && player.longTouState !== 1) {
-      // 有非龙头的玩家出牌
-      return true
-    }
-    return this.players.some(p => p.cards.length === 0)
+  isGameOver(): boolean {
+    return this.players.some(p => p.cards.length === 0);
   }
 
   bombScorer(bomb: IPattern): number {
@@ -127,23 +120,16 @@ export default class NormalTable extends Table {
   }
 
   reconnectContent(index, reconnectPlayer: PlayerState) {
-    const stateData = this.stateData
-    const juIndex = this.room.game.juIndex
+    const stateData = this.stateData;
+    const juIndex = this.room.game.juIndex;
 
     const status = this.players.map(player => {
-      return player === reconnectPlayer ? {
+      return player._id.toString() === reconnectPlayer._id.toString() ? {
         ...player.statusForSelf(this),
         teamMateCards: this.teamMateCards(player)
       } : player.statusForOther(this)
     })
-    const currentPlayerIndex = this.status.current.seatIndex
-
-    let redPocketsData = null
-    let validPlayerRedPocket = null
-    if (this.rule.luckyReward && this.rule.luckyReward > 0) {
-      redPocketsData = this.room.redPockets;
-      validPlayerRedPocket = this.room.vaildPlayerRedPocketArray;
-    }
+    const currentPlayerIndex = this.status.current.seatIndex;
 
     return {
       mode: this.mode,
@@ -157,25 +143,8 @@ export default class NormalTable extends Table {
       index,
       juIndex,
       stateData,
-      status,
-      redPocketsData,
-      validPlayerRedPocket
+      status
     }
-  }
-
-  @once
-  showFriend() {
-    if (this.mode === 'solo') return
-
-    this.foundFriend = true
-
-    this.players.forEach(ps => {
-      ps.foundFriend = true
-    })
-    this.room.broadcast('game/showFriend', {ok: true, data: {
-        homeTeam: this.homeTeamPlayers().map(p => p.index),
-        awayTeam: this.awayTeamPlayers().map(p => p.index)
-      }})
   }
 
   private playerAfter(p: PlayerState) {
@@ -218,10 +187,6 @@ export default class NormalTable extends Table {
     super.onPlayerGuo(player)
   }
 
-  // daPai(player: PlayerState, cards: Card[], pattern: IPattern) {
-  //   return super.daPai(player, cards, pattern)
-  // }
-
   async gameOver() {
     this.updateRemainCards();
     this.settler();
@@ -251,8 +216,6 @@ export default class NormalTable extends Table {
       ruleType: this.rule.ruleType,
       juIndex: this.room.game.juIndex,
       mode: this.mode,
-      homeTeam: this.homeTeamPlayers().map(p => p.index),
-      awayTeam: this.awayTeamPlayers().map(p => p.index),
       creator: this.room.creator.model._id,
     }
     this.room.broadcast('game/gameOveReply', {ok: true, data: gameOverMsg})
@@ -264,7 +227,7 @@ export default class NormalTable extends Table {
       const firstPlayerIndex = (loserPlayer.seatIndex + 1) % this.playerCount
       firstPlayer = this.players.find(p => p.seatIndex === firstPlayerIndex)
     }
-    await this.roomGameOver(states, firstPlayer._id)
+    await this.roomGameOver(states, firstPlayer._id);
   }
 
   private guanPaiSettler() {
@@ -330,41 +293,14 @@ export default class NormalTable extends Table {
       .sort((p1, p2) => p2.cards.length - p1.cards.length);
     console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
     let factor = 1
-    if (this.players.length === 4) {
-      if (losers[0].cards.length === 13) {
-        factor = 2
-      }
-      const playerCardsJudege = this.judegePlayersCardsLength(losers)
-      if (playerCardsJudege.threeSameCount === 1) {
-        for (let i = 0; i < losers.length; i++) {
-          const loser = losers[i];
-          winner.winFrom(loser, 2 * factor)
-        }
-      } else if (playerCardsJudege.twoSameCount === 1) {
-        if (losers[0].cards.length === losers[1].cards.length) {
-          winner.winFrom(losers[0], 3 * factor)
-          winner.winFrom(losers[1], 3 * factor)
-          winner.winFrom(losers[2], 1)
-        } else {
-          winner.winFrom(losers[0], 3 * factor)
-          winner.winFrom(losers[1], 2)
-          winner.winFrom(losers[2], 2)
-        }
-      } else {
-        winner.winFrom(losers[0], 3 * factor)
-        winner.winFrom(losers[1], 2)
-        winner.winFrom(losers[2], 1)
-      }
+    if (losers[0].cards.length === 16) {
+      factor = 2
+    }
+    winner.winFrom(losers[0], 2 * factor)
+    if (losers[0].cards.length === losers[1].cards.length) {
+      winner.winFrom(losers[1], 2 * factor)
     } else {
-      if (losers[0].cards.length === 16) {
-        factor = 2
-      }
-      winner.winFrom(losers[0], 2 * factor)
-      if (losers[0].cards.length === losers[1].cards.length) {
-        winner.winFrom(losers[1], 2 * factor)
-      } else {
-        winner.winFrom(losers[1], factor)
-      }
+      winner.winFrom(losers[1], factor)
     }
   }
 

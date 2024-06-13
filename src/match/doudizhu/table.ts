@@ -86,10 +86,10 @@ abstract class Table implements Serializable {
     this.rule = rule
     this.room = room
     this.status = new Status()
-    this.listenRoom(room)
+    this.listenRoom(room);
 
-    this.initPlayers()
-    this.setGameRecorder(new GameRecorder(this))
+    this.initPlayers();
+    this.setGameRecorder(new GameRecorder(this));
     this.cardManager = new CardManager(rule.playerCount);
     this.playManager = new PlayManager(rule);
     this.audit = new AuditPdk(rule);
@@ -298,7 +298,7 @@ abstract class Table implements Serializable {
     }
     this.moveToNext()
     player.sendMessage('game/daCardReply', {ok: true, data: {remains, teamMateCards, onDeposit: player.onDeposit}})
-    const isGameOver = this.isGameOver(player)
+    const isGameOver = this.isGameOver()
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
 
     this.room.broadcast('game/otherDa', {ok: true, data: {
@@ -438,15 +438,7 @@ abstract class Table implements Serializable {
     })
   }
 
-  homeTeamPlayers(): PlayerState[] {
-    return this.players.filter(p => p.team === Team.HomeTeam)
-  }
-
-  awayTeamPlayers(): PlayerState[] {
-    return this.players.filter(p => p.team === Team.AwayTeam)
-  }
-
-  abstract isGameOver(player: PlayerState): boolean
+  abstract isGameOver(): boolean
 
   cannotDaPai(player, cards) {
     player.sendMessage('game/daCardReply', {

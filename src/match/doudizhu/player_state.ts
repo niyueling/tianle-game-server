@@ -249,6 +249,7 @@ class PlayerState implements Serializable {
   private baseStatus(table: Table) {
     return {
       model: this.model,
+      mode: this.mode,
       index: this.index,
       zhuaFen: this.zhua,
       score: this.room.getScoreBy(this._id),
@@ -262,7 +263,6 @@ class PlayerState implements Serializable {
   }
 
   statusForSelf(table: Table) {
-
     const base = this.baseStatus(table)
     return {
       ...base,

@@ -564,9 +564,9 @@ class Room extends RoomBase {
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
     // 扣除房卡
-    await this.charge()
+    // await this.charge()
     // 金币场扣金币
-    await this.updateClubGoldByScore(stateScore);
+    // await this.updateClubGoldByScore(stateScore);
     this.gameState.destroy()
     this.gameState = null
 
