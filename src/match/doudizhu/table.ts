@@ -14,7 +14,6 @@ import Rule from './Rule'
 import GameCardRecord from "../../database/models/gameCardRecord";
 import {GameType, TianleErrorCode} from "@fm/common/constants";
 import enums from "./enums";
-import Enums from "../xmmajiang/enums";
 
 class Status {
   current = {seatIndex: 0, step: 1}

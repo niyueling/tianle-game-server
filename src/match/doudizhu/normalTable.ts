@@ -8,7 +8,6 @@ import PlayerState from "./player_state"
 import Rule from './Rule'
 import Table from './table'
 import {GameType} from "@fm/common/constants";
-import Enums from "../xmmajiang/enums";
 import enums from "./enums";
 
 function once(target, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -88,7 +87,8 @@ export default class NormalTable extends Table {
     this.tableState = ''
     this.room.broadcast('game/startChooseMode', {ok: true, data: {index: this.currentPlayerStep}})
 
-    this.players[this.currentPlayerStep].emitter.emit('game/chooseMode', {mode: enums.farmer});
+    console.warn(enums.chooseMode, {mode: enums.farmer});
+    this.players[this.currentPlayerStep].emitter.emit(enums.chooseMode, {mode: enums.farmer});
     this.depositForPlayerChooseMode(this.players[this.currentPlayerStep]);
   }
 
