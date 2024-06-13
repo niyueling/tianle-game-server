@@ -434,12 +434,7 @@ abstract class Table implements Serializable {
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer];
       this.room.broadcast('game/startChooseMode', {ok: true, data: {index: nextPlayer}})
-
-      const nextChoose = async() => {
-        this.depositForPlayerChooseMode(nextPlayerState);
-      }
-
-      setTimeout(nextChoose, 500);
+      this.depositForPlayerChooseMode(nextPlayerState);
     }
   }
 
