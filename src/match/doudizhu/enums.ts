@@ -17,6 +17,10 @@ const enums = {
 
   chooseMode: "chooseMode",
   chooseMultiple: "chooseMultiple",
+  cancelDeposit: "cancelDeposit",
+  refresh: "refresh",
+  da: "da",
+  guo: "guo",
 
   h1: new Card(CardType.Heart, 1),
   h2: new Card(CardType.Heart, 2),

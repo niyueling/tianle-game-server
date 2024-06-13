@@ -11,6 +11,8 @@ import Room from './room'
 import Rule from './Rule'
 import {default as Table} from "./table";
 import enums from "./enums";
+import Enums from "../xmmajiang/enums";
+import {genCardArray} from "../xmmajiang/player_state";
 
 const removeCard = (src, odst) => {
   const dst = odst.slice()
@@ -123,7 +125,24 @@ class PlayerState implements Serializable {
   }
 
   listenDispatcher(socket) {
-    return;
+    socket.on('game/guo', msg => {
+      this.emitter.emit(enums.guo, msg)
+    })
+    socket.on('game/da', msg => {
+      this.emitter.emit(enums.da, msg)
+    })
+    socket.on('game/cancelDeposit', msg => {
+      this.emitter.emit(enums.cancelDeposit, msg);
+    })
+    socket.on('game/refresh', msg => {
+      this.emitter.emit(enums.refresh, msg);
+    })
+    socket.on('game/chooseMode', msg => {
+      this.emitter.emit(enums.chooseMode, msg);
+    })
+    socket.on('game/chooseMultiple', msg => {
+      this.emitter.emit(enums.chooseMultiple, msg);
+    })
   }
 
   setGameRecorder(r) {
