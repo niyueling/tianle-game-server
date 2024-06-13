@@ -89,7 +89,7 @@ class PlayerState implements Serializable {
   teamMate: number = -1;
   // foundTeamMate: boolean = false;
   zhuaFen = 0
-  mode: "teamwork" | "solo" | "unknown" = 'unknown';
+  mode = 'unknown';
   private usedBombs: IPattern[] = [];
 
   @autoSerialize
@@ -307,7 +307,7 @@ class PlayerState implements Serializable {
     //   return;
     // }
 
-    console.warn("canDeposit-%s, timeoutTask-%s", this.canDeposit, !!this.timeoutTask);
+    // console.warn("canDeposit-%s, timeoutTask-%s", this.canDeposit, !!this.timeoutTask);
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {

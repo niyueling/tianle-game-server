@@ -13,6 +13,7 @@ import Room from './room'
 import Rule from './Rule'
 import GameCardRecord from "../../database/models/gameCardRecord";
 import {GameType, TianleErrorCode} from "@fm/common/constants";
+import enums from "./enums";
 
 export enum Team {
   HomeTeam = 0,
@@ -160,7 +161,6 @@ abstract class Table implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const initCards = this.cardManager.getCardTypesFromTag(allPlayerCards[i]);
       const p = this.players[i];
-      console.warn("index-%s, initCards-%s", i, JSON.stringify(initCards));
       this.audit.saveRemainCards(p.model.shortId, initCards);
       await GameCardRecord.create({
         player: p._id, shortId: p.model.shortId, username: p.model.name, cardLists: initCards, createAt: new Date(),
@@ -184,7 +184,7 @@ abstract class Table implements Serializable {
   }
 
   listenPlayer(player: PlayerState) {
-    this.listenerOn = ['game/da', 'game/guo', 'game/longTou', 'game/refresh']
+    this.listenerOn = ['game/da', 'game/guo', 'game/refresh']
 
     player.msgDispatcher.on('game/da', msg => this.onPlayerDa(player, msg))
     player.msgDispatcher.on('game/guo', () => this.onPlayerGuo(player))
@@ -362,7 +362,8 @@ abstract class Table implements Serializable {
   }
 
   abstract findMatchedPatternByPattern(currentPattern: IPattern, cards: Card[]): Card[][];
-  // 托管
+
+  // 托管出牌
   depositForPlayer(nextPlayerState: PlayerState) {
     nextPlayerState.deposit(async () => {
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards)
@@ -372,6 +373,29 @@ abstract class Table implements Serializable {
         this.onPlayerGuo(nextPlayerState)
       }
 
+    })
+  }
+
+  // 托管选择地主
+  depositForPlayerChooseMode(player: PlayerState) {
+    player.deposit(async () => {
+      let mode = enums.farmer;
+      const index = this.players.findIndex(p => p.mode === enums.landlord);
+      if (player.mode === enums.unknown && index === -1) {
+        mode = enums.landlord;
+      }
+
+      player.mode = mode;
+      player.sendMessage("game/chooseMode", {ok: true, data: {seatIndex: player.seatIndex, mode: player.mode}});
+      this.moveToNext();
+
+      // 下一用户选择地主
+      const nextPlayer = this.currentPlayerStep;
+      console.warn("nextPlayerIndex-%s", nextPlayer);
+      if (this.players[nextPlayer]) {
+        const nextPlayerState = this.players[nextPlayer];
+        this.depositForPlayerChooseMode(nextPlayerState);
+      }
     })
   }
 

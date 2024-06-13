@@ -57,7 +57,7 @@ export class CardManager {
         count--;
       }
 
-      console.warn("playerCards-%s", JSON.stringify(playerCards));
+      // console.warn("playerCards-%s", JSON.stringify(playerCards));
     } else {
       // 将牌排序以后再发
       const randomList = this.orderCardTagBySameValue(newCardTags);

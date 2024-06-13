@@ -72,8 +72,8 @@ export default class NormalTable extends Table {
   }
 
   startStateUpdate() {
-    if (this.room.game.lastWinnerShortId !== -1 && !this.rule.longTou && this.rule.winnerFirst) {
-      // 有上一局赢的人且不抢龙头且设置了赢家先出
+    if (this.room.game.lastWinnerShortId !== -1) {
+      // 有上一局赢的人,则赢家先选择地主
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         if (p.model.shortId === this.room.game.lastWinnerShortId) {
@@ -82,43 +82,27 @@ export default class NormalTable extends Table {
         }
       }
     } else {
-      // 找黑桃 3，或者抢龙头
-      for (const [i, p]of this.players.entries()) {
-        if (p.cards.find(c => Card.compare(c, Enums.s3) === 0)) {
-          if (this.rule.longTou) {
-            this.tableState = 'qiangLongTou'
-            this.broadcastQiangLong(p)
-          } else {
-            this.setFirstDa(i)
-          }
-          break
-        }
-      }
+      this.setFirstDa(0);
     }
-    if (!this.rule.longTou) {
-      this.broadcastFirstDa()
-    }
+
+    // 选择地主
+    this.broadcastChooseMode();
   }
 
-  broadcastFirstDa() {
+  // broadcastFirstDa() {
+  //   this.tableState = ''
+  //   this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
+  //   this.depositForPlayer(this.players[this.currentPlayerStep]);
+  // }
+
+  broadcastChooseMode() {
     this.tableState = ''
-    this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
-    this.depositForPlayer(this.players[this.currentPlayerStep]);
-  }
-
-  broadcastQiangLong(player) {
-    this.startQiangLongTouTime = new Date().getTime();
-    this.room.broadcast('game/startQiang', {ok: true, data: {index: player.seatIndex, startTime: this.startQiangLongTouTime}})
-    player.isQiangLongTou = true;
-    setTimeout(() => {
-      if (new Date().getTime() - this.startQiangLongTouTime >= 10 * 1000 && player.longTouState === -1) {
-        this.broadcastLongTouReply({qiang: false}, player)
-      }
-    }, 10 * 1000)
+    this.room.broadcast('game/startChooseMode', {ok: true, data: {index: this.currentPlayerStep}})
+    this.depositForPlayerChooseMode(this.players[this.currentPlayerStep]);
   }
 
   setFirstDa(startPlayerIndex: number) {
-    this.status.current.seatIndex = startPlayerIndex
+    this.status.current.seatIndex = startPlayerIndex;
     // 第一个打的
     this.audit.setFirstPlay(this.players[startPlayerIndex].model.shortId);
   }
@@ -150,39 +134,6 @@ export default class NormalTable extends Table {
 
   listenPlayer(player: PlayerState) {
     super.listenPlayer(player)
-
-    player.msgDispatcher.on('game/longTou', msg => this.broadcastLongTouReply(msg, player))
-  }
-
-  broadcastLongTouReply(msg, player) {
-    if (player.longTouState !== -1) {
-      return
-    }
-    // 不抢龙头
-    player.longTouState = 0
-    player.isQiangLongTou = false;
-    this.room.emit('qiangLongTou', {})
-    if (msg.qiang) {
-      this.longTouIndex = player.seatIndex
-      player.longTouState = 1
-      player.isQiangLongTou = false;
-      this.room.broadcast('game/startQiangReply', {ok: true, index: player.seatIndex})
-      this.setFirstDa(player.seatIndex)
-      this.audit.setLongTou(player.model.shortId);
-      this.broadcastFirstDa()
-      this.room.emit('qiangLongTou', {})
-      return
-    }
-    const nextIndex = player.seatIndex + 1 >= this.playerCount ? 0 : player.seatIndex + 1
-    if (!this.players.some(p => p.longTouState < 0)) {
-      // 所有人都不抢，龙头给第一个人
-      this.setFirstDa(nextIndex)
-      this.audit.setLongTou(this.players[nextIndex].model.shortId);
-      this.broadcastFirstDa()
-      this.room.emit('qiangLongTou', {})
-      return
-    }
-    this.broadcastQiangLong(this.players[nextIndex]);
   }
 
   reconnectContent(index, reconnectPlayer: PlayerState) {
