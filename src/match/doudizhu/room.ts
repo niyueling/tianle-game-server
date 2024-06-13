@@ -332,8 +332,8 @@ class Room extends RoomBase {
     const players = this.snapshot.map(p => p._id)
     const scores = this.playersOrder.map(player => ({
       score: this.scoreMap[player.model._id] || 0,
-      name: player.model.name,
-      headImgUrl: player.model.headImgUrl,
+      name: player.model.nickname,
+      headImgUrl: player.model.avatar,
       shortId: player.model.shortId
     }))
 

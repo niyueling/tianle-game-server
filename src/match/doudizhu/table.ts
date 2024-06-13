@@ -160,7 +160,7 @@ abstract class Table implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const initCards = this.cardManager.getCardTypesFromTag(allPlayerCards[i]);
       const p = this.players[i];
-      console.warn("index-%s, initCards-%s", p.seatIndex, JSON.stringify(initCards));
+      console.warn("index-%s, initCards-%s", i, JSON.stringify(initCards));
       this.audit.saveRemainCards(p.model.shortId, initCards);
       await GameCardRecord.create({
         player: p._id, shortId: p.model.shortId, username: p.model.name, cardLists: initCards, createAt: new Date(),

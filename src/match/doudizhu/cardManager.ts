@@ -50,8 +50,10 @@ export class CardManager {
       while (count > 0) {
         // 每个玩家取一张牌
         for (const pc of playerCards) {
-          pc.push(newCardTags.pop());
+          const card = newCardTags.pop();
+          pc.push(card);
         }
+        console.warn("count-%s, cardCount-%s", count, newCardTags.length);
         count--;
       }
     } else {
