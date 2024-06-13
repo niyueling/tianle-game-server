@@ -396,6 +396,8 @@ abstract class Table implements Serializable {
       const firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
       let nextPlayer = this.currentPlayerStep;
 
+      console.warn("unknownCount-%s, landlordCount-%s, landlordCount-%s, nextPlayer-%s", cIndex, landlordCount, firstLandlordIndex, nextPlayer);
+
       // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
       if (cIndex === -1 && landlordCount === 1) {
         // 将地主牌发给用户
@@ -415,6 +417,7 @@ abstract class Table implements Serializable {
 
       // 所有人都选择模式，并且没人选择地主,则重新发牌
       if (cIndex === -1 && landlordCount === 0) {
+        this.players.map(p => p.mode = enums.unknown);
         this.start();
         return ;
       }
