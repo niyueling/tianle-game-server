@@ -551,11 +551,11 @@ class Room extends RoomBase {
     let stateScore = {};
     states.forEach(state => {
       state.model.played += 1
-      this.addScore(state.model._id, state.score)
+      this.addScore(state.model._id, state.score);
       stateScore[state.model._id] = state.score;
     })
-    this.clearReady()
-    await this.delPlayerBless();
+    this.clearReady();
+
     // 最后一局才翻
     let lowScoreTimes = 1;
     if (!this.game.juIndex === this.gameRule.juShu) {
@@ -567,7 +567,7 @@ class Room extends RoomBase {
     // await this.charge()
     // 金币场扣金币
     // await this.updateClubGoldByScore(stateScore);
-    this.gameState.destroy()
+    this.gameState.destroy();
     this.gameState = null
 
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id === firstPlayerId)
