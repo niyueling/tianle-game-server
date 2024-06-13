@@ -123,13 +123,7 @@ class PlayerState implements Serializable {
   }
 
   listenDispatcher(socket) {
-    socket.on('game/chooseMode', msg => {
-      this.emitter.emit(enums.chooseMode, msg);
-    })
-
-    socket.on('game/chooseMultiple', msg => {
-      this.emitter.emit(enums.chooseMultiple, msg);
-    })
+    return;
   }
 
   setGameRecorder(r) {
