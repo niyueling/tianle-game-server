@@ -413,7 +413,7 @@ abstract class Table implements Serializable {
           this.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
           // 下发开始翻倍消息
-          this.room.broadcast('game/startChooseMultiple', {ok: true, data: {index: this.currentPlayerStep}});
+          this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
 
           // 托管状态自动选择不翻倍
           this.players.map(p => this.depositForPlayerChooseMultiple(p));
