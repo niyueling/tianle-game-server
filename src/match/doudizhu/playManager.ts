@@ -133,8 +133,9 @@ export class PlayManager {
 
   // 根据牌型查找相同牌
   getCardByPattern(pattern: IPattern, remainCards: Card[]): Card[][] {
-    // 默认出单张
-    if (!pattern) return [[remainCards[0]]]
+    // 如果本轮轮到自己出牌，默认出单张
+    if (!pattern) return this.firstPlayCard(remainCards);
+
     const prompts = [];
     for (const matcher of this.allowPattern) {
       const result = matcher.promptWithPattern(pattern, remainCards);

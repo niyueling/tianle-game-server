@@ -14,6 +14,7 @@ import Rule from './Rule'
 import GameCardRecord from "../../database/models/gameCardRecord";
 import {GameType, TianleErrorCode} from "@fm/common/constants";
 import enums from "./enums";
+import GameCategory from "../../database/models/gameCategory";
 
 class Status {
   current = {seatIndex: 0, step: 1}
@@ -23,7 +24,6 @@ class Status {
   // 出牌玩家位置
   from: number
   winOrder = 0
-  fen = 0
 }
 
 abstract class Table implements Serializable {
@@ -49,17 +49,11 @@ abstract class Table implements Serializable {
 
   recorder: IGameRecorder
 
-  @autoSerialize
-  listenerOn: string[]
-
   @serialize
   stateData: any
 
   @autoSerialize
   tableState: string = ''
-
-  @autoSerialize
-  startQiangLongTouTime: number = -1
 
   cardManager: CardManager;
 
@@ -108,10 +102,6 @@ abstract class Table implements Serializable {
     }
 
     this.stateData = {}
-    if (this.startQiangLongTouTime !== -1) {
-      this.startQiangLongTouTime = new Date().getTime() - this.startQiangLongTouTime > 8 * 1000 ?
-        new Date().getTime() : this.startQiangLongTouTime;
-    }
 
     for (const [i, p] of this.players.entries()) {
       p.resume(tableStateJson.gameState.players[i])
@@ -130,10 +120,10 @@ abstract class Table implements Serializable {
     const players = room.playersOrder
       .map(playerSocket => new PlayerState(playerSocket, room, rule))
 
-    players[0].zhuang = true
-    this.zhuang = players[0]
-    players.forEach(p => this.listenPlayer(p))
-    this.players = players
+    players[0].zhuang = true;
+    this.zhuang = players[0];
+    players.forEach(p => this.listenPlayer(p));
+    this.players = players;
   }
 
   shuffle() {
@@ -163,28 +153,26 @@ abstract class Table implements Serializable {
   }
 
   removeRoomListener() {
-    this.room.removeListener('reconnect', this.onReconnect)
-    this.room.removeListener('empty', this.onRoomEmpty)
+    this.room.removeListener('reconnect', this.onReconnect);
+    this.room.removeListener('empty', this.onRoomEmpty);
   }
 
   get empty() {
-    return this.players.filter(p => p).length === 0
+    return this.players.filter(p => p).length === 0;
   }
 
   get playerCount() {
-    return this.players.filter(p => p).length
+    return this.players.filter(p => p).length;
   }
 
   listenPlayer(player: PlayerState) {
-    // this.listenerOn = ['game/da', 'game/guo', 'game/refresh', 'game/chooseMode', 'game/chooseMultiple']
-
     player.on(enums.da, msg => this.onPlayerDa(player, msg))
     player.on(enums.chooseMode, msg => this.onPlayerChooseMode(player, msg));
     player.on(enums.chooseMultiple, msg => this.onPlayerChooseMultiple(player, msg))
     player.on(enums.guo, () => this.onPlayerGuo(player))
     player.on(enums.cancelDeposit, () => this.onCancelDeposit(player))
-    player.on(enums.refresh, () => {
-      player.sendMessage('room/refreshReply', {ok: true, data: this.restoreMessageForPlayer(player)});
+    player.on(enums.refresh, async () => {
+      player.sendMessage('room/refreshReply', {ok: true, data: await this.restoreMessageForPlayer(player)});
     })
   }
 
@@ -252,10 +240,10 @@ abstract class Table implements Serializable {
   async onPlayerDa(player: PlayerState, {cards: plainCards}) {
     if (!this.isCurrentStep(player)) {
       this.daPaiFail(player, TianleErrorCode.notDaRound);
-      return
+      return;
     }
     // 转换成 Card 类型
-    const cards = plainCards.map(Card.from)
+    const cards = plainCards.map(Card.from);
     const currentPattern = this.playManager.getPatternByCard(cards, player.cards);
     this.status.lastIndex = this.currentPlayerStep
     // 检查最后几张
@@ -277,7 +265,6 @@ abstract class Table implements Serializable {
     this.status.from = this.status.current.seatIndex
     this.status.lastPattern = pattern
     this.status.lastCards = cards
-    // this.status.fen += this.fenInCards(cards)
     if (pattern.name === PatterNames.bomb) {
       player.recordBomb(pattern)
       // 添加炸弹次数
@@ -301,33 +288,32 @@ abstract class Table implements Serializable {
         index: player.seatIndex,
         next: nextPlayer,
         pattern: this.status.lastPattern,
-        fen: this.status.fen,
         bomb: this.bombScorer(pattern),
         newBombScore: player.bombScore(this.bombScorer)
       }})
     this.notifyTeamMateWhenTeamMateWin(player, cards)
 
     if (this.players[nextPlayer]) {
-      const nextPlayerState = this.players[nextPlayer]
+      const nextPlayerState = this.players[nextPlayer];
       this.depositForPlayer(nextPlayerState)
     }
     if (isGameOver) {
       this.showGameOverPlayerCards()
-      player.zhua(this.status.fen)
       this.room.game.saveLastWinner(player.model.shortId);
       this.status.current.seatIndex = -1
       await this.gameOver()
     }
   }
 
-  restoreMessageForPlayer(player: PlayerState) {
+  async restoreMessageForPlayer(player: PlayerState) {
     const index = this.atIndex(player)
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
     const pushMsg = {
       index, status: [],
+      category,
       currentPlayer: this.status.current.seatIndex,
       lastPattern: this.status.lastPattern,
       lastIndex: this.status.lastIndex,
-      fen: this.status.fen,
       from: this.status.from,
       juIndex: this.room.game.juIndex,
       juShu: this.restJushu,
@@ -360,7 +346,8 @@ abstract class Table implements Serializable {
   // 托管出牌
   depositForPlayer(nextPlayerState: PlayerState) {
     nextPlayerState.deposit(async () => {
-      const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards)
+      const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
+      console.warn("prompts-%s", JSON.stringify(prompts));
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
@@ -544,8 +531,8 @@ abstract class Table implements Serializable {
     player.sendMessage('game/daCardReply', {
       ok: false,
       info: TianleErrorCode.cardDaError,
-      daCards: cards,
-      inHandle: player.cards
+      data: {daCards: cards, inHandle: player.cards}
+
     })
   }
 
@@ -580,21 +567,17 @@ abstract class Table implements Serializable {
     this.moveToNext()
     if (!this.status.lastPattern) {
       const zhuaFenPlayer = this.players[this.status.from]
-      zhuaFenPlayer.zhua(this.status.fen)
 
       // this.room.broadcast('game/zhuaFen', {ok: true, data: {
       //     index: this.status.from,
-      //     win: this.status.fen,
       //     zhuaFen: zhuaFenPlayer.zhuaFen
       //   }})
 
-      this.status.fen = 0
     }
     this.room.broadcast("game/otherGuo", {ok: true, data: {
         index: player.seatIndex,
         next: this.currentPlayerStep,
         pattern: this.status.lastPattern,
-        fen: this.status.fen
       }})
   }
 
@@ -705,9 +688,9 @@ abstract class Table implements Serializable {
     }
   }
 
-  removeListeners(player) {
-    player.removeListenersByNames(this.listenerOn)
-  }
+  // removeListeners(player) {
+  //   player.removeListenersByNames(this.listenerOn)
+  // }
 
   destroy() {
     this.removeRoomListener()

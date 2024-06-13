@@ -242,10 +242,6 @@ class PlayerState implements Serializable {
     return this.model._id
   }
 
-  zhua(fen: number) {
-    this.zhuaFen += fen
-  }
-
   winFrom(loser: PlayerState, score: number, cate: string = 'base') {
     this.balance += score
     loser.balance -= score
@@ -268,7 +264,6 @@ class PlayerState implements Serializable {
       model: this.model,
       mode: this.mode,
       index: this.index,
-      zhuaFen: this.zhua,
       score: this.room.getScoreBy(this._id),
       remains: this.cards.length,
       lastPattern: this.lastPattern,
@@ -312,7 +307,7 @@ class PlayerState implements Serializable {
 
   // 托管
   deposit(callback) {
-    const minutes = 15 * 1000
+    const minutes = 3 * 1000
 
     // if (!this.canDeposit) {
     //   return

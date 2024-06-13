@@ -143,7 +143,6 @@ export default class NormalTable extends Table {
       currentPlayer: currentPlayerIndex,
       lastPattern: this.status.lastPattern,
       lastIndex: this.status.lastIndex,
-      fen: this.status.fen,
       from: this.status.from,
       foundFriend: this.foundFriend,
       index,
@@ -153,44 +152,14 @@ export default class NormalTable extends Table {
     }
   }
 
-  private playerAfter(p: PlayerState) {
-    const nextIndex = (p.index + 1) % this.players.length
-
-    return this.players[nextIndex]
-  }
-
   async onPlayerDa(player: PlayerState, {cards: plainCards}) {
     const cards = plainCards.map(Card.from)
     const isOk = this.playManager.isAllowPlayCard(cards, player.cards);
     if (!isOk) {
       return this.cannotDaPai(player, cards);
     }
-    const currentPattern = this.playManager.getPatternByCard(cards, player.cards);
-    if (currentPattern && currentPattern.name === PatterNames.single) {
-      const nextPlayer = this.playerAfter(player)
-      const card = cards[0]
-      const biggestCard = player.cards.sort((c1, c2) => c2.point - c1.point)[0]
-      if (nextPlayer.cards.length === 1 && card.point !== biggestCard.point) {
-        return this.daPaiFail(player, '下家保本,不能出这张牌')
-      }
-    }
-    await super.onPlayerDa(player, {cards: plainCards})
-  }
 
-  onPlayerGuo(player) {
-    const lastCards = this.status.lastCards
-    const lastPattern = this.status.lastPattern
-    if (lastPattern && lastPattern.name === PatterNames.single) {
-      const haveBiggerCard = player.cards.some(x => x.point > lastCards[0].point)
-      const nextPlayer = this.playerAfter(player)
-      if (nextPlayer.cards.length === 1 && haveBiggerCard) {
-        return this.guoPaiFail(player, '下家保本,不能过牌')
-      }
-    }
-    if (lastPattern && this.rule.yaPai && this.playManager.getCardByPattern(lastPattern, player.cards).length > 0) {
-      return this.guoPaiFail(player, '必须压牌！')
-    }
-    super.onPlayerGuo(player)
+    await super.onPlayerDa(player, {cards: plainCards})
   }
 
   async gameOver() {
