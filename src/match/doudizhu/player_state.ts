@@ -213,8 +213,9 @@ class PlayerState implements Serializable {
 
   removeAllListeners() {
     if (this.msgDispatcher) {
-      const allNames = Object.keys(this.msgDispatcher.getGameMsgHandler())
-      this.removeListenersByNames(allNames)
+      Object.keys(this.msgDispatcher.getGameMsgHandler()).forEach(x => {
+        this.msgDispatcher.removeAllListeners(x)
+      })
       this.msgDispatcher.removeListener('disconnect', this.disconnectCallBack)
     }
   }
