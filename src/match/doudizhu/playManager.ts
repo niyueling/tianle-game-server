@@ -134,7 +134,9 @@ export class PlayManager {
   // 根据牌型查找相同牌
   getCardByPattern(pattern: IPattern, remainCards: Card[]): Card[][] {
     // 如果本轮轮到自己出牌，默认出单张
-    if (!pattern) return [this.firstPlayCard(remainCards)];
+    const cards = this.firstPlayCard(remainCards);
+    console.warn("cards-%s", JSON.stringify(cards));
+    if (!pattern) return [[remainCards[0]]];
 
     const prompts = [];
     for (const matcher of this.allowPattern) {
