@@ -407,7 +407,7 @@ abstract class Table implements Serializable {
         // 将地主牌发给用户
         const cards = this.cardManager.getLandlordCard();
         this.players[this.currentPlayerStep].cards = [...this.players[this.currentPlayerStep].cards, ...cards];
-        this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[this.currentPlayerStep].index, cards}});
+        this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[this.currentPlayerStep].index, landlordCards: cards, cards: this.players[this.currentPlayerStep].cards}});
 
         const startDaFunc = async() => {
           this.status.current.seatIndex = this.players[firstLandlordIndex].index;
