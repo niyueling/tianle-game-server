@@ -263,7 +263,7 @@ export class NewRobotManager {
   // 更新玩家位置
   async updatePlayerOrder() {
     for (const key of Object.keys(this.disconnectPlayers)) {
-      const index = this.room.players.findIndex(value => value._id.toString() === key);
+      const index = this.room.players.findIndex(value => value && value._id.toString() === key.toString());
       if (index === -1) {
         console.log('no such player to order', key, 'room id', this.room._id)
         delete this.disconnectPlayers[key];

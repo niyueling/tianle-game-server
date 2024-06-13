@@ -217,7 +217,7 @@ export default class NormalTable extends Table {
       mode: this.mode,
       creator: this.room.creator.model._id,
     }
-    this.room.broadcast('game/gameOveReply', {ok: true, data: gameOverMsg})
+    this.room.broadcast('game/gameOverReply', {ok: true, data: gameOverMsg})
     this.stateData.gameOver = gameOverMsg
 
     let firstPlayer = this.players.find(p => p.cards.length === 0)

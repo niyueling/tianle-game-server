@@ -56,6 +56,7 @@ export default class Game implements Serializable {
   }
 
   isAllOver(): boolean {
+    console.warn("juShu-%s", this.juShu);
     return this.juShu <= 0
   }
 

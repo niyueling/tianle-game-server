@@ -328,9 +328,9 @@ class Room extends RoomBase {
   // }
 
   async recordRoomScore(roomState = 'normal') {
-    const players = this.snapshot.map(p => p._id)
+    const players = this.snapshot.map(p => p._id);
     const scores = this.playersOrder.map(player => ({
-      score: this.scoreMap[player.model._id] || 0,
+      score: this.scoreMap[player._id] || 0,
       name: player.model.nickname,
       headImgUrl: player.model.avatar,
       shortId: player.model.shortId
@@ -570,7 +570,7 @@ class Room extends RoomBase {
     this.gameState.destroy();
     this.gameState = null
 
-    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id === firstPlayerId)
+    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)
     await this.robotManager.nextRound();
 
@@ -585,7 +585,7 @@ class Room extends RoomBase {
         await this.updateClubGoldByScore(stateScore);
       }
       const message = this.allOverMessage(lowScoreTimes)
-      this.broadcast('room/allOver', {ok: true, data: message})
+      this.broadcast('room/gameAllOverReply', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
       this.emit('empty', this.disconnected)
       // 更新大赢家
