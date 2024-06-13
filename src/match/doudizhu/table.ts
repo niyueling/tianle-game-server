@@ -490,11 +490,11 @@ abstract class Table implements Serializable {
       const zhuaFenPlayer = this.players[this.status.from]
       zhuaFenPlayer.zhua(this.status.fen)
 
-      this.room.broadcast('game/zhuaFen', {ok: true, data: {
-          index: this.status.from,
-          win: this.status.fen,
-          zhuaFen: zhuaFenPlayer.zhuaFen
-        }})
+      // this.room.broadcast('game/zhuaFen', {ok: true, data: {
+      //     index: this.status.from,
+      //     win: this.status.fen,
+      //     zhuaFen: zhuaFenPlayer.zhuaFen
+      //   }})
 
       this.status.fen = 0
     }
