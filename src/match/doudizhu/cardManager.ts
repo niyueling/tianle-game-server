@@ -36,6 +36,17 @@ export class CardManager {
     }
   }
 
+  // 发放地主牌
+  getLandlordCard() {
+    const cards = [];
+    for (let i = 0; i < 3; i++) {
+      const card = this.remainCardTags.pop();
+      cards.push(card);
+    }
+
+    return this.getCardTypesFromTag(cards);
+  }
+
   // 为每个玩家发牌
   genCardForEachPlayer(isSorted?) {
     // 洗牌

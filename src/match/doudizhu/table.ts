@@ -381,16 +381,51 @@ abstract class Table implements Serializable {
     player.deposit(async () => {
       let mode = enums.farmer;
       const index = this.players.findIndex(p => p.mode === enums.landlord);
-      if (player.mode === enums.unknown && index === -1) {
+      if (player.mode !== enums.farmer && index === -1) {
         mode = enums.landlord;
       }
 
       player.mode = mode;
-      player.sendMessage("game/chooseMode", {ok: true, data: {seatIndex: player.seatIndex, mode: player.mode}});
+      this.room.broadcast("game/chooseMode", {ok: true, data: {seatIndex: player.index, mode: player.mode}});
       this.moveToNext();
 
-      // 下一用户选择地主
-      const nextPlayer = this.currentPlayerStep;
+      // 如果所有人都选择模式
+      let cIndex = this.players.findIndex(p => p.mode === enums.unknown);
+      const landlordCount = this.players.findIndex(p => p.mode === enums.landlord);
+      // 找到第一个选择地主重新选择
+      const firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
+      let nextPlayer = this.currentPlayerStep;
+
+      // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
+      if (cIndex === -1 && landlordCount === 1) {
+        // 将地主牌发给用户
+        const cards = this.cardManager.getLandlordCard();
+        this.players[this.currentPlayerStep].cards = [...this.players[this.currentPlayerStep].cards, ...cards];
+        this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[this.currentPlayerStep].index, cards}});
+
+        const startDaFunc = async() => {
+          this.status.current.seatIndex = this.players[firstLandlordIndex].index;
+          this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
+          this.depositForPlayer(this.players[this.currentPlayerStep]);
+        }
+
+        setTimeout(startDaFunc, 500);
+        return ;
+      }
+
+      // 所有人都选择模式，并且没人选择地主,则重新发牌
+      if (cIndex === -1 && landlordCount === 0) {
+        this.start();
+        return ;
+      }
+
+      // 有多人选择地主,让第一个用户重新选择模式
+      if (cIndex === -1 && landlordCount > 1) {
+        if (firstLandlordIndex !== -1) {
+          nextPlayer = firstLandlordIndex;
+        }
+      }
+
       console.warn("nextPlayerIndex-%s", nextPlayer);
       if (this.players[nextPlayer]) {
         const nextPlayerState = this.players[nextPlayer];
