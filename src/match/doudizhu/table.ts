@@ -15,12 +15,6 @@ import GameCardRecord from "../../database/models/gameCardRecord";
 import {GameType, TianleErrorCode} from "@fm/common/constants";
 import enums from "./enums";
 
-export enum Team {
-  HomeTeam = 0,
-  AwayTeam = 1,
-  NoTeam = 2,
-}
-
 class Status {
   current = {seatIndex: 0, step: 1}
   lastCards: Card[] = []
@@ -65,21 +59,19 @@ abstract class Table implements Serializable {
   tableState: string = ''
 
   @autoSerialize
-  longTouIndex: number = -1
-
-  @autoSerialize
   startQiangLongTouTime: number = -1
 
   cardManager: CardManager;
 
   playManager: PlayManager;
+
   // 结算
   @serialize
   audit: AuditPdk;
 
-  // 本局是否开启补助
+  // 本局倍数
   @autoSerialize
-  isHelp: boolean = false
+  multiple: number = 1
 
   constructor(room, rule, restJushu) {
     this.restJushu = restJushu
@@ -383,10 +375,11 @@ abstract class Table implements Serializable {
       const index = this.players.findIndex(p => p.mode === enums.landlord);
       if (player.mode !== enums.farmer && index === -1) {
         mode = enums.landlord;
+        this.multiple *= 2;
       }
 
       player.mode = mode;
-      this.room.broadcast("game/chooseMode", {ok: true, data: {seatIndex: player.index, mode: player.mode}});
+      this.room.broadcast("game/chooseMode", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple}});
       this.moveToNext();
 
       // 如果所有人都选择模式

@@ -260,33 +260,6 @@ export default class NormalTable extends Table {
     this.updateBoomScore();
   }
 
-  judegePlayersCardsLength(players: PlayerState[]) {
-    const result = {
-      twoSameCount: 0,
-      threeSameCount: 0
-    };
-
-    let tempPlayers = players.filter(x => x);
-    let tempLength = tempPlayers.length;
-    while (tempPlayers.length > 1) {
-      const tempPlayer = tempPlayers[0];
-      tempPlayers = tempPlayers.filter(p => p.cards.length !== tempPlayer.cards.length)
-
-      switch (tempLength - tempPlayers.length) {
-        case 2 :
-          result.twoSameCount = result.twoSameCount + 1;
-          break;
-        case 3 :
-          result.threeSameCount = result.threeSameCount + 1;
-          break;
-        default :
-          break;
-      }
-      tempLength = tempPlayers.length;
-    }
-    return result;
-  }
-
   private shangYouSettler() {
     const winner = this.players.find(p => p.cards.length === 0)
     const losers = this.players.filter(p => p.cards.length > 0)
