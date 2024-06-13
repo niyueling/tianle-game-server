@@ -9,7 +9,7 @@ import Card, {CardType} from './card'
 import {IPattern} from "./patterns/base";
 import Room from './room'
 import Rule from './Rule'
-import {default as Table, Team} from "./table";
+import {default as Table} from "./table";
 
 const removeCard = (src, odst) => {
   const dst = odst.slice()
@@ -85,7 +85,6 @@ class PlayerState implements Serializable {
   @autoSerialize
   isQiangLongTou: false
 
-  team = Team.NoTeam
   teamMate: number = -1;
   // foundTeamMate: boolean = false;
   zhuaFen = 0
@@ -257,7 +256,6 @@ class PlayerState implements Serializable {
       lastPattern: this.lastPattern,
       isQiangLongTou: this.isQiangLongTou,
       lastAction: this.lastAction,
-      team: this.team,
       bombScore: this.bombScore(table.bombScorer)
     }
   }
