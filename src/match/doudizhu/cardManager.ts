@@ -46,14 +46,14 @@ export class CardManager {
       // 随机发牌
       algorithm.shuffle(newCardTags);
       let count = this.playerCardCount;
-      console.warn("playerCardCount-%s, cardCount-%s", this.playerCardCount, newCardTags.length);
+      // console.warn("playerCardCount-%s, cardCount-%s", this.playerCardCount, newCardTags.length);
       while (count > 0) {
         // 每个玩家取一张牌
         for (const pc of playerCards) {
           const card = newCardTags.pop();
           pc.push(card);
         }
-        console.warn("count-%s, cardCount-%s", count, newCardTags.length);
+        // console.warn("count-%s, cardCount-%s", count, newCardTags.length);
         count--;
       }
 
@@ -84,6 +84,8 @@ export class CardManager {
         cards.push(new Card(CardType.Spades, t - CardTag.sa + 1))
       } else if (t >= CardTag.da && t <= CardTag.dk) {
         cards.push(new Card(CardType.Diamond, t - CardTag.da + 1))
+      } else if (t >= CardTag.bigJoker && t <= CardTag.littleJoker) {
+        cards.push(new Card(CardType.Joker, 15 + t - CardTag.bigJoker + 1))
       }
     }
     return cards;
