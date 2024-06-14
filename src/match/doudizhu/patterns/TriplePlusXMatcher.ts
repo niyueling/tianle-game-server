@@ -23,7 +23,7 @@ export default class TriplePlusXMatcher implements IMatcher {
   }
 
   promptWithPattern(target, cards: Card[]): Card[][] {
-    if (target.name !== this.name || cards.length >= 5) {
+    if (target.name !== this.name || cards.length < 3) {
       return []
     }
     const pattern = this.verify(cards)
