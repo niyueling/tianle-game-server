@@ -127,15 +127,15 @@ export class PlayManager {
       }
     }
     // 没有相同牌型，可以出炸
-    // if (pattern.name !== PatterNames.bomb) {
-    //   for (const matcher of this.boomPattern) {
-    //     const result = matcher.promptWithPattern({ name: PatterNames.bomb, score: 0, cards: null }, remainCards);
-    //     if (result.length > 0) {
-    //       prompts.push(...result);
-    //       break;
-    //     }
-    //   }
-    // }
+    if (pattern.name !== PatterNames.bomb) {
+      for (const matcher of this.boomPattern) {
+        const result = matcher.promptWithPattern({ name: PatterNames.bomb, score: 0, cards: null }, remainCards);
+        if (result.length > 0) {
+          prompts.push(...result);
+          break;
+        }
+      }
+    }
     return prompts;
   }
 
