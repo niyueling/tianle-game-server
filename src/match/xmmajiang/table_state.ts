@@ -1179,7 +1179,7 @@ class TableState implements Serializable {
         // 解决机器人有时候自摸找不到牌的bug
         if (!card) {
           card = player.cards.findIndex(c => c > 0);
-          console.warn("robot reset card-%s", card);
+          console.warn("robot reset card-%s, stateData-%s", card, JSON.stringify(this.stateData));
         }
 
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
