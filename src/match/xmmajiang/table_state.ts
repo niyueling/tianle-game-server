@@ -1877,7 +1877,7 @@ class TableState implements Serializable {
         for (let i = 0; i < this.players.length; i++) {
           const pp = this.players[i];
           const actions = this.actionResolver && this.actionResolver.allOptions && this.actionResolver.allOptions(pp);
-          console.warn("state-%s, actions-%s", this.state, JSON.stringify(actions));
+          console.warn("state-%s, actions-%s, cards-%s", this.state, JSON.stringify(actions), JSON.stringify(this.getCardArray(pp.cards)));
           if (actions) {
             console.warn("index-%s, actions-%s", pp.seatIndex, JSON.stringify(actions));
             player.emitter.emit(Enums.guo);
