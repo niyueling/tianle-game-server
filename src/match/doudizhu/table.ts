@@ -153,7 +153,7 @@ abstract class Table implements Serializable {
         player: p._id, shortId: p.model.shortId, username: p.model.name, cardLists: initCards, createAt: new Date(),
         room: this.room._id, juIndex: this.room.game.juIndex, game: GameType.ddz
       });
-      p.onShuffle(this.restJushu, initCards, i, this.room.game.juIndex, needShuffle)
+      p.onShuffle(this.restJushu, initCards, i, this.room.game.juIndex, needShuffle, allPlayerCards)
     }
   }
 

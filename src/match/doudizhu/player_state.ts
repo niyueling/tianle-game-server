@@ -151,13 +151,13 @@ class PlayerState implements Serializable {
     return this
   }
 
-  onShuffle(juShu, cards: Card[], seatIndex, juIndex, needShuffle?: boolean) {
+  onShuffle(juShu, cards: Card[], seatIndex, juIndex, needShuffle: boolean, allPlayerCards) {
     this.cards = cards
     this.index = seatIndex
 
     this.recorder.recordUserEvent(this, 'shuffle')
     this.unusedJokers = this.cards.filter(c => c.type === CardType.Joker).length
-    this.sendMessage('game/ShuffleCards', {ok: true, data: {juShu, cards, juIndex, needShuffle: !!needShuffle }})
+    this.sendMessage('game/ShuffleCards', {ok: true, data: {juShu, cards, juIndex, needShuffle: !!needShuffle, allPlayerCards }})
   }
 
   toJSON() {
