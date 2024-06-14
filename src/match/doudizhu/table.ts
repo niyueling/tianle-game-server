@@ -253,7 +253,8 @@ abstract class Table implements Serializable {
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
       await this.daPai(player, cards, currentPattern)
     } else {
-      this.cannotDaPai(player, cards)
+      console.warn(player.tryDaPai(cards.slice()), patternCompare(currentPattern, this.status.lastPattern));
+      this.cannotDaPai(player, cards, this.playManager.noPattern)
     }
   }
 
@@ -527,11 +528,11 @@ abstract class Table implements Serializable {
 
   abstract isGameOver(): boolean
 
-  cannotDaPai(player, cards) {
-    player.sendMessage('game/daCardReply', {
+  cannotDaPai(player, cards, noPattern) {
+    this.room.broadcast('game/daCardReply', {
       ok: false,
       info: TianleErrorCode.cardDaError,
-      data: {daCards: cards, inHandle: player.cards}
+      data: {index: player.index, daCards: cards, inHandle: player.cards, noPattern}
 
     })
   }

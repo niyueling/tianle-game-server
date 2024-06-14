@@ -153,7 +153,7 @@ export default class NormalTable extends Table {
     const cards = plainCards.map(Card.from)
     const isOk = this.playManager.isAllowPlayCard(cards, player.cards);
     if (!isOk) {
-      return this.cannotDaPai(player, cards);
+      return this.cannotDaPai(player, cards, this.playManager.noPattern);
     }
 
     await super.onPlayerDa(player, {cards: plainCards})

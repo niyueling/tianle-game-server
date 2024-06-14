@@ -76,7 +76,7 @@ export class PlayManager {
   // 规则
   private rule: Rule;
   // 禁止出的牌型
-  private noPattern: Array<(playCard: Card[], remainCard: Card[]) => boolean>;
+  noPattern: Array<(playCard: Card[], remainCard: Card[]) => boolean>;
   private allowPattern: IMatcher[];
 
   // 炸弹牌型
