@@ -30,7 +30,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       return []
     }
     return groupBy(cards.filter(c => c.point > target.score), c => c.point)
-      .filter(grp => grp.length >= 3)
+      .filter(grp => grp.length === 3)
       .sort(lengthFirstThenPointGroupComparator)
       .map(group => {
         console.warn("cards-%s, group-%s", JSON.stringify(cards), JSON.stringify(group));
