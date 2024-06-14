@@ -8,7 +8,7 @@ import {
 export default class TriplePlus2Matcher implements IMatcher {
   name: string = PatterNames.triplePlus2;
   verify(cards: Card[]): IPattern | null {
-    if ([4, 5].includes(cards.length)) {
+    if ([3, 4, 5].includes(cards.length)) {
       const groups = groupBy(cards, (card: Card) => card.point).sort((grp1, grp2) => {
         return grp2.length - grp1.length
       })
@@ -26,7 +26,7 @@ export default class TriplePlus2Matcher implements IMatcher {
   }
 
   promptWithPattern(target, cards: Card[]): Card[][] {
-    if (target.name !== this.name || cards.length < 5) {
+    if (target.name !== this.name || cards.length < 3) {
       return []
     }
     return groupBy(cards.filter(c => c.point > target.score), c => c.point)
@@ -37,10 +37,16 @@ export default class TriplePlus2Matcher implements IMatcher {
         const triple = group.slice(0, 3)
         const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point)
           .sort(lengthFirstThenPointGroupComparator))
-        const simpleCards = leftCards[0] === leftCards[1] ? leftCards : [leftCards[1]];
+        let simpleCards = [];
+        if (leftCards.length === 1) {
+          simpleCards.push(leftCards[0]);
+        }
+        if (leftCards.length > 1) {
+          leftCards[0] === leftCards[1] ? simpleCards = [...simpleCards, ...leftCards] : simpleCards.push(leftCards[0]);
+        }
 
 
-        return [...triple, ...simpleCards]
+        return [...triple, ...simpleCards];
       })
   }
 }
