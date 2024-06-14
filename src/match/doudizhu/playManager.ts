@@ -140,13 +140,13 @@ export class PlayManager {
   buildAllowPattern() {
     // 添加基本牌型
     this.allowPattern = [
-      new SingleMatcher(),
-      new DoubleMatcher(),
-      new StraightMatcher(),
-      new StraightDoublesMatcher(),
-      new StraightTriplePlus2Matcher(),
-      new TriplePlus2Matcher(),
-      new BombMatcher(),
+      new SingleMatcher(),// 单张
+      new DoubleMatcher(), // 对子
+      new StraightMatcher(), // 顺子
+      new StraightDoublesMatcher(), // 连对
+      new StraightTriplePlus2Matcher(), // 飞机
+      new TriplePlus2Matcher(), // 三带二
+      new BombMatcher(), // 炸弹
     ];
     this.boomPattern = [ new BombMatcher() ];
     if (this.rule.boomPlus2) {
@@ -154,7 +154,7 @@ export class PlayManager {
     }
     if (this.rule.triplePlusX) {
       // 3张可以少带
-      this.allowPattern.push(new TriplePlusXMatcher());
+      // this.allowPattern.push(new TriplePlusXMatcher());
     }
   }
 
