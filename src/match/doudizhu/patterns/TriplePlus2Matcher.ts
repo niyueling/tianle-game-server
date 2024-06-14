@@ -36,8 +36,9 @@ export default class TriplePlus2Matcher implements IMatcher {
         const triple = group.slice(0, 3)
         const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point)
           .sort(lengthFirstThenPointGroupComparator))
+        const simpleCards = leftCards[0] === leftCards[1] ? leftCards : leftCards[0];
 
-        return [...triple, leftCards[0], leftCards[1]]
+        return [...triple, ...simpleCards]
       })
   }
 }

@@ -12,7 +12,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           return grp1[0].point - grp2[0].point
         })
 
-      if (last(sortedGroups)[0].point >= 15) return null
+      if (last(sortedGroups)[0].point >= 15) return null;
 
       if (!sortedGroups.every(grp => grp.length === 2)) {
         return null
