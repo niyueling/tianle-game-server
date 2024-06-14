@@ -88,8 +88,8 @@ export class PublicRoom extends Room {
       console.error('game config lost', this.gameRule.categoryId);
       return ;
     }
-    await service.playerService.updateRoomRuby(this._id.toString(), findPlayer.model._id, findPlayer.model.shortId,
-      v)
+    // await service.playerService.updateRoomRuby(this._id.toString(), findPlayer.model._id, findPlayer.model.shortId,
+    //   v)
     const model = await this.updatePlayer(playerId, v);
     if (findPlayer.isPublicRobot) {
       // 金豆机器人,自动加金豆

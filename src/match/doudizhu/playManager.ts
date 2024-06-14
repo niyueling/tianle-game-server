@@ -112,8 +112,11 @@ export class PlayManager {
   // 根据牌型查找相同牌
   getCardByPattern(pattern: IPattern, remainCards: Card[]): Card[][] {
     // 如果本轮轮到自己出牌，默认出单张
-    const cards = this.firstPlayCard(remainCards);
-    if (!pattern) return [cards];
+
+    if (!pattern) {
+      const cards = this.firstPlayCard(remainCards);
+      return [cards];
+    }
 
     const prompts = [];
     for (const matcher of this.allowPattern) {
@@ -124,15 +127,15 @@ export class PlayManager {
       }
     }
     // 没有相同牌型，可以出炸
-    if (pattern.name !== PatterNames.bomb) {
-      for (const matcher of this.boomPattern) {
-        const result = matcher.promptWithPattern({ name: PatterNames.bomb, score: 0, cards: null }, remainCards);
-        if (result.length > 0) {
-          prompts.push(...result);
-          break;
-        }
-      }
-    }
+    // if (pattern.name !== PatterNames.bomb) {
+    //   for (const matcher of this.boomPattern) {
+    //     const result = matcher.promptWithPattern({ name: PatterNames.bomb, score: 0, cards: null }, remainCards);
+    //     if (result.length > 0) {
+    //       prompts.push(...result);
+    //       break;
+    //     }
+    //   }
+    // }
     return prompts;
   }
 
