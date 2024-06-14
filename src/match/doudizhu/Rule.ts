@@ -20,7 +20,7 @@ class Rule {
   }
 
   get test() {
-    return this.ro.test || false
+    return this.ro.test || true
   }
 
   get playerCount() {

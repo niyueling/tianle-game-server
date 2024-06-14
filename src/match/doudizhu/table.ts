@@ -141,7 +141,11 @@ abstract class Table implements Serializable {
     // 下一轮
     this.audit.startNewRound();
 
-    const allPlayerCards = this.cardManager.genCardForEachPlayer(false, payload.cards ?? [], this.rule.test);
+    if (!payload || !payload.cards) {
+      payload.cards = [[1, 14, 27, 2, 15, 28]];
+    }
+
+    const allPlayerCards = this.cardManager.genCardForEachPlayer(false, payload.cards || [], this.rule.test);
     this.cards = this.cardManager.allCards();
     this.stateData = {}
     const needShuffle = this.room.shuffleData.length > 0;
