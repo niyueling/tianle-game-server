@@ -415,7 +415,7 @@ class TableState implements Serializable {
         if (msg) {
           this.state = stateWaitDa;
           this.stateData = {da: player, card: resetCard, msg};
-          const sendMsg = {index: this.players.indexOf(player), card: resetCard, msg}
+          const sendMsg = {index: this.players.indexOf(player), card: resetCard, msg};
           this.room.broadcast('game/oppoTakeCard', {ok: true, data: sendMsg}, player.msgDispatcher)
         }
       }
@@ -1073,7 +1073,7 @@ class TableState implements Serializable {
       const huResult = player.checkZiMo()
       const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && huResult.hu && huResult.huType !== Enums.qiShouSanCai;
       const isQiangJin = this.state === stateQiangJin || (huResult.hu && huResult.huType === Enums.qiShouSanCai);
-      console.warn("jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s, cards-%s", isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult), JSON.stringify(this.getCardArray(player.cards)));
+      console.warn("jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s, caishen-%s, cards-%s", isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult), this.caishen, JSON.stringify(this.getCardArray(player.cards)));
 
       //双游只能自摸
       if (isJiePao && this.isSomeOne2youOr3you()) {
@@ -1178,7 +1178,8 @@ class TableState implements Serializable {
 
         // 解决机器人有时候自摸找不到牌的bug
         if (!card) {
-          card = this.lastTakeCard;
+          card = player.cards.findIndex(c => c > 0);
+          console.warn("robot reset card-%s", card);
         }
 
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
