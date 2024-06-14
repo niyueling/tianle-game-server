@@ -980,22 +980,22 @@ class PlayerState implements Serializable {
             this.room.broadcast("game/startYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
           }
         } else {
-          if (this.events[Enums.youJinTimes] >= 2) {
-            this.room.broadcast("game/endYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
-          }
-
           // 第一次游金
           this.recordGameSingleEvent(Enums.youJinTimes, 1);
           this.isYouJin = false;
+
+          if (this.events[Enums.youJinTimes] >= 2) {
+            this.room.broadcast("game/endYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
+          }
         }
       } else {
-        if (this.events[Enums.youJinTimes] >= 2) {
-          this.room.broadcast("game/endYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
-        }
-
         // 非游金，重置次数
         this.recordGameSingleEvent(Enums.youJinTimes, 0);
         this.isYouJin = false;
+
+        if (this.events[Enums.youJinTimes] >= 2) {
+          this.room.broadcast("game/endYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
+        }
       }
 
       return true;
