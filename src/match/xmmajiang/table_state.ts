@@ -1834,6 +1834,8 @@ class TableState implements Serializable {
       isGameRunning: !!this.room.gameState,
       redPocketsData,
       validPlayerRedPocket,
+      state: this.state,
+      stateData: this.stateData,
     }
     for (let i = 0; i < this.players.length; i++) {
       if (i === index) {
