@@ -67,6 +67,10 @@ abstract class Table implements Serializable {
   @autoSerialize
   multiple: number = 1
 
+  // 发牌参数(记录防止重新发牌参数丢失)
+  @autoSerialize
+  startParams: object = {}
+
   constructor(room, rule, restJushu) {
     this.restJushu = restJushu
     this.rule = rule
@@ -110,7 +114,7 @@ abstract class Table implements Serializable {
 
   abstract name()
 
-  abstract start()
+  abstract start(payload)
 
   abstract startStateUpdate()
 
@@ -132,11 +136,12 @@ abstract class Table implements Serializable {
   }
 
   // 发牌
-  async fapai() {
+  async fapai(payload) {
+    this.startParams = payload;
     // 下一轮
     this.audit.startNewRound();
 
-    const allPlayerCards = this.cardManager.genCardForEachPlayer();
+    const allPlayerCards = this.cardManager.genCardForEachPlayer(false, payload.cards ?? [], this.rule.test);
     this.cards = this.cardManager.allCards();
     this.stateData = {}
     const needShuffle = this.room.shuffleData.length > 0;
@@ -408,7 +413,7 @@ abstract class Table implements Serializable {
     // 所有人都选择模式，并且没人选择地主,则重新发牌
     if (cIndex === -1 && landlordCount === 0) {
       this.players.map(p => p.mode = enums.unknown);
-      this.start();
+      this.start(this.startParams);
       return ;
     }
 
@@ -486,7 +491,7 @@ abstract class Table implements Serializable {
       // 所有人都选择模式，并且没人选择地主,则重新发牌
       if (cIndex === -1 && landlordCount === 0) {
         this.players.map(p => p.mode = enums.unknown);
-        this.start();
+        this.start(this.startParams);
         return ;
       }
 

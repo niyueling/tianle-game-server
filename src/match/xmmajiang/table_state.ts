@@ -1818,7 +1818,7 @@ class TableState implements Serializable {
       redPocketsData = this.room.redPockets;
       validPlayerRedPocket = this.room.vaildPlayerRedPocketArray;
     }
-    console.warn("state-%s", this.state);
+
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
     const pushMsg = {
       index,

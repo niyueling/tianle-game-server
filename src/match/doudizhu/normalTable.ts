@@ -50,8 +50,8 @@ export default class NormalTable extends Table {
     return GameType.ddz
   }
 
-  async start() {
-    await this.fapai()
+  async start(payload) {
+    await this.fapai(payload)
     this.status.current.seatIndex = -1
     this.startStateUpdate()
   }

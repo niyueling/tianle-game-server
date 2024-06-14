@@ -19,6 +19,10 @@ class Rule {
     return this.ro.juShu || 0
   }
 
+  get test() {
+    return this.ro.test || false
+  }
+
   get playerCount() {
     return this.ro.playerCount || 3
   }

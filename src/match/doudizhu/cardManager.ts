@@ -48,7 +48,7 @@ export class CardManager {
   }
 
   // 为每个玩家发牌
-  genCardForEachPlayer(isSorted?) {
+  genCardForEachPlayer(isSorted?, customCards?, test?) {
     // 洗牌
     let newCardTags = this.cardTags.slice();
     // 为每个玩家创建空列表
@@ -57,18 +57,33 @@ export class CardManager {
       // 随机发牌
       algorithm.shuffle(newCardTags);
       let count = this.playerCardCount;
-      // console.warn("playerCardCount-%s, cardCount-%s", this.playerCardCount, newCardTags.length);
-      while (count > 0) {
-        // 每个玩家取一张牌
-        for (const pc of playerCards) {
-          const card = newCardTags.pop();
-          pc.push(card);
+      for (let i = 0; i < playerCards.length; i++) {
+        for (let j = 0; j < count; j++) {
+          if (test && customCards && customCards[i].length > j) {
+            // 将指定发牌从牌堆中移除
+            const cardIndex = newCardTags.findIndex(c => c === customCards[i][j]);
+            if (cardIndex !== -1) {
+              const card = newCardTags[cardIndex];
+              newCardTags.splice(cardIndex, 1);
+              playerCards[i].push(card);
+            } else {
+              const card = newCardTags.pop();
+              playerCards[i].push(card);
+            }
+          } else {
+            const card = newCardTags.pop();
+            playerCards[i].push(card);
+          }
         }
-        // console.warn("count-%s, cardCount-%s", count, newCardTags.length);
-        count--;
       }
-
-      // console.warn("playerCards-%s", JSON.stringify(playerCards));
+      // while (count > 0) {
+      //   // 每个玩家取一张牌
+      //   for (const pc of playerCards) {
+      //     const card = newCardTags.pop();
+      //     pc.push(card);
+      //   }
+      //   count--;
+      // }
     } else {
       // 将牌排序以后再发
       const randomList = this.orderCardTagBySameValue(newCardTags);
