@@ -11,8 +11,8 @@ export default class StraightTriplePlus2Matcher implements IMatcher {
   name: string = PatterNames.straightTriplePlus2;
   verify(cards: Card[]): IPattern | null {
     let pattern: IPattern = null
-    if (cards.length % 5 === 0) {
-      const allTriplesLen = (cards.length / 5) * 3
+    if (cards.length % 4 === 0) {
+      const allTriplesLen = (cards.length / 4) * 3
       const groups = groupBy(cards, (card: Card) => card.point)
         .filter(group => group.length >= 3 && group[0].point < Enums.c2.point)
         .sort((grp1, grp2) => {
