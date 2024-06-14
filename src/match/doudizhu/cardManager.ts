@@ -59,7 +59,7 @@ export class CardManager {
       let count = this.playerCardCount;
       for (let i = 0; i < playerCards.length; i++) {
         for (let j = 0; j < count; j++) {
-          if (test && customCards && customCards[i].length > j) {
+          if (test && customCards[i] && customCards[i].length > j) {
             // 将指定发牌从牌堆中移除
             const cardIndex = newCardTags.findIndex(c => c === customCards[i][j]);
             if (cardIndex !== -1) {
