@@ -2180,7 +2180,7 @@ class TableState implements Serializable {
           })
         }
 
-        console.warn("qiangJinPlayerCount-%s, qiangJinDataCount-%s, isRunQiangJin-%s", this.qiangJinPlayer.length, this.qiangJinData.length, this.isRunQiangJin);
+        // console.warn("qiangJinPlayerCount-%s, qiangJinDataCount-%s, isRunQiangJin-%s", this.qiangJinPlayer.length, this.qiangJinData.length, this.isRunQiangJin);
         if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
           this.isRunQiangJin = true;
           player.emitter.emit(Enums.qiangJinHu);
@@ -2486,9 +2486,8 @@ class TableState implements Serializable {
     // 从卡牌随机取一张牌
     else if (randCard.code) daCard = randCard.index;
 
-    console.warn("card-%s, cardCount-%s", daCard, player.cards[daCard]);
-
     if (player.cards[daCard] === 0) {
+      console.warn("card-%s, cardCount-%s", daCard, player.cards[daCard]);
       daCard = player.cards.findIndex(cardCount => cardCount > 0);
     }
 
