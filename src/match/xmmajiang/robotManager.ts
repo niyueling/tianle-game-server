@@ -54,7 +54,7 @@ export class RobotManager extends NewRobotManager {
       if (this.room.gameState.testMoCards.length === 0) {
         if (this.room.gameState.state === 10) {
           return await proxy.choice(Enums.qiangJin);
-        } else if (isHu.hu) {
+        } else if (isHu.hu && !this.room.gameState.stateData.type) {
           return await proxy.choice(Enums.hu)
         } else if (AnGangIndex) {
           return await proxy.gang(Enums.anGang, AnGangIndex)

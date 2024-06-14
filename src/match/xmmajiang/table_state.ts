@@ -14,7 +14,7 @@ import GameRecorder, {IGameRecorder} from './GameRecorder'
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 import GameCategory from "../../database/models/gameCategory";
 
 const stateWaitDa = 1
@@ -41,6 +41,7 @@ interface StateData {
   da?: PlayerState
   player?: PlayerState
   turn?: number
+  type?: string
   current?: number
   msg?: any
   hu?: any
@@ -854,7 +855,8 @@ class TableState implements Serializable {
         if (ok) {
           this.turn++;
           this.state = stateWaitDa;
-          this.stateData = {da: player};
+          const daCard = await this.promptWithPattern(player, null);
+          this.stateData = {da: player, card: daCard, type: Enums.peng};
           const gangSelection = player.getAvailableGangs()
           const from = this.atIndex(this.lastDa)
 
@@ -908,9 +910,9 @@ class TableState implements Serializable {
           const hangUpList = this.stateData.hangUp
           this.turn++
           this.state = stateWaitDa
-          const nextStateData = {da: player}
           const gangSelection = player.getAvailableGangs(true)
-          this.stateData = nextStateData
+          const daCard = await this.promptWithPattern(player, null);
+          this.stateData = {da: player, card: daCard, type: Enums.peng};
           const from = this.atIndex(this.lastDa)
           const me = this.atIndex(player)
           player.sendMessage('game/pengReply', {ok: true, data: {
@@ -2427,7 +2429,7 @@ class TableState implements Serializable {
     let daCard = 0;
     // 获取摸牌前的卡牌
     const cards = player.cards.slice();
-    if (cards[lastTakeCard] > 0) cards[lastTakeCard]--;
+    if (lastTakeCard && cards[lastTakeCard] > 0) cards[lastTakeCard]--;
     // 检查手里有没有要打的大牌
     const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards);
     if (bigCardList.length > 0) {
@@ -2438,7 +2440,7 @@ class TableState implements Serializable {
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
-      if (player.cards[lastTakeCard] > 0 && lastTakeCard !== this.caishen) return lastTakeCard;
+      if (lastTakeCard && player.cards[lastTakeCard] > 0 && lastTakeCard !== this.caishen) return lastTakeCard;
     }
 
     // 有大牌，非单张，先打大牌
