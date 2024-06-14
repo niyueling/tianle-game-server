@@ -8,7 +8,7 @@ import {
 export default class TriplePlus2Matcher implements IMatcher {
   name: string = PatterNames.triplePlus2;
   verify(cards: Card[]): IPattern | null {
-    if (cards.length === 5) {
+    if ([4, 5].includes(cards.length)) {
       const groups = groupBy(cards, (card: Card) => card.point).sort((grp1, grp2) => {
         return grp2.length - grp1.length
       })
