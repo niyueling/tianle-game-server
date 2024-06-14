@@ -41,11 +41,7 @@ export default class Game implements Serializable {
   }
 
   createTable(room) {
-    const wanFaMap = {
-      normal: NormalTable,
-    }
-
-    const Table = wanFaMap[this.rule.wanFa] || NormalTable
+    const Table = NormalTable
     return new Table(room, this.rule, this.juShu)
   }
 

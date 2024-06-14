@@ -10,8 +10,6 @@ interface PlayerData {
   playTimes: number
   // 炸弹次数
   boomTimes: number
-  // 是否是龙头
-  isLongTou: boolean
   // 剩余牌
   remainCards: Card[]
   // 出牌顺序
@@ -47,7 +45,6 @@ export class AuditPdk implements Serializable {
     this.currentRound[shortId] = {
       isFirstPlay: false,
       playTimes: 0,
-      isLongTou: false,
       remainCards: [],
       orderList: [],
       boomTimes: 0,
@@ -63,14 +60,6 @@ export class AuditPdk implements Serializable {
       this.currentRound[k].isFirstPlay = false;
     }
     this.currentRound[shortId].isFirstPlay = true;
-  }
-
-  // 抢龙头
-  setLongTou(shortId) {
-    for (const k of Object.keys(this.currentRound)) {
-      this.currentRound[k].isLongTou = false;
-    }
-    this.currentRound[shortId].isLongTou = true;
   }
 
   // 添加出牌次数

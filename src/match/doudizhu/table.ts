@@ -624,7 +624,6 @@ abstract class Table implements Serializable {
       states,
       juShu: this.restJushu,
       isPublic: this.room.isPublic,
-      ruleType: this.rule.ruleType,
       juIndex: this.room.game.juIndex,
       creator: this.room.creator.model._id,
     }

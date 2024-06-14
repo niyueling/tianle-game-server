@@ -19,11 +19,7 @@ const composedBombMatcher = orCompose(new BombMatcher(), new TripleABomb())
 function patternNameToPatternMatcher(name: string, rule?: Rule): IMatcher {
   if (name === PatterNames.single) return new SingleMatcher()
   if (name === PatterNames.bomb) {
-    if (rule && rule.boom3A) {
-      return composedBombMatcher;
-    } else {
-      return new BombMatcher();
-    }
+    return new BombMatcher();
   }
   if (name === PatterNames.double) return new DoubleMatcher()
   if (name === PatterNames.triplePlus2) return new TriplePlus2MatcherExtra()

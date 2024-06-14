@@ -36,9 +36,6 @@ export default class NormalTable extends Table {
     super(room, rule, restJushu)
 
     this.settler = this.shangYouSettler
-    if (rule.guanPai) {
-      this.settler = this.guanPaiSettler
-    }
   }
 
   resume(json) {
@@ -188,7 +185,6 @@ export default class NormalTable extends Table {
       states,
       juShu: this.restJushu,
       isPublic: this.room.isPublic,
-      ruleType: this.rule.ruleType,
       juIndex: this.room.game.juIndex,
       mode: this.mode,
       creator: this.room.creator.model._id,
@@ -199,36 +195,6 @@ export default class NormalTable extends Table {
     let firstPlayer = this.players.find(p => p.cards.length === 0)
 
     await this.roomGameOver(states, firstPlayer._id);
-  }
-
-  private guanPaiSettler() {
-    const winner = this.players.find(p => p.cards.length === 0)
-    const losers = this.players.filter(p => p.cards.length > 0)
-    const spring = this.audit.isSpring();
-    for (const loser of losers) {
-      const nCards = loser.cards.length
-      let amount = 0;
-      if (nCards > 1 || nCards === 1 && this.rule.lastCard2Score) {
-        // 最后一张算分
-        winner.winFrom(loser, nCards);
-        amount += nCards;
-      }
-      if (spring.length > 0) {
-        // 春天, 输的翻一倍
-        for (const shortId of spring) {
-          if (loser.model.shortId.toString() === shortId) {
-            winner.winFrom(loser, amount);
-            // 记录春天分
-            this.audit.setSpringScore(winner.model.shortId, amount);
-            this.audit.setSpringScore(loser.model.shortId, -amount);
-            amount += amount;
-            break;
-          }
-        }
-      }
-    }
-    // 炸弹分
-    this.updateBoomScore();
   }
 
   private shangYouSettler() {

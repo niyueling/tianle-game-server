@@ -1,16 +1,6 @@
 import Card, {CardType} from "./card"
 
 const enums = {
-  ruleType: {
-    zhuanZhuanMaJiang: 1,
-    sanRenZhuanZhuan: 2,
-    erRenZhuanZhuan: 3,
-    changShaMaJiang: 4,
-    lobby3Player: 5,
-    lobby2Player: 6,
-    lobby4Player: 7
-  },
-
   unknown: "unknown",
   landlord: "landlord",
   farmer: "farmer",

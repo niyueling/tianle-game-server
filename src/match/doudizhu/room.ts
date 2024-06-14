@@ -212,18 +212,7 @@ class Room extends RoomBase {
   }
 
   async recordDrawGameScore() {
-    const lowScoreTimes = this.checkLowScore();
     await this.recordRoomScore('dissolve')
-    if (this.gameState) {
-      if (lowScoreTimes > 1) {
-        // 低分翻 n 倍
-        const stateScore = {};
-        for (const playerId of Object.keys(this.scoreMap)) {
-          stateScore[playerId] = (this.scoreMap[playerId] / lowScoreTimes) * (lowScoreTimes - 1);
-        }
-        await this.updateClubGoldByScore(stateScore);
-      }
-    }
     DissolveRecord.create({
         roomNum: this._id,
         juIndex: this.game.juIndex,
@@ -238,7 +227,7 @@ class Room extends RoomBase {
     )
     // 记录大赢家
     await this.updateBigWinner();
-    return lowScoreTimes;
+    return 1;
   }
 
   updatePosition(player, position) {
@@ -557,10 +546,6 @@ class Room extends RoomBase {
     this.clearReady();
 
     // 最后一局才翻
-    let lowScoreTimes = 1;
-    if (!this.game.juIndex === this.gameRule.juShu) {
-      lowScoreTimes = this.checkLowScore();
-    }
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
     // 扣除房卡
@@ -576,15 +561,7 @@ class Room extends RoomBase {
 
     // 结束当前房间
     if (this.game.isAllOver()) {
-      if (lowScoreTimes > 1) {
-        // 低分翻 n 倍
-        stateScore = {};
-        for (const playerId of Object.keys(this.scoreMap)) {
-          stateScore[playerId] = (this.scoreMap[playerId] / lowScoreTimes) * (lowScoreTimes - 1);
-        }
-        await this.updateClubGoldByScore(stateScore);
-      }
-      const message = this.allOverMessage(lowScoreTimes)
+      const message = this.allOverMessage(1)
       this.broadcast('room/gameAllOverReply', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
       this.emit('empty', this.disconnected)
@@ -716,15 +693,7 @@ class Room extends RoomBase {
       }
     }
     // 总结算中显示的低分翻倍数
-    let lowScoreTimes = 1;
-    if (maxScore <= this.gameRule.lowScore && this.gameRule.lowScoreTimes > 0) {
-      // 最终分要翻 n 倍
-      for (const playerId of allPlayerId) {
-        this.scoreMap[playerId] *= this.gameRule.lowScoreTimes;
-      }
-      lowScoreTimes = this.gameRule.lowScoreTimes;
-    }
-    return lowScoreTimes;
+    return 1;
   }
 
 }

@@ -49,11 +49,6 @@ class Rule {
     return this.ro.playerCount || 3
   }
 
-  get maPaiArray(): Card[] {
-    const maPaiArr = this.ro.maPaiArray || []
-    return maPaiArr.map(maPai => new Card(CardType.Heart, maPai))
-  }
-
   get yaPai(): boolean {
     return this.ro.yaPai || false;
   }

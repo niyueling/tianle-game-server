@@ -107,14 +107,6 @@ export class PlayManager {
       const pattern = matcher.verify(playCard)
       if (pattern) return pattern
     }
-    if (playCard.length === remainCard.length && this.rule.lastTriplePlusX) {
-      // 检查是不是最后少带的牌型
-      const matcher =  new TriplePlusXMatcher();
-      const pattern = matcher.verify(playCard);
-      if (pattern) {
-        return pattern;
-      }
-    }
     // 没有找到出牌的牌型
     return null;
   }
@@ -159,14 +151,6 @@ export class PlayManager {
       new BombMatcher(),
     ];
     this.boomPattern = [ new BombMatcher() ];
-    // 3个A
-    if (this.rule.boom3A) {
-      this.allowPattern.push(new TripleABomb());
-      this.boomPattern.push(new TripleABomb());
-    }
-    if (this.rule.boomPlus3) {
-      this.allowPattern.push(new QuadruplePlusThree());
-    }
     if (this.rule.boomPlus2) {
       this.allowPattern.push(new QuadruplePlusTwo());
     }
@@ -178,47 +162,6 @@ export class PlayManager {
 
   buildNoPattern() {
     this.noPattern = [];
-    if (this.rule.noSingleBoomCard) {
-      this.noPattern.push(this.noSingleBoomCard.bind(this));
-    }
-  }
-
-  // 不能拆炸
-  noSingleBoomCard(playCard: Card[], remainCard: Card[]) {
-    const remainGroup = this.groupByValue(remainCard);
-    const playGroup = this.groupByValue(playCard);
-    for (const value of Object.keys(playGroup)) {
-      if (value === '1') {
-        // A只有3张,且要为炸
-        if (this.rule.boom3A) {
-          // 3个A当炸
-          if (remainGroup[value].length === 3 && playGroup[value].length !== 3) {
-            // 有A炸且没有一起出
-            return false;
-          }
-        }
-      } else {
-        if (remainGroup[value].length === 4 && playGroup[value].length !== 4) {
-          // 有炸,没一起出
-          return false;
-        }
-      }
-    }
-    // 没有禁止出的牌
-    return true;
-  }
-
-  // 归类相同数值的牌
-  groupByValue(list: Card[]) {
-    const group = {};
-    for (const card of list) {
-      if (group[card.value]) {
-        group[card.value].push(card);
-      } else {
-        group[card.value] = [ card ];
-      }
-    }
-    return group;
   }
 
   // 过滤牌
