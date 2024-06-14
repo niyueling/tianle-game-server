@@ -421,7 +421,7 @@ class TableState implements Serializable {
         }
       }
 
-      setTimeout(getFlowerCard, 700);
+      setTimeout(getFlowerCard, 1500);
     }
 
     return card
