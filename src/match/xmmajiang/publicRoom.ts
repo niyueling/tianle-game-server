@@ -99,14 +99,8 @@ export class PublicRoom extends Room {
         minAmount: 10000,
       }
     }
-    // let totalRuby = v;
-    // if (this.game.juIndex === 1) {
-    //   // 扣除进房金豆
-    //   totalRuby -= conf.roomRate;
-    // }
-    // this.scoreMap[playerId] += totalRuby
     let restoreRuby = 0
-    await service.playerService.updateRoomRuby(this._id.toString(), findPlayer.model._id.toString(), findPlayer.model.shortId, restoreRuby)
+    await service.playerService.updateRoomRuby(this._id.toString(), findPlayer._id.toString(), findPlayer.shortId, restoreRuby)
     const model = await this.updatePlayer(playerId, v);
     if (findPlayer.isPublicRobot) {
       // 金豆机器人,自动加金豆
