@@ -689,9 +689,11 @@ class PlayerState implements Serializable {
       this.cards.gang = false;
       this.cards[otherCard1]--;
       this.cards[otherCard2]--;
-      const cards = [card, otherCard1, otherCard2].sort();
-      // 第一张是被吃的，记录吃牌
-      this.recordGameEvent(Enums.chi, [...cards, ...[card]]);
+      const cards = [card, otherCard1, otherCard2].sort((a, b) => a.value - b.value); // 假设value是排序依据
+      // 将新牌添加到排序后数组的末尾
+      const cardsWithNewCard = [...cards, card];
+      // 最后插入card，记录吃牌
+      this.recordGameEvent(Enums.chi, cardsWithNewCard);
       if (daPlayer) {
         daPlayer.consumeDropped()
       }
