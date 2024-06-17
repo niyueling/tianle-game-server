@@ -687,10 +687,12 @@ class PlayerState implements Serializable {
   async chiPai(card, otherCard1, otherCard2, daPlayer) {
     if (this.cards[otherCard1] > 0 && this.cards[otherCard2] > 0) {
       this.cards.gang = false;
-      this.cards[otherCard1]--
-      this.cards[otherCard2]--
+      this.cards[otherCard1]--;
+      this.cards[otherCard2]--;
+      const cards = [card, otherCard1, otherCard2].sort();
+      cards.push(card);
       // 第一张是被吃的，记录吃牌
-      this.recordGameEvent(Enums.chi, [card, otherCard1, otherCard2])
+      this.recordGameEvent(Enums.chi, cards);
       if (daPlayer) {
         daPlayer.consumeDropped()
       }
