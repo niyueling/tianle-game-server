@@ -140,8 +140,7 @@ export class RobotManager extends NewRobotManager {
   isPlayerChoice(playerId) {
     const actionList = [Enums.hu, Enums.peng, Enums.chi];
     for (const action of actionList) {
-      if ([Enums.peng, Enums.chi].includes(action)
-        && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
+      if ([Enums.peng, Enums.chi].includes(action) && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }
       if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&

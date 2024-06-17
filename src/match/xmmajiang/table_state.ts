@@ -2092,7 +2092,7 @@ class TableState implements Serializable {
       if (msg) {
         p.record('choice', card, msg)
         // 碰、杠等
-        p.sendMessage('game/canDoSomething', {ok: true, data: msg})
+        p.sendMessage('game/canDoSomething', {ok: true, data: msg});
         this.room.broadcast('game/oppoCanDoSomething', {
           ok: true,
           data: {...msg, ...{index: this.atIndex(p)}}
@@ -2103,6 +2103,7 @@ class TableState implements Serializable {
     if (check[Enums.chi] || check[Enums.pengGang] || (check[Enums.hu] && !this.isSomeOne2youOr3you())) {
       this.state = stateWaitAction;
       this.stateData = check;
+      console.warn("index-%s, stateData-%s", player.seatIndex, JSON.stringify(this.stateData));
       this.stateData.hangUp = [];
     }
 
