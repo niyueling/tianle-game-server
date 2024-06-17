@@ -2103,7 +2103,7 @@ class TableState implements Serializable {
     if (check[Enums.chi] || check[Enums.pengGang] || (check[Enums.hu] && !this.isSomeOne2youOr3you())) {
       this.state = stateWaitAction;
       this.stateData = check;
-      console.warn("index-%s, stateData-%s", player.seatIndex, JSON.stringify(this.stateData));
+      // console.warn("index-%s, stateData-%s", player.seatIndex, JSON.stringify(this.stateData));
       this.stateData.hangUp = [];
     }
 
