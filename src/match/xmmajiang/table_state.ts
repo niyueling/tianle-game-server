@@ -166,9 +166,10 @@ export class ActionResolver implements Serializable {
 
     this.actionsOptions.filter(ao => ao.state === 'waiting')
       .forEach(ao => {
+        console.warn("actionsOptions-%s", JSON.stringify(ao));
         if (!notified[ao.who._id]) {
-          ao.who.sendMessage('game/actionClose', {ok: true, data: {}})
-          notified[ao.who._id] = true
+          ao.who.sendMessage('game/actionClose', {ok: true, data: {}});
+          notified[ao.who._id] = true;
         }
       })
   }
