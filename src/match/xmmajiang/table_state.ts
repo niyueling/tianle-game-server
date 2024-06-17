@@ -794,7 +794,7 @@ class TableState implements Serializable {
     player.on('willTakeCard', async denyFunc => {
       if (this.remainCards < (this.rule.noBigCard ? 0 : 16)) {
         denyFunc()
-        await this.gameOver()
+        await this.gameOver(player)
         return
       }
     })
@@ -1108,7 +1108,7 @@ class TableState implements Serializable {
               });
 
               const gameOver = async() => {
-                await this.gameOver();
+                await this.gameOver(player);
               }
 
               const huReply = async() => {
@@ -1204,7 +1204,7 @@ class TableState implements Serializable {
           });
 
           const gameOver = async() => {
-            await this.gameOver();
+            await this.gameOver(player);
           }
 
           const huReply = async() => {
@@ -1333,7 +1333,7 @@ class TableState implements Serializable {
           });
 
           const gameOver = async() => {
-            await this.gameOver();
+            await this.gameOver(player);
           }
 
           const huReply = async() => {
@@ -1685,7 +1685,7 @@ class TableState implements Serializable {
     playerPanShus.push({index: huPlayer.seatIndex, panShu: huPlayer.panShu, balance: huPlayer.balance});
   }
 
-  async gameOver() {
+  async gameOver(player) {
     if (this.state !== stateGameOver) {
       this.state = stateGameOver;
       const winner = this.players.filter(x => x.events.jiePao)[0]
@@ -1732,7 +1732,7 @@ class TableState implements Serializable {
         } else {
           state1.score = this.players[i].balance * this.rule.diFen
         }
-        await this.room.addScore(state1.model._id, state1.score)
+        await this.room.addScore(player._id, state1.score)
       }
 
       await this.room.recordGameRecord(this, states)
