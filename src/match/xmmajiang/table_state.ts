@@ -675,13 +675,7 @@ class TableState implements Serializable {
         // 金豆房机器人， 不打
         return;
       }
-      // 检查手里有没有要打的大牌
-      let bigCard = 0;
-      const bigCardList = await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards);
-      if (bigCardList.length > 0) {
-        // 从大牌中随机选第一个
-        bigCard = bigCardList[0];
-      }
+
       player.deposit(async () => {
         if (msg) {
           const takenCard = msg.card
@@ -725,8 +719,10 @@ class TableState implements Serializable {
                   return;
                 }
               } else {
-                const card = await this.promptWithPattern(player, this.lastTakeCard)
-                player.emitter.emit(Enums.da, this.turn, card)
+                if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() === player._id.toString()) {
+                  const card = await this.promptWithPattern(player, this.lastTakeCard)
+                  player.emitter.emit(Enums.da, this.turn, card)
+                }
               }
 
               break
@@ -762,8 +758,10 @@ class TableState implements Serializable {
               return;
             }
           } else {
-            const card = await this.promptWithPattern(player, this.lastTakeCard);
-            player.emitter.emit(Enums.da, this.turn, card)
+            if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() === player._id.toString()) {
+              const card = await this.promptWithPattern(player, this.lastTakeCard)
+              player.emitter.emit(Enums.da, this.turn, card)
+            }
           }
         }
       })
