@@ -1571,7 +1571,9 @@ class PlayerState implements Serializable {
     // 检查金牌是不是大于2
     const count = this.room.auditManager.getGoldCount(this.model._id);
     const isOnlyYouJin = count === 2 && this.room.gameRule.doubleGoldYouJin;
-    console.warn("hu-%s, isYouJin-%s, isOnlyYouJin-%s, result-%s", !!huResult.hu, huResult.isYouJin, isOnlyYouJin, JSON.stringify(huResult));
+    if (huResult.hu) {
+      console.warn("hu-%s, isYouJin-%s, isOnlyYouJin-%s, result-%s", !!huResult.hu, huResult.isYouJin, isOnlyYouJin, JSON.stringify(huResult));
+    }
     if (huResult.hu && isOnlyYouJin && (!huResult.isYouJin || huResult.youJinTimes === 0)) {
       // 不能胡非游金
       return false;
