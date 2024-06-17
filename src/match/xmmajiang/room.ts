@@ -23,7 +23,7 @@ import {autoSerialize, autoSerializePropertyKeys, serialize, serializeHelp} from
 import {AuditManager} from "./auditManager";
 import Game from './game'
 import {RobotManager} from "./robotManager";
-import TableState from "./table_state"
+import TableState, {stateGameOver} from "./table_state"
 
 const ObjectId = mongoose.Types.ObjectId
 const gameType = GameType.xmmj;
@@ -599,7 +599,7 @@ class Room extends RoomBase {
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),
-      isGameRunning: !!this.gameState,
+      isGameRunning: !!this.gameState && this.gameState.state !== stateGameOver,
       location: newJoinPlayer.location,
       owner: this.ownerId,
       score: this.getScore(newJoinPlayer),
