@@ -433,6 +433,13 @@ class TableState implements Serializable {
     const cardCount = cards.length;
     const flowerList = [];
     let card;
+
+    for (let i = 0; i < cards.length; i++) {
+      if (this.isFlower(cards[i])) {
+        flowerList.push(cards[i]);
+      }
+    }
+
     for (let i = 0; i < 16 - cardCount; i++) {
       card = await this.consumeCard(player, false, false, false);
       if (this.isFlower(card)) {
