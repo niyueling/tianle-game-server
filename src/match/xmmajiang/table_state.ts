@@ -1994,7 +1994,7 @@ class TableState implements Serializable {
 
     const ok = await player.daPai(card)
     if (ok) {
-      this.lastDa = player
+      this.lastDa = player;
       player.cancelTimeout()
       this.stateData = {};
       await player.sendMessage('game/daReply', {ok: true, data: card});
@@ -2325,6 +2325,7 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
+    console.warn("todo-%s, seatIndex-%s, card-%s, chiCombol-%s", todo, player.seatIndex, card, JSON.stringify(player.chiCombol));
     switch (todo) {
       case Enums.peng:
         player.emitter.emit(Enums.peng, this.turn, this.stateData.card)
