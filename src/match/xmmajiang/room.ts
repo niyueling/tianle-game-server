@@ -565,10 +565,10 @@ class Room extends RoomBase {
       this.removeDisconnected(disconnectedItem)
     }
 
-    if (!this.gameState) {
+    if (!this.gameState || this.gameState.state === 3) {
       console.warn("gameState is dissolve");
       if (this.isPublic) {
-        await this.forceDissolve();
+        await this.forceDissolve(false);
         return ;
       } else {
         await this.announcePlayerJoin(reconnectPlayer);
@@ -735,7 +735,7 @@ class Room extends RoomBase {
     return true
   }
 
-  async forceDissolve() {
+  async forceDissolve(send = true) {
     clearTimeout(this.autoDissolveTimer)
     await this.recordDrawGameScore()
     this.dissolveReqInfo = [];
@@ -748,7 +748,10 @@ class Room extends RoomBase {
     this.players
       .filter(p => p)
       .forEach(player => {
-        player.sendMessage('room/dissolve', {ok: true, data: allOverMessage})
+        if (send) {
+          player.sendMessage('room/dissolve', {ok: true, data: allOverMessage})
+        }
+
         player.room = null
       })
     // await this.refundClubOwner();
