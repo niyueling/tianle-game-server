@@ -1874,19 +1874,26 @@ class TableState implements Serializable {
         break;
       }
       case stateWaitAction: {
+        const actionList = [];
+        const playerAction = this.actionResolver && this.actionResolver.allOptions && this.actionResolver.allOptions(player);
+        this.state = stateWaitAction;
+        pushMsg.current = {
+          index, state: 'waitAction',
+          msg: playerAction
+        }
+
         for (let i = 0; i < this.players.length; i++) {
           const pp = this.players[i];
           const actions = this.actionResolver && this.actionResolver.allOptions && this.actionResolver.allOptions(pp);
           console.warn("state-%s, actions-%s, cards-%s", this.state, JSON.stringify(actions), JSON.stringify(this.getCardArray(pp.cards)));
           if (actions) {
-            console.warn("index-%s, actions-%s", pp.seatIndex, JSON.stringify(actions));
-            player.emitter.emit(Enums.guo);
-            // this.state = stateWaitAction;
-            // pushMsg.current = {
-            //   index, state: 'waitAction',
-            //   msg: actions
-            // }
+            actionList.push(actions);
+            // player.emitter.emit(Enums.guo);
           }
+        }
+
+        if (this.room.isPublic && !actionList.length) {
+          await this.room.forceDissolve();
         }
 
         break;
