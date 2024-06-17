@@ -1572,9 +1572,10 @@ class PlayerState implements Serializable {
     const count = this.room.auditManager.getGoldCount(this.model._id);
     const isOnlyYouJin = count === 2 && this.room.gameRule.doubleGoldYouJin;
     if (huResult.hu) {
-      console.warn("hu-%s, isYouJin-%s, isOnlyYouJin-%s, result-%s", !!huResult.hu, huResult.isYouJin, isOnlyYouJin, JSON.stringify(huResult));
+      console.warn("hu-%s, isYouJin-%s, youJinTimes-%s, goldCount-%s, doubleGoldYouJin-%s, result-%s, status-%s", !!huResult.hu, huResult.isYouJin,
+        huResult.youJinTimes, count, this.room.gameRule.doubleGoldYouJin, JSON.stringify(huResult));
     }
-    if (huResult.hu && isOnlyYouJin && (!huResult.isYouJin || huResult.youJinTimes === 0)) {
+    if (huResult.hu && isOnlyYouJin && (!huResult.isYouJin || !huResult.youJinTimes)) {
       // 不能胡非游金
       return false;
     }
