@@ -154,10 +154,9 @@ class Room extends RoomBase {
     this.playersOrder = new Array(this.capacity).fill(null)
     this.snapshot = []
     this.isPublic = rule.isPublic
-    this.disconnectCallback = messageBoyd => {
-
+    this.disconnectCallback = async messageBoyd => {
       const disconnectPlayer = this.getPlayerById(messageBoyd.from)
-      this.playerDisconnect(disconnectPlayer)
+      await this.playerDisconnect(disconnectPlayer)
     }
 
     this.readyPlayers = []
@@ -757,7 +756,7 @@ class Room extends RoomBase {
     return true
   }
 
-  playerDisconnect(player) {
+  async playerDisconnect(player) {
     const p = player
     const index = this.players.indexOf(player)
     if (index === -1) {
@@ -770,6 +769,17 @@ class Room extends RoomBase {
 
     if (this.dissolveTimeout) {
       this.updateDisconnectPlayerDissolveInfoAndBroadcast(player);
+    }
+
+    // 如果离线的时候房间已结束
+    if (this.gameState && this.gameState.state === 3) {
+      // 金豆房直接解散房间
+      if (this.isPublic) {
+        await this.forceDissolve();
+      } else {
+        // 好友房则设置房间状态为null
+        this.gameState = null;
+      }
     }
 
     // 测试环境，离线就解散房间
