@@ -13,7 +13,6 @@ import {DummyRecorder, IGameRecorder} from './GameRecorder'
 import HuPaiDetect from './HuPaiDetect'
 import Room from './room'
 import Rule from './Rule'
-import {TianleErrorCode} from "@fm/common/constants";
 
 export class SourceCardMap extends Array<number> {
   first: boolean
@@ -642,7 +641,6 @@ class PlayerState implements Serializable {
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
     const result = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
-    // console.warn("cards-%s, caiShen-%, huResult-%s", JSON.stringify(this.getCardsArray()), this.cards.caiShen, JSON.stringify(result));
     result.hu = this.isDoubleGoldCardForYouJin(result);
 
     if (this.getCardCount() % 3 !== 2) {
@@ -1000,6 +998,8 @@ class PlayerState implements Serializable {
           this.room.broadcast("game/endYouJin", {ok: true, data: {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}}});
         }
       }
+
+      console.warn("seatIndex-%s, card-%s, cards-%s, isYouJin-%s, youJinTimes-%s", this.seatIndex, card, JSON.stringify(this.getCardsArray()), isOk, this.events[Enums.youJinTimes]);
 
       return true;
     }

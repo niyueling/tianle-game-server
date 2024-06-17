@@ -295,12 +295,12 @@ const HuPaiDetect = {
     let jiang = _jiang;
 
     if (!result.huCards) {
-      result.huCards = {useJiang: [], keZi: [], shunZi: [], gangZi: []}
-      result.hu = false
+      result.huCards = {useJiang: [], keZi: [], shunZi: [], gangZi: []};
+      result.hu = false;
       result.huType = Enums.pingHu;
     }
 
-    const {useJiang, keZi, shunZi, gangZi} = result.huCards
+    const {useJiang, keZi, shunZi, gangZi} = result.huCards;
 
     if (!this.remain(countMap) && caiCount === 0) {
       if (!jiang) return false
