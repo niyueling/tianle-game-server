@@ -100,7 +100,7 @@ export class PublicRoom extends Room {
       }
     }
     let restoreRuby = 0
-    await service.playerService.updateRoomRuby(this._id.toString(), findPlayer._id.toString(), findPlayer.shortId, restoreRuby)
+    await service.playerService.updateRoomRuby(this._id.toString(), findPlayer._id.toString(), findPlayer.model.shortId, restoreRuby)
     const model = await this.updatePlayer(playerId, v);
     if (findPlayer.isPublicRobot) {
       // 金豆机器人,自动加金豆
