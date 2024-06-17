@@ -872,7 +872,7 @@ class TableState implements Serializable {
               turn,
               from,
               index,
-              suit: [card, otherCard1, otherCard2].sort(),
+              suit: cardsWithNewCard,
             }}, player.msgDispatcher);
         } else {
           player.emitter.emit(Enums.guo, turn, card);
