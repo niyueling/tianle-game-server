@@ -1569,10 +1569,13 @@ class PlayerState implements Serializable {
   // 双金是否只能游金
   isDoubleGoldCardForYouJin(huResult) {
     // 检查金牌是不是大于2
-    const count = this.room.auditManager.getGoldCount(this.model._id);
+    const count = this.cards[this.caiShen];
     const isOnlyYouJin = count === 2 && this.room.gameRule.doubleGoldYouJin;
-    console.warn("hu-%s, isYouJin-%s, youJinTimes-%s, goldCount-%s, doubleGoldYouJin-%s, result-%s, status-%s", !!huResult.hu, huResult.isYouJin,
-      huResult.youJinTimes, count, this.room.gameRule.doubleGoldYouJin, JSON.stringify(huResult));
+    if (huResult.hu) {
+      console.warn("hu-%s, isYouJin-%s, youJinTimes-%s, goldCount-%s, doubleGoldYouJin-%s, result-%s, status-%s", !!huResult.hu, huResult.isYouJin,
+        huResult.youJinTimes, count, this.room.gameRule.doubleGoldYouJin, JSON.stringify(huResult));
+    }
+
     if (huResult.hu && isOnlyYouJin && (!huResult.isYouJin || !huResult.youJinTimes)) {
       // 不能胡非游金
       return false;
