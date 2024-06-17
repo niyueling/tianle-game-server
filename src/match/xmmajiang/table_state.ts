@@ -1891,7 +1891,10 @@ class TableState implements Serializable {
         break;
       }
       default:
-        await this.room.forceDissolve();
+        if (this.room.isPublic) {
+          await this.room.forceDissolve();
+        }
+
         break
     }
     return pushMsg
