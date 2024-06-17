@@ -690,9 +690,8 @@ class PlayerState implements Serializable {
       this.cards[otherCard1]--;
       this.cards[otherCard2]--;
       const cards = [card, otherCard1, otherCard2].sort();
-      cards.push(card);
       // 第一张是被吃的，记录吃牌
-      this.recordGameEvent(Enums.chi, cards);
+      this.recordGameEvent(Enums.chi, [...cards, ...[card]]);
       if (daPlayer) {
         daPlayer.consumeDropped()
       }
