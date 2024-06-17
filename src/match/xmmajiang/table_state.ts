@@ -834,12 +834,12 @@ class TableState implements Serializable {
       const otherCard2 = cardList[1]
       if (this.state !== stateWaitAction) {
         player.emitter.emit(Enums.guo, turn, card);
-        player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiParamStateInvaid})
+        // player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiParamStateInvaid})
         return
       }
       if (this.stateData[Enums.chi] && this.stateData[Enums.chi]._id.toString() !== player._id.toString()) {
         player.emitter.emit(Enums.guo, turn, card);
-        player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiButPlayerChi})
+        // player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiButPlayerChi})
         return
       }
 
@@ -879,11 +879,11 @@ class TableState implements Serializable {
             }}, player.msgDispatcher);
         } else {
           player.emitter.emit(Enums.guo, turn, card);
-          player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiNotSuccess});
+          // player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiNotSuccess});
         }
       }, () => {
         player.emitter.emit(Enums.guo, turn, card);
-        player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiPriorityInsufficient});
+        // player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiPriorityInsufficient});
       })
 
       await this.actionResolver.tryResolve()
@@ -1897,62 +1897,6 @@ class TableState implements Serializable {
         }
 
         break;
-      }
-      case stateWaitGangShangHua: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'waitGangShangHua',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'waitGangShangHua'}
-        }
-        break
-      }
-      case stateWaitGangShangAction: {
-        const indices = this.stateData.currentIndex
-        for (let i = 0; i < indices.length; i++) {
-          if (indices[i] === index) {
-            pushMsg.current = {index, state: 'waitGangShangAction', msg: this.stateData.lastMsg[i]}
-            break
-          }
-        }
-        break
-      }
-      case stateQiangHaiDi: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'qiangHaiDi',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'qiangHaiDi'}
-        }
-        break
-      }
-      case stateWaitDaHaiDi: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'waitDaHaiDi',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'waitDaHaiDi'}
-        }
-        break
-      }
-      case stateWaitHaiDiPao: {
-        const indices = this.stateData.currentIndex
-        for (let i = 0; i < indices.length; i++) {
-          if (indices[i] === index) {
-            pushMsg.current = {index, state: 'waitHaiDiPao', msg: this.stateData.lastMsg[i]}
-            break
-          }
-        }
-        break
       }
       default:
         break
