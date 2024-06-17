@@ -1303,18 +1303,18 @@ class PlayerState implements Serializable {
 
     // 排序吃牌
     const events = Object.assign({}, this.events);
-    if (events.chi) {
-      for (const list of events.chi) {
-        list.sort();
-      }
-    }
-    if (events.chiPengGang) {
-      for (const item of events.chiPengGang) {
-        if (item[0] === 'chi') {
-          item[1].sort();
-        }
-      }
-    }
+    // if (events.chi) {
+    //   for (const list of events.chi) {
+    //     list.sort();
+    //   }
+    // }
+    // if (events.chiPengGang) {
+    //   for (const item of events.chiPengGang) {
+    //     if (item[0] === 'chi') {
+    //       item[1].sort();
+    //     }
+    //   }
+    // }
     return {
       index,
       score: 0,
