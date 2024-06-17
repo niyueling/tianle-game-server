@@ -44,7 +44,6 @@ export class RobotManager extends NewRobotManager {
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
     let playerId;
-    // console.log('robot play card, keys', keys, this.room._id);
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
       playerId = proxy.model._id;
@@ -137,7 +136,7 @@ export class RobotManager extends NewRobotManager {
     return false;
   }
 
-  // 是否碰杠胡
+  // 是否碰吃胡
   isPlayerChoice(playerId) {
     const actionList = [Enums.hu, Enums.peng, Enums.chi];
     for (const action of actionList) {
@@ -154,11 +153,4 @@ export class RobotManager extends NewRobotManager {
     }
     return false;
   }
-
-  // async readyAndPlay() {
-  //   await super.readyAndPlay();
-  //   if (this.model.step === RobotStep.running) {
-  //     // 检查吃杠胡
-  //   }
-  // }
 }

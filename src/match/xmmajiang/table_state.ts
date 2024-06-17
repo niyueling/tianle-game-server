@@ -20,11 +20,6 @@ import GameCategory from "../../database/models/gameCategory";
 const stateWaitDa = 1
 const stateWaitAction = 2
 export const stateGameOver = 3
-const stateWaitGangShangHua = 4
-const stateWaitGangShangAction = 5
-const stateQiangHaiDi = 6
-const stateWaitDaHaiDi = 7
-const stateWaitHaiDiPao = 8
 const stateQiangGang = 9
 const stateQiangJin = 10
 
@@ -1591,9 +1586,6 @@ class TableState implements Serializable {
         pengScore,
         shuiShu: playerToResolve.shuiShu
       }
-
-      // console.warn("index-%s, mingGangScore-%s, ziMingGangScore-%s, anGangScore-%s, ziAnGangScore-%s, goldScore-%s, huaScore-%s, anKeScore-%s, ziAnKeScore-%s, pengScore-%s, shuiShu-%s",
-      //   this.atIndex(playerToResolve), mingGangScore, ziMingGangScore, anGangScore, ziAnGangScore, goldScore, huaScore, anKeScore, ziAnKeScore, pengScore, playerToResolve.shuiShu);
     })
   }
 
@@ -1691,8 +1683,6 @@ class TableState implements Serializable {
     }
 
     playerPanShus.push({index: huPlayer.seatIndex, panShu: huPlayer.panShu, balance: huPlayer.balance});
-
-    // console.warn("playerPanShus-%s", JSON.stringify(playerPanShus));
   }
 
   async gameOver() {
@@ -1899,6 +1889,7 @@ class TableState implements Serializable {
         break;
       }
       default:
+        await this.room.forceDissolve();
         break
     }
     return pushMsg
