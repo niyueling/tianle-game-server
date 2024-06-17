@@ -138,6 +138,7 @@ export class RobotManager extends NewRobotManager {
 
   // 是否碰吃胡
   isPlayerChoice(playerId) {
+    console.warn("playerId-%s", playerId);
     const actionList = [Enums.hu, Enums.peng, Enums.chi];
     for (const action of actionList) {
       if ([Enums.peng].includes(action) && this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng) {
