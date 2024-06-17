@@ -999,7 +999,9 @@ class PlayerState implements Serializable {
         }
       }
 
-      console.warn("seatIndex-%s, card-%s, cards-%s, isYouJin-%s, youJinTimes-%s", this.seatIndex, card, JSON.stringify(this.getCardsArray()), isOk, this.events[Enums.youJinTimes]);
+      if (isOk) {
+        console.warn("seatIndex-%s, card-%s, cards-%s, isYouJin-%s, youJinTimes-%s", this.seatIndex, card, JSON.stringify(this.getCardsArray()), isOk, this.events[Enums.youJinTimes]);
+      }
 
       return true;
     }
