@@ -1570,7 +1570,7 @@ class PlayerState implements Serializable {
   isDoubleGoldCardForYouJin(huResult) {
     // 检查金牌是不是大于2
     const count = this.cards[this.caiShen];
-    const isOnlyYouJin = count === 2 && this.room.gameRule.doubleGoldYouJin;
+    const isOnlyYouJin = count >= 2 && this.room.gameRule.doubleGoldYouJin;
     if (huResult.hu) {
       console.warn("hu-%s, isYouJin-%s, youJinTimes-%s, goldCount-%s, doubleGoldYouJin-%s, result-%s", !!huResult.hu, huResult.isYouJin,
         huResult.youJinTimes, count, this.room.gameRule.doubleGoldYouJin, JSON.stringify(huResult));
