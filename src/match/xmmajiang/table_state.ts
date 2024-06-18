@@ -166,7 +166,6 @@ export class ActionResolver implements Serializable {
 
     this.actionsOptions.filter(ao => ao.state === 'waiting')
       .forEach(ao => {
-        console.warn("actionsOptions-%s", JSON.stringify(ao));
         if (!notified[ao.who._id]) {
           ao.who.sendMessage('game/actionClose', {ok: true, data: {}});
           notified[ao.who._id] = true;
@@ -1186,7 +1185,7 @@ class TableState implements Serializable {
         // 解决机器人有时候自摸找不到牌的bug
         if (!card) {
           card = player.cards.findIndex(c => c > 0);
-          console.warn("robot reset card-%s, stateData-%s", card, JSON.stringify(this.stateData));
+          // console.warn("robot reset card-%s, stateData-%s", card, JSON.stringify(this.stateData));
         }
 
         const ok = player.zimo(card, turn === 1, this.remainCards === 0);
@@ -2233,7 +2232,7 @@ class TableState implements Serializable {
       // 插入一张财神牌
       // this.players[data.index].cards[this.caishen]++;
 
-      console.warn("data-%s, cards-%s", JSON.stringify(data), JSON.stringify(this.getCardArray(this.players[data.index].cards)));
+      // console.warn("data-%s, cards-%s", JSON.stringify(data), JSON.stringify(this.getCardArray(this.players[data.index].cards)));
 
       this.players[data.index].emitter.emit(Enums.hu, this.turn, data.card);
       msgs.push({type: Enums.hu, card: data.card, index: data.index});
@@ -2458,7 +2457,7 @@ class TableState implements Serializable {
     else if (randCard.code) daCard = randCard.index;
 
     if (player.cards[daCard] === 0) {
-      console.warn("card-%s, cardCount-%s", daCard, player.cards[daCard]);
+      // console.warn("card-%s, cardCount-%s", daCard, player.cards[daCard]);
       daCard = player.cards.findIndex(cardCount => cardCount > 0);
     }
 
