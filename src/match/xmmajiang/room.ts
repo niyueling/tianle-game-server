@@ -1042,23 +1042,24 @@ class Room extends RoomBase {
     // 清除洗牌
     this.shuffleData = []
     const nextZhuang = this.players.find(x => x != null && x._id.toString() === nextZhuangId.toString());
-    if (nextZhuang._id.toString() === this.players[0]._id.toString()) {
-      this.zhuangCounter += 1
-    } else {
-      this.zhuangCounter = 1
-      this.changeZhuang()
+    try {
+      if (nextZhuang._id.toString() === this.players[0]._id.toString()) {
+        this.zhuangCounter += 1
+      } else {
+        this.zhuangCounter = 1
+        this.changeZhuang()
+      }
+    } catch(e) {
+      console.warn("players-%s", JSON.stringify(this.players));
     }
+
     this.sortPlayer(nextZhuang)
     this.clearReady()
-    // await this.delPlayerBless();
     // 下一局
     await this.robotManager.nextRound();
 
     this.gameState.dissolve()
     this.gameState = null
-
-    // const message = this.allOverMessage()
-    // this.broadcast('room/gameAllOver', {ok: true, data: message});
 
     if (this.isRoomAllOver(states) && !this.isPublic) {
       const message = this.allOverMessage()
