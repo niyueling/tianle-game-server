@@ -420,7 +420,7 @@ class TableState implements Serializable {
       setTimeout(getFlowerCard, 1000);
     }
 
-    return card
+    return card;
   }
 
   // 是否是花牌
