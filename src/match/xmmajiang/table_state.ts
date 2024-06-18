@@ -1778,7 +1778,7 @@ class TableState implements Serializable {
       }
 
       this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg});
-      await this.room.gameOver(nextZhuang._id, states);
+      await this.room.gameOver(nextZhuang._id, states, this.zhuang._id);
     }
   }
 

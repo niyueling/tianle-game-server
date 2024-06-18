@@ -1038,12 +1038,12 @@ class Room extends RoomBase {
     return loserPlayer !== -1 || gameOver;
   }
 
-  async gameOver(nextZhuangId, states) {
+  async gameOver(nextZhuangId, states, zhuangId) {
     // 清除洗牌
     this.shuffleData = []
     const nextZhuang = this.players.find(x => x != null && x._id.toString() === nextZhuangId.toString());
     try {
-      if (nextZhuang._id.toString() === this.players[0]._id.toString()) {
+      if (nextZhuang._id.toString() === zhuangId.toString()) {
         this.zhuangCounter += 1
       } else {
         this.zhuangCounter = 1

@@ -954,7 +954,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   protected abstract recordDrawGameScore(): any
 
-  abstract async gameOver(states: any, winnerPlayerId: string)
+  abstract async gameOver(nextZhuangId: string, states: any, currentZhuangId: string)
 
   // 红包总额
   getRedPocketAmount(): number {
