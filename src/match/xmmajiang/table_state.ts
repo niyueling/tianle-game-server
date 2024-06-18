@@ -1547,11 +1547,13 @@ class TableState implements Serializable {
         }
       }
       if ((flag && !flag1) || (!flag && flag1)) {
-        huaScore = config.xmmj.huaSetShui;
+        huaScore -= 4;
+        huaScore += config.xmmj.huaSetShui;
       }
 
       if (flag && flag1) {
-        huaScore = config.xmmj.allHuaShui;
+        huaScore -= 8;
+        huaScore += config.xmmj.allHuaShui;
       }
       playerShuiShu += huaScore;
 

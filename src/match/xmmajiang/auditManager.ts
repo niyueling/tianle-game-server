@@ -65,6 +65,10 @@ export class AuditManager {
     this.model.cardUsed[card]++;
     // 扣掉已经出的牌
     this.model.playerCardList[playerId][card]--;
+    // 记录摸到的金牌
+    if (card === this.model.goldCard) {
+      this.model.playerCardRecord[playerId].goldCount--;
+    }
     // 最后打的牌
     this.model.playerCardRecord[playerId].lastDa = card;
     await this.save();
