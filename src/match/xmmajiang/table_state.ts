@@ -1899,6 +1899,10 @@ class TableState implements Serializable {
           await this.room.forceDissolve();
         }
 
+        if (!this.room.isPublic && !actionList.length) {
+          pushMsg.isGameRunning = false;
+        }
+
         break;
       }
       default:
