@@ -1484,7 +1484,7 @@ class TableState implements Serializable {
       playerFanShus.push({index: p.seatIndex, fanShu: this.room.fanShuMap[p._id]});
     }
 
-    console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
+    // console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
     return players[nextZhuangIndex];
   }
 
