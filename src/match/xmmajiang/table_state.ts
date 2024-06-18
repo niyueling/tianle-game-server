@@ -1449,21 +1449,21 @@ class TableState implements Serializable {
     const currentZhuangIndex = this.zhuang.seatIndex;
 
     // 获取本局胡牌用户数据
-    const huPlayers = this.players.filter(p => p.huPai());
+    const huPlayers = players.filter(p => p.huPai());
 
     // 计算下一局庄家位置
     let nextZhuangIndex = currentZhuangIndex;
     if (huPlayers.length === 1) {
       nextZhuangIndex = huPlayers[0].seatIndex;
     } else if (huPlayers.length > 1) {
-      const loser = this.players.find(p => p.events[Enums.dianPao]);
+      const loser = players.find(p => p.events[Enums.dianPao]);
       nextZhuangIndex = this.atIndex(loser);
     }
 
     // 计算用户番数
     const playerFanShus = [];
-    for (let i = 0; i < this.players.length; i++) {
-      const p = this.players[i];
+    for (let i = 0; i < players.length; i++) {
+      const p = players[i];
       // 记录上一局番数
       p.lastFanShu = p.fanShu;
 
@@ -1485,12 +1485,12 @@ class TableState implements Serializable {
     }
 
     // console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
-    return this.players[nextZhuangIndex];
+    return players[nextZhuangIndex];
   }
 
   // 计算盘数
-  calcGangScore() {
-    this.players.forEach(playerToResolve => {
+  calcGangScore(players) {
+    players.forEach(playerToResolve => {
       const mingGang = playerToResolve.events.mingGang || [];
       const AnGang = playerToResolve.events.anGang || [];
       let mingGangCount = 0;
@@ -1608,7 +1608,7 @@ class TableState implements Serializable {
       // 没有赢家
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
       // this.assignNiaos()
-      this.calcGangScore()
+      this.calcGangScore(this.players);
 
       for (const state1 of states) {
         const i = states.indexOf(state1);
@@ -1645,8 +1645,8 @@ class TableState implements Serializable {
     }
   }
 
-  async calcGameScore() {
-    const huPlayer = this.players.filter(p => p.huPai())[0];
+  async calcGameScore(players) {
+    const huPlayer = players.filter(p => p.huPai())[0];
     const playerPanShus = [];
 
     // 计算赢家盘数
@@ -1656,7 +1656,7 @@ class TableState implements Serializable {
     huPlayer.panInfo["shuiShu"] = huPlayer.shuiShu;
 
     // 计算输家盘数
-    const loserPlayers = this.players.filter(p => !p.huPai());
+    const loserPlayers = players.filter(p => !p.huPai());
     for (let i = 0; i < loserPlayers.length; i++) {
       const loser = loserPlayers[i];
       let loserPanCount = 0;
@@ -1700,10 +1700,10 @@ class TableState implements Serializable {
   async gameOver(players) {
     if (this.state !== stateGameOver) {
       this.state = stateGameOver;
-      const winner = this.players.filter(x => x.events.jiePao)[0]
-      const index = this.players.findIndex(p => p.events.hu && p.events.hu[0].huType === Enums.qiangJin);
+      const winner = players.filter(x => x.events.jiePao)[0]
+      const index = players.findIndex(p => p.events.hu && p.events.hu[0].huType === Enums.qiangJin);
       if (index !== -1) {
-        const qiangJinPlayer = this.players[index];
+        const qiangJinPlayer = players[index];
         if (qiangJinPlayer) {
           qiangJinPlayer.cards[this.caishen]--;
         }
@@ -1711,25 +1711,25 @@ class TableState implements Serializable {
 
       // 没胡牌 也没放冲
       if (winner) {
-        this.players.filter(x => !x.events.jiePao && !x.events.dianPao)
+        players.filter(x => !x.events.jiePao && !x.events.dianPao)
           .forEach(x => {
             x.events.hunhun = winner.events.hu
           })
       }
 
       // 计算用户盘数
-      this.calcGangScore();
+      this.calcGangScore(players);
 
       // 计算用户最终得分
-      if (this.players.filter(x => x.huPai()).length > 0) {
-        await this.calcGameScore();
+      if (players.filter(x => x.huPai()).length > 0) {
+        await this.calcGameScore(players);
       }
 
       // 计算下一局庄家，计算底分
       const nextZhuang = this.nextZhuang(players);
 
-      const states = this.players.map((player, idx) => player.genGameStatus(idx))
-      const huPlayers = this.players.filter(p => p.huPai());
+      const states = players.map((player, idx) => player.genGameStatus(idx))
+      const huPlayers = players.filter(p => p.huPai());
 
       await this.recordRubyReward();
       for (const state1 of states) {
