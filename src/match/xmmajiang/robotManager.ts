@@ -140,20 +140,19 @@ export class RobotManager extends NewRobotManager {
   isPlayerChoice(playerId) {
     let pengStatus = false;
     const actionList = [Enums.hu, Enums.peng, Enums.chi];
-
     const keys = Object.keys(this.disconnectPlayers);
     let proxy;
+    // 解决机器人偶发性不能吃碰操作bug
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
 
       if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && proxy.model._id.toString() === this.room.gameState.stateData[Enums.peng]._id.toString()) {
         pengStatus = true;
-        console.warn("action-%s, stateData._id-%s, playerId-%s, flag-%s", Enums.peng, this.room.gameState.stateData[Enums.peng]._id, proxy.model._id,
-          proxy.model._id.toString() === this.room.gameState.stateData[Enums.peng]._id.toString());
       }
     }
 
     if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && !pengStatus) {
+      console.warn("action-%s, _id-%s", Enums.peng, this.room.gameState.stateData[Enums.peng]._id);
       return false;
     }
 

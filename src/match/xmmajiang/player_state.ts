@@ -1572,8 +1572,8 @@ class PlayerState implements Serializable {
     const count = this.cards[this.caiShen];
     const isOnlyYouJin = (count === 2 || (count === 3 && huResult.huType !== Enums.qiShouSanCai)) && this.room.gameRule.doubleGoldYouJin;
     if (huResult.hu) {
-      console.warn("hu-%s, isYouJin-%s, youJinTimes-%s, goldCount-%s, doubleGoldYouJin-%s, result-%s", !!huResult.hu, huResult.isYouJin,
-        huResult.youJinTimes, count, this.room.gameRule.doubleGoldYouJin, JSON.stringify(huResult));
+      // console.warn("hu-%s, isYouJin-%s, youJinTimes-%s, goldCount-%s, doubleGoldYouJin-%s, result-%s", !!huResult.hu, huResult.isYouJin,
+      //   huResult.youJinTimes, count, this.room.gameRule.doubleGoldYouJin, JSON.stringify(huResult));
     }
 
     if (huResult.hu && isOnlyYouJin && (!huResult.isYouJin || !huResult.youJinTimes)) {
