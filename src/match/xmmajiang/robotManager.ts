@@ -138,11 +138,26 @@ export class RobotManager extends NewRobotManager {
 
   // 是否碰吃胡
   isPlayerChoice(playerId) {
+    let pengStatus = false;
     const actionList = [Enums.hu, Enums.peng, Enums.chi];
-    for (const action of actionList) {
-      if (action === Enums.peng && this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng) {
-        console.warn("action-%s, stateData._id-%s, playerId-%s, flag-%s", action, this.room.gameState.stateData[action]._id, playerId, playerId.toString() === this.room.gameState.stateData[action]._id.toString());
+
+    const keys = Object.keys(this.disconnectPlayers);
+    let proxy;
+    for (const key of keys) {
+      proxy = this.disconnectPlayers[key];
+
+      if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && proxy.model._id.toString() === this.room.gameState.stateData[Enums.peng]._id.toString()) {
+        pengStatus = true;
+        console.warn("action-%s, stateData._id-%s, playerId-%s, flag-%s", Enums.peng, this.room.gameState.stateData[Enums.peng]._id, proxy.model._id,
+          proxy.model._id.toString() === this.room.gameState.stateData[Enums.peng]._id.toString());
       }
+    }
+
+    if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && !pengStatus) {
+      return false;
+    }
+
+    for (const action of actionList) {
       if ([Enums.peng, Enums.chi].includes(action) && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }
