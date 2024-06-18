@@ -1050,7 +1050,7 @@ class Room extends RoomBase {
         this.changeZhuang()
       }
     } catch(e) {
-      console.warn("players-%s", JSON.stringify(this.players));
+      console.warn("nextZhuangId-%s, currentZhuangId", nextZhuang._id, zhuangId);
     }
 
     this.sortPlayer(nextZhuang)
