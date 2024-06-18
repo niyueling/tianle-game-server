@@ -460,7 +460,7 @@ class PlayerState implements Serializable {
         const takeFlower = async() => {
           this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: this.seatIndex, remainCards: this.room.gameState.remainCards}})
         }
-        setTimeout(takeFlower, 500);
+        setTimeout(takeFlower, 1000);
       }
     }
 
