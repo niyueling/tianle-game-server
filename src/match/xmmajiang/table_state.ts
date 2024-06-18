@@ -800,7 +800,7 @@ class TableState implements Serializable {
     player.on('willTakeCard', async denyFunc => {
       if (this.remainCards < (this.rule.noBigCard ? 0 : 16)) {
         denyFunc()
-        await this.gameOver()
+        await this.gameOver(this.players)
         return
       }
     })
@@ -1075,6 +1075,7 @@ class TableState implements Serializable {
 
     player.on(Enums.hu, async (turn, card) => {
       const recordCard = this.stateData.card;
+      const players = this.players;
       const isJiePao = this.state === stateWaitAction && recordCard === card && this.stateData[Enums.hu] && this.stateData[Enums.hu].findIndex(p => p._id.toString() === player._id.toString()) !== -1;
       const huResult = player.checkZiMo()
       const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && huResult.hu && huResult.huType !== Enums.qiShouSanCai;
@@ -1117,7 +1118,7 @@ class TableState implements Serializable {
               });
 
               const gameOver = async() => {
-                await this.gameOver();
+                await this.gameOver(players);
               }
 
               const huReply = async() => {
@@ -1213,7 +1214,7 @@ class TableState implements Serializable {
           });
 
           const gameOver = async() => {
-            await this.gameOver();
+            await this.gameOver(players);
           }
 
           const huReply = async() => {
@@ -1342,7 +1343,7 @@ class TableState implements Serializable {
           });
 
           const gameOver = async() => {
-            await this.gameOver();
+            await this.gameOver(players);
           }
 
           const huReply = async() => {
@@ -1443,7 +1444,7 @@ class TableState implements Serializable {
   }
 
 
-  nextZhuang(): PlayerState {
+  nextZhuang(players): PlayerState {
     // 获取本局庄家位置
     const currentZhuangIndex = this.zhuang.seatIndex;
 
@@ -1696,7 +1697,7 @@ class TableState implements Serializable {
     playerPanShus.push({index: huPlayer.seatIndex, panShu: huPlayer.panShu, balance: huPlayer.balance});
   }
 
-  async gameOver() {
+  async gameOver(players) {
     if (this.state !== stateGameOver) {
       this.state = stateGameOver;
       const winner = this.players.filter(x => x.events.jiePao)[0]
@@ -1725,7 +1726,7 @@ class TableState implements Serializable {
       }
 
       // 计算下一局庄家，计算底分
-      const nextZhuang = this.nextZhuang();
+      const nextZhuang = this.nextZhuang(players);
 
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
       const huPlayers = this.players.filter(p => p.huPai());
