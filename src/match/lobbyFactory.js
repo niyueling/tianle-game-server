@@ -1,6 +1,6 @@
-import Club from "../database/models/club";
 import createClient from "../utils/redis";
 import {service} from "../service/importService";
+import Enums from "./majiang/enums";
 
 /**
  *
@@ -115,8 +115,8 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
     }
 
     // 房间等级是否正确
-    async isRoomLevelCorrect(model, categoryId) {
-      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(categoryId);
+    async isRoomLevelCorrect(model, rule) {
+      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(rule.categoryId);
       // 需要升级到高级
       let isUpper = false;
       let isMoreRuby = false;
@@ -125,14 +125,26 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         return { isUpper, isMoreRuby: true };
       }
       // 检查金豆是否够扣
-      isMoreRuby = model.gold < conf.roomRate || model.gold < conf.minAmount;
+      if (rule.currency && rule.currency === Enums.goldCurrency) {
+        isMoreRuby = model.gold < conf.roomRate || model.gold < conf.minAmount;
+      }
+      if (rule.currency && rule.currency === Enums.tlGoldCurrency) {
+        isMoreRuby = model.tlGold < conf.roomRate || model.tlGold < conf.minAmount;
+      }
+
       if (isMoreRuby) {
         console.error("no enough roomRate or minAmount", conf.roomRate, conf.minAmount, "with gold", model.gold)
         return { isMoreRuby, isUpper };
       }
       if (conf.maxAmount && conf.maxAmount !== -1) {
         // 有最大值上限
-        isUpper = model.gold > conf.maxAmount;
+        if (rule.currency && rule.currency === Enums.goldCurrency) {
+          isUpper = model.gold > conf.maxAmount;
+        }
+        if (rule.currency && rule.currency === Enums.tlGoldCurrency) {
+          isUpper = model.tlGold > conf.maxAmount;
+        }
+
       }
       if (isUpper) {
         // 检查是不是还有更高等级的场次

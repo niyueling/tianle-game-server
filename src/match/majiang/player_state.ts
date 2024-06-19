@@ -449,11 +449,6 @@ class PlayerState implements Serializable {
         return this.emitter.emit(Enums.hu, this.turn, card)
       }
 
-      if (this.rule.useCaiShen && (this.rule.keJiePao || !this.rule.keJiePao && this.rule.hzlz_option === 'qidui')) {
-        huResult = {
-          qiDui: huResult.qiDui || huResult.haoQi
-        }
-      }
       msg.huInfo = huResult
       msg.hu = true
       this.huForbiddenCards = []
@@ -539,11 +534,6 @@ class PlayerState implements Serializable {
         return this.emitter.emit(Enums.hu, this.turn, card);
       }
 
-      if (this.rule.useCaiShen && (this.rule.keJiePao || !this.rule.keJiePao && this.rule.hzlz_option === 'qidui')) {
-        huResult = {
-          qiDui: huResult.qiDui || huResult.haoQi
-        }
-      }
       msg.huInfo = huResult;
       msg.hu = true;
       this.huForbiddenCards = [];
@@ -672,11 +662,6 @@ class PlayerState implements Serializable {
         refMap.hu.push(this)
       } else {
         refMap.hu = [this]
-      }
-      if (this.rule.useCaiShen && (this.rule.keJiePao || !this.rule.keJiePao && this.rule.hzlz_option === 'qidui')) {
-        check = {
-          qiDui: check.qiDui || check.haoQi
-        }
       }
       refMap.check = check
 

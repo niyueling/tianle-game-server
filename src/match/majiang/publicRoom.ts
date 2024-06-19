@@ -7,6 +7,7 @@ import {getPlayerRmqProxy} from "../PlayerRmqProxy";
 import {autoSerializePropertyKeys} from "../serializeDecorator";
 import Room from "./room";
 import TableState, {stateGameOver} from "./table_state";
+import Enums from "./enums";
 
 // 金豆房
 export class PublicRoom extends Room {
@@ -76,7 +77,7 @@ export class PublicRoom extends Room {
   }
 
   // 更新 ruby
-  async addScore(playerId, v) {
+  async addScore(playerId, v, currency) {
     const findPlayer = this.players.find(player => {
       return player && player.model._id.toString() === playerId
     })
@@ -89,10 +90,10 @@ export class PublicRoom extends Room {
         minAmount: 10000,
       }
     }
-    const model = await this.updatePlayer(playerId, v);
+    const model = await this.updatePlayer(playerId, v, currency);
     if (findPlayer && findPlayer.isPublicRobot) {
       // 金豆机器人,自动加金豆
-      if (model.gold < conf.minAmount && !this.gameState) {
+      if (model.gold < conf.minAmount && !this.gameState && currency === Enums.goldCurrency) {
         // 金豆不足，添加金豆
         const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
         const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
@@ -101,24 +102,34 @@ export class PublicRoom extends Room {
           model.gold, `机器人自动加金豆`);
         await model.save();
       }
+
+      if (model.tlGold < conf.minAmount && !this.gameState && currency === Enums.tlGoldCurrency) {
+        // 金豆不足，添加金豆
+        const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
+        const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
+        model.tlGold = service.utils.randomIntBetweenNumber(conf.minAmount, max);
+        await service.playerService.logGoldConsume(model._id, ConsumeLogType.robotAutoAdd, model.tlGold,
+          model.tlGold, `机器人自动加金豆`);
+        await model.save();
+      }
       return;
     }
 
     if (findPlayer) {
       findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
-      findPlayer.sendMessage('resource/update', {ok: true, data: {gold: findPlayer.model.gold, diamond: findPlayer.model.diamond, voucher: findPlayer.model.voucher}})
+      findPlayer.sendMessage('resource/update', {ok: true, data: {gold: findPlayer.model.gold, diamond: findPlayer.model.diamond, tlGold: findPlayer.model.tlGold}})
     }
   }
 
   // 更新 player model
-  async updatePlayer(playerId, addRuby = 0, addGem = 0) {
+  async updatePlayer(playerId, addRuby = 0, currency) {
     const model = await service.playerService.getPlayerModel(playerId);
     if (!model) {
       console.error('player not exists');
       return;
     }
     // 添加金豆
-    if (!isNaN(addRuby)) {
+    if (!isNaN(addRuby) && currency === Enums.goldCurrency) {
       if (model.gold + addRuby <= 0) {
         model.gold = 0;
       } else {
@@ -126,12 +137,12 @@ export class PublicRoom extends Room {
       }
     }
 
-    // 添加房卡
-    if (!isNaN(addGem)) {
-      if (model.diamond + addGem <= 0) {
-        model.diamond = 0;
+    // 添加天乐豆
+    if (!isNaN(addRuby) && currency === Enums.tlGoldCurrency) {
+      if (model.tlGold + addRuby <= 0) {
+        model.tlGold = 0;
       } else {
-        model.diamond += addGem;
+        model.tlGold += addRuby;
       }
     }
 
@@ -159,7 +170,7 @@ export class PublicRoom extends Room {
       return thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
     }
     // 检查金豆
-    const resp = await service.gameConfig.rubyRequired(thePlayer.model._id, this.gameRule.categoryId);
+    const resp = await service.gameConfig.rubyRequired(thePlayer.model._id, this.gameRule);
     if (resp.isNeedRuby) {
       return thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.goldInsufficient})
     }
@@ -213,7 +224,7 @@ export class PublicRoom extends Room {
     }
     for (const p of this.players) {
       if (p) {
-        p.model = await this.updatePlayer(p.model._id, -conf.roomRate);
+        p.model = await this.updatePlayer(p.model._id, -conf.roomRate, this.gameRule.currency);
         await service.playerService.logGoldConsume(p._id, ConsumeLogType.payGameFee, -conf.roomRate,
           p.model.gold, `扣除房费`);
         // 通知客户端更新金豆

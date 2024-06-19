@@ -1217,38 +1217,6 @@ const HuPaiDetect = {
   },
 
   getPropertiesAndTimes(rule){
-    if(!rule.useCaiShen || rule.hzlz_option === 'all'){
-      return [
-        {prop: 'qingYiSe', times: 4},
-        {prop: 'tianHu', times: 4},
-        {prop: 'diHu', times: 4},
-        // {prop: 'quanQiuRen', times: 4},
-        // {prop: '13buKao', times: 1},
-        // {prop: 'qiFeng', times: 2},
-        // {prop: 'luanFeng', times: 8},
-        // {prop: 'caiShenTou', times: 4},
-        // {prop: 'sanCaiYiKe', times: 4},
-        // {prop: 'gangBao', times: 4},
-        // {prop: 'qiShouSanCai', times: 2},
-        // {prop: 'gangShangKaiHua', times: 2},
-        // {prop: 'gangShangPao', times: 2},
-        // {prop: 'haiDiLaoYue', times: 2},
-        // {prop: 'haiDiPao', times: 2},
-        // {prop: 'caiShenGuiWei', times: 2},
-        // {prop: 'shuangCaiGuiWei', times: 4},
-        // {prop: 'sanCaiGuiWei', times: 8},
-        {prop: 'qiangGang', times: 2},
-        {prop: 'pengPengHu', times: 2},
-        {prop: 'qiDui', times: 2},
-        {prop: 'haoQi', times: 4},
-      ]
-    }
-    if(rule.hzlz_option === 'qidui'){
-      return [
-        {prop: 'qiDui', times: 2},
-        {prop: 'haoQi', times: 4},
-      ]
-    }
     return []
   },
 

@@ -1,9 +1,8 @@
-import {GameTypeList} from "@fm/common/constants";
 import GameCategory from "../database/models/gameCategory";
-import GameItem from "../database/models/gameItem";
 import GoodsLive from "../database/models/goodsLive";
 import BaseService from "./base";
 import {service} from "./importService";
+import Enums from "../match/majiang/enums";
 
 export default class GameConfig extends BaseService {
 
@@ -92,8 +91,8 @@ export default class GameConfig extends BaseService {
   }
 
   // 检查房间是否需要升级
-  async rubyRequired(playerId, categoryId) {
-    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(categoryId);
+  async rubyRequired(playerId, rule) {
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(rule.categoryId);
     if (!conf) {
       // 配置错了，继续玩吧
       return {isUpgrade: false, isNeedRuby: false};
@@ -101,11 +100,11 @@ export default class GameConfig extends BaseService {
 
     const model = await service.playerService.getPlayerModel(playerId);
     // 房间要升级
-    const isUpgrade = model.gold > conf.maxAmount;
+    const isUpgrade = rule.currency === Enums.goldCurrency ? model.gold > conf.maxAmount : model.tlGold > conf.maxAmount;
     // 需要更金豆
-    const isNeedRuby = model.gold < conf.minAmount;
+    const isNeedRuby = rule.currency === Enums.goldCurrency ? model.gold < conf.minAmount : model.tlGold < conf.minAmount;
     // 是否复活成功
-    const isResurrection = model.gold <= 0;
+    const isResurrection = Enums.goldCurrency ? model.gold <= 0 : model.tlGold <= 0;
 
     return {isUpgrade, isNeedRuby, isResurrection, minAmount: conf.minAmount}
   }

@@ -1257,7 +1257,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   // 转发，通知客户端
   updateResource2Client(player) {
-    player.sendMessage('resource/update', {ok: true, data: {gold: player.model.gold, diamond: player.model.diamond, voucher: player.model.voucher}})
+    player.sendMessage('resource/update', {ok: true, data: {gold: player.model.gold, diamond: player.model.diamond, tlGold: player.model.tlGold}})
   }
 
   async payRubyForStart() {

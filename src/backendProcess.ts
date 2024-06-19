@@ -165,7 +165,7 @@ export class BackendProcess {
     const room = await this.lobby.getAvailablePublicRoom(messageBody.from, Number(roomId), rule);
 
     // 检查金豆
-    const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule.categoryId);
+    const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule);
     if (resp.isMoreRuby) {
       return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldInsufficient}, playerRouteKey);
     }

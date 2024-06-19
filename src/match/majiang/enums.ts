@@ -13,17 +13,6 @@ const enums = {
   },
 
   sameType: (card1, card2) => (Math.floor(card1 / 10) === Math.floor(card2 / 10)),
-
-  ruleType: {
-    zhuanZhuanMaJiang: 1,
-    sanRenZhuanZhuan: 2,
-    erRenZhuanZhuan: 3,
-    changShaMaJiang: 4,
-    lobby3Player: 5,
-    lobby2Player: 6,
-    lobby4Player: 7
-  },
-
   slotNoCard: 0,
 
   wanzi1: 1,
@@ -98,6 +87,8 @@ const enums = {
   topDa: 'topDa',
   topGang: 'topGang',
   restoreGame: 'restoreGame',
+  goldCurrency: "gold",
+  tlGoldCurrency: "tlGold",
 
   guo: 'guo',
   gangByOtherDa: 'gangByOtherDa',

@@ -504,7 +504,7 @@ class Room extends RoomBase {
     // await this.updateBigWinner();
   }
 
-  async addScore(playerId: string, gains: number, cardTypes) {
+  async addScore(playerId: string, gains: number, currency) {
     const p = PlayerManager.getInstance().getPlayer(playerId)
     this.scoreMap[playerId] += gains
 
@@ -594,7 +594,6 @@ class Room extends RoomBase {
         return this.players.indexOf(readyPlayer)
       }),
       disconnectedPlayers: this.disconnected.map(item => this.indexOf({_id: item[0]})),
-      maiDi: this.rule.maiDi
     }
   }
 
@@ -992,10 +991,6 @@ class Room extends RoomBase {
     return this.game.juShu < -1;
   }
 
-  someoneOverLostLimit() {
-    return values(this.scoreMap).some(score => score <= this.rule.lostLimit)
-  }
-
   async gameOver(nextZhuangId, states) {
     // 清除洗牌
     this.shuffleData = []
@@ -1080,44 +1075,6 @@ class Room extends RoomBase {
         type: ConsumeLogType.chargeRoomFeeByCreator,
         note: ""
       }).save();
-    }
-  }
-
-  async chargeAllPlayers() {
-    if (!this.charged) {
-      this.charged = true
-      const createRoomNeed = this.privateRoomFee(this.rule)
-      const playerManager = PlayerManager.getInstance()
-
-      const share = Math.ceil(createRoomNeed / this.capacity)
-      for (const player of this.snapshot) {
-
-        const payee = playerManager.getPlayer(player.model._id) || player
-
-        payee.model.gem -= share
-        payee.sendMessage('resource/createRoomUsedGem', {
-          createRoomNeed: share
-        })
-        PlayerModel.update({_id: player.model._id},
-          {
-            $inc: {
-              gem: -share,
-            },
-          }, err => {
-            if (err) {
-              logger.error(player.model, err)
-            }
-          })
-
-        new ConsumeRecord({player: player.model._id, gem: share}).save()
-        new DiamondRecord({
-          player: player.model._id,
-          amount: -share,
-          residue: player.model.gem,
-          type: ConsumeLogType.chargeRoomFeeByShare,
-          note: ""
-        }).save();
-      }
     }
   }
 
