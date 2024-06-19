@@ -1007,8 +1007,7 @@ class TableState implements Serializable {
 
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
-      console.warn("currency-%s", this.rule.currency);
-      await this.room.payRubyForStart();
+      await this.room.payRubyForStart(this.rule.currency);
     }
 
     const nextDo = async () => {
@@ -4735,7 +4734,7 @@ class TableState implements Serializable {
     from.juScore += from.balance;
     failGoldList.push(from.balance);
     if (from.balance !== 0) {
-      await this.room.addScore(from.model._id.toString(), from.balance, this.room.gameRule.currency);
+      await this.room.addScore(from.model._id.toString(), from.balance, this.rule.currency);
       await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
         model.gold + from.balance, `对局扣除${this.room._id}`);
     }
@@ -4744,7 +4743,7 @@ class TableState implements Serializable {
     to.balance = winBalance;
     to.juScore += winBalance;
     if (winBalance !== 0) {
-      await this.room.addScore(to.model._id.toString(), winBalance, this.room.gameRule.currency);
+      await this.room.addScore(to.model._id.toString(), winBalance, this.rule.currency);
       await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
         to.model.gold + to.balance, `对局获得-${this.room._id}`);
     }
@@ -4947,7 +4946,7 @@ class TableState implements Serializable {
         winBalance += Math.abs(p.balance);
         p.juScore += p.balance;
         if (p.balance !== 0) {
-          await this.room.addScore(p.model._id.toString(), p.balance, this.room.gameRule.currency);
+          await this.room.addScore(p.model._id.toString(), p.balance, this.rule.currency);
           await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
             model.gold + p.balance, `对局扣除-${this.room._id}`);
           failList.push(p._id);
@@ -4961,7 +4960,7 @@ class TableState implements Serializable {
     to.balance = winBalance;
     to.juScore += winBalance;
     if (winBalance !== 0) {
-      await this.room.addScore(to.model._id.toString(), winBalance, this.room.gameRule.currency);
+      await this.room.addScore(to.model._id.toString(), winBalance, this.rule.currency);
       await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
         to.model.gold + to.balance, `对局获得-${this.room._id}`);
     }
@@ -5471,7 +5470,7 @@ class TableState implements Serializable {
         const i = states.indexOf(state1);
         state1.model.played += 1
         state1.score = this.players[i].balance * this.rule.diFen
-        await this.room.addScore(state1.model._id.toString(), state1.score, this.room.gameRule.currency)
+        await this.room.addScore(state1.model._id.toString(), state1.score, this.rule.currency)
       }
     }
   }
@@ -5497,7 +5496,7 @@ class TableState implements Serializable {
       from.juScore += from.balance;
       failGoldList.push(from.balance);
       if (from.balance !== 0) {
-        await this.room.addScore(from.model._id.toString(), from.balance, this.room.gameRule.currency);
+        await this.room.addScore(from.model._id.toString(), from.balance, this.rule.currency);
         await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
           model.gold + from.balance, `对局扣除${this.room._id}`);
       }
@@ -5512,7 +5511,7 @@ class TableState implements Serializable {
           winBalance += Math.abs(p.balance);
           p.juScore += p.balance;
           if (p.balance !== 0) {
-            await this.room.addScore(p.model._id.toString(), p.balance, this.room.gameRule.currency);
+            await this.room.addScore(p.model._id.toString(), p.balance, this.rule.currency);
             await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
               model.gold + p.balance, `对局扣除-${this.room._id}`);
             failList.push(p._id);
@@ -5527,7 +5526,7 @@ class TableState implements Serializable {
     to.balance = winBalance;
     to.juScore += winBalance;
     if (winBalance !== 0) {
-      await this.room.addScore(to.model._id.toString(), winBalance, this.room.gameRule.currency);
+      await this.room.addScore(to.model._id.toString(), winBalance, this.rule.currency);
       await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
         to.model.gold + to.balance, `对局获得-${this.room._id}`);
     }

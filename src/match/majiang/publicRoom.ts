@@ -213,7 +213,7 @@ export class PublicRoom extends Room {
   }
 
   // 每局开始扣除进房金豆
-  async payRubyForStart() {
+  async payRubyForStart(currency) {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
     if (!conf) {
       console.error('game config lost', this.gameRule.categoryId);
@@ -222,10 +222,10 @@ export class PublicRoom extends Room {
         minAmount: 10000,
       }
     }
-    console.warn("currency-%s", this.gameRule.currency);
+
     for (const p of this.players) {
       if (p) {
-        p.model = await this.updatePlayer(p.model._id, -conf.roomRate, this.gameRule.currency);
+        p.model = await this.updatePlayer(p.model._id, -conf.roomRate, currency);
         await service.playerService.logGoldConsume(p._id, ConsumeLogType.payGameFee, -conf.roomRate,
           p.model.gold, `扣除房费`);
         // 通知客户端更新金豆
