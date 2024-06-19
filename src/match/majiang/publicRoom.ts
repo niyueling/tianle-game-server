@@ -222,6 +222,7 @@ export class PublicRoom extends Room {
         minAmount: 10000,
       }
     }
+    console.warn("currency-%s", this.gameRule.currency);
     for (const p of this.players) {
       if (p) {
         p.model = await this.updatePlayer(p.model._id, -conf.roomRate, this.gameRule.currency);
