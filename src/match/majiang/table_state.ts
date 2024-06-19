@@ -5235,8 +5235,6 @@ class TableState implements Serializable {
         }
       }
 
-      console.warn("currency-%s, seatIndex-%s", this.rule.currency, xiajia ? xiajia.seatIndex : -1);
-
       const env = {card, from, turn: this.turn}
       // console.warn("card-%s, index-%s, env-%s, actions-%s, check-%s", card, this.atIndex(player), JSON.stringify(env), this.actionResolver && JSON.stringify(this.actionResolver.allOptions(player)), JSON.stringify(check));
       this.actionResolver = new ActionResolver(env, async () => {

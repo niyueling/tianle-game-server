@@ -45,7 +45,7 @@ class Rule {
 
   get currency(): string {
     if (!this.ro.currency) {
-      return Enums.tlGoldCurrency;
+      return Enums.goldCurrency;
     }
 
     return this.ro.currency;

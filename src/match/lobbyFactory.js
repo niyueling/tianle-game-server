@@ -124,6 +124,10 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         console.error('invalid category config');
         return { isUpper, isMoreRuby: true };
       }
+      if (!rule.currency) {
+        rule.currency = Enums.goldCurrency;
+      }
+      console.warn("currency-%s", rule.currency);
       // 检查金豆是否够扣
       if (rule.currency && rule.currency === Enums.goldCurrency) {
         isMoreRuby = model.gold < conf.roomRate || model.gold < conf.minAmount;
