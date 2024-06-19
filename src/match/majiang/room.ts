@@ -736,7 +736,7 @@ class Room extends RoomBase {
 
     const model = await service.playerService.getPlayerModel(p._id);
 
-    console.warn("gameState-%s readyIndex-%s gold-%s", this.gameState, readyIndex, model.gold);
+    // console.warn("gameState-%s readyIndex-%s gold-%s", this.gameState, readyIndex, model.gold);
     if (!this.gameState || readyIndex === -1 || model.gold <= 0) {
       // this.removeReadyPlayer(p.model._id.toString())
       this.forceDissolve();

@@ -187,6 +187,7 @@ export class PublicRoom extends Room {
       if (player) {
         players.push({
           gold: player.model.gold,
+          tlGold: player.model.tlGold,
           diamond: player.model.diamond,
           nickname: player.model.nickname,
           avatar: player.model.avatar,
@@ -227,7 +228,7 @@ export class PublicRoom extends Room {
       if (p) {
         p.model = await this.updatePlayer(p.model._id, -conf.roomRate, currency);
         await service.playerService.logGoldConsume(p._id, ConsumeLogType.payGameFee, -conf.roomRate,
-          p.model.gold, `扣除房费`);
+          currency === Enums.goldCurrency ? p.model.gold : p.model.tlGold, `扣除房费`);
         // 通知客户端更新金豆
         this.updateResource2Client(p)
       }
