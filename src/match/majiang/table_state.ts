@@ -4421,9 +4421,9 @@ class TableState implements Serializable {
 
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
-      changeGolds[i].currentGold = model.gold;
+      changeGolds[i].currentGold = this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold;
       if (this.room.isPublic) {
-        changeGolds[i].isBroke = model.gold === 0;
+        changeGolds[i].isBroke = this.rule.currency === Enums.goldCurrency ? model.gold === 0 : model.tlGold === 0;
       }
     }
 
@@ -4582,7 +4582,7 @@ class TableState implements Serializable {
 
     for (let i = 0; i < this.players.length; i++) {
       const model = await service.playerService.getPlayerModel(this.players[i]._id);
-      changeGolds[i].currentGold = model.gold;
+      changeGolds[i].currentGold = this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold;
       if (this.room.isPublic) {
         changeGolds[i].isBroke = this.players[i].isBroke;
       }
@@ -4729,14 +4729,14 @@ class TableState implements Serializable {
     failFromList.push(this.atIndex(from));
     const model = await service.playerService.getPlayerModel(from._id.toString());
     const balance = await this.getRoomMultipleScore(to);
-    from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+    from.balance = -Math.min(Math.abs(balance), this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold, this.rule.currency === Enums.goldCurrency ? winModel.gold : winModel.tlGold);
     winBalance += Math.abs(from.balance);
     from.juScore += from.balance;
     failGoldList.push(from.balance);
     if (from.balance !== 0) {
       await this.room.addScore(from.model._id.toString(), from.balance, this.rule.currency);
       await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
-        model.gold + from.balance, `对局扣除${this.room._id}`);
+        (this.rule.currency === Enums.goldCurrency ? model.gold: model.tlGold) + from.balance, `对局扣除${this.room._id}`);
     }
 
     //增加胡牌用户金币
@@ -4745,7 +4745,7 @@ class TableState implements Serializable {
     if (winBalance !== 0) {
       await this.room.addScore(to.model._id.toString(), winBalance, this.rule.currency);
       await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
-        to.model.gold + to.balance, `对局获得-${this.room._id}`);
+        (this.rule.currency === Enums.goldCurrency ? to.model.gold : to.model.tlGold) + to.balance, `对局获得-${this.room._id}`);
     }
 
     // 生成金豆记录
@@ -4777,11 +4777,11 @@ class TableState implements Serializable {
         _id: p.model._id.toString(),
         shortId: p.model.shortId,
         gold: p.balance,
-        currentGold: model.gold,
+        currentGold: this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold,
         isBroke: p.isBroke,
         huType: this.cardTypes
       };
-      if (model.gold <= 0) {
+      if ((this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) <= 0) {
         if (params.index === 0) {
           if (!p.isBroke) {
             waits.push(params);
@@ -4942,13 +4942,13 @@ class TableState implements Serializable {
       if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
         const model = await service.playerService.getPlayerModel(p._id.toString());
         const balance = await this.getRoomMultipleScore(to);
-        p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+        p.balance = -Math.min(Math.abs(balance), this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold, this.rule.currency === Enums.goldCurrency ? winModel.gold : winModel.tlGold);
         winBalance += Math.abs(p.balance);
         p.juScore += p.balance;
         if (p.balance !== 0) {
           await this.room.addScore(p.model._id.toString(), p.balance, this.rule.currency);
           await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
-            model.gold + p.balance, `对局扣除-${this.room._id}`);
+            (this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) + p.balance, `对局扣除-${this.room._id}`);
           failList.push(p._id);
           failFromList.push(this.atIndex(p));
           failGoldList.push(p.balance);
@@ -4962,7 +4962,7 @@ class TableState implements Serializable {
     if (winBalance !== 0) {
       await this.room.addScore(to.model._id.toString(), winBalance, this.rule.currency);
       await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
-        to.model.gold + to.balance, `对局获得-${this.room._id}`);
+        (this.rule.currency === Enums.goldCurrency ? to.model.gold : to.model.tlGold) + to.balance, `对局获得-${this.room._id}`);
     }
 
     // 生成金豆记录
@@ -4994,11 +4994,11 @@ class TableState implements Serializable {
         _id: p.model._id.toString(),
         shortId: p.model.shortId,
         gold: p.balance,
-        currentGold: model.gold,
+        currentGold: this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold,
         isBroke: p.isBroke,
         huType: this.cardTypes
       };
-      if (model.gold <= 0) {
+      if ((this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) <= 0) {
         if (params.index === 0) {
           if (!p.isBroke) {
             waits.push(params);
@@ -5209,7 +5209,7 @@ class TableState implements Serializable {
         const i = (index + j) % this.players.length;
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p._id);
-        if (!p.isBroke && model.gold > 0) {
+        if (!p.isBroke && (this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) > 0) {
           const r = p.markJiePao(card, result);
           if (r.hu) {
             if (!check.hu || check.hu.length === 0) {
@@ -5229,7 +5229,7 @@ class TableState implements Serializable {
       for (let i = startIndex; i < startIndex + this.players.length; i++) {
         let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
         const model = await service.playerService.getPlayerModel(this.players[index]._id);
-        if (!this.players[index].isBroke && model.gold > 0) {
+        if (!this.players[index].isBroke && (this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) > 0) {
           xiajia = this.players[index];
           break;
         }
@@ -5287,7 +5287,7 @@ class TableState implements Serializable {
         const i = (index + j) % this.players.length;
         const p = this.players[i];
         const model = await service.playerService.getPlayerModel(p._id);
-        if (!p.isBroke && model.gold > 0 && !p.isGameHu) {
+        if (!p.isBroke && (this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) > 0 && !p.isGameHu) {
           check = p.checkPengGang(card, check);
         }
       }
@@ -5319,7 +5319,7 @@ class TableState implements Serializable {
 
         const msg = this.actionResolver.allOptions(p);
         const model = await service.playerService.getPlayerModel(p.model._id);
-        if (msg && model.gold > 0 && !p.isBroke) {
+        if (msg && (this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) > 0 && !p.isBroke) {
           huCount++;
           this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});
           this.canManyHuPlayers.push(p._id.toString());
@@ -5491,14 +5491,14 @@ class TableState implements Serializable {
       failFromList.push(this.atIndex(from));
       const model = await service.playerService.getPlayerModel(from._id.toString());
       const balance = await this.getRoomMultipleScore(to);
-      from.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+      from.balance = -Math.min(Math.abs(balance), this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold, this.rule.currency === Enums.goldCurrency ? winModel.gold : winModel.tlGold);
       winBalance += Math.abs(from.balance);
       from.juScore += from.balance;
       failGoldList.push(from.balance);
       if (from.balance !== 0) {
         await this.room.addScore(from.model._id.toString(), from.balance, this.rule.currency);
         await service.playerService.logGoldConsume(from._id, ConsumeLogType.gamePayGold, from.balance,
-          model.gold + from.balance, `对局扣除${this.room._id}`);
+          (this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) + from.balance, `对局扣除${this.room._id}`);
       }
     } else {
       // 自摸胡
@@ -5507,13 +5507,13 @@ class TableState implements Serializable {
         if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
           const model = await service.playerService.getPlayerModel(p._id.toString());
           const balance = await this.getRoomMultipleScore(to);
-          p.balance = -Math.min(Math.abs(balance), model.gold, winModel.gold);
+          p.balance = -Math.min(Math.abs(balance), this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold, this.rule.currency === Enums.goldCurrency ? winModel.gold : winModel.tlGold);
           winBalance += Math.abs(p.balance);
           p.juScore += p.balance;
           if (p.balance !== 0) {
             await this.room.addScore(p.model._id.toString(), p.balance, this.rule.currency);
             await service.playerService.logGoldConsume(p._id, ConsumeLogType.gamePayGold, p.balance,
-              model.gold + p.balance, `对局扣除-${this.room._id}`);
+              (this.rule.currency === Enums.goldCurrency ?model.gold : model.tlGold) + p.balance, `对局扣除-${this.room._id}`);
             failList.push(p._id);
             failGoldList.push(p.balance);
             failFromList.push(this.atIndex(p));
@@ -5528,7 +5528,7 @@ class TableState implements Serializable {
     if (winBalance !== 0) {
       await this.room.addScore(to.model._id.toString(), winBalance, this.rule.currency);
       await service.playerService.logGoldConsume(to._id, ConsumeLogType.gameGiveGold, to.balance,
-        to.model.gold + to.balance, `对局获得-${this.room._id}`);
+        (this.rule.currency === Enums.goldCurrency ? to.model.gold : to.model.tlGold) + to.balance, `对局获得-${this.room._id}`);
     }
 
     // 生成金豆记录
@@ -5562,10 +5562,10 @@ class TableState implements Serializable {
         index: this.atIndex(p),
         _id: p.model._id.toString(),
         gold: p.balance,
-        currentGold: model.gold,
+        currentGold: this.rule.currency === Enums.goldCurrency ?model.gold : model.tlGold,
         isBroke: p.isBroke
       };
-      if (model.gold <= 0) {
+      if ((this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) <= 0) {
         if (p.zhuang) {
           if (!p.isBroke) {
             if (isWait) {
