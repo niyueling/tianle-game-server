@@ -1007,6 +1007,7 @@ class TableState implements Serializable {
 
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
+      console.warn("currency-%s", this.rule.currency);
       await this.room.payRubyForStart();
     }
 
