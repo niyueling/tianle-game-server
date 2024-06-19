@@ -44,7 +44,11 @@ class Rule {
   }
 
   get currency(): string {
-    return this.ro.currency || Enums.tlGoldCurrency
+    if (!this.ro.currency) {
+      return Enums.tlGoldCurrency;
+    }
+
+    return this.ro.currency;
   }
 }
 export default Rule;
