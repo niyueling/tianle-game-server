@@ -1765,18 +1765,15 @@ class TableState implements Serializable {
         creator: this.room.creator.model._id,
         juShu: this.restJushu,
         juIndex: this.room.game.juIndex,
-        useKun: this.rule.useKun,
         states,
         isYouJin,
         isSanJinDao,
         gameType: GameType.xmmj,
         // 金豆奖池
         rubyReward: 0,
-        ruleType: this.rule.ruleType,
         isPublic: this.room.isPublic,
         caiShen: this.caishen,
         zhuangCount: this.room.zhuangCounter,
-        maiDi: this.rule.maiDi,
         caishen: [this.caishen]
       }
 

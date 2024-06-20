@@ -34,7 +34,6 @@ const stateQiangHaiDi = 6
 const stateWaitDaHaiDi = 7
 const stateWaitHaiDiPao = 8
 const stateQiangGang = 9
-const stateWaitFinish = 10
 
 class HuCheck {
   hu?: any[]
@@ -77,7 +76,7 @@ interface StateData {
 const getCanPengCards = (p, checks) => {
   const ret = []
   checks.forEach(x => {
-    if (x.peng === p) {
+    if (x.peng._id.toString() === p._id.toString()) {
       ret.push(x.card)
     }
   })
@@ -87,8 +86,8 @@ const getCanPengCards = (p, checks) => {
 const getCanGangCards = (p, checks, gangPlayer) => {
   const ret = []
   checks.forEach(x => {
-    if (x.gang === p) {
-      ret.push([x.card, p.getGangKind(x.card, p === gangPlayer)])
+    if (x.gang._id.toString() === p._id.toString()) {
+      ret.push([x.card, p.getGangKind(x.card, p._id.toString() === gangPlayer._id.toString())])
     }
   })
   return ret
@@ -98,7 +97,7 @@ const getCanBuCards = (p, checks, gangPlayer) => {
   const ret = []
   checks.forEach(x => {
     if (x.bu === p) {
-      ret.push([x.card, p.getGangKind(x.card, p === gangPlayer)])
+      ret.push([x.card, p.getGangKind(x.card, p._id.toString() === gangPlayer._id.toString())])
     }
   })
   return ret
@@ -247,7 +246,6 @@ export class ActionResolver implements Serializable {
 
     try {
       actionOption = this.actionsOptions.find(ao => {
-        // console.warn("ao.who._id-%s player._id-%s ao.action-%s action-%s flag-%s", ao.who._id, player._id, ao.action, action, ao.who._id === player._id && ao.action === action);
         return ao.who._id === player._id && ao.action === action;
       })
       if (actionOption) {
@@ -5562,7 +5560,7 @@ class TableState implements Serializable {
         index: this.atIndex(p),
         _id: p.model._id.toString(),
         gold: p.balance,
-        currentGold: this.rule.currency === Enums.goldCurrency ?model.gold : model.tlGold,
+        currentGold: this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold,
         isBroke: p.isBroke
       };
       if ((this.rule.currency === Enums.goldCurrency ? model.gold : model.tlGold) <= 0) {

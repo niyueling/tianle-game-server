@@ -18,6 +18,7 @@ import { IGame, IRoom, ITable, SimplePlayer } from './interfaces';
 import {once} from "./onceDecorator"
 import {autoSerialize, Serializable, serialize, serializeHelp} from "./serializeDecorator"
 import {eqlModelId} from "./pcmajiang/modelId";
+import Enums from "./majiang/enums";
 
 export const playerInClub = async (clubShortId: string, playerId: string) => {
   if (!clubShortId) {
@@ -1260,7 +1261,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     player.sendMessage('resource/update', {ok: true, data: {gold: player.model.gold, diamond: player.model.diamond, tlGold: player.model.tlGold}})
   }
 
-  async payRubyForStart() {
+  async payRubyForStart(currency = Enums.goldCurrency) {
     return;
   }
 }

@@ -10,29 +10,12 @@ class Rule {
     this.ro = ruleObj;
   }
 
-  get canChi() {
-    return true
-  }
-
-  get lostLimit(): number {
-    if (this.useKun) {
-      return 0
-    }
-    return this.ro.jieSuan === 100 ? -100 : Number.MIN_SAFE_INTEGER
-  }
-
-  get share(): boolean {
-    return !!this.ro.share
-  }
-
-  get ruleType() {
-    return this.ro.ruleType || Enums.ruleType.xmmajiang;
-  }
-
   get test() {
-    if (this.ro.isPublic) return true;
+    if (!this.ro.test) {
+      return false;
+    }
 
-      return this.ro.test;
+    return this.ro.test;
   }
 
   get juShu() {
@@ -47,32 +30,12 @@ class Rule {
     return this.ro.gameJuCount || Enums.yiKe;
   }
 
-  get hzlz_option() {
-    return this.ro.hzlz_option
-  }
-
-  get useKun() {
-    return this.ro.juShu === 'yiKun'
-  }
-
   get initScore() {
-    if (this.useKun) {
-      return 50
-    } else {
-      return 0
-    }
-  }
-
-  get quan() {
-    return this.ro.quanShu || 2
+    return 0
   }
 
   get playerCount() {
     return this.ro.playerCount || 4
-  }
-
-  get maiDi() {
-    return !!this.ro.diFen
   }
 
   get useCaiShen() {
@@ -102,7 +65,7 @@ class Rule {
   get doubleGoldYouJin() {
     let doubleGoldYouJin = !!this.ro.doubleGoldYouJin;
     if (this.ro.isPublic) doubleGoldYouJin = true;
-    return doubleGoldYouJin
+    return doubleGoldYouJin;
   }
 
   // 3金倒必起手
@@ -114,6 +77,14 @@ class Rule {
 
   getOriginData() {
     return this.ro
+  }
+
+  get currency(): string {
+    if (!this.ro.currency) {
+      return Enums.goldCurrency;
+    }
+
+    return this.ro.currency;
   }
 }
 
