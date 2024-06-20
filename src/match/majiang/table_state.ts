@@ -5479,7 +5479,6 @@ class TableState implements Serializable {
     let failGoldList = [];
     let failFromList = [];
     let winBalance = 0;
-    let winModel = await service.playerService.getPlayerModel(to._id.toString());
     const winCurrency = await this.PlayerGoldCurrency(to._id);
 
     // 点炮胡
@@ -5502,8 +5501,7 @@ class TableState implements Serializable {
       for (const p of this.players) {
         // 扣除三家金币
         if (p.model._id.toString() !== to.model._id.toString() && !p.isBroke) {
-          const model = await service.playerService.getPlayerModel(p._id.toString());
-          const currency = await this.PlayerGoldCurrency(from._id);
+          const currency = await this.PlayerGoldCurrency(p._id);
           const balance = await this.getRoomMultipleScore(to);
           p.balance = -Math.min(Math.abs(balance), currency, winCurrency);
           winBalance += Math.abs(p.balance);
@@ -5555,7 +5553,6 @@ class TableState implements Serializable {
     let waits = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
-      const model = await service.playerService.getPlayerModel(p.model._id.toString());
       const currency = await this.PlayerGoldCurrency(p._id);
       let params = {
         index: this.atIndex(p),
@@ -5714,19 +5711,6 @@ class TableState implements Serializable {
     }
 
     return model.tlGold;
-  }
-
-  // 根据币种类型设置币种余额
-  async setPlayerGoldCurrency(playerId, currency) {
-    const model = await service.playerService.getPlayerModel(playerId);
-
-    if (this.rule.currency === Enums.goldCurrency) {
-      model.gold = currency;
-    } else {
-      model.tlGold = currency;
-    }
-
-    await model.save();
   }
 
   checkPlayerSimpleCrdCount(player) {
