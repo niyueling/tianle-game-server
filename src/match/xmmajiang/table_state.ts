@@ -532,7 +532,7 @@ class TableState implements Serializable {
 
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
-      await this.room.payRubyForStart(this.rule.currency);
+      await this.room.payRubyForStart();
     }
 
     const nextDo = async () => {

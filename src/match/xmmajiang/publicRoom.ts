@@ -74,7 +74,7 @@ export class PublicRoom extends Room {
     this.removeOrder(player);
     this.removeReadyPlayer(player.model._id)
     player.room = null
-    this.broadcast('room/leave', {_id: player.model._id})
+    this.broadcast('room/leave', {ok: true, data: {_id: player.model._id}})
     this.clearScore(player.model._id)
 
     return true
@@ -102,7 +102,6 @@ export class PublicRoom extends Room {
     }
     let restoreRuby = 0
     await service.playerService.updateRoomRuby(this._id.toString(), findPlayer._id.toString(), findPlayer.model.shortId, restoreRuby)
-    const model = await this.updatePlayer(playerId, v);
     if (findPlayer.isPublicRobot) {
       const currency = await this.PlayerGoldCurrency(playerId);
       // 金豆机器人,自动加金豆
@@ -122,7 +121,6 @@ export class PublicRoom extends Room {
   // 根据币种类型获取币种余额
   async PlayerGoldCurrency(playerId) {
     const model = await service.playerService.getPlayerModel(playerId);
-    console.warn("currency-%s", this.game.rule.currency);
 
     if (this.game.rule.currency === Enums.goldCurrency) {
       return model.gold;
@@ -207,7 +205,7 @@ export class PublicRoom extends Room {
       if (p) {
         p.model = await this.updatePlayer(p.model._id, -conf.roomRate);
         // 通知客户端更新金豆
-        await this.updateResource2Client(p)
+        await this.updateResource2Client(p);
       }
     }
   }
