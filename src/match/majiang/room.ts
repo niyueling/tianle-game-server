@@ -504,7 +504,7 @@ class Room extends RoomBase {
     // await this.updateBigWinner();
   }
 
-  async addScore(playerId: string, gains: number, currency) {
+  async addScore(playerId: string, gains: number) {
     const p = PlayerManager.getInstance().getPlayer(playerId)
     this.scoreMap[playerId] += gains
 

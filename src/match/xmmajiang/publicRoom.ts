@@ -144,11 +144,6 @@ export class PublicRoom extends Room {
 
   // 更新 player model
   async updatePlayer(playerId, addRuby = 0) {
-    const model = await service.playerService.getPlayerModel(playerId);
-    if (!model) {
-      console.error('player not exists');
-      return;
-    }
     // 添加金豆
     const currency = await this.PlayerGoldCurrency(playerId);
     if (currency + addRuby <= 0) {
@@ -156,7 +151,7 @@ export class PublicRoom extends Room {
     } else {
       await this.setPlayerGoldCurrency(playerId, currency + addRuby);
     }
-    await model.save();
+    const model = await service.playerService.getPlayerModel(playerId);
     return model;
   }
 

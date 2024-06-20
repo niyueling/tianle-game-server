@@ -127,7 +127,6 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       if (!rule.currency) {
         rule.currency = Enums.goldCurrency;
       }
-      console.warn("currency-%s", rule.currency);
       // 检查金豆是否够扣
       if (rule.currency && rule.currency === Enums.goldCurrency) {
         isMoreRuby = model.gold < conf.roomRate || model.gold < conf.minAmount;
