@@ -110,8 +110,8 @@ export class PublicRoom extends Room {
         // 金豆不足，添加金豆
         const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
         const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
-        model.gold = service.utils.randomIntBetweenNumber(conf.minAmount, max);
-        await model.save();
+        const gold = service.utils.randomIntBetweenNumber(conf.minAmount, max);
+        await this.setPlayerGoldCurrency(playerId, gold);
       }
       return;
     }
@@ -122,8 +122,9 @@ export class PublicRoom extends Room {
   // 根据币种类型获取币种余额
   async PlayerGoldCurrency(playerId) {
     const model = await service.playerService.getPlayerModel(playerId);
+    console.warn("currency-%s", this.game.rule.currency);
 
-    if (this.rule.currency === Enums.goldCurrency) {
+    if (this.game.rule.currency === Enums.goldCurrency) {
       return model.gold;
     }
 
@@ -134,7 +135,7 @@ export class PublicRoom extends Room {
   async setPlayerGoldCurrency(playerId, currency) {
     const model = await service.playerService.getPlayerModel(playerId);
 
-    if (this.rule.currency === Enums.goldCurrency) {
+    if (this.game.rule.currency === Enums.goldCurrency) {
       model.gold = currency;
     } else {
       model.tlGold = currency;
@@ -144,23 +145,18 @@ export class PublicRoom extends Room {
   }
 
   // 更新 player model
-  async updatePlayer(playerId, addRuby = 0, addGem = 0) {
+  async updatePlayer(playerId, addRuby = 0) {
     const model = await service.playerService.getPlayerModel(playerId);
     if (!model) {
       console.error('player not exists');
       return;
     }
     // 添加金豆
-    if (model.gold + addRuby <= 0) {
-      model.gold = 0;
+    const currency = await this.PlayerGoldCurrency(playerId);
+    if (currency + addRuby <= 0) {
+      await this.setPlayerGoldCurrency(playerId, 0);
     } else {
-      model.gold += addRuby;
-    }
-    // 添加房卡
-    if (model.diamond + addGem <= 0) {
-      model.diamond = 0;
-    } else {
-      model.diamond += addGem;
+      await this.setPlayerGoldCurrency(playerId, currency + addRuby);
     }
     await model.save();
     return model;
