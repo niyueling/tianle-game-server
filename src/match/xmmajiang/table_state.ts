@@ -532,7 +532,7 @@ class TableState implements Serializable {
 
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
-      await this.room.payRubyForStart();
+      await this.room.payRubyForStart(this.rule.currency);
     }
 
     const nextDo = async () => {
@@ -625,6 +625,17 @@ class TableState implements Serializable {
     }
 
     return playerIndexs;
+  }
+
+  // 根据币种类型获取币种余额
+  async PlayerGoldCurrency(playerId) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.rule.currency === Enums.goldCurrency) {
+      return model.gold;
+    }
+
+    return model.tlGold;
   }
 
   atIndex(player: PlayerState) {
@@ -2318,9 +2329,9 @@ class TableState implements Serializable {
           winRuby += p.balance;
           winnerList.push(p);
         } else {
-          const model = await service.playerService.getPlayerModel(p.model._id);
-          if (model.gold < -p.balance) {
-            p.balance = -model.gold;
+          const currency = await this.PlayerGoldCurrency(p._id);
+          if (currency < -p.balance) {
+            p.balance = -currency;
             p.isBroke = true;
           }
           lostRuby += p.balance;

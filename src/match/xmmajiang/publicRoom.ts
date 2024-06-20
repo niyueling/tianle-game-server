@@ -8,6 +8,7 @@ import {getPlayerRmqProxy} from "../PlayerRmqProxy";
 import {autoSerializePropertyKeys} from "../serializeDecorator";
 import Room from "./room";
 import TableState, {stateGameOver} from "./table_state";
+import Enums from "./enums";
 
 // 金豆房
 export class PublicRoom extends Room {
@@ -103,8 +104,9 @@ export class PublicRoom extends Room {
     await service.playerService.updateRoomRuby(this._id.toString(), findPlayer._id.toString(), findPlayer.model.shortId, restoreRuby)
     const model = await this.updatePlayer(playerId, v);
     if (findPlayer.isPublicRobot) {
+      const currency = await this.PlayerGoldCurrency(playerId);
       // 金豆机器人,自动加金豆
-      if (model.gold < conf.minAmount) {
+      if (currency < conf.minAmount) {
         // 金豆不足，添加金豆
         const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
         const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
@@ -115,6 +117,30 @@ export class PublicRoom extends Room {
     }
     findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
     findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'voucher'])})
+  }
+
+  // 根据币种类型获取币种余额
+  async PlayerGoldCurrency(playerId) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.rule.currency === Enums.goldCurrency) {
+      return model.gold;
+    }
+
+    return model.tlGold;
+  }
+
+  // 根据币种类型设置币种余额
+  async setPlayerGoldCurrency(playerId, currency) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.rule.currency === Enums.goldCurrency) {
+      model.gold = currency;
+    } else {
+      model.tlGold = currency;
+    }
+
+    await model.save();
   }
 
   // 更新 player model

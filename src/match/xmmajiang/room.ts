@@ -193,9 +193,6 @@ class Room extends RoomBase {
   }
 
   static publicRoomLowestLimit(rule) {
-    if (rule.diFen >= 500) {
-      return rule.diFen * 100 / 2 - 1
-    }
     return 0
   }
 

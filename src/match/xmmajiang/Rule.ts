@@ -42,16 +42,8 @@ class Rule {
     return this.ro.useCaiShen
   }
 
-  get keJiePao(): boolean {
-    return this.ro.keJiePao
-  }
-
   get diFen(): number {
     return this.ro.diFen || 1
-  }
-
-  get specialReward() {
-    return this.ro.specialReward || 0
   }
 
   // 是否无大牌, true = 无大牌
@@ -79,6 +71,7 @@ class Rule {
     return this.ro
   }
 
+  // 币种
   get currency(): string {
     if (!this.ro.currency) {
       return Enums.goldCurrency;
