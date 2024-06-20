@@ -1,4 +1,4 @@
-import {ApplePrice, ConsumeLogType, RedisKey, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, RedisKey, TianleErrorCode} from "@fm/common/constants";
 import {addApi} from "../../common/api";
 import GoodsModel from "../../database/models/goods";
 import GoodsExchangeRuby from "../../database/models/goodsExchangeRuby";
@@ -12,6 +12,7 @@ import FreeGoldRecord from "../../database/models/freeGoldRecord";
 import UserRechargeOrder from "../../database/models/userRechargeOrder";
 import crypto = require('crypto');
 import Player from "../../database/models/player";
+import Enums from "../../match/majiang/enums";
 
 // 商品
 export class GoodsApi extends BaseApi {
@@ -364,23 +365,24 @@ export class GoodsApi extends BaseApi {
       return this.replyFail(TianleErrorCode.diamondInsufficient);
     }
 
-    let temp = '';
-    if (exchangeConf.gold > 100000000) {
-      temp = (exchangeConf.gold / 100000000) + "亿";
-    } else if (exchangeConf.gold > 1000000000000) {
-      temp = (exchangeConf.gold / 1000000000000) + "兆";
+    this.player.model.diamond = model.diamond - exchangeConf.diamond;
+    if (message.currency === Enums.goldCurrency) {
+      this.player.model.gold = model.gold + exchangeConf.gold;
+
+      await PlayerModel.update({_id: model._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
+    }
+    if (message.currency === Enums.tlGoldCurrency) {
+      this.player.model.tlGold = model.tlGold + exchangeConf.gold;
+
+      await PlayerModel.update({_id: model._id}, {$inc: {diamond: -exchangeConf.diamond, tlGold: exchangeConf.gold}});
     }
 
-    await PlayerModel.update({_id: model._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
-    this.player.model.diamond = model.diamond - exchangeConf.diamond;
-    this.player.model.gold = model.gold + exchangeConf.gold;
     // 增加日志
-    await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `成功兑换${exchangeConf.diamond}钻石成${temp}金豆`);
-    await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveGold, exchangeConf.gold,
-      this.player.model.gold, `购买复活礼包`);
+    await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买复活礼包`);
+    await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveGold, exchangeConf.gold, this.player.model.gold, `购买复活礼包`);
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
-    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond, voucher: this.player.model.voucher}})
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond, tlGold: this.player.model.tlGold}})
   }
 
   // 下一局金豆礼包
@@ -407,16 +409,21 @@ export class GoodsApi extends BaseApi {
     }
 
     model.diamond -= exchangeConf.diamond;
-    model.gold += exchangeConf.gold;
+    this.player.model.diamond = model.diamond;
+    if (message.currency === Enums.goldCurrency) {
+      model.gold += exchangeConf.gold;
+      this.player.model.gold = model.gold;
+    }
+    if (message.currency === Enums.tlGoldCurrency) {
+      model.tlGold += exchangeConf.gold;
+      this.player.model.tlGold = model.tlGold;
+    }
+
     model.loftyHeroicCount++;
     await model.save();
-    this.player.model.diamond = model.diamond;
-    this.player.model.gold = model.gold;
 
-    // 增加日志
     await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买超值礼包`);
-    // 记录金豆日志
-    await service.playerService.logGoldConsume(model._id, ConsumeLogType.diamondToGold, exchangeConf.gold, this.player.model.gold, `钻石兑换金豆`);
+    await service.playerService.logGoldConsume(model._id, ConsumeLogType.diamondToGold, exchangeConf.gold, this.player.model.gold, `购买超值礼包`);
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
     await this.player.updateResource2Client();
