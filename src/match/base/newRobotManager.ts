@@ -406,7 +406,7 @@ export class NewRobotManager {
         continue;
       }
 
-      const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id);
+      const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id, this.room.game.rule.currency);
       const robotProxy = await this.createProxy(model._id.toString());
       robotProxy.seatIndex = i;
       robotProxy.isPublicRobot = true;

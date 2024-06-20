@@ -23,21 +23,9 @@ export default class PlayerService extends BaseService {
     return Player.findById(playerId);
   }
 
-  async getPlayerModelByShortId(shortId: number): Promise<any> {
-    return Player.findOne({ shortId });
-  }
-
   // 根据用户名获取玩家
   async getPlayerByName(name) {
     return Player.find({ name });
-  }
-
-  async findOrCreatePlayerByName(name) {
-    const players = await this.getPlayerByName(name);
-    if (players.length < 1) {
-      return this.createNewPlayer({ name });
-    }
-    return players[0];
   }
 
   // 创建用户
@@ -56,7 +44,7 @@ export default class PlayerService extends BaseService {
   }
 
   // 获取机器人
-  async getRobot(categoryId, roomId) {
+  async getRobot(categoryId, roomId, currency) {
     // 金豆
     const rubyRequired = await service.gameConfig.getPublicRoomCategoryByCategory(categoryId);
     if (!rubyRequired) {
@@ -76,7 +64,7 @@ export default class PlayerService extends BaseService {
       {$match: {robot: true, isGame: false }},
       {$sample: { size: 1}}
     ]);
-    // console.warn("minAmount %s maxAmount %s rand %s max %s gold %s", rubyRequired.minAmount, rubyRequired.maxAmount, rand, max, gold);
+    console.warn("currency-%s gold-%s tlGoldRand-%s", currency, gold, tlGoldRand);
     const randomPlayer = await this.getPlayerModel(result[0]._id);
     // 重新随机设置 ruby
     randomPlayer.gold = gold;
