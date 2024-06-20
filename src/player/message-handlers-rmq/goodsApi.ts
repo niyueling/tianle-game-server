@@ -381,7 +381,7 @@ export class GoodsApi extends BaseApi {
     await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买复活礼包`);
     await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveGold, exchangeConf.gold, this.player.model.gold, `购买复活礼包`);
 
-    this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
+    this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold, currency: message.currency});
     this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond, tlGold: this.player.model.tlGold}})
   }
 
@@ -425,7 +425,7 @@ export class GoodsApi extends BaseApi {
     await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买超值礼包`);
     await service.playerService.logGoldConsume(model._id, ConsumeLogType.diamondToGold, exchangeConf.gold, this.player.model.gold, `购买超值礼包`);
 
-    this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold});
+    this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold, currency: message.currency});
     await this.player.updateResource2Client();
   }
 }
