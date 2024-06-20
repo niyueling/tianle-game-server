@@ -11,6 +11,7 @@ import GoldRecord from "../database/models/goldRecord";
 import {ConsumeLogType} from "@fm/common/constants";
 import UserRechargeOrder from "../database/models/userRechargeOrder";
 import CombatGain from "../database/models/combatGain";
+import Enums from "../match/majiang/enums";
 
 // 玩家信息
 export default class PlayerService extends BaseService {
@@ -57,18 +58,21 @@ export default class PlayerService extends BaseService {
     }
     // 最高为随机下限的 20% - 30%
     const rand = service.utils.randomIntBetweenNumber(10, 100) / 100;
-    const tlGoldRand = service.utils.randomIntBetweenNumber(1, 2);
     const max = rubyRequired.minAmount + Math.floor(rand * (rubyRequired.maxAmount - rubyRequired.minAmount));
     const gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
     const result = await Player.aggregate([
       {$match: {robot: true, isGame: false }},
       {$sample: { size: 1}}
     ]);
-    console.warn("currency-%s gold-%s tlGoldRand-%s", currency, gold, tlGoldRand);
+
     const randomPlayer = await this.getPlayerModel(result[0]._id);
     // 重新随机设置 ruby
-    randomPlayer.gold = gold;
-    randomPlayer.tlGold = gold * tlGoldRand;
+    if (currency === Enums.goldCurrency) {
+      randomPlayer.gold = gold;
+    }
+    if (currency === Enums.tlGoldCurrency) {
+      randomPlayer.tlGold = gold;
+    }
     randomPlayer.isGame = true;
     randomPlayer.gameTime = new Date();
 
