@@ -2424,7 +2424,7 @@ class TableState implements Serializable {
 
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
-    if (ting.hu) {
+    if (ting.hu && player.cards[this.caishen] <= 1) {
       if (lastTakeCard && player.cards[lastTakeCard] > 0 && lastTakeCard !== this.caishen) return lastTakeCard;
     }
 
