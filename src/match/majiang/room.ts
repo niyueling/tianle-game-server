@@ -733,11 +733,10 @@ class Room extends RoomBase {
     }
     p.room = null
     const readyIndex = this.readyPlayers.indexOf(p._id);
-
-    const model = await service.playerService.getPlayerModel(p._id);
+    const currency = await this.gameState.PlayerGoldCurrency(p._id);
 
     // console.warn("gameState-%s readyIndex-%s gold-%s", this.gameState, readyIndex, model.gold);
-    if (!this.gameState || readyIndex === -1 || model.gold <= 0) {
+    if (!this.gameState || readyIndex === -1 || currency <= 0) {
       // this.removeReadyPlayer(p.model._id.toString())
       this.forceDissolve();
     }

@@ -101,8 +101,8 @@ export class PublicRoom extends Room {
         const gold = service.utils.randomIntBetweenNumber(conf.minAmount, max);
         await this.setPlayerGoldCurrency(playerId, gold);
 
-        await service.playerService.logGoldConsume(model._id, ConsumeLogType.robotAutoAdd, model.gold,
-          model.gold, `机器人自动加金豆`);
+        await service.playerService.logGoldConsume(model._id, ConsumeLogType.robotAutoAdd, await this.PlayerGoldCurrency(playerId),
+          await this.PlayerGoldCurrency(playerId), `机器人自动加金豆`);
       }
       return;
     }
