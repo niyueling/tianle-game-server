@@ -152,7 +152,8 @@ export class RobotManager extends NewRobotManager {
     }
 
     if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && !pengStatus) {
-      console.warn("action-%s, _id-%s", Enums.peng, this.room.gameState.stateData[Enums.peng]._id);
+      console.warn("action-%s, _id-%s, card-%s", Enums.peng, this.room.gameState.stateData[Enums.peng]._id, this.room.gameState.stateData.card);
+      this.room.gameState.stateData[Enums.peng].emitter.emit(Enums.guo, this.room.gameState.turn, this.room.gameState.stateData.card);
       return false;
     }
 
