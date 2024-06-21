@@ -49,6 +49,7 @@ export class RobotManager extends NewRobotManager {
       playerId = proxy.model._id;
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
+      const choice = this.isPlayerChoice(playerId);
       const isHu = proxy.playerState.checkZiMo();
       if (this.room.gameState.testMoCards.length === 0) {
         if (this.room.gameState.state === 10) {
@@ -59,10 +60,8 @@ export class RobotManager extends NewRobotManager {
           return await proxy.gang(Enums.anGang, AnGangIndex)
         } else if (buGangIndex) {
           return await proxy.gang(Enums.buGang, buGangIndex)
-        } else if (this.isPlayerChoice(playerId)) {
-          return await proxy.choice(this.isPlayerChoice(playerId))
-        } else if (this.isPlayerGang(playerId)) {
-          return await proxy.gang(this.isPlayerGang(playerId))
+        } else if (choice) {
+          return await proxy.choice(choice)
         }
       }
 
@@ -108,9 +107,9 @@ export class RobotManager extends NewRobotManager {
 
   // 是不是能过
   isPlayerGuo(playerId) {
-    const actionList = [Enums.hu, Enums.peng, Enums.chi];
+    const actionList = [Enums.hu, Enums.peng, Enums.gang, Enums.chi];
     for (const action of actionList) {
-      if ([Enums.peng, Enums.chi].includes(action)
+      if ([Enums.peng, Enums.chi, Enums.gang].includes(action)
         && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return true;
       }
@@ -125,43 +124,13 @@ export class RobotManager extends NewRobotManager {
     return false;
   }
 
-  isPlayerGang(playerId) {
-    const actionList = [Enums.gang, Enums.anGang, Enums.mingGang];
-    for (const action of actionList) {
-      if ([Enums.gang, Enums.anGang, Enums.mingGang].includes(action) && this.room.gameState.stateData[action]) {
-        if (playerId.toString() === this.room.gameState.stateData[action]._id.toString()) return action;
-      }
-    }
-
-    return false;
-  }
-
   // 是否碰吃胡
   isPlayerChoice(playerId) {
-    let pengStatus = false;
-    const actionList = [Enums.hu, Enums.peng, Enums.chi];
-    // const keys = Object.keys(this.disconnectPlayers);
-    // let proxy;
-    // // 解决机器人偶发性不能吃碰操作bug
-    // for (const key of keys) {
-    //   proxy = this.disconnectPlayers[key];
-    //
-    //   if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && proxy.model._id.toString() === this.room.gameState.stateData[Enums.peng]._id.toString()) {
-    //     pengStatus = true;
-    //   }
-    // }
-    //
-    // if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && !pengStatus && this.room.gameState.stateData.peng.seatIndex !== this.room.gameState.zhuang.seatIndex) {
-    //   console.warn("action-%s, _id-%s, seatIndex-%s, card-%s", Enums.peng, this.room.gameState.stateData[Enums.peng]._id, this.room.gameState.stateData[Enums.peng].seatIndex, this.room.gameState.stateData.card);
-    //   const player = this.room.gameState.stateData.peng;
-    //   delete this.room.gameState.stateData.peng;
-    //   player.emitter.emit(Enums.guo, this.room.gameState.turn, this.room.gameState.stateData.card);
-    //
-    //   return false;
-    // }
+    const actionList = [Enums.hu, Enums.peng, Enums.chi, Enums.gang];
 
     for (const action of actionList) {
-      if ([Enums.peng, Enums.chi].includes(action) && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
+      console.warn("action-%s, playerId-%s, actionPlayerId-%s", action, playerId, this.room.gameState.stateData[action]._id);
+      if ([Enums.peng, Enums.chi, Enums.gang].includes(action) && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }
       if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
