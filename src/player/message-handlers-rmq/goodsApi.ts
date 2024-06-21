@@ -311,14 +311,19 @@ export class GoodsApi extends BaseApi {
 
       await PlayerModel.update({_id: this.player._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
       this.player.model.diamond = user.diamond - exchangeConf.diamond;
-      this.player.model.gold = user.gold + exchangeConf.gold;
+      if (message.currency === Enums.goldCurrency) {
+        this.player.model.gold = user.gold + exchangeConf.gold;
+      }
+      if (message.currency === Enums.tlGoldCurrency) {
+        this.player.model.tlGold = user.tlGold + exchangeConf.gold;
+      }
 
       // 增加日志
       await service.playerService.logGemConsume(user._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买超值礼包`);
       // 记录金豆日志
-      await service.playerService.logGoldConsume(user._id, ConsumeLogType.diamondToGold, exchangeConf.gold, this.player.model.gold, `钻石兑换金豆`);
+      await service.playerService.logGoldConsume(user._id, ConsumeLogType.diamondToGold, exchangeConf.gold, this.player.model.gold, `钻石兑换游戏豆`);
 
-      this.player.sendMessage("goods/nextExchangeGoldReply", {ok: true, data: {diamond: exchangeConf.diamond, gold: exchangeConf.gold}});
+      this.player.sendMessage("goods/nextExchangeGoldReply", {ok: true, data: {diamond: exchangeConf.diamond, gold: exchangeConf.gold, currency: message.currency}});
     }
 
     await this.player.updateResource2Client();
