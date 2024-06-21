@@ -71,7 +71,6 @@ export class RobotManager extends NewRobotManager {
           // 重新计时
           this.waitInterval[key] = 0;
         }
-        break;
       } else {
         if (this.isPlayerGuo(playerId)) {
           await proxy.guo();
