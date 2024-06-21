@@ -1757,7 +1757,9 @@ class TableState implements Serializable {
         } else {
           state1.score = this.players[i].balance * this.rule.diFen
         }
-        await this.room.addScore(state1._id, state1.score);
+        if (state1.model && state1.model._id) {
+          await this.room.addScore(state1.model._id, state1.score);
+        }
       }
 
       await this.room.recordGameRecord(this, states)
