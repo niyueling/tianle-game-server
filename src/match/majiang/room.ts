@@ -29,6 +29,7 @@ import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import PlayerMedal from "../../database/models/PlayerMedal";
 import {service} from "../../service/importService";
 import Player from "../../database/models/player";
+import Enums from "./enums";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -725,6 +726,17 @@ class Room extends RoomBase {
     return true
   }
 
+  // 根据币种类型获取币种余额
+  async PlayerGoldCurrency(playerId) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.game.rule.currency === Enums.goldCurrency) {
+      return model.gold;
+    }
+
+    return model.tlGold;
+  }
+
   async playerDisconnect(player) {
     const p = player
     const index = this.players.indexOf(player)
@@ -733,7 +745,7 @@ class Room extends RoomBase {
     }
     p.room = null
     const readyIndex = this.readyPlayers.indexOf(p._id);
-    const currency = await this.gameState.PlayerGoldCurrency(p._id);
+    const currency = await this.PlayerGoldCurrency(p._id);
 
     // console.warn("gameState-%s readyIndex-%s gold-%s", this.gameState, readyIndex, model.gold);
     if (!this.gameState || readyIndex === -1 || currency <= 0) {
