@@ -397,7 +397,7 @@ export default {
 
             await PlayerBenefitRecord.create(data);
 
-            p.sendMessage('resource/update', {ok: true, data: pick(user, ['gold', 'diamond', 'voucher'])})
+            p.sendMessage('resource/update', {ok: true, data: pick(user, ['gold', 'diamond', 'tlGold'])})
             return p.sendMessage('account/benefitReply', {
                 ok: true,
                 data: {gold: gold, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount + 1}

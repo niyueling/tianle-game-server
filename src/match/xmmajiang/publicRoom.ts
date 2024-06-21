@@ -1,5 +1,4 @@
 import {GameType, TianleErrorCode} from "@fm/common/constants";
-import {Errors, getCodeByError} from "@fm/common/errors";
 import {Channel} from "amqplib";
 // @ts-ignore
 import {pick} from "lodash";
@@ -91,31 +90,9 @@ export class PublicRoom extends Room {
     const findPlayer = this.players.find(player => {
       return player && player.model._id.toString() === playerId.toString()
     })
-    // 添加倍率
-    let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
-    if (!conf) {
-      console.error('game config lost', this.gameRule.categoryId);
-      conf = {
-        roomRate: 10000,
-        minAmount: 10000,
-      }
-    }
-    let restoreRuby = 0
-    await service.playerService.updateRoomRuby(this._id.toString(), findPlayer._id.toString(), findPlayer.model.shortId, restoreRuby)
-    if (findPlayer.isPublicRobot) {
-      const currency = await this.PlayerGoldCurrency(playerId);
-      // 金豆机器人,自动加金豆
-      if (currency < conf.minAmount) {
-        // 金豆不足，添加金豆
-        const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
-        const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
-        const gold = service.utils.randomIntBetweenNumber(conf.minAmount, max);
-        await this.setPlayerGoldCurrency(playerId, gold);
-      }
-      return;
-    }
+    await this.updatePlayer(playerId, v);
     findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
-    findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'voucher'])})
+    findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
   }
 
   // 根据币种类型获取币种余额
@@ -151,8 +128,7 @@ export class PublicRoom extends Room {
     } else {
       await this.setPlayerGoldCurrency(playerId, currency + addRuby);
     }
-    const model = await service.playerService.getPlayerModel(playerId);
-    return model;
+    return await service.playerService.getPlayerModel(playerId);
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
