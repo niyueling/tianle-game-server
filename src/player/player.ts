@@ -451,6 +451,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
       return;
     }
     const model = await service.playerService.getPlayerModel(this.model._id);
-    this.sendMessage('resource/update', {ok: true, data: {gold: model.gold, diamond: model.diamond, voucher: model.voucher }});
+    this.sendMessage('resource/update', {ok: true, data: {gold: model.gold, diamond: model.diamond, tlGold: model.tlGold }});
   }
 }

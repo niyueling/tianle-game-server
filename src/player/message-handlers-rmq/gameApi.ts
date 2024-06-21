@@ -5,6 +5,7 @@ import {service} from "../../service/importService";
 import {BaseApi} from "./baseApi";
 import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import GameFeedback from "../../database/models/GameFeedback";
+import Enums from "../../match/majiang/enums";
 
 // 游戏
 export class GameApi extends BaseApi {
@@ -163,6 +164,7 @@ export class GameApi extends BaseApi {
   @addApi({
     rule: {
       roomId: "number", // 房间号
+      currency: "string", // 币种
     }
   })
   async restoreOrDoubleRuby(msg) {
@@ -173,16 +175,14 @@ export class GameApi extends BaseApi {
     if (record && record.roomNum === msg.roomNum) {
       if (record.score < 0) {
         // 免输
-        player.gold -= score;
-        // 记录金豆日志
+        msg.currency === Enums.goldCurrency ? player.gold -= score : player.tlGold -= score;
         await service.playerService.logGoldConsume(player._id, ConsumeLogType.doubleWinOrFail, -score,
-          player.gold, `结算免输:${msg.roomId}`);
+          msg.currency === Enums.goldCurrency ? player.gold : player.tlGold, `结算免输:${msg.roomId}`);
       } else {
         // 翻倍
-        player.gold += score;
-        // 记录金豆日志
+        msg.currency === Enums.goldCurrency ? player.gold += score : player.tlGold += score;
         await service.playerService.logGoldConsume(player._id, ConsumeLogType.doubleWinOrFail, score,
-          player.gold, `结算双倍奖励:${msg.roomId}`);
+          msg.currency === Enums.goldCurrency ? player.gold : player.tlGold, `结算双倍奖励:${msg.roomId}`);
       }
       await player.save();
       await this.player.updateResource2Client();
