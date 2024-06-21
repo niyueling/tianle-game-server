@@ -59,10 +59,10 @@ export class RobotManager extends NewRobotManager {
           return await proxy.gang(Enums.anGang, AnGangIndex)
         } else if (buGangIndex) {
           return await proxy.gang(Enums.buGang, buGangIndex)
-        } else if (this.isPlayerGang(playerId)) {
-          return await proxy.gang(this.isPlayerGang(playerId))
         } else if (this.isPlayerChoice(playerId)) {
           return await proxy.choice(this.isPlayerChoice(playerId))
+        } else if (this.isPlayerGang(playerId)) {
+          return await proxy.gang(this.isPlayerGang(playerId))
         }
       }
 
@@ -140,25 +140,25 @@ export class RobotManager extends NewRobotManager {
   isPlayerChoice(playerId) {
     let pengStatus = false;
     const actionList = [Enums.hu, Enums.peng, Enums.chi];
-    const keys = Object.keys(this.disconnectPlayers);
-    let proxy;
-    // 解决机器人偶发性不能吃碰操作bug
-    for (const key of keys) {
-      proxy = this.disconnectPlayers[key];
-
-      if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && proxy.model._id.toString() === this.room.gameState.stateData[Enums.peng]._id.toString()) {
-        pengStatus = true;
-      }
-    }
-
-    if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && !pengStatus && this.room.gameState.stateData.peng.seatIndex !== this.room.gameState.zhuang.seatIndex) {
-      console.warn("action-%s, _id-%s, seatIndex-%s, card-%s", Enums.peng, this.room.gameState.stateData[Enums.peng]._id, this.room.gameState.stateData[Enums.peng].seatIndex, this.room.gameState.stateData.card);
-      const player = this.room.gameState.stateData.peng;
-      delete this.room.gameState.stateData.peng;
-      player.emitter.emit(Enums.guo, this.room.gameState.turn, this.room.gameState.stateData.card);
-
-      return false;
-    }
+    // const keys = Object.keys(this.disconnectPlayers);
+    // let proxy;
+    // // 解决机器人偶发性不能吃碰操作bug
+    // for (const key of keys) {
+    //   proxy = this.disconnectPlayers[key];
+    //
+    //   if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && proxy.model._id.toString() === this.room.gameState.stateData[Enums.peng]._id.toString()) {
+    //     pengStatus = true;
+    //   }
+    // }
+    //
+    // if (this.room.gameState.stateData && this.room.gameState.stateData.chi && this.room.gameState.stateData.peng && !pengStatus && this.room.gameState.stateData.peng.seatIndex !== this.room.gameState.zhuang.seatIndex) {
+    //   console.warn("action-%s, _id-%s, seatIndex-%s, card-%s", Enums.peng, this.room.gameState.stateData[Enums.peng]._id, this.room.gameState.stateData[Enums.peng].seatIndex, this.room.gameState.stateData.card);
+    //   const player = this.room.gameState.stateData.peng;
+    //   delete this.room.gameState.stateData.peng;
+    //   player.emitter.emit(Enums.guo, this.room.gameState.turn, this.room.gameState.stateData.card);
+    //
+    //   return false;
+    // }
 
     for (const action of actionList) {
       if ([Enums.peng, Enums.chi].includes(action) && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
