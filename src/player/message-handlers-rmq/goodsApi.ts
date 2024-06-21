@@ -365,24 +365,27 @@ export class GoodsApi extends BaseApi {
       return this.replyFail(TianleErrorCode.diamondInsufficient);
     }
 
-    this.player.model.diamond = model.diamond - exchangeConf.diamond;
+    model.diamond = model.diamond - exchangeConf.diamond
+    this.player.model.diamond = model.diamond;
     if (message.currency === Enums.goldCurrency) {
-      this.player.model.gold = model.gold + exchangeConf.gold;
+      model.gold = model.gold + exchangeConf.gold;
+      this.player.model.gold = model.gold;
 
       await PlayerModel.update({_id: model._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
     }
     if (message.currency === Enums.tlGoldCurrency) {
-      this.player.model.tlGold = model.tlGold + exchangeConf.gold;
+      model.tlGold = model.tlGold + exchangeConf.gold;
+      this.player.model.tlGold = model.tlGold;
 
       await PlayerModel.update({_id: model._id}, {$inc: {diamond: -exchangeConf.diamond, tlGold: exchangeConf.gold}});
     }
 
     // 增加日志
-    await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, this.player.model.diamond, `购买复活礼包`);
-    await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveGold, exchangeConf.gold, this.player.model.gold, `购买复活礼包`);
+    await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -exchangeConf.diamond, model.diamond, `购买复活礼包`);
+    await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveGold, exchangeConf.gold, model.gold, `购买复活礼包`);
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold, currency: message.currency});
-    this.player.sendMessage('resource/update', {ok: true, data: {gold: this.player.model.gold, diamond: this.player.model.diamond, tlGold: this.player.model.tlGold}})
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: model.gold, diamond: model.diamond, tlGold: model.tlGold}})
   }
 
   // 下一局金豆礼包

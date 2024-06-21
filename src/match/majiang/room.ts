@@ -750,7 +750,7 @@ class Room extends RoomBase {
     // console.warn("gameState-%s readyIndex-%s gold-%s", this.gameState, readyIndex, model.gold);
     if (!this.gameState || readyIndex === -1 || currency <= 0) {
       // this.removeReadyPlayer(p.model._id.toString())
-      this.forceDissolve();
+      await this.forceDissolve();
     }
 
     if (this.dissolveTimeout) {
