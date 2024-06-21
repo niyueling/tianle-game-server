@@ -465,7 +465,7 @@ class TableState implements Serializable {
 
   async fapai(payload) {
     this.shuffle();
-    this.sleepTime = 2500;
+    this.sleepTime = 3000;
     // 金牌
     this.caishen = this.randGoldCard(this.rule.test, payload.goldCard);
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
