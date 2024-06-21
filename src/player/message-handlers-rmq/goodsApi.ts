@@ -309,13 +309,13 @@ export class GoodsApi extends BaseApi {
         return this.replyFail(TianleErrorCode.diamondInsufficient);
       }
 
-      await PlayerModel.update({_id: this.player._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
       this.player.model.diamond = user.diamond - exchangeConf.diamond;
-      if (message.currency === Enums.goldCurrency) {
-        this.player.model.gold = user.gold + exchangeConf.gold;
-      }
       if (message.currency === Enums.tlGoldCurrency) {
         this.player.model.tlGold = user.tlGold + exchangeConf.gold;
+        await PlayerModel.update({_id: this.player._id}, {$inc: {diamond: -exchangeConf.diamond, tlGold: exchangeConf.gold}});
+      } else {
+        this.player.model.gold = user.gold + exchangeConf.gold;
+        await PlayerModel.update({_id: this.player._id}, {$inc: {diamond: -exchangeConf.diamond, gold: exchangeConf.gold}});
       }
 
       // 增加日志
