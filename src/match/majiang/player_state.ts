@@ -650,10 +650,8 @@ class PlayerState implements Serializable {
     let newHuForbidCards = []
     if (ignore && check.hu) {
       canHu = true
-    } else if (this.rule.keJiePao) {
-      canHu = check.fan > 1 && check.fan > this.huForbiddenFan
     } else {
-      canHu = check.hu && check.fan > this.huForbiddenFan
+      canHu = check.fan > 1 && check.fan > this.huForbiddenFan
     }
 
     if (canHu) {
