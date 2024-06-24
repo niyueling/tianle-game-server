@@ -612,7 +612,7 @@ class PlayerState implements Serializable {
       return true
     }
 
-    return checkResult.hu && checkResult.fan > this.huForbiddenFan
+    return checkResult.hu && checkResult.fan > this.huForbiddenFan && this.cards[this.caiShen] === 0
   }
 
   checkHuState(card) {
