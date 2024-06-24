@@ -1966,7 +1966,7 @@ class TableState implements Serializable {
 
   async onPlayerDa(player, turn, card) {
     const index = this.players.indexOf(player);
-    let from
+    let from;
     if (this.state === stateQiangJin) {
       const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
       // 如果用户无法天胡，三金倒，抢金，或者闲家可以抢金，三金倒，则不能打牌

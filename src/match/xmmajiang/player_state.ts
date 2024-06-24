@@ -577,7 +577,7 @@ class PlayerState implements Serializable {
     if (ignore && check.hu && this.cards[this.caiShen] === 0) {
       canHu = true
     } else {
-      canHu = check.hu && check.fan > this.huForbiddenFan
+      canHu = check.hu && check.fan > this.huForbiddenFan && this.cards[this.caiShen] === 0
     }
     // 检查金牌是不是大于2
     const isHu = this.isDoubleGoldCardForYouJin(check);
