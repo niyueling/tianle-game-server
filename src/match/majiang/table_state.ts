@@ -5207,7 +5207,6 @@ class TableState implements Serializable {
         const currency = await this.PlayerGoldCurrency(p._id);
         if (!p.isBroke && currency > 0) {
           const r = p.markJiePao(card, result);
-          console.warn("isBroke-%s, gold-%s, currency-%s, huResult-%s", p.isBroke, currency, this.rule.currency, JSON.stringify(r));
           if (r.hu) {
             if (!check.hu || check.hu.length === 0) {
               check.hu = [];
@@ -5315,7 +5314,6 @@ class TableState implements Serializable {
 
         const msg = this.actionResolver.allOptions(p);
         const currency = await this.PlayerGoldCurrency(p._id);
-        console.warn("seatIndex-%s, currency-%s, msg-%s", p.seatIndex, currency, JSON.stringify(msg));
         if (msg && currency > 0 && !p.isBroke) {
           huCount++;
           this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});

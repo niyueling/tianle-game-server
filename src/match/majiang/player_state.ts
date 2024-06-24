@@ -647,8 +647,6 @@ class PlayerState implements Serializable {
     let check = this.checkHuState(card)
     let canHu;
 
-    console.warn("fan-%s, huForbiddenFan-%s", check.fan, this.huForbiddenFan);
-
     let newHuForbidCards = []
     if (ignore && check.hu) {
       canHu = true
