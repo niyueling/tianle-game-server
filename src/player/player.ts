@@ -404,6 +404,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
     const playerIp = this.getIpAddress()
     if (!this.currentRoom) {
       logger.error('player is not in room', name, message)
+      this.sendMessage("room/leaveReply", {ok: true, data: {_id: this._id}})
       return
     }
 
