@@ -685,10 +685,6 @@ class PlayerState implements Serializable {
       return true
     }
 
-    if (!this.rule.keJiePao) {
-      return checkResult.fan > 1
-    }
-
     return checkResult.hu && checkResult.fan > this.huForbiddenFan
   }
 
