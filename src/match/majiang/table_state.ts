@@ -5315,6 +5315,7 @@ class TableState implements Serializable {
 
         const msg = this.actionResolver.allOptions(p);
         const currency = await this.PlayerGoldCurrency(p._id);
+        console.warn("seatIndex-%s, currency-%s", p.seatIndex, currency);
         if (msg && currency > 0 && !p.isBroke) {
           huCount++;
           this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});
