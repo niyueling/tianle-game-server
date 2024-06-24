@@ -21,6 +21,8 @@ import Room from './room'
 import Rule from './Rule'
 import {GameType, TianleErrorCode} from "@fm/common/constants";
 import Player from "../../database/models/player";
+import GameCategory from "../../database/models/gameCategory";
+import CombatGain from "../../database/models/combatGain";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1612,6 +1614,9 @@ class TableState implements Serializable {
           state1.isBroke = player.isBroke;
           // mvp 次数
           state1.mvpTimes = 0;
+
+          // 生成战绩
+          await this.savePublicCombatGain(player, state1.score);
         } else {
           state1.score = ((this.rule.quanFei > 0 || this.rule.feiNiao > 0) ? this.players[i].gameScore : this.players[i].balance) * this.rule.diFen
         }
@@ -1657,6 +1662,21 @@ class TableState implements Serializable {
       await this.room.gameOver(nextZhuang.model._id, states)
     }
     this.logger.close()
+  }
+
+  async savePublicCombatGain(player, score) {
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
+
+    await CombatGain.create({
+      uid: this.room._id,
+      room: this.room.uid,
+      juIndex: this.room.game.juIndex,
+      playerId: player._id,
+      gameName: "红中麻将",
+      caregoryName: category.title,
+      time: new Date(),
+      score
+    });
   }
 
   async setPlayerGameConfig(player, score) {
