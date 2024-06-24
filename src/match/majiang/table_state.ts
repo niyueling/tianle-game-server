@@ -5206,8 +5206,8 @@ class TableState implements Serializable {
         const p = this.players[i];
         const currency = await this.PlayerGoldCurrency(p._id);
         if (!p.isBroke && currency > 0) {
-          console.warn("isBroke-%s, gold-%s, currency-%s", p.isBroke, currency, this.rule.currency);
           const r = p.markJiePao(card, result);
+          console.warn("isBroke-%s, gold-%s, currency-%s, huResult-%s", p.isBroke, currency, this.rule.currency, JSON.stringify(r));
           if (r.hu) {
             if (!check.hu || check.hu.length === 0) {
               check.hu = [];
