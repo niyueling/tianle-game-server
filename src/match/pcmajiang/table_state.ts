@@ -20,6 +20,7 @@ import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
 import {GameType, TianleErrorCode} from "@fm/common/constants";
+import Player from "../../database/models/player";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -652,7 +653,7 @@ class TableState implements Serializable {
       player.deposit(() => {
         const card = msg.data.card
         const todo = player.ai.onCanDoSomething(msg.data)
-        console.warn("card-%s, todo-%s", card, todo)
+        // console.warn("card-%s, todo-%s", card, todo)
         switch (todo) {
           case Enums.peng:
             player.emitter.emit(Enums.peng, this.turn, card)
@@ -1577,7 +1578,7 @@ class TableState implements Serializable {
 
         for (let i = 0; i < this.players.length; i++) {
           feiNiaoArrs.push({shortId: this.players[i].model.shortId, feiNiaoCards: this.players[i].feiNiaoCards });
-          console.warn("index-%s, gameScore-%s", this.players[i].seatIndex, this.players[i].gameScore);
+          // console.warn("index-%s, gameScore-%s", this.players[i].seatIndex, this.players[i].gameScore);
         }
       }
 
@@ -1624,6 +1625,8 @@ class TableState implements Serializable {
         if (state1.score !== 0) {
           isLiuJu = false;
         }
+
+        await this.setPlayerGameConfig(state1.model, state1.score);
       }
 
       await this.room.recordGameRecord(this, states)
@@ -1654,6 +1657,40 @@ class TableState implements Serializable {
       await this.room.gameOver(nextZhuang.model._id, states)
     }
     this.logger.close()
+  }
+
+  async setPlayerGameConfig(player, score) {
+    const model = await Player.findOne({_id: player._id});
+
+    model.isGame = false;
+    model.juCount++;
+    if (score > 0) {
+      model.juWinCount++;
+    }
+    model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+    model.goVillageCount++;
+
+    if (score > 0) {
+      model.juContinueWinCount++;
+
+      if (score > model.reapingMachineAmount) {
+        model.reapingMachineAmount = score;
+      }
+    }
+
+    if (score === 0) {
+      model.noStrokeCount++;
+    }
+
+    if (score < 0) {
+      model.juContinueWinCount = 0;
+
+      if (Math.abs(score) > model.looseMoneyBoyAmount) {
+        model.looseMoneyBoyAmount = Math.abs(score);
+      }
+    }
+
+    await model.save();
   }
 
   dissolve() {
