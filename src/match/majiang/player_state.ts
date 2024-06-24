@@ -653,7 +653,7 @@ class PlayerState implements Serializable {
     if (ignore && check.hu) {
       canHu = true
     } else {
-      canHu = check.fan > 1 && check.fan > this.huForbiddenFan
+      canHu = check.fan > this.huForbiddenFan
     }
 
     if (canHu) {
