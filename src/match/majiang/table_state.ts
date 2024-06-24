@@ -5308,15 +5308,14 @@ class TableState implements Serializable {
       }
 
       let huCount = 0;
-
       for (let i = 1; i < this.players.length; i++) {
         const j = (from + i) % this.players.length;
         const p = this.players[j];
 
         const msg = this.actionResolver.allOptions(p);
         const currency = await this.PlayerGoldCurrency(p._id);
-        console.warn("seatIndex-%s, currency-%s", p.seatIndex, currency);
         if (msg && currency > 0 && !p.isBroke) {
+          console.warn("seatIndex-%s, currency-%s, msg-%s", p.seatIndex, currency, JSON.stringify(msg));
           huCount++;
           this.manyHuArray.push({...msg, ...{to: this.atIndex(p)}});
           this.canManyHuPlayers.push(p._id.toString());
