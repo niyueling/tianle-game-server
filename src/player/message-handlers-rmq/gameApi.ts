@@ -171,7 +171,7 @@ export class GameApi extends BaseApi {
     const record = await service.playerService.getLastRoomRuby(this.player.model._id, msg.roomId);
     const player = await service.playerService.getPlayerModel(this.player.model._id);
     const random = Math.random();
-    const score = record.score * random;
+    const score = Math.floor(record.score * random);
     if (record && record.roomNum === msg.roomNum) {
       if (record.score < 0) {
         // 免输
