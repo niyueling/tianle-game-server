@@ -47,21 +47,28 @@ export class RobotManager extends NewRobotManager {
     for (const key of keys) {
       proxy = this.disconnectPlayers[key];
       playerId = proxy.model._id;
+
       const AnGangIndex = this.isPlayerAnGang(proxy.playerState);
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const choice = this.isPlayerChoice(playerId);
       const isHu = proxy.playerState.checkZiMo();
+
       if (this.room.gameState.testMoCards.length === 0) {
         if (this.room.gameState.state === 10) {
-          return await proxy.choice(Enums.qiangJin);
+          await proxy.choice(Enums.qiangJin);
+          continue;
         } else if (isHu.hu && !this.room.gameState.stateData.type) {
-          return await proxy.choice(Enums.hu)
+          await proxy.choice(Enums.hu);
+          continue;
         } else if (AnGangIndex) {
-          return await proxy.gang(Enums.anGang, AnGangIndex)
+          await proxy.gang(Enums.anGang, AnGangIndex);
+          continue;
         } else if (buGangIndex) {
-          return await proxy.gang(Enums.buGang, buGangIndex)
+          await proxy.gang(Enums.buGang, buGangIndex);
+          continue;
         } else if (choice) {
-          return await proxy.choice(choice)
+          await proxy.choice(choice);
+          continue;
         }
       }
 
@@ -123,7 +130,7 @@ export class RobotManager extends NewRobotManager {
     return false;
   }
 
-  // 是否碰吃胡
+  // 是否碰吃杠胡
   isPlayerChoice(playerId) {
     const actionList = [Enums.hu, Enums.peng, Enums.chi, Enums.gang];
 
@@ -135,6 +142,7 @@ export class RobotManager extends NewRobotManager {
       if ([Enums.peng, Enums.chi, Enums.gang].includes(action) && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }
+
       if (action === Enums.hu && Array.isArray(this.room.gameState.stateData[action]) &&
         this.room.gameState.stateData[action].length > 0) {
         if (playerId.toString() === (Array.isArray(this.room.gameState.stateData[action]) ?
