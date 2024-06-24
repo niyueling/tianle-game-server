@@ -17,6 +17,7 @@ import Rule from './Rule'
 import {GameType, TianleErrorCode} from "@fm/common/constants";
 import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
+import Player from "../../database/models/player";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1752,13 +1753,16 @@ class TableState implements Serializable {
           state1.score = player.balance;
           // 是否破产
           state1.isBroke = player.isBroke;
-
+          // 生成战绩
           await this.savePublicCombatGain(player, state1.score);
         } else {
           state1.score = this.players[i].balance * this.rule.diFen
         }
         if (state1.model && state1.model._id) {
           await this.room.addScore(state1.model._id, state1.score);
+
+          // 记录胜率
+          await this.setPlayerGameConfig(state1.model, state1.score);
         }
       }
 
@@ -1791,6 +1795,40 @@ class TableState implements Serializable {
       this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg});
       await this.room.gameOver(nextZhuang._id, states, this.zhuang._id);
     }
+  }
+
+  async setPlayerGameConfig(player, score) {
+    const model = await Player.findOne({_id: player._id});
+
+    model.isGame = false;
+    model.juCount++;
+    if (score > 0) {
+      model.juWinCount++;
+    }
+    model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+    model.goVillageCount++;
+
+    if (score > 0) {
+      model.juContinueWinCount++;
+
+      if (score > model.reapingMachineAmount) {
+        model.reapingMachineAmount = score;
+      }
+    }
+
+    if (score === 0) {
+      model.noStrokeCount++;
+    }
+
+    if (score < 0) {
+      model.juContinueWinCount = 0;
+
+      if (Math.abs(score) > model.looseMoneyBoyAmount) {
+        model.looseMoneyBoyAmount = Math.abs(score);
+      }
+    }
+
+    await model.save();
   }
 
   async savePublicCombatGain(player, score) {
