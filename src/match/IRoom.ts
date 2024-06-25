@@ -232,6 +232,13 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
         readyPlayers: this.readyPlayers
       }
     })
+
+    if (this.allReady) {
+      if (!this.game.isAllOver()) {
+        // 先播动画
+        this.playShuffle();
+      }
+    }
   }
 
   clearReady() {
@@ -948,25 +955,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   abstract async gameOver(nextZhuangId: string, states: any, currentZhuangId: string)
 
-  // 红包总额
-  getRedPocketAmount(): number {
-    const pocketTypes = this.gameRule.luckyRewardList;
-    if (!pocketTypes || pocketTypes.length < 1) {
-      // 没有红包
-      return 0;
-    }
-    const hit = Math.random();
-    for (const pt of pocketTypes) {
-      if (hit <= pt.probability) {
-        // 抽中了
-        return pt.amount;
-      }
-    }
-    // tslint:disable-next-line:max-line-length
-    logger.error(`error, get wrong pocket with gameType ${this.gameRule.type}, rewardConfigs ${JSON.stringify(pocketTypes)}`)
-    return 0;
-  }
-
   async addShuffle(player) {
     const model = await service.playerService.getPlayerModel(player._id);
     if (model.diamond < config.game.payForReshuffle) {
@@ -986,7 +974,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     })
     // 多延时 1 秒
     const shuffleDelayTime = this.shuffleData.length * config.game.playShuffleTime + 1000;
-    this.broadcast('game/shuffleData', {ok: true, shuffleData})
+    this.broadcast('game/shuffleData', {ok: true, data: {shuffleData, shuffleDelayTime}});
     return shuffleDelayTime;
   }
 
