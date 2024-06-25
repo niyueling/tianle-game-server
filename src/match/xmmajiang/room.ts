@@ -406,7 +406,8 @@ class Room extends RoomBase {
 
     const playerArray = states.map(state => {
       return {
-        name: state.model.nickname,
+        nickname: state.model.nickname,
+        avatar: state.model.avatar,
         score: state.score,
       }
     })

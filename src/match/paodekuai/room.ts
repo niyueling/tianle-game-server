@@ -184,12 +184,13 @@ class Room extends RoomBase {
     const playersInfo = states.map(player => ({
       model: pick(player.model, ['name', 'headImgUrl', 'sex', 'gold', 'shortId'])
     }))
-    const playerArray = states.map(state => ({
-      name: state.model.name,
-      headImgUrl: state.model.headImgUrl,
-      score: state.score,
-      _id: state.model._id,
-    }))
+    const playerArray = states.map(state => {
+      return {
+        nickname: state.model.nickname,
+        avatar: state.model.avatar,
+        score: state.score,
+      }
+    })
 
     GameRecord.create({
         room,
