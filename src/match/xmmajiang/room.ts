@@ -704,7 +704,7 @@ class Room extends RoomBase {
     await this.announcePlayerJoin(thePlayer);
 
     // 测试洗牌
-    await this.addShuffle(thePlayer);
+    // await this.addShuffle(thePlayer);
     return true;
   }
 
