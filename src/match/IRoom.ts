@@ -941,7 +941,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
       if (newDoc) {
         player.model.diamond = newDoc.diamond
-        player.sendMessage('resource/createRoomUsedDiamond', {ok: true, data: {diamondFee: toPay}})
+        // player.sendMessage('resource/createRoomUsedDiamond', {ok: true, data: {diamondFee: toPay}})
         service.playerService.logGemConsume(player.model._id, type, -toPay, player.model.diamond, note);
       }
     }
@@ -963,7 +963,9 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
     this.shuffleData.push(player.model._id);
     this.payUseGem(player, config.game.payForReshuffle, this._id, ConsumeLogType.reshuffleCard);
-    player.sendMessage('room/addShuffleRely', {ok: true, info: TianleErrorCode.shuffleSuccess})
+    player.sendMessage('room/addShuffleRely', {ok: true, data: {seatIndex: this.indexOf(player), diamondFee: config.game.payForReshuffle}})
+
+    this.updateResource2Client(player);
   }
 
   playShuffle() {
