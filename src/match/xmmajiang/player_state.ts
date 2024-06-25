@@ -387,12 +387,6 @@ class PlayerState implements Serializable {
     }
     await this.room.auditManager.playerTakeCard(this.model._id, card);
     this.huForbiddenCards = []
-    // 敲响check
-    // if (!afterQiaoXiang && !this.hadQiaoXiang && this.checkQiaoXiang()) {
-    //   this.takeCardStash = {turn, card, gangGuo}
-    //   this.mayQiaoXiang()
-    //   return {};
-    // }
 
     this.lastCardToken = card
     if (!this.room.gameState.isFlower(card)) {
@@ -637,6 +631,7 @@ class PlayerState implements Serializable {
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
     const result = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
+    console.warn("seatIndex-%s, cards-%s, huResult-%s", this.seatIndex, JSON.stringify(this.getCardsArray()), JSON.stringify(result));
     result.hu = this.isDoubleGoldCardForYouJin(result);
 
     if (this.getCardCount() % 3 !== 2) {
