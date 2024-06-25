@@ -1,18 +1,24 @@
 # 血流红中-十二星座
 
 ### 介绍
-血流麻将包含两个玩法，十二星座和血流红中。
+血流类游戏包含三个玩法，十二星座和血流红中和国标血流。麻将类包含两个玩法，红中麻将和厦门麻将。扑克类包含一个玩法，斗地主。
 
 | 类型      | 链接                                                          |
 |---------|-------------------------------------------------------------|
 | 大厅服源码   | https://gitee.com/cyntc_1061451899/poker-majiang-dating.git |
 | 游戏服源码   | https://gitee.com/cyntc_1061451899/poker-majiang.git        |
-| web端演示  | https://admin.hfdsdas.cn/majiang                            |
-| 移动端H5演示 | https://admin.hfdsdas.cn/majiang                            |
+| web端演示  | https://phpadmin.tianle.fanmengonline.com/majiang/                            |
+| 移动端H5演示 | https://phpadmin.tianle.fanmengonline.com/majiang/                            |
 
 ### 支持功能
-- 血流麻将-十二星座玩法，仿指尖麻将-十二生肖玩法
-- 去除麻将筒牌，使用十二星座牌替代，使用波塞冬，宙斯，雅典娜牌作为癞子牌
+- 血流类游戏包含三个玩法，十二星座和血流红中和国标血流。麻将类包含两个玩法，红中麻将和厦门麻将。扑克类包含一个玩法，斗地主。
+- 十二星座仿指尖四川麻将-十二生肖。
+- 血流红中仿指尖四川麻将-血流红中。
+- 国标血流仿微乐福建麻将-百变国标。
+- 红中麻将为福建浦城地区的地域性玩法，可以选择红中赖子，庄飞鸟，全飞鸟的特殊玩法。
+- 厦门麻将仿微乐开心泉州麻将-厦门麻将。
+- 斗地主仿欢乐斗地主-经典玩法。
+- 自创十二星座玩法，去除麻将筒牌，使用十二星座牌替代，使用波塞冬，宙斯，雅典娜牌作为癞子牌
 - 大厅活动包含幸运抽奖，登录礼包，游戏圈，开运好礼，新手宝典，充值派对，成就，新人福利，商城，邮件，背包，战绩
 - 拥有丰富的页面交互和特效
 - 支持移动端（由cocos开发，可打包H5、APP和小游戏）
@@ -54,22 +60,36 @@ npm install
 - docker安装redis,rabbitmq,mongo
 ```
 - 安装redis: docker run -p 6379:6379 --name redis -d redis redis-server --requirepass "qazwsx123!!"
-
-- 安装rabbitmq: docker run -p 5672:5672 -p 15672:15672 --namer rabbitmq-server -d rabbitmq:3.8.9-management
-
-- 安装mongodb: docker run --name data-mongo-1 -p 27017:27017 -d mongo:3.4
 ```
+```
+- 安装rabbitmq: docker run -p 5672:5672 -p 15672:15672 --namer rabbitmq-server -d rabbitmq:3.8.9-management
+- rabbitmq操作步骤：
+- 进入rabbitmq
+- docker exec -it tianle-rabbitmq-server bash
+- 创建账号
+- rabbitmqctl add_user user password
+- 设置用户的角色和权限
+- rabbitmqctl set_user_tags user administrator
+- 设置用户的访问权限，三个星号分别代表配置、写和读的权限，表示用户具有完全的访问权限。
+- rabbitmqctl set_permissions -p / user ".*" ".*" ".*"
+```
+```
+安装mongodb: docker run --name data-mongo-1 -p 27017:27017 -d mongo:3.4
+- Mongodb导入数据库
+- 进入mongodb
+- docker exec -it data-mongo-1 bash
+- 导入数据库
+- mongorestore --host 127.0.0.1 --port 27017 --db tianleServer /opt/dbs/tianleServer
+```
+
+- 修改服务端配置文件
+- 进入/src/config目录下，如果是正式环境修改default.js和default.js的配置，如果是测试环境，修改proprod.js的配置。
+
 
 - 启动服务器
 ```
 pm2 startOrRestart ecosystem.config.js
 ```
-
-- docker启动效果图
-![img_6.png](img_6.png)
-
-- 启动效果图
-![img_5.png](img_5.png)
 
 - 设置nginx代理
 
@@ -97,6 +117,34 @@ server {
 }
 ```
 
+- 进入游戏服
+```
+- cd /project/tianle-game-server
+- 录入房间号数据
+- node ./dist/bin/setupRoomIds.js
+
+- 录入短信验证码数据
+- node ./dist/bin/setupSMSIds.js
+```
+
+- 大厅服更新脚本
+```
+cd /root/project/tianle-server || exit;
+git pull;
+npm install;
+npm run build;
+pm2 restart ecosystem.config.js;
+```
+
+- 游戏服更新脚本
+```
+cd /root/project/tianle-game-server || exit;
+git pull;
+npm install;
+npm run build;
+pm2 restart ecosystem.config.js;
+```
+
 - 如果有域名并且需要配置证书来开启HTTPS，可以使用免费的 `Let's Encrypt` 证书，如果不需要这些服务，可以直接使用HTTP协议,小游戏服务必须配置https。
 
 ### 安装部署服务
@@ -109,97 +157,3 @@ server {
 创作不易，点个star吧
 
 [QQ 交流群：642610895](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=AjhXh31lV0NPJz3qAQ9J1Ui0yY8lDeNH&authKey=fnAhcR90n%2FEEYqWVr9IoBw9JjCdnU1P8yJ58Rq9esmvq3Fj%2FTUux%2FQcUvU92W7dE&noverify=0&group_code=642610895)
-
-页面展示：
-- 登录页面(支持游客登陆和微信登陆)
-- ![img_7.png](img_7.png)
-
-- 大厅页面
-- ![img_8.png](img_8.png)
-
-- 个人信息页面
-- ![img_9.png](img_9.png)
-
-- 幸运抽奖界面
-- ![img_10.png](img_10.png)
-
-- 登陆礼包界面(每日登陆礼包)
-- ![img_11.png](img_11.png)
-
-- 游戏圈界面(接入小游戏游戏圈)
-- ![img_12.png](img_12.png)
-
-- 开运好礼(每日开运领金豆)
-- ![img_13.png](img_13.png)
-
-- 新手宝典(包括新手7日签到，初见引导，新人首充)
-- ![img_14.png](img_14.png)
-- ![img_15.png](img_15.png)
-- ![img_16.png](img_16.png)
-
-- 充值派对(包括1元档，6元档，30元档福利)
-- ![img_17.png](img_17.png)
-- ![img_18.png](img_18.png)
-- ![img_19.png](img_19.png)
-
-- 成就(包括成长成就，对局成就，玩法成就，特殊成就)
-- ![img_20.png](img_20.png)
-- ![img_21.png](img_21.png)
-- ![img_22.png](img_22.png)
-- ![img_23.png](img_23.png)
-- ![img_24.png](img_24.png)
-
-- 新人福利
-- ![img_25.png](img_25.png)
-
-- 商城(包含金豆，钻石，代金券，头像框，称号，靓号购买)
-- ![img_26.png](img_26.png)
-- ![img_27.png](img_27.png)
-- ![img_28.png](img_28.png)
-- ![img_29.png](img_29.png)
-- ![img_30.png](img_30.png)
-
-- 战绩
-- ![img_31.png](img_31.png)
-
-- 邮件
-- ![img_32.png](img_32.png)
-
-- 背包
-- ![img_33.png](img_33.png)
-- ![img_34.png](img_34.png)
-- ![img_35.png](img_35.png)
-
-- 场次选择
-- ![img_45.png](img_45.png)
-
-- 对局匹配界面
-- ![img_36.png](img_36.png)
-
-- 开局特效
-- ![img_37.png](img_37.png)
-
-- 对局页面
-- ![img_38.png](img_38.png)
-- ![img_42.png](img_42.png)
-
-- 特效展示
-- ![img_39.png](img_39.png)
-- ![img_40.png](img_40.png)
-- ![img_43.png](img_43.png)
-- ![img_44.png](img_44.png)
-
-- 结算界面
-- ![img_41.png](img_41.png)
-
-- 对局超值礼包
-- ![img_46.png](img_46.png)
-
-- 救济金
-- ![img_47.png](img_47.png)
-
-- 破产礼包
-- ![img_48.png](img_48.png)
-
-- 游戏破产提前离场
-- ![img_49.png](img_49.png)
