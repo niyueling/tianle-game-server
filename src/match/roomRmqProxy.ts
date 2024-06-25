@@ -280,7 +280,7 @@ export default class RoomProxy {
           return
         }
         if (messageBody.name === 'room/addShuffle') {
-          room.addShuffle(thePlayer)
+          await room.addShuffle(thePlayer)
           await this.tryBestStore(rabbit.redisClient, room)
           return
         }

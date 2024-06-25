@@ -65,7 +65,7 @@ export default class QianService extends BaseService {
   // 获取今日签
   async getTodayQian(playerShortId) {
     const record = await PlayerQian.findOne({
-      playerShortId,
+      playerShortId
     });
     if (!record) {
       // 没有，一次都没抽

@@ -925,30 +925,23 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   payUseGem(player, toPay: number, note: string | number = '', type: number = 1) {
-    const condition = {_id: player.model._id}
-    const update = {$inc: {gem: -toPay}}
-    const options = {new: true}
+    const condition = {_id: player.model._id};
+    const update = {$inc: {diamond: -toPay}};
+    const options = {new: true};
     const callback = (err, newDoc) => {
       if (err) {
-        logger.error(player.model, err)
-      } else {
-        if (newDoc) {
-          player.model.gem = newDoc.gem
-          player.sendMessage('resource/createRoomUsedGem', {
-            createRoomNeed: toPay
-          })
-          new ConsumeRecord({
-            player: player.model._id,
-            gem: toPay,
-            note: `${note}=>${newDoc.gem}/${newDoc.gold}`
-          }).save()
+        logger.error(player.model, err);
+        return
+      }
 
-          service.playerService.logGemConsume(player.model._id, type, -toPay, player.model.gem, note);
-        }
+      if (newDoc) {
+        player.model.diamond = newDoc.diamond
+        player.sendMessage('resource/createRoomUsedDiamond', {ok: true, data: {diamondFee: toPay}})
+        service.playerService.logGemConsume(player.model._id, type, -toPay, player.model.diamond, note);
       }
     }
 
-    PlayerModel.findOneAndUpdate(condition, update, options, callback)
+    PlayerModel.findOneAndUpdate(condition, update, options, callback);
   }
 
   protected abstract allOverMessage(lowScoreTimes?: number): any
@@ -976,14 +969,15 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     return 0;
   }
 
-  addShuffle(player) {
-    if (player.model.gem < config.game.payForReshuffle) {
-      player.sendMessage('room/addShuffleRely', {ok: false, info: '钻石不够！'})
+  async addShuffle(player) {
+    const model = await service.playerService.getPlayerModel(player._id);
+    if (model.diamond < config.game.payForReshuffle) {
+      player.sendMessage('room/addShuffleRely', {ok: false, info: TianleErrorCode.diamondInsufficient});
       return
     }
-    this.shuffleData.push(player.model._id)
-    this.payUseGem(player, config.game.payForReshuffle, this._id, ConsumeLogType.reshuffleCard)
-    player.sendMessage('room/addShuffleRely', {ok: true, info: '请求成功！将在下一局开始前重新洗牌！'})
+    this.shuffleData.push(player.model._id);
+    this.payUseGem(player, config.game.payForReshuffle, this._id, ConsumeLogType.reshuffleCard);
+    player.sendMessage('room/addShuffleRely', {ok: true, info: TianleErrorCode.shuffleSuccess})
   }
 
   playShuffle() {

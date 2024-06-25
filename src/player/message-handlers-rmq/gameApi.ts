@@ -145,7 +145,7 @@ export class GameApi extends BaseApi {
     if (todayQian.record) {
       resp.record = todayQian.record;
       // 获取改签需要的钻石
-      resp.qianCost = await service.utils.getGlobalConfigByName(GlobalConfigKeys.changeQianCostGem) || 200;
+      resp.qianCost = await service.utils.getGlobalConfigByName(GlobalConfigKeys.changeQianCostGem) || 20;
       resp.qianCost = parseInt(resp.qianCost.toString(), 10);
     } else {
       resp.record = null;
@@ -153,7 +153,7 @@ export class GameApi extends BaseApi {
         resp.qianCost = 0;
       } else {
         // 当天第一次抽签
-        resp.qianCost = await service.utils.getGlobalConfigByName(GlobalConfigKeys.firstQianCostGem) || 100;
+        resp.qianCost = await service.utils.getGlobalConfigByName(GlobalConfigKeys.firstQianCostGem) || 10;
         resp.qianCost = parseInt(resp.qianCost.toString(), 10);
       }
     }
