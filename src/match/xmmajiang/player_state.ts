@@ -631,7 +631,6 @@ class PlayerState implements Serializable {
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
     const result = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
-    console.warn("seatIndex-%s, cards-%s, huResult-%s", this.seatIndex, JSON.stringify(this.getCardsArray()), JSON.stringify(result));
     result.hu = this.isDoubleGoldCardForYouJin(result);
 
     if (this.getCardCount() % 3 !== 2) {
@@ -1564,12 +1563,10 @@ class PlayerState implements Serializable {
     // 检查金牌是不是大于2
     const count = this.cards[this.caiShen];
     const isOnlyYouJin = (count === 2 || (count === 3 && huResult.huType !== Enums.qiShouSanCai)) && this.room.gameRule.doubleGoldYouJin;
-    if (huResult.hu) {
-      // console.warn("hu-%s, isYouJin-%s, youJinTimes-%s, goldCount-%s, doubleGoldYouJin-%s, result-%s", !!huResult.hu, huResult.isYouJin,
-      //   huResult.youJinTimes, count, this.room.gameRule.doubleGoldYouJin, JSON.stringify(huResult));
-    }
+    const isCanYouJin = manager.isYouJin(this.cards, this.caiShen);
+    console.warn("seatIndex-%s, caiCount-%s, isOnlyYouJin-%s, isCanYouJin-%s", this.seatIndex, count, isOnlyYouJin, isCanYouJin);
 
-    if (huResult.hu && isOnlyYouJin && (!huResult.isYouJin || !huResult.youJinTimes)) {
+    if (huResult.hu && isOnlyYouJin && !isCanYouJin) {
       // 不能胡非游金
       return false;
     }
