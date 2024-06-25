@@ -231,9 +231,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
         index: this.players.indexOf(player),
         readyPlayers: this.readyPlayers
       }
-
     })
-
   }
 
   clearReady() {
