@@ -432,9 +432,16 @@ class PlayerState implements Serializable {
 
     const huResult = this.checkZiMo()
     if (huResult.hu) {
+      const isCanYouJin = manager.isYouJin(this.cards, this.caiShen);
       msg.huInfo = huResult
       msg.hu = true
       this.huForbiddenCards = []
+
+      if (isCanYouJin && !huResult.isYouJin) {
+        msg.huInfo.isYouJin = true;
+        msg.huInfo.youJinTimes = 1;
+        this.recordGameSingleEvent(Enums.youJinTimes, 1);
+      }
 
       if (!huResult.gangShangKaiHua && this.room.gameState.isSomeOne3you(this)) {
         msg.hu = false;
@@ -1564,7 +1571,6 @@ class PlayerState implements Serializable {
     const count = this.cards[this.caiShen];
     const isOnlyYouJin = (count === 2 || (count === 3 && huResult.huType !== Enums.qiShouSanCai)) && this.room.gameRule.doubleGoldYouJin;
     const isCanYouJin = manager.isYouJin(this.cards, this.caiShen);
-    console.warn("seatIndex-%s, caiCount-%s, isOnlyYouJin-%s, isCanYouJin-%s", this.seatIndex, count, isOnlyYouJin, isCanYouJin);
 
     if (huResult.hu && isOnlyYouJin && !isCanYouJin) {
       // 不能胡非游金
