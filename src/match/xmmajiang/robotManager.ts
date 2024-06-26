@@ -135,10 +135,6 @@ export class RobotManager extends NewRobotManager {
     const actionList = [Enums.hu, Enums.peng, Enums.chi, Enums.gang];
 
     for (const action of actionList) {
-      if (this.room.gameState.stateData[action]) {
-        console.warn("action-%s, playerId-%s, actionPlayerId-%s", action, playerId, this.room.gameState.stateData[action] ? this.room.gameState.stateData[action]._id : null);
-      }
-
       if ([Enums.peng, Enums.chi, Enums.gang].includes(action) && this.room.gameState.stateData[action] && playerId.toString() === this.room.gameState.stateData[action]._id.toString()) {
         return action;
       }
