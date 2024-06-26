@@ -752,6 +752,9 @@ class PlayerState implements Serializable {
       this.room.recordPlayerEvent('fangGang', daPlayer.model._id)
       daPlayer.fangGangCount += 1
       await this.room.auditManager.recordGangZi(this._id, card, daPlayer._id, Enums.mingGang);
+
+      await this.checkYouJin(card);
+
       return true
     }
     return false
