@@ -151,13 +151,8 @@ const HuPaiDetect = {
     }
 
     // 杠上开花
-    if (gang) {
-      if (result.baoTou) {
-        result.baoTou = false
-        result.gangBao = true
-      } else {
-        result.gangShangKaiHua = true
-      }
+    if (gang && !result.baoTou) {
+      result.gangShangKaiHua = true
     }
 
     if (qiangGang) {
@@ -409,9 +404,6 @@ const HuPaiDetect = {
       // result.caiShenTou = true
       // result.wuCai = false
       // 区分杠上开花
-      if (lastTakeCardAndCaiShen.lastTakeCard === lastTakeCardAndCaiShen.caiShen) {
-        result.baoTou = true
-      }
 
       if (lastTakeCardAndCaiShen.takeSelfCard) {
         // 检查是不是游金

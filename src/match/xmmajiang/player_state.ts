@@ -439,11 +439,6 @@ class PlayerState implements Serializable {
         msg.hu = false;
       }
 
-      if (huResult.isYouJin && !this.events[Enums.youJinTimes]) {
-        huResult.youJinTimes = 1;
-        this.recordGameSingleEvent(Enums.youJinTimes, 1);
-      }
-
       msg.huInfo = huResult;
     }
 
@@ -777,7 +772,7 @@ class PlayerState implements Serializable {
         this.room.recordPlayerEvent('buGang', this.model._id)
         this.record('gang', card)
         await this.room.auditManager.recordGangZi(this._id, card, this._id, Enums.buGang);
-        return true
+        return true;
       }
     } else {
       if (this.cards[card] === 4) {
@@ -790,10 +785,12 @@ class PlayerState implements Serializable {
         this.record('gang', card)
         this.room.recordPlayerEvent('anGang', this.model._id)
         await this.room.auditManager.recordGangZi(this._id, card, this._id, Enums.anGang);
-        return true
+        return true;
       }
     }
-    return false
+
+    await this.checkYouJin(card);
+    return false;
   }
 
   gangShangGang(card, self, info) {
@@ -957,57 +954,57 @@ class PlayerState implements Serializable {
       this.record('da', card)
       this.recordGameSingleEvent(Enums.lastPlayerDaCard, card);
 
-      if (!this.events[Enums.youJinTimes]) {
-        this.recordGameSingleEvent(Enums.youJinTimes, 0);
-      }
-
-      // 检查是否是游金
-      const isOk = manager.isCanYouJin(this.cards, this.caiShen);
-      if (isOk) {
-        if (card === this.caiShen) {
-          // 如果起手双金，打出金牌则是双游
-          if (this.cards[card] > 0 && this.events[Enums.youJinTimes] === 0) {
-            this.recordGameSingleEvent(Enums.youJinTimes, this.events[Enums.youJinTimes] + 1);
-          }
-          // 打的金牌,游金次数 + 1
-          this.recordGameSingleEvent(Enums.youJinTimes, this.events[Enums.youJinTimes] + 1);
-
-          // 如果用户处于双游中，设置游金状态
-          this.isYouJin = true;
-
-          if (this.events[Enums.youJinTimes] >= 2) {
-            this.room.broadcast("game/startYouJin", {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}});
-          }
-        } else {
-          const youJinTimes = this.events[Enums.youJinTimes];
-          // 第一次游金
-          this.recordGameSingleEvent(Enums.youJinTimes, 1);
-          this.isYouJin = false;
-
-          if (youJinTimes >= 2) {
-            this.room.broadcast("game/endYouJin", {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}});
-          }
-        }
-      } else {
-        const youJinTimes = this.events[Enums.youJinTimes];
-        // 非游金，重置次数
-        this.recordGameSingleEvent(Enums.youJinTimes, 0);
-        this.isYouJin = false;
-
-        if (youJinTimes >= 2) {
-          this.room.broadcast("game/endYouJin", {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}});
-        }
-      }
-
-      if (isOk) {
-        console.warn("seatIndex-%s, card-%s, cards-%s, isYouJin-%s, youJinTimes-%s", this.seatIndex, card, JSON.stringify(this.getCardsArray()), isOk, this.events[Enums.youJinTimes]);
-      }
+      await this.checkYouJin(card);
 
       return true;
     }
 
     console.warn('no such card', card);
     return false;
+  }
+
+  async checkYouJin(card) {
+    if (!this.events[Enums.youJinTimes]) {
+      this.recordGameSingleEvent(Enums.youJinTimes, 0);
+    }
+
+    // 检查是否是游金
+    const isOk = manager.isCanYouJin(this.cards, this.caiShen);
+    if (isOk) {
+      if (card === this.caiShen) {
+        // 如果起手双金，打出金牌则是双游
+        if (this.cards[card] > 0 && this.events[Enums.youJinTimes] === 0) {
+          this.recordGameSingleEvent(Enums.youJinTimes, this.events[Enums.youJinTimes] + 1);
+        }
+        // 打的金牌,游金次数 + 1
+        this.recordGameSingleEvent(Enums.youJinTimes, this.events[Enums.youJinTimes] + 1);
+
+        // 如果用户处于双游中，设置游金状态
+        this.isYouJin = true;
+
+        if (this.events[Enums.youJinTimes] >= 2) {
+          this.room.broadcast("game/startYouJin", {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}});
+        }
+      } else {
+        const youJinTimes = this.events[Enums.youJinTimes];
+        // 第一次游金
+        this.recordGameSingleEvent(Enums.youJinTimes, 1);
+        this.isYouJin = false;
+
+        if (youJinTimes >= 2) {
+          this.room.broadcast("game/endYouJin", {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}});
+        }
+      }
+    } else {
+      const youJinTimes = this.events[Enums.youJinTimes];
+      // 非游金，重置次数
+      this.recordGameSingleEvent(Enums.youJinTimes, 0);
+      this.isYouJin = false;
+
+      if (youJinTimes >= 2) {
+        this.room.broadcast("game/endYouJin", {ok: true, data: {index: this.seatIndex, youJinTimes: this.events[Enums.youJinTimes]}});
+      }
+    }
   }
 
   daHuPai(card, daPlayer) {
