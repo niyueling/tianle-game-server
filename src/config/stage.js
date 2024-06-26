@@ -1,6 +1,6 @@
 module.exports = {
   database: {
-    url: "mongodb://172.19.148.251:27017/tianleServer"
+    url: "mongodb://localhost:27017/tianleServer"
   },
   websocket: {
     "port": 9596
