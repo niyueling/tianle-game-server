@@ -13,9 +13,9 @@
     "dev": "nodemon --ext js,ts -i dist --exec ts-node src/server.js",
     "backend-majiang": "nodemon --ext js,ts -i dist --exec ts-node src/backend.majiang.ts",
     "dist-majiang": "cross-env NODE_ENV=dev INSTANCE_ID=majiang nodemon dist/backend.majiang.js",
-    "init-production-roomId": "cross-env NODE_ENV=production node dist/bin/setupRoomIds.ts",
-    "init-proprod-roomId": "cross-env NODE_ENV=proprod node dist/bin/setupRoomIds.ts",
-    "init-stage-roomId": "cross-env NODE_ENV=stage node dist/bin/setupRoomIds.ts",
+    "init-production-roomId": "cross-env NODE_ENV=production node dist/bin/setupRoomIds.js",
+    "init-proprod-roomId": "cross-env NODE_ENV=proprod node dist/bin/setupRoomIds.js",
+    "init-stage-roomId": "cross-env NODE_ENV=stage node dist/bin/setupRoomIds.js",
     "init-robot": "ts-node src/bin/addRobot.ts",
     "tsc": "tsc | sed  -Ee \"s/\\(([[:digit:]]+),([[:digit:]]+)\\)/\\:\\1:\\2 /g\""
   },
