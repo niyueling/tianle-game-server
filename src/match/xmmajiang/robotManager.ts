@@ -95,7 +95,7 @@ export class RobotManager extends NewRobotManager {
   isPlayerBuGang(player) {
     if (!Array.isArray(player.events.peng)) return false;
     for (const index in player.events.peng) {
-      if (player.cards[player.events.peng[index]] > 0) {
+      if (player.cards[player.events.peng[index]] > 0 && this.room.gameState.stateData[Enums.da] && player._id.toString() === this.room.gameState.stateData[Enums.da]._id.toString()) {
         return player.events.peng[index];
       }
     }
@@ -104,7 +104,7 @@ export class RobotManager extends NewRobotManager {
 
   isPlayerAnGang(player) {
     for (const index in player.cards) {
-      if (player.cards[index] === 4 && !isNaN(Number(index))) {
+      if (player.cards[index] === 4 && !isNaN(Number(index)) && this.room.gameState.stateData[Enums.da] && player._id.toString() === this.room.gameState.stateData[Enums.da]._id.toString()) {
         return index;
       }
     }
