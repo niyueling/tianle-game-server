@@ -322,6 +322,7 @@ const HuPaiDetect = {
       //console.log(`${__filename}:315 huRecur`, result)
       return exit        //   递归退出条件：如果没有剩牌，则和牌返回。
     }
+
     let i = 1;
     // 找到有牌的地方，i就是当前牌,   PAI[i]是个数
     while (!countMap[i] && i < Enums.maxValidCard) {
@@ -475,6 +476,11 @@ const HuPaiDetect = {
       // if (i === Enums.bai) {
       //   result.guiWeiCount -= 1
       // }
+    }
+
+    // 如果剩余的牌都是金牌,则设置为游金
+    if (this.remain(countMap) === caiCount) {
+      result.isYouJin = true;
     }
 
     if (Enums.dong <= i) return false;
