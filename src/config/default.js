@@ -66,28 +66,6 @@ module.exports = {
       }
     ]
   },
-  gmTool: {
-    port: 9528,
-    jwt: {
-      "secret": "secret"
-    },
-    superAccounts: [
-      {
-        "username": "super",
-        "password": "super"
-      }
-    ],
-    recharge: {
-      "kickback": 0.25,
-      "kickback2": 0.2
-    },
-    server: {
-      "api": "http://localhost:3001"
-    },
-    allowOrigin: [
-      "http://localhost:3003"
-    ]
-  },
   logger: {
     level: "debug"
   },

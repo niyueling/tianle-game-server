@@ -18,17 +18,5 @@ module.exports = {
   },
   debug: {
     "message": false
-  },
-  "gmTool": {
-    "port": 9528,
-    "superAccounts": [
-      {
-        "username": "super",
-        "password": "qq42833131"
-      }
-    ],
-    "allowOrigin": [
-      "http://admin.xiexiangwangluo.com"
-    ]
   }
 }
