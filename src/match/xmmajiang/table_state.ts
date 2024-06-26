@@ -982,7 +982,7 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.guo, turn, card);
         return;
       }
-      if ((this.stateData[Enums.gang] && this.stateData[Enums.gang]._id.toString() !== player._id.toString()) || this.stateData.card !== card) {
+      if (!this.stateData[Enums.gang] || this.stateData[Enums.gang]._id.toString() !== player._id.toString() || this.stateData.card !== card) {
         player.emitter.emit(Enums.guo, turn, card);
         return
       }
@@ -1044,7 +1044,7 @@ class TableState implements Serializable {
       if (![stateWaitDa, stateQiangJin].includes(this.state)) {
         return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangParamStateInvaid});
       }
-      if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() !== player.model._id.toString()) {
+      if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id.toString() !== player._id.toString()) {
         return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
       }
       // if (this.isSomeOne2youOr3you()) {
