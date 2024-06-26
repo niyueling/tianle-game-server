@@ -423,7 +423,7 @@ class Room extends RoomBase {
       juShu: this.game.juIndex,
       players: players.map(p => p.model._id),
       playersInfo: players.map(player => (
-        {model: pick(player.model, ['nickname', 'avatar', 'diamond', 'gold', 'shortId'])}
+        {model: pick(player.model, ['nickname', 'avatar', 'diamond', 'gold', 'shortId', 'tlGold'])}
       )),
       record: playerArray,
       game: {
@@ -1033,7 +1033,7 @@ class Room extends RoomBase {
     const loserPlayer = states.findIndex(x => {
       return x != null && this.getScore(x.model) <= 0;
     });
-    console.warn("score-%s, juShu-%s, index-%s", loserPlayer !== -1 ? this.getScore(states[loserPlayer].model) : 0, this.game.juShu, loserPlayer);
+    // console.warn("score-%s, juShu-%s, index-%s", loserPlayer !== -1 ? this.getScore(states[loserPlayer].model) : 0, this.game.juShu, loserPlayer);
     const gameOver = this.game.juShu <= 0;
     return loserPlayer !== -1 || gameOver;
   }
@@ -1050,7 +1050,7 @@ class Room extends RoomBase {
         this.changeZhuang()
       }
     } catch(e) {
-      console.warn("nextZhuangId-%s, currentZhuangId", nextZhuang._id, zhuangId);
+      // console.warn("nextZhuangId-%s, currentZhuangId", nextZhuang._id, zhuangId);
     }
 
     this.sortPlayer(nextZhuang)
