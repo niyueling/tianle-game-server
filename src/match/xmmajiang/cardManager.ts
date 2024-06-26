@@ -482,6 +482,7 @@ class CardManager {
       // 还原
       cardMap[card]++;
     }
+
     cardMap[goldCard]++;
     return false;
   }
