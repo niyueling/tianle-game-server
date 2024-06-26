@@ -356,7 +356,6 @@ const HuPaiDetect = {
       countMap[i] += 3;                                   //   取消3张组合
     }
 
-
     // 使用财神组成刻字
     if (countMap[i] >= 2 && caiCount >= 1) {                              //   如果当前牌不少于3张
       countMap[i] -= 2;
@@ -404,7 +403,6 @@ const HuPaiDetect = {
       countMap[i] += 1;
     }
 
-
     // 优先用财神做刻字 和 将
     if (!_jiang && caiCount >= 2) {
       useJiang.push(CAISHEN_HOLDER)
@@ -414,12 +412,19 @@ const HuPaiDetect = {
       if (lastTakeCardAndCaiShen.lastTakeCard === lastTakeCardAndCaiShen.caiShen) {
         result.baoTou = true
       }
+
+      if (lastTakeCardAndCaiShen.takeSelfCard) {
+        // 检查是不是游金
+        result.isYouJin = true;
+      }
+
       if (this.huRecur(countMap, true, caiCount - 2, lastTakeCardAndCaiShen, result, allSearch)) {
         return true;             //   如果剩余的牌组合成功，和牌
       }
       // result.caiShenTou = false
       // result.wuCai = true
-      result.baoTou = false
+      // result.baoTou = false
+      result.isYouJin = false
       useJiang.pop()
     }
 
@@ -427,10 +432,15 @@ const HuPaiDetect = {
       keZi.push(CAISHEN_HOLDER)
       // result.sanCaiYiKe = true
       // result.wuCai = false
+      if (lastTakeCardAndCaiShen.takeSelfCard) {
+        // 检查是不是游金
+        result.isYouJin = true;
+      }
+
       if (this.huRecur(countMap, jiang, caiCount - 3, lastTakeCardAndCaiShen, result, allSearch)) {
         return true;             //   如果剩余的牌组合成功，和牌
       }
-      // result.sanCaiYiKe = false
+      result.isYouJin = false
       // result.wuCai = true
       keZi.splice(keZi.indexOf(CAISHEN_HOLDER), 1)
     }
@@ -1032,22 +1042,6 @@ const HuPaiDetect = {
     //   return true;
     // }
     return false;
-  },
-
-  // 全球人？
-  checkQuanQiuRen(countMap, events, result) {
-    let cardsInHand = 0;
-    for (let i = 1; i < Enums.maxValidCard; i++) {
-      cardsInHand += countMap[i]
-      if (cardsInHand > 2)
-        return
-    }
-
-    if (cardsInHand <= 2) {
-      result.quanQiuRen = true;
-      result.baoTou = false;
-
-    }
   },
 
   backUpCards(countMap) {
