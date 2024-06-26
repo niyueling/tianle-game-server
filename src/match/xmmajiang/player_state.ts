@@ -1577,7 +1577,7 @@ class PlayerState implements Serializable {
       console.warn("seatIndex-%s, cards-%s, huResult-%s, isCanYouJin-%s, isOnlyYouJin-%s", this.seatIndex, JSON.stringify(this.getCardsArray()), JSON.stringify(huResult), isCanYouJin, isOnlyYouJin);
     }
 
-    if (huResult.hu && (!huResult.isYouJin || !huResult.youJinTimes) && isOnlyYouJin) {
+    if (huResult.hu && (!huResult.isYouJin || !huResult.youJinTimes) && isOnlyYouJin && !isCanYouJin) {
       // 不能胡非游金
       return false;
     }
