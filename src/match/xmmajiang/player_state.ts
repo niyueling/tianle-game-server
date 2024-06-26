@@ -772,6 +772,8 @@ class PlayerState implements Serializable {
         this.room.recordPlayerEvent('buGang', this.model._id)
         this.record('gang', card)
         await this.room.auditManager.recordGangZi(this._id, card, this._id, Enums.buGang);
+
+        await this.checkYouJin(card);
         return true;
       }
     } else {
@@ -785,11 +787,12 @@ class PlayerState implements Serializable {
         this.record('gang', card)
         this.room.recordPlayerEvent('anGang', this.model._id)
         await this.room.auditManager.recordGangZi(this._id, card, this._id, Enums.anGang);
+
+        await this.checkYouJin(card);
         return true;
       }
     }
 
-    await this.checkYouJin(card);
     return false;
   }
 
