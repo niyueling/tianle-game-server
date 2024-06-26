@@ -432,16 +432,9 @@ class PlayerState implements Serializable {
 
     const huResult = this.checkZiMo()
     if (huResult.hu) {
-      const isCanYouJin = manager.isYouJin(this.cards, this.caiShen);
       msg.huInfo = huResult
       msg.hu = true
       this.huForbiddenCards = []
-
-      if (isCanYouJin && !huResult.isYouJin) {
-        msg.huInfo.isYouJin = true;
-        msg.huInfo.youJinTimes = 1;
-        this.recordGameSingleEvent(Enums.youJinTimes, 1);
-      }
 
       if (!huResult.gangShangKaiHua && this.room.gameState.isSomeOne3you(this)) {
         msg.hu = false;
@@ -1571,11 +1564,10 @@ class PlayerState implements Serializable {
     // 检查金牌是不是大于2
     const count = this.cards[this.caiShen];
     const isOnlyYouJin = (count === 2 || (count === 3 && huResult.huType !== Enums.qiShouSanCai)) && this.room.gameRule.doubleGoldYouJin;
-    const isCanYouJin = manager.isYouJin(this.cards, this.caiShen);
 
-    if (huResult.hu) {
-      console.warn("seatIndex-%s, cards-%s, huResult-%s, isCanYouJin-%s, isOnlyYouJin-%s", this.seatIndex, JSON.stringify(this.getCardsArray()), JSON.stringify(huResult), isCanYouJin, isOnlyYouJin);
-    }
+    // if (huResult.hu) {
+    //   console.warn("seatIndex-%s, cards-%s, huResult-%s, isCanYouJin-%s, isOnlyYouJin-%s", this.seatIndex, JSON.stringify(this.getCardsArray()), JSON.stringify(huResult), isCanYouJin, isOnlyYouJin);
+    // }
 
     if (huResult.hu && (!huResult.isYouJin || !huResult.youJinTimes) && isOnlyYouJin) {
       // 不能胡非游金
