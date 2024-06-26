@@ -432,16 +432,23 @@ class PlayerState implements Serializable {
 
     const huResult = this.checkZiMo()
     if (huResult.hu) {
-      msg.huInfo = huResult
-      msg.hu = true
-      this.huForbiddenCards = []
+      msg.hu = true;
+      this.huForbiddenCards = [];
 
       if (!huResult.gangShangKaiHua && this.room.gameState.isSomeOne3you(this)) {
         msg.hu = false;
       }
+
+      if (huResult.isYouJin && !this.events[Enums.youJinTimes]) {
+        huResult.youJinTimes = 1;
+        this.recordGameSingleEvent(Enums.youJinTimes, 1);
+      }
+
+      msg.huInfo = huResult;
     }
+
     if (gangGuo) {
-      this.freeCard = card
+      this.freeCard = card;
     }
 
     // 判断是否有大牌需要先打
