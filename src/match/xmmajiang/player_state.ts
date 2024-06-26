@@ -638,7 +638,10 @@ class PlayerState implements Serializable {
     this.cards.qiaoXiang = this.hadQiaoXiang
     this.cards.first = this.turn === 2
     const result = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
-    console.warn("seatIndex-%s, cards-%s, huResult-%s, isCanYouJin-%s", this.seatIndex, JSON.stringify(this.getCardsArray()), JSON.stringify(result), this.isDoubleGoldCardForYouJin(result));
+    if (result.hu) {
+      console.warn("seatIndex-%s, cards-%s, huResult-%s, isCanYouJin-%s", this.seatIndex, JSON.stringify(this.getCardsArray()), JSON.stringify(result), this.isDoubleGoldCardForYouJin(result));
+    }
+
     result.hu = this.isDoubleGoldCardForYouJin(result);
 
     if (this.getCardCount() % 3 !== 2) {
