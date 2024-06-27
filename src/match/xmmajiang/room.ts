@@ -605,8 +605,9 @@ class Room extends RoomBase {
       base: this.currentBase,
       zhuangCounter: this.zhuangCounter,
       juIndex: this.game.juIndex,
+      readyPlayerIds: this.readyPlayers,
       readyPlayers: this.readyPlayers.map(playerId => {
-        const readyPlayer = this.inRoomPlayers.find(p => p._id === playerId)
+        const readyPlayer = this.inRoomPlayers.find(p => p._id.toString() === playerId)
         return this.players.indexOf(readyPlayer)
       }),
       disconnectedPlayers: this.disconnected.map(item => this.indexOf({_id: item[0]})),
@@ -619,7 +620,7 @@ class Room extends RoomBase {
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x._id !== newJoinPlayer._id && this.readyPlayers.indexOf(x._id) >= 0)) {
+      .filter(x => x !== null && x._id !== newJoinPlayer._id)) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
