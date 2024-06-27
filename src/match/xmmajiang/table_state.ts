@@ -2125,9 +2125,8 @@ class TableState implements Serializable {
     }
     const env = {card, from, turn: this.turn}
     this.actionResolver = new ActionResolver(env, async () => {
-      const newCard = await this.consumeCard(xiajia)
-      const msg = await xiajia.takeCard(this.turn, newCard)
-
+      const newCard = await this.consumeCard(xiajia);
+      const msg = await xiajia.takeCard(this.turn, newCard);
       if (!msg) {
         return ;
       }
