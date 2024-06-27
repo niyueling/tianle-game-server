@@ -619,7 +619,7 @@ class Room extends RoomBase {
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x._id !== newJoinPlayer._id)) {
+      .filter(x => x !== null && x._id !== newJoinPlayer._id && this.readyPlayers.indexOf(x._id) >= 0)) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
