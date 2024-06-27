@@ -45,7 +45,7 @@ export class GameApi extends BaseApi {
   async dissolveFeedback(msg) {
     const recordCount = await GameFeedback.count({roomId: msg.roomId});
     if (recordCount) {
-      return this.replyFail(TianleErrorCode.recordIsExists);
+      await GameFeedback.remove({roomId: msg.roomId});
     }
 
     const data = {

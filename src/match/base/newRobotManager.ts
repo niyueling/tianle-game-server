@@ -211,12 +211,6 @@ export class NewRobotManager {
     robotProxy.seatIndex = posIndex;
     robotProxy.room = this.room;
     this.room.players[posIndex] = robotProxy;
-    // 替换 playerState
-    // if (this.room.gameState) {
-    //   // 游戏已经开始了
-    //   const oldPlayerState = this.room.gameState.players[posIndex];
-    //   await oldPlayerState.reconnect(robotProxy);
-    // }
     if (!this.model.depositPlayer[playerId]) {
       // 第一次离线
       this.model.depositPlayer[playerId] = this.depositCount;
@@ -299,10 +293,6 @@ export class NewRobotManager {
       this.disconnectPlayers = null;
       await service.roomRegister.decrPublicRoomCount(this.room.gameRule.gameType, this.room.gameRule.categoryId);
     }
-    // 删除 mongo
-    // if (this.model) {
-    //   await this.model.remove();
-    // }
   }
 
   // 玩家是否到齐
