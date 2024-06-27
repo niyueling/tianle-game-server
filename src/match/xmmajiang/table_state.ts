@@ -684,9 +684,9 @@ class TableState implements Serializable {
       })
     })
     // TODO drop emit
-    // player.on('refreshQuiet', (p, idx) => {
-    //   this.onRefresh(idx)
-    // })
+    player.on('refreshQuiet', (p, idx) => {
+      this.onRefresh(idx)
+    })
 
     player.on('waitForDa', async msg => {
       // this.logger.info('waitForDa %s', JSON.stringify(msg))

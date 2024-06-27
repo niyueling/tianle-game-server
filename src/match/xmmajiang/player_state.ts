@@ -1173,9 +1173,9 @@ class PlayerState implements Serializable {
       this.cancelTimeout()
       this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
     })
-    // playerSocket.on('game/refreshQuiet', () => {
-    //   this.emitter.emit('refreshQuiet', playerSocket, this.seatIndex)
-    // })
+    playerSocket.on('game/refreshQuiet', () => {
+      this.emitter.emit('refreshQuiet', playerSocket, this.seatIndex)
+    })
   }
 
   // checkQiaoXiang() {
