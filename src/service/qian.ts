@@ -3,10 +3,75 @@ import PlayerBless from "../database/models/playerBless";
 import PlayerQian from "../database/models/playerQian";
 import BaseService from "./base";
 import {service} from "./importService";
+import {GlobalConfigKeys, playerAttributes, shopPropType} from "@fm/common/constants";
+import LuckyBless from "../database/models/luckyBless";
 
 // 求签
 export default class QianService extends BaseService {
 
+  // 祈福列表
+  async blessList(player) {
+    const list = await LuckyBless.find().sort({orderIndex: 1});
+    const result = [];
+    for (let j = 0; j < list.length; j++) {
+      const item = list[j];
+      const rows = [];
+      for (let i = 0; i < item.times.length; i++) {
+        rows.push({
+          // 倍数
+          times: item.times[i],
+          // 钻石消耗
+          gem: item.gem[i],
+          // 运势
+          bless: item.bless[i]
+        })
+      }
+      let itemCount = await service.item.getItemCount(player._id, shopPropType.qiFuCard, list[j].orderIndex);
+      let isFree = await service.playerService.getPlayerAttrValueByShortId(player.model.shortId, playerAttributes.blessEndAt, item._id);
+      result.push({
+        _id: item._id,
+        name: item.name,
+        // 是否免费
+        isFree: !isFree,
+        rows,
+        index: j,
+        // 道具数量
+        itemCount,
+      })
+    }
+
+    return result;
+  }
+
+  async qianList(player) {
+    const resp = {
+      // 今日签文
+      record: null,
+      // 求签钻石
+      qianCost: 0,
+      // 道具数量
+      itemCount: 0,
+    };
+    const todayQian = await service.qian.getTodayQian(player.model.shortId);
+    if (todayQian.record) {
+      resp.record = todayQian.record;
+      // 获取改签需要的钻石
+      resp.qianCost = await service.utils.getGlobalConfigByName(GlobalConfigKeys.changeQianCostGem) || 200;
+      resp.qianCost = parseInt(resp.qianCost.toString(), 10);
+    } else {
+      resp.record = null;
+      if (todayQian.isFirst) {
+        resp.qianCost = 0;
+      } else {
+        // 当天第一次抽签
+        resp.qianCost = await service.utils.getGlobalConfigByName(GlobalConfigKeys.firstQianCostGem) || 100;
+        resp.qianCost = parseInt(resp.qianCost.toString(), 10);
+      }
+    }
+    resp.itemCount = await service.item.getItemCount(player._id, shopPropType.qiuqianCard);
+
+    return resp;
+  }
   // 求签
   async createQian(playerShortId) {
     // 随机选一签

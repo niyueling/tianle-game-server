@@ -254,9 +254,6 @@ class TableState implements Serializable {
   recorder: IGameRecorder
 
   @autoSerialize
-  niaos: any[] = []
-
-  @autoSerialize
   actionResolver: ActionResolver
 
   // 最后拿到的牌
@@ -1619,7 +1616,6 @@ class TableState implements Serializable {
       this.state = stateGameOver
       // 没有赢家
       const states = this.players.map((player, idx) => player.genGameStatus(idx))
-      // this.assignNiaos()
       this.calcGangScore(this.players);
 
       for (const state1 of states) {
@@ -1776,7 +1772,6 @@ class TableState implements Serializable {
       // 是否3金倒
       const isSanJinDao = huPlayers.filter(item => item.events.hu.filter(value => value.huType === Enums.qiShouSanCai).length > 0).length > 0
       const gameOverMsg = {
-        niaos: [],
         creator: this.room.creator.model._id,
         juShu: this.restJushu,
         juIndex: this.room.game.juIndex,

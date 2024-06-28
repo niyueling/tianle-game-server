@@ -468,11 +468,8 @@ class Room extends RoomBase {
         })
       }
     })
-    // if (!this.charged) {
-    //   roomState = 'zero_ju'
-    // }
-    const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
 
+    const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
     const roomRecord = {
       players, scores,
       roomNum: this._id, room: this.uid,
@@ -488,8 +485,6 @@ class Room extends RoomBase {
     if (this.clubId) {
       roomRecord.club = this.clubId;
     }
-
-    // logger.info('roomState:', roomState);
 
     RoomRecord
       .update({room: this.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})
@@ -526,20 +521,6 @@ class Room extends RoomBase {
   async addScore(playerId: string, gains: number) {
     const p = PlayerManager.getInstance().getPlayer(playerId)
     this.scoreMap[playerId] += gains
-
-    // if (gains > 0) {
-    //   if (p) {
-    //     p.addGold(gains)
-    //   } else {
-    //     PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
-    //       if (err) {
-    //         logger.error(err)
-    //       } else {
-    //         return;
-    //       }
-    //     })
-    //   }
-    // }
   }
 
   removeDisconnected(item) {

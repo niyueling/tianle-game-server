@@ -315,12 +315,6 @@ export default class RoomProxy {
           return
         }
 
-        if (messageBody.name === 'room/openRedPocket') {
-          this.room.openRedPocket(thePlayer)
-          await this.tryBestStore(rabbit.redisClient, room)
-          return
-        }
-
         if (messageBody.name === 'game/exchangeLiveGift') {
           // 兑换复活礼包
           await this.room.exchangeLiveGift(thePlayer, messageBody.payload);

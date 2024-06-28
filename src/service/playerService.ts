@@ -109,6 +109,18 @@ export default class PlayerService extends BaseService {
   }
 
   // 扣除并记录房卡
+  async logAndConsumeDiamond(playerId, type, amount, note) {
+    const model = await this.getPlayerModel(playerId);
+    if (model.diamond < amount) {
+      return { isOk: false };
+    }
+    model.diamond -= amount;
+    await model.save();
+    await this.logGemConsume(model._id, type, -amount, model.diamond, note);
+    return { isOk: true, model };
+  }
+
+  // 扣除并记录房卡
   async logAndConsumeGem(playerId, type, amount, note) {
     const model = await this.getPlayerModel(playerId);
     if (model.gem < amount) {

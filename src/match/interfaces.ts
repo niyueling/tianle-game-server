@@ -57,7 +57,6 @@ export interface IRoom extends EventEmitter {
 
   forceDissolve()
 
-  openRedPocket(player: SimplePlayer)
   exchangeLiveGift(player: SimplePlayer, msg: any)
 }
 

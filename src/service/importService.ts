@@ -12,6 +12,7 @@ import RoomRegister from "./roomRegister";
 import RubyReward from "./rubyReward";
 import TimesService from "./times";
 import UtilsService from "./utils";
+import ItemService from "./item";
 export interface ServiceType {
   // 文件名：函数名
   base: BaseService,
@@ -26,6 +27,7 @@ export interface ServiceType {
   qian: QianService,
   times: TimesService,
   cards: CardsService,
+  item: ItemService
 }
 // 导出 service 目录下的所有 service
 // @ts-ignore
