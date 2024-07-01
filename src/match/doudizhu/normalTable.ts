@@ -70,15 +70,20 @@ export default class NormalTable extends Table {
       this.setFirstDa(0);
     }
 
-    // 选择地主
-    this.broadcastChooseMode();
+    // 如果已经重新叫地主第三轮，则设置0号位为地主，直接开局
+    if (this.resetCount === 2) {
+      this.broadcastLandlordAndPlayer();
+    } else {
+      this.broadcastChooseMode();
+    }
+
   }
 
-  // broadcastFirstDa() {
-  //   this.tableState = ''
-  //   this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
-  //   this.depositForPlayer(this.players[this.currentPlayerStep]);
-  // }
+  broadcastLandlordAndPlayer() {
+    this.tableState = ''
+    this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
+    this.depositForPlayer(this.players[this.currentPlayerStep]);
+  }
 
   broadcastChooseMode() {
     this.tableState = ''

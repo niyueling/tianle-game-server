@@ -71,6 +71,9 @@ abstract class Table implements Serializable {
   @autoSerialize
   startParams: object = {}
 
+  // 不叫地主重复发牌次数
+  resetCount: number = 0;
+
   constructor(room, rule, restJushu) {
     this.restJushu = restJushu
     this.rule = rule
@@ -83,6 +86,7 @@ abstract class Table implements Serializable {
     this.cardManager = new CardManager(rule.playerCount);
     this.playManager = new PlayManager(rule);
     this.audit = new AuditPdk(rule);
+    this.resetCount = 0;
     // 结算玩家
     for (const p of this.players) {
       this.audit.initData(p.model.shortId);
@@ -354,7 +358,6 @@ abstract class Table implements Serializable {
   depositForPlayer(nextPlayerState: PlayerState) {
     nextPlayerState.deposit(async () => {
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
-      // console.warn("prompts-%s", JSON.stringify(prompts));
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
@@ -364,7 +367,6 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMode(player, msg) {
-    // console.warn("index-%s, msg-%s", player.index, JSON.stringify(msg));
     let mode = msg.mode;
     if (mode === enums.landlord) {
       this.multiple *= 2;
@@ -433,7 +435,20 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMultiple(player, msg) {
+    player.isMultiple = true;
+    player.double = msg.double;
+    this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, multiple: this.multiple, isMultiple: player.isMultiple, double: player.double}});
 
+    const isAllChoose = this.players.filter(value => value.isMultiple).length >= this.rule.playerCount;
+
+    if (isAllChoose) {
+      const startDa = async() => {
+        this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
+        this.depositForPlayer(this.players[this.currentPlayerStep]);
+      }
+
+      setTimeout(startDa, 500);
+    }
   }
 
   onPlayerOpenCard(player, msg) {
@@ -501,6 +516,7 @@ abstract class Table implements Serializable {
 
       // 所有人都选择模式，并且没人选择地主,则重新发牌
       if (cIndex === -1 && landlordCount === 0) {
+        this.resetCount++;
         this.players.map(p => p.mode = enums.unknown);
         this.start(this.startParams);
         return ;
