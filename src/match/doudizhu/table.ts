@@ -463,19 +463,19 @@ abstract class Table implements Serializable {
     player.deposit(async () => {
       let mode = enums.farmer;
       const index = this.players.findIndex(p => p.mode === enums.landlord);
-      if (player.mode !== enums.farmer && index === -1) {
-        mode = enums.landlord;
-        this.multiple *= 2;
-
-        // 如果用户已经选择叫地主，则重置其他用户为农民
-        if (player.mode !== enums.unknown) {
-          for (let i = 0; i < this.players.length; i++) {
-            if (this.players[i]._id.toString() !== player._id.toString()) {
-              this.players[i].mode = enums.farmer;
-            }
-          }
-        }
-      }
+      // if (player.mode !== enums.farmer && index === -1) {
+      //   mode = enums.landlord;
+      //   this.multiple *= 2;
+      //
+      //   // 如果用户已经选择叫地主，则重置其他用户为农民
+      //   if (player.mode !== enums.unknown) {
+      //     for (let i = 0; i < this.players.length; i++) {
+      //       if (this.players[i]._id.toString() !== player._id.toString()) {
+      //         this.players[i].mode = enums.farmer;
+      //       }
+      //     }
+      //   }
+      // }
 
       player.mode = mode;
       this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple}});
@@ -499,9 +499,6 @@ abstract class Table implements Serializable {
 
         const startDaFunc = async() => {
           this.status.current.seatIndex = this.players[firstLandlordIndex].index;
-
-          // 测试明牌接口
-          this.players[this.currentPlayerStep].emitter.emit(enums.openCard, {multiple: 3});
 
           // 下发开始翻倍消息
           this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});

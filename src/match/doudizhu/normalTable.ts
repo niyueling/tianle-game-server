@@ -80,9 +80,24 @@ export default class NormalTable extends Table {
   }
 
   broadcastLandlordAndPlayer() {
-    this.tableState = ''
-    this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
-    this.depositForPlayer(this.players[this.currentPlayerStep]);
+    // 庄家成为地主
+    this.zhuang.mode = enums.landlord;
+    // 将地主牌发给用户
+    const cards = this.cardManager.getLandlordCard();
+    this.zhuang.cards = [...this.zhuang.cards, ...cards];
+    this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.zhuang.index, landlordCards: cards, cards: this.zhuang.cards}});
+
+    const startDaFunc = async() => {
+      this.status.current.seatIndex = this.zhuang.index;
+
+      // 下发开始翻倍消息
+      this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
+
+      // 托管状态自动选择不翻倍
+      this.players.map(p => this.depositForPlayerChooseMultiple(p));
+    }
+
+    setTimeout(startDaFunc, 500);
   }
 
   broadcastChooseMode() {
