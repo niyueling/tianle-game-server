@@ -74,7 +74,7 @@ abstract class Table implements Serializable {
   // 不叫地主重复发牌次数
   resetCount: number = 0;
 
-  constructor(room, rule, restJushu) {
+  protected constructor(room, rule, restJushu) {
     this.restJushu = restJushu
     this.rule = rule
     this.room = room
@@ -464,19 +464,19 @@ abstract class Table implements Serializable {
     player.deposit(async () => {
       let mode = enums.farmer;
       const index = this.players.findIndex(p => p.mode === enums.landlord);
-      // if (player.mode !== enums.farmer && index === -1) {
-      //   mode = enums.landlord;
-      //   this.multiple *= 2;
-      //
-      //   // 如果用户已经选择叫地主，则重置其他用户为农民
-      //   if (player.mode !== enums.unknown) {
-      //     for (let i = 0; i < this.players.length; i++) {
-      //       if (this.players[i]._id.toString() !== player._id.toString()) {
-      //         this.players[i].mode = enums.farmer;
-      //       }
-      //     }
-      //   }
-      // }
+      if (player.mode !== enums.farmer && index === -1) {
+        mode = enums.landlord;
+        this.multiple *= 2;
+
+        // 如果用户已经选择叫地主，则重置其他用户为农民
+        if (player.mode !== enums.unknown) {
+          for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i]._id.toString() !== player._id.toString()) {
+              this.players[i].mode = enums.farmer;
+            }
+          }
+        }
+      }
 
       player.mode = mode;
       this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple}});
@@ -596,15 +596,6 @@ abstract class Table implements Serializable {
     player.guo()
     player.sendMessage("game/guoCardReply", {ok: true, data: {}})
     this.moveToNext()
-    if (!this.status.lastPattern) {
-      const zhuaFenPlayer = this.players[this.status.from]
-
-      // this.room.broadcast('game/zhuaFen', {ok: true, data: {
-      //     index: this.status.from,
-      //     zhuaFen: zhuaFenPlayer.zhuaFen
-      //   }})
-
-    }
     this.room.broadcast("game/otherGuo", {ok: true, data: {
         index: player.seatIndex,
         next: this.currentPlayerStep,
@@ -612,20 +603,7 @@ abstract class Table implements Serializable {
       }})
   }
 
-  get isLastMatch() {
-    return this.restJushu === 0
-  }
-
   abstract bombScorer(bomb: IPattern): number;
-
-  calcExtraBomb() {
-    for (const winner of this.players) {
-      const allBombScore = winner.bombScore(this.bombScorer)
-      for (const loser of this.players) {
-        winner.winFrom(loser, allBombScore, 'bomb')
-      }
-    }
-  }
 
   atIndex(player: PlayerState) {
     return this.players.findIndex(p => p._id === player._id)
@@ -664,10 +642,6 @@ abstract class Table implements Serializable {
     let firstPlayer = this.players.find(p => p.cards.length === 0)
 
     await this.roomGameOver(states, firstPlayer._id);
-  }
-
-  getScoreBy(playerId) {
-    return this.room.getScoreBy(playerId)
   }
 
   async roomGameOver(states, nextStarterIndex: string) {
@@ -745,17 +719,6 @@ abstract class Table implements Serializable {
       return teamMate.cards
     }
     return []
-  }
-
-  // 第一次出牌
-  promptWithFirstPlay(player: PlayerState) {
-    const cards = this.playManager.firstPlayCard(player.cards);
-    if (cards.length === 1 && this.isNextPlayerHasOneCard(player)) {
-      // 下家保单, 出最大的牌
-      const card = player.cards.sort((c1, c2) => c2.point - c1.point)[0];
-      return [card];
-    }
-    return cards;
   }
 
   // 根据出牌模式出牌
