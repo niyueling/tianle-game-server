@@ -7,6 +7,7 @@ const enums = {
 
   chooseMode: "chooseMode",
   chooseMultiple: "chooseMultiple",
+  openCard: "openCard",
   cancelDeposit: "cancelDeposit",
   refresh: "refresh",
   da: "da",

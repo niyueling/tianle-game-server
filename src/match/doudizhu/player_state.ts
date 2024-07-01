@@ -69,7 +69,6 @@ class PlayerState implements Serializable {
   score: number
   msgDispatcher: any
   onDeposit: boolean = false
-  msgHook: any
   isOperated: boolean
 
   winOrder = 99
@@ -83,8 +82,6 @@ class PlayerState implements Serializable {
   index = 0
 
   teamMate: number = -1;
-  // foundTeamMate: boolean = false;
-  zhuaFen = 0
   mode = 'unknown';
   private usedBombs: IPattern[] = [];
 
@@ -93,8 +90,14 @@ class PlayerState implements Serializable {
   cleaned: boolean = false;
   foundFriend: boolean = false;
 
+  // 是否操作翻倍选择
   isMultiple: boolean = false;
+  // 用户是否选择翻倍
   double: boolean = false;
+  // 是否明牌
+  isOpenCard: boolean = false;
+  // 明牌倍数
+  openMultiple: number = 1;
 
   constructor(userSocket, room, rule) {
     this.room = room
@@ -116,7 +119,6 @@ class PlayerState implements Serializable {
 
     this.isOperated = false
     this.recorder = new DummyRecorder()
-
     this.onDeposit = false;
   }
 
