@@ -415,6 +415,7 @@ abstract class Table implements Serializable {
 
     // 所有人都选择模式，并且没人选择地主,则重新发牌
     if (cIndex === -1 && landlordCount === 0) {
+      this.resetCount++;
       this.players.map(p => p.mode = enums.unknown);
       this.start(this.startParams);
       return ;
