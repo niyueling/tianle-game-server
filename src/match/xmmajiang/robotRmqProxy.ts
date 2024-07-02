@@ -28,9 +28,14 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
 
   async choice(action) {
     if (this.playerState) {
-      await this.room.gameState.promptWithOther(
-        action, this.playerState
-      );
+      const choiceFunc = async() => {
+        await this.room.gameState.promptWithOther(
+          action, this.playerState
+        );
+      }
+
+      setTimeout(choiceFunc, 1500);
+
     }
   }
 
