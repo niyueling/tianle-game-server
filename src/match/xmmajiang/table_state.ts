@@ -1392,7 +1392,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.guo, async (turn, card) => {
-      await this.onPlayerGuo(player, turn, card)
+      await this.onPlayerGuo(player, card)
     })
 
     player.on(Enums.qiangJinHu, async () => {
@@ -2183,7 +2183,7 @@ class TableState implements Serializable {
     await this.actionResolver.tryResolve()
   }
 
-  async onPlayerGuo(player, playTurn, playCard) {
+  async onPlayerGuo(player, playCard) {
     if (this.state === stateQiangJin) {
       // 天胡(金豆房)
       const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
