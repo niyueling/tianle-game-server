@@ -554,11 +554,7 @@ export class NewRobotManager {
     if (this.model.step === RobotStep.running && this.isPlayed) {
       this.isPlayed = false;
 
-      const playCardFunc = async() => {
-        await this.playCard();
-      }
-
-      setTimeout(playCardFunc, 1000);
+      await this.playCard();
 
       this.isPlayed = true;
     }
