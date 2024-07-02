@@ -163,7 +163,7 @@ export class NewRobotManager {
   // 默认出牌间隔 5s
   getWaitSecond() {
     if (this.room.gameRule.isPublic) {
-      return Math.floor(Math.random() * 2 + 3);
+      return Math.floor(Math.random() * 3 + 2);
     }
     return config.game.waitDelayTime;
   }
@@ -553,7 +553,12 @@ export class NewRobotManager {
 
     if (this.model.step === RobotStep.running && this.isPlayed) {
       this.isPlayed = false;
-      await this.playCard();
+
+      const playCardFunc = async() => {
+        await this.playCard();
+      }
+
+      setTimeout(playCardFunc, 1000);
 
       this.isPlayed = true;
     }
