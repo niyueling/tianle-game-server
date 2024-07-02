@@ -9,6 +9,7 @@ const schema = new Schema({
   playerId: {type: String, required: true},
   gameName: {type: String, required: true},
   caregoryName: {type: String, required: true},
+  currency: {type: String, required: true, default: "gold"},
   score: {type: Number, default: 0},
   time: {type: Date, default: Date.now},
 });

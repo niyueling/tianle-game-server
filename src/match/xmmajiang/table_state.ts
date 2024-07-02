@@ -1836,6 +1836,7 @@ class TableState implements Serializable {
       playerId: player._id,
       gameName: "厦门麻将",
       caregoryName: category.title,
+      currency: this.rule.currency,
       time: new Date(),
       score
     });

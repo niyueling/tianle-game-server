@@ -5819,6 +5819,7 @@ class TableState implements Serializable {
       juIndex: this.room.game.juIndex,
       playerId: p.model._id,
       gameName: "十二星座",
+      currency: this.rule.currency,
       caregoryName: category.title,
       time: new Date(),
       score: p.juScore
@@ -5958,6 +5959,7 @@ class TableState implements Serializable {
           playerId: states[i].model._id,
           gameName: "十二星座",
           caregoryName: category.title,
+          currency: this.rule.currency,
           time: new Date(),
           score: states[i].score
         });
