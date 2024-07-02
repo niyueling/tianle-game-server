@@ -182,7 +182,7 @@ class Room extends RoomBase {
     const room = this.uid
     const players = states.map(state => state.model._id)
     const playersInfo = states.map(player => ({
-      model: pick(player.model, ['name', 'headImgUrl', 'sex', 'gold', 'shortId'])
+      model: pick(player.model, ['nickname', 'avatar', 'diamond', 'gold', 'shortId'])
     }))
     const playerArray = states.map(state => {
       return {
@@ -363,9 +363,8 @@ class Room extends RoomBase {
     return roomRecord
   }
 
-  addScore(player, v) {
-    const p = this.getPlayerById(player);
-    this.scoreMap[player] += v;
+  addScore(playerId, v) {
+    this.scoreMap[playerId] += v;
   }
 
   removeDisconnected(item) {

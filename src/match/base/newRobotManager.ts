@@ -163,7 +163,7 @@ export class NewRobotManager {
   // 默认出牌间隔 5s
   getWaitSecond() {
     if (this.room.gameRule.isPublic) {
-      return Math.floor(Math.random() * 3 + 2);
+      return Math.floor(Math.random() * 2 + 3);
     }
     return config.game.waitDelayTime;
   }

@@ -14,6 +14,4 @@ export class RobotManager extends NewRobotManager {
     }
     return new RobotDDZ(model);
   }
-
-
 }

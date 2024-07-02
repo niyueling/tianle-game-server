@@ -1,9 +1,6 @@
 /**
  * Created by Color on 2016/9/2.
  */
-import Card, {CardType} from "./card";
-import Enums from './enums';
-
 class Rule {
   ro: any
 

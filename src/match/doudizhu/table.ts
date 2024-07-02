@@ -125,8 +125,7 @@ abstract class Table implements Serializable {
   initPlayers() {
     const room = this.room
     const rule = this.rule
-    const players = room.playersOrder
-      .map(playerSocket => new PlayerState(playerSocket, room, rule))
+    const players = room.playersOrder.map(playerSocket => new PlayerState(playerSocket, room, rule))
 
     players[0].zhuang = true;
     this.zhuang = players[0];

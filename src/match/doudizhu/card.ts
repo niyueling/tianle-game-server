@@ -73,8 +73,6 @@ export enum CardTag {
   bigJoker,
   // 小王
   littleJoker,
-  // 未知牌(兼容旧版本)
-  noTag,
 }
 
 const cardType2Symbol = {
@@ -83,16 +81,6 @@ const cardType2Symbol = {
   [CardType.Diamond]: '♦',
   [CardType.Club]: '♣',
   [CardType.Joker]: '🃏'
-}
-
-export enum HelpType {
-  double = 1,
-  triple,
-  doubles,
-  straight,
-  triples,
-  boom,
-  booms
 }
 
 // 所有红桃
@@ -113,7 +101,6 @@ export const diamonds = [CardTag.da, CardTag.d2, CardTag.d3, CardTag.d4, CardTag
 
 export default class Card {
   point: number
-  // tag: CardTag
 
   constructor(readonly type: CardType, readonly value: number) {
     if (type === CardType.Joker) {
@@ -122,7 +109,6 @@ export default class Card {
       // 2最大, 然后A
       this.point = this.value > 2 ? this.value : 13 + value
     }
-    // this.tag = tag || CardTag.noTag;
   }
 
   static from({type, value}): Card {
@@ -159,13 +145,5 @@ export default class Card {
 
   static sort(cards: Card[]) {
     return cards.sort(Card.compare)
-  }
-
-  fen(): number {
-    if (this.value === 5) return 5
-    if (this.value === 10 || this.value === 13) {
-      return 10
-    }
-    return 0
   }
 }
