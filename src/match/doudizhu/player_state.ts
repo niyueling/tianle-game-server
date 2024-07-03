@@ -312,7 +312,7 @@ class PlayerState implements Serializable {
 
   // 托管
   deposit(callback) {
-    const minutes = 3 * 1000
+    const minutes = 15 * 1000
 
     // if (!this.canDeposit) {
     //   return
