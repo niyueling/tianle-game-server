@@ -139,11 +139,11 @@ class PlayerState implements Serializable {
     socket.on('game/cancelDeposit', msg => {
       this.emitter.emit(enums.cancelDeposit, msg);
     })
+    socket.on('game/callLandload', msg => {
+      this.emitter.emit(enums.chooseMode, msg);
+    })
     socket.on('game/refresh', msg => {
       this.emitter.emit(enums.refresh, msg);
-    })
-    socket.on('game/chooseMode', msg => {
-      this.emitter.emit(enums.chooseMode, msg);
     })
     socket.on('game/chooseMultiple', msg => {
       this.emitter.emit(enums.chooseMultiple, msg);

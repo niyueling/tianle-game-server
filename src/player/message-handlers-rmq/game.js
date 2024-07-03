@@ -44,6 +44,9 @@ const exportObj = {
   'game/chooseMode': (player, msg) => {
     player.emit('game/chooseMode', msg);
   },
+  'game/callLandload': (player, msg) => {
+    player.emit('game/callLandload', msg);
+  },
   'game/chooseMultiple': (player, msg) => {
     player.emit('game/chooseMultiple', msg);
   },
