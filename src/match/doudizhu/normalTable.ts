@@ -112,8 +112,8 @@ export default class NormalTable extends Table {
 
 
     const chooseModeFunc = async() => {
-      this.players[this.currentPlayerStep].emitter.emit(enums.chooseMode, {mode: enums.farmer});
-      // this.depositForPlayerChooseMode(this.players[this.currentPlayerStep]);
+      // this.players[this.currentPlayerStep].emitter.emit(enums.chooseMode, {mode: enums.farmer});
+      this.depositForPlayerChooseMode(this.players[this.currentPlayerStep]);
     }
   }
 

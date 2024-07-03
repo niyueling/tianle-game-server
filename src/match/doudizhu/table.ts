@@ -368,6 +368,7 @@ abstract class Table implements Serializable {
   onPlayerChooseMode(player, msg) {
     let mode = msg.mode;
     if (mode === enums.landlord) {
+      // 判断是叫地主还是抢地主，叫地主不翻倍，抢地主翻倍
       this.multiple *= 2;
 
       // 如果用户已经选择叫地主，则重置其他用户为农民

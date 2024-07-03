@@ -98,6 +98,8 @@ class PlayerState implements Serializable {
   isOpenCard: boolean = false;
   // 明牌倍数
   openMultiple: number = 1;
+  // 小局倍数
+  multiple: number = 1;
 
   constructor(userSocket, room, rule) {
     this.room = room
