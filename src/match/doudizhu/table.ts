@@ -455,7 +455,7 @@ abstract class Table implements Serializable {
     player.isOpenCard = true;
     player.openMultiple = msg.multiple;
 
-    this.room.broadcast("game/openCard", {ok: true, data: {index: player.index, isOpenCard: player.isOpenCard, multiple: player.openMultiple}})
+    this.room.broadcast("game/openDealReply", {ok: true, data: {index: player.index, isOpenCard: player.isOpenCard, multiple: player.openMultiple}})
   }
 
   // 托管选择地主
