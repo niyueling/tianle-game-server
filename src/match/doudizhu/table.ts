@@ -177,7 +177,10 @@ abstract class Table implements Serializable {
     player.on('game/da', msg => this.onPlayerDa(player, msg))
     player.on('game/chooseMode', msg => this.onPlayerChooseMode(player, msg));
     player.on('game/chooseMultiple', msg => this.onPlayerChooseMultiple(player, msg))
-    player.on('game/openDeal', msg => this.onPlayerOpenCard(player, msg))
+    player.on('game/openDeal', msg => {
+      console.warn("msg-%s", JSON.stringify(msg));
+      this.onPlayerOpenCard(player, msg)
+    })
     player.on('game/guo', () => this.onPlayerGuo(player))
     player.on('game/cancelDeposit', () => this.onCancelDeposit(player))
     player.on('game/refresh', async () => {
@@ -452,11 +455,10 @@ abstract class Table implements Serializable {
   }
 
   onPlayerOpenCard(player, msg) {
-    console.warn("msg-%s", JSON.stringify(msg));
     player.isOpenCard = true;
     player.openMultiple = msg.multiple;
 
-    this.room.broadcast("game/openCard", {ok: true, data: {index: player.index, isOpenCard: player.isOpenCard, multiple: player.openMultiple}})
+    this.room.broadcast("game/openDealReply", {ok: true, data: {index: player.index, isOpenCard: player.isOpenCard, multiple: player.openMultiple}})
   }
 
   // 托管选择地主
