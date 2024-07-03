@@ -101,15 +101,20 @@ export default class NormalTable extends Table {
   }
 
   broadcastChooseMode() {
-    this.tableState = ''
-    this.room.broadcast('game/startChooseMode', {ok: true, data: {index: this.currentPlayerStep}})
+    const startChooseModeFunc = async() => {
+      this.tableState = ''
+      this.room.broadcast('game/startChooseMode', {ok: true, data: {index: this.currentPlayerStep}})
+
+      setTimeout(chooseModeFunc, 1000);
+    }
+
+    setTimeout(startChooseModeFunc, 5000);
+
 
     const chooseModeFunc = async() => {
       this.players[this.currentPlayerStep].emitter.emit(enums.chooseMode, {mode: enums.farmer});
       // this.depositForPlayerChooseMode(this.players[this.currentPlayerStep]);
     }
-
-    setTimeout(chooseModeFunc, 1000);
   }
 
   setFirstDa(startPlayerIndex: number) {

@@ -452,6 +452,7 @@ abstract class Table implements Serializable {
   }
 
   onPlayerOpenCard(player, msg) {
+    console.warn("msg-%s", JSON.stringify(msg));
     player.isOpenCard = true;
     player.openMultiple = msg.multiple;
 
