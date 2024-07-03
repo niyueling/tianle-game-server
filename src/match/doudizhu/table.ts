@@ -174,13 +174,13 @@ abstract class Table implements Serializable {
   }
 
   listenPlayer(player: PlayerState) {
-    player.on(enums.da, msg => this.onPlayerDa(player, msg))
-    player.on(enums.chooseMode, msg => this.onPlayerChooseMode(player, msg));
-    player.on(enums.chooseMultiple, msg => this.onPlayerChooseMultiple(player, msg))
-    player.on("game/openDeal", msg => this.onPlayerOpenCard(player, msg))
-    player.on(enums.guo, () => this.onPlayerGuo(player))
-    player.on(enums.cancelDeposit, () => this.onCancelDeposit(player))
-    player.on(enums.refresh, async () => {
+    player.on('game/da', msg => this.onPlayerDa(player, msg))
+    player.on('game/chooseMode', msg => this.onPlayerChooseMode(player, msg));
+    player.on('game/chooseMultiple', msg => this.onPlayerChooseMultiple(player, msg))
+    player.on('game/openDeal', msg => this.onPlayerOpenCard(player, msg))
+    player.on('game/guo', () => this.onPlayerGuo(player))
+    player.on('game/cancelDeposit', () => this.onCancelDeposit(player))
+    player.on('game/refresh', async () => {
       player.sendMessage('room/refreshReply', {ok: true, data: await this.restoreMessageForPlayer(player)});
     })
   }
