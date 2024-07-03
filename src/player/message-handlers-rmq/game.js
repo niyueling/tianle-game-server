@@ -50,6 +50,9 @@ const exportObj = {
   'game/openCard': (player, msg) => {
     player.emit('game/openCard', msg);
   },
+  'game/openDeal': (player, msg) => {
+    player.emit('game/openDeal', msg);
+  },
   'game/getActions': (player, msg) => {
     player.emit('game/getActions', msg);
   },

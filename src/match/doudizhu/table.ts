@@ -177,7 +177,7 @@ abstract class Table implements Serializable {
     player.on(enums.da, msg => this.onPlayerDa(player, msg))
     player.on(enums.chooseMode, msg => this.onPlayerChooseMode(player, msg));
     player.on(enums.chooseMultiple, msg => this.onPlayerChooseMultiple(player, msg))
-    player.on(enums.openCard, msg => this.onPlayerOpenCard(player, msg))
+    player.on(enums.openDeal, msg => this.onPlayerOpenCard(player, msg))
     player.on(enums.guo, () => this.onPlayerGuo(player))
     player.on(enums.cancelDeposit, () => this.onCancelDeposit(player))
     player.on(enums.refresh, async () => {
