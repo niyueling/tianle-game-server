@@ -385,6 +385,10 @@ abstract class Table implements Serializable {
       let landlordCount = this.players.filter(p => p.mode === enums.landlord).length;
       if (landlordCount > 0) {
         this.multiple *= 2;
+        this.players.map((p) => {
+          p.multiple = this.multiple;
+          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: this.multiple, changeMultiple: 2}});
+        })
       }
 
 
@@ -414,6 +418,10 @@ abstract class Table implements Serializable {
       // 如果倍数=1，表示无人抢地主，倍数翻倍
       if (this.multiple === 1) {
         this.multiple *= 2;
+        this.players.map((p) => {
+          p.multiple = this.multiple;
+          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: this.multiple, changeMultiple: 2}});
+        })
       }
 
       // 将地主牌发给用户
@@ -522,6 +530,7 @@ abstract class Table implements Serializable {
         // 如果倍数=1，表示无人抢地主，倍数翻倍
         if (this.multiple === 1) {
           this.multiple *= 2;
+          this.room.broadcast("game/multipleChange", {ok: true, data: {multiple: this.multiple}});
         }
 
         // 将地主牌发给用户

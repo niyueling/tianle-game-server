@@ -358,7 +358,6 @@ class PlayerState implements Serializable {
     this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
   }
 
-
   // // 是否存在该卡
   // isCardExists(cardList: Card[]) {
   //   for (const card of this.cards) {
