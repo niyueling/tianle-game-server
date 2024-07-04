@@ -179,6 +179,7 @@ abstract class Table implements Serializable {
     player.on(enums.chooseMultiple, msg => this.onPlayerChooseMultiple(player, msg))
     player.on(enums.openDeal, msg => this.onPlayerOpenCard(player, msg))
     player.on(enums.waitForDa, async () => this.depositForPlayer(player))
+    player.on(enums.waitForPlayerChooseMode, async () => this.depositForPlayerChooseMode(player))
     player.on(enums.guo, () => this.onPlayerGuo(player))
     player.on(enums.cancelDeposit, () => this.onCancelDeposit(player))
     player.on(enums.refresh, async () => {
@@ -447,7 +448,8 @@ abstract class Table implements Serializable {
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer];
       this.room.broadcast('game/startChooseMode', {ok: true, data: {index: nextPlayer}})
-      this.depositForPlayerChooseMode(nextPlayerState);
+      nextPlayerState.emitter.emit(enums.waitForPlayerChooseMode);
+      // this.depositForPlayerChooseMode(nextPlayerState);
     }
   }
 
@@ -552,7 +554,8 @@ abstract class Table implements Serializable {
       if (this.players[nextPlayer]) {
         const nextPlayerState = this.players[nextPlayer];
         this.room.broadcast('game/startChooseMode', {ok: true, data: {index: nextPlayer}})
-        this.depositForPlayerChooseMode(nextPlayerState);
+        nextPlayerState.emitter.emit(enums.waitForPlayerChooseMode);
+        // this.depositForPlayerChooseMode(nextPlayerState);
       }
     })
   }
