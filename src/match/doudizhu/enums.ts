@@ -10,6 +10,7 @@ const enums = {
   openDeal: "openDeal",
   waitForDa: "waitForDa",
   waitForPlayerChooseMode: "waitForPlayerChooseMode",
+  waitForPlayerChooseMultiple: "waitForPlayerChooseMultiple",
   cancelDeposit: "cancelDeposit",
   refresh: "refresh",
   da: "da",
