@@ -370,8 +370,7 @@ abstract class Table implements Serializable {
     if (mode === enums.landlord) {
       // 判断是叫地主还是抢地主，叫地主不翻倍，抢地主翻倍
       let landlordCount = this.players.filter(p => p.mode === enums.landlord).length;
-      console.warn("landlordCount-%s, multiple-%s", landlordCount, this.multiple)
-      if (landlordCount >= 0) {
+      if (landlordCount > 0) {
         this.multiple *= 2;
       }
 
