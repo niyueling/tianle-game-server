@@ -364,6 +364,10 @@ abstract class Table implements Serializable {
   // 托管出牌
   depositForPlayer(nextPlayerState: PlayerState) {
     nextPlayerState.deposit(async () => {
+      if (this.currentPlayerStep !== nextPlayerState.index) {
+        return ;
+      }
+
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
@@ -481,6 +485,9 @@ abstract class Table implements Serializable {
   // 托管选择地主
   depositForPlayerChooseMode(player: PlayerState) {
     player.deposit(async () => {
+      if (this.currentPlayerStep !== player.index) {
+        return ;
+      }
       let mode = enums.farmer;
       const index = this.players.findIndex(p => p.mode === enums.landlord);
       if (player.mode !== enums.farmer && index === -1) {
