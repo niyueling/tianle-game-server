@@ -178,6 +178,7 @@ abstract class Table implements Serializable {
     player.on(enums.chooseMode, msg => this.onPlayerChooseMode(player, msg));
     player.on(enums.chooseMultiple, msg => this.onPlayerChooseMultiple(player, msg))
     player.on(enums.openDeal, msg => this.onPlayerOpenCard(player, msg))
+    player.on(enums.waitForDa, async () => this.depositForPlayer(player))
     player.on(enums.guo, () => this.onPlayerGuo(player))
     player.on(enums.cancelDeposit, () => this.onCancelDeposit(player))
     player.on(enums.refresh, async () => {
@@ -191,7 +192,7 @@ abstract class Table implements Serializable {
     this.room.robotManager.disableRobot(player._id)
   }
 
-  moveToNext() {
+  moveToNext(deposit = false) {
     let nextSeatIndex = this.currentPlayerStep
 
     let findNext = false
@@ -218,6 +219,11 @@ abstract class Table implements Serializable {
     }
     this.status.current.seatIndex = nextSeatIndex
     this.status.current.step += 1
+
+    // 设置下家托管
+    if (deposit) {
+      this.players[this.status.current.seatIndex].emitter.emit('waitForDa');
+    }
   }
 
   cleanCards(player: PlayerState) {
@@ -287,7 +293,7 @@ abstract class Table implements Serializable {
       player.winOrder = this.status.winOrder++
       teamMateCards = this.teamMateCards(player)
     }
-    this.moveToNext()
+    this.moveToNext(true)
     player.sendMessage('game/daCardReply', {ok: true, data: {remains, teamMateCards, onDeposit: player.onDeposit}})
     const isGameOver = this.isGameOver()
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
@@ -305,7 +311,8 @@ abstract class Table implements Serializable {
 
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer];
-      this.depositForPlayer(nextPlayerState)
+      nextPlayerState.emitter.emit('waitForDa');
+      // this.depositForPlayer(nextPlayerState)
     }
     if (isGameOver) {
       this.showGameOverPlayerCards()
@@ -454,7 +461,8 @@ abstract class Table implements Serializable {
     if (isAllChoose) {
       const startDa = async() => {
         this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
-        this.depositForPlayer(this.players[this.currentPlayerStep]);
+        this.players[this.currentPlayerStep].emitter.emit('waitForDa');
+        // this.depositForPlayer(this.players[this.currentPlayerStep]);
       }
 
       setTimeout(startDa, 500);
@@ -561,7 +569,8 @@ abstract class Table implements Serializable {
       if (isAllChoose) {
         const startDa = async() => {
           this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
-          this.depositForPlayer(this.players[this.currentPlayerStep]);
+          this.players[this.currentPlayerStep].emitter.emit('waitForDa');
+          // this.depositForPlayer(this.players[this.currentPlayerStep]);
         }
 
         setTimeout(startDa, 500);
@@ -601,14 +610,15 @@ abstract class Table implements Serializable {
 
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer]
-      this.depositForPlayer(nextPlayerState)
+      nextPlayerState.emitter.emit('waitForDa');
+      // this.depositForPlayer(nextPlayerState)
     }
   }
 
   guoPai(player: PlayerState) {
     player.guo()
     player.sendMessage("game/guoCardReply", {ok: true, data: {}})
-    this.moveToNext()
+    this.moveToNext(true)
     this.room.broadcast("game/otherGuo", {ok: true, data: {
         index: player.seatIndex,
         next: this.currentPlayerStep,

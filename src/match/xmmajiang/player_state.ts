@@ -656,9 +656,6 @@ class PlayerState implements Serializable {
 
   // 添加花牌
   onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList) {
-    // if (juIndex === 1 && this.zhuang) {
-    //   this.fanShu = 16;
-    // }
     cards.forEach(x => {
       if (!this.room.gameState.isFlower(x)) {
         this.cards[x]++;
