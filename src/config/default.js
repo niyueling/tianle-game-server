@@ -1,4 +1,4 @@
-usermodule.exports = {
+module.exports = {
   gameName: "tianleGame",
   database: {
     url: "mongodb://localhost:27017/tianleServer",
