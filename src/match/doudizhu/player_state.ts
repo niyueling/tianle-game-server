@@ -317,9 +317,6 @@ class PlayerState implements Serializable {
     const minutes = 15 * 1000
 
     console.warn("currentPlayerStep-%s, index-%s", this.room.gameState.currentPlayerStep, this.index);
-    if (this.room.gameState.currentPlayerStep !== this.index) {
-      return
-    }
     //
     // if (!this.msgDispatcher) {
     //   return;
@@ -331,8 +328,11 @@ class PlayerState implements Serializable {
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
-        this.onDeposit = true
-        this.sendMessage('game/startDepositReply', {ok: true, data: {}})
+        if (this.room.gameState.currentPlayerStep === this.index) {
+          this.onDeposit = true
+          this.sendMessage('game/startDepositReply', {ok: true, data: {}})
+        }
+
         callback()
         this.timeoutTask = null
       }, minutes)
