@@ -316,6 +316,7 @@ class PlayerState implements Serializable {
   deposit(callback) {
     const minutes = 15 * 1000
 
+    console.warn("currentPlayerStep-%s, index-%s", this.room.gameState.currentPlayerStep, this.index);
     if (this.room.gameState.currentPlayerStep !== this.index) {
       return
     }
