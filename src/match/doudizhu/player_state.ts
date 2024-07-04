@@ -1,6 +1,6 @@
 import * as EventEmitter from 'events'
 // @ts-ignore
-import {pick} from 'lodash'
+import {pick, random} from 'lodash'
 import {IGameRecorder} from '../GameRecorder'
 import {DummyRecorder} from '../GameRecorder'
 import Timer = NodeJS.Timer;
@@ -326,20 +326,29 @@ class PlayerState implements Serializable {
 
     // console.warn("canDeposit-%s, timeoutTask-%s", this.canDeposit, !!this.timeoutTask);
 
+    this.cancelTimeout()
+
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
-        this.onDeposit = true;
-        this.sendMessage('game/startDepositReply', {ok: true, data: {index: this.seatIndex}})
-        callback();
-        this.timeoutTask = null;
-      }, minutes);
+        this.onDeposit = true
+        this.sendMessage('game/startDepositReply', {ok: true, data: {}})
+        callback()
+        this.timeoutTask = null
+      }, minutes)
     } else {
       const isRobot = this.msgDispatcher.isRobot()
 
       this.timeoutTask = setTimeout(() => {
-        callback();
-        this.timeoutTask = null;
-      }, isRobot ? 1000 : 3000);
+        callback()
+        this.timeoutTask = null
+      }, isRobot ? random(500, 1500) : 1000)
+    }
+  }
+
+  cancelTimeout() {
+    if (this.timeoutTask != null) {
+      clearTimeout(this.timeoutTask)
+      this.timeoutTask = null
     }
   }
 

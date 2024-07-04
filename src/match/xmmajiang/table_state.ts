@@ -686,7 +686,7 @@ class TableState implements Serializable {
     })
 
     player.on('waitForDa', async msg => {
-      this.logger.info('waitForDa %s', JSON.stringify(msg))
+      // this.logger.info('waitForDa %s', JSON.stringify(msg))
       if (player.isPublicRobot) {
         // 金豆房机器人， 不打
         return;
