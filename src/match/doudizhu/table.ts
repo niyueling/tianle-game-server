@@ -541,6 +541,7 @@ abstract class Table implements Serializable {
       const index = this.players.findIndex(p => p.mode === enums.landlord);
       if (player.mode !== enums.farmer && index === -1) {
         mode = enums.landlord;
+        this.callLandlord++;
 
         // 如果用户已经选择叫地主，则重置其他用户为农民
         if (player.mode !== enums.unknown) {
