@@ -77,7 +77,9 @@ export default class NormalTable extends Table {
         maxMultiple = this.players[this.openCardPlayers[i]].openMultiple;
       }
     }
-    this.multiple = maxMultiple;
+    if (maxMultiple) {
+      this.multiple = maxMultiple;
+    }
 
     // 如果已经重新叫地主第三轮，则设置0号位为地主，直接开局
     if (this.resetCount === 2) {
