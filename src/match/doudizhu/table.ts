@@ -427,7 +427,7 @@ abstract class Table implements Serializable {
       if (this.multiple === 1) {
         this.multiple *= 2;
         this.players.map((p) => {
-          p.multiple = p.mode === enums.landlord ? this.multiple : this.multiple / 2;
+          p.multiple = (p.mode === enums.landlord ? this.multiple : this.multiple / 2);
           p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: this.multiple, changeMultiple: 2}});
         })
       }
@@ -568,7 +568,7 @@ abstract class Table implements Serializable {
         if (this.multiple === 1) {
           this.multiple *= 2;
           this.players.map((p) => {
-            p.multiple = p.mode === enums.landlord ? this.multiple : this.multiple / 2;
+            p.multiple = (p.mode === enums.landlord ? this.multiple : this.multiple / 2);
             p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}});
           })
         }
