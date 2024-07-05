@@ -469,7 +469,35 @@ abstract class Table implements Serializable {
   onPlayerChooseMultiple(player, msg) {
     player.isMultiple = true;
     player.double = msg.double;
-    this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, multiple: this.multiple, isMultiple: player.isMultiple, double: player.double}});
+    let addMultiple = 0;
+    this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, isMultiple: player.isMultiple, double: player.double}});
+
+    if (player.double > 1) {
+      addMultiple = player.multiple * player.double - player.multiple;
+      player.multiple *= player.double;
+      this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: msg.double}});
+
+      // 翻倍用户为农民，地主跟着加翻倍倍数
+      if (player.mode === enums.farmer) {
+        const playerIndex = this.players.findIndex(p => p.mode === enums.landlord);
+        if (playerIndex !== -1) {
+          const p = this.players[playerIndex];
+          p.multiple += addMultiple;
+          this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: -1}});
+        }
+      }
+
+      // 翻倍用户为地主，所有农民跟着翻倍
+      if (player.mode === enums.landlord) {
+        for (let i = 0; i < this.players.length; i++) {
+          const p = this.players[i];
+          if (p.mode === enums.farmer) {
+            p.multiple *= msg.double;
+            this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: p.double}});
+          }
+        }
+      }
+    }
 
     const isAllChoose = this.players.filter(value => value.isMultiple).length >= this.rule.playerCount;
 
@@ -584,8 +612,37 @@ abstract class Table implements Serializable {
   depositForPlayerChooseMultiple(player: PlayerState) {
     player.deposit(async () => {
       player.isMultiple = true;
-      player.double = false;
-      this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, multiple: this.multiple, isMultiple: player.isMultiple, double: player.double}});
+      const double = player.mode === enums.landlord ? 2 : 1;
+      player.double = double;
+      let addMultiple = 0;
+      this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, isMultiple: player.isMultiple, double: player.double}});
+
+      if (player.double > 1) {
+        addMultiple = player.multiple * player.double - player.multiple;
+        player.multiple *= double;
+        this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: double}});
+
+        // 翻倍用户为农民，地主跟着加翻倍倍数
+        if (player.mode === enums.farmer) {
+          const playerIndex = this.players.findIndex(p => p.mode === enums.landlord);
+          if (playerIndex !== -1) {
+            const p = this.players[playerIndex];
+            p.multiple += addMultiple;
+            this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: -1}});
+          }
+        }
+
+        // 翻倍用户为地主，所有农民跟着翻倍
+        if (player.mode === enums.landlord) {
+          for (let i = 0; i < this.players.length; i++) {
+            const p = this.players[i];
+            if (p.mode === enums.farmer) {
+              p.multiple *= double;
+              this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: p.double}});
+            }
+          }
+        }
+      }
 
       const isAllChoose = this.players.filter(value => value.isMultiple).length >= this.rule.playerCount;
 

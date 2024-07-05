@@ -93,7 +93,7 @@ class PlayerState implements Serializable {
   // 是否操作翻倍选择
   isMultiple: boolean = false;
   // 用户是否选择翻倍
-  double: boolean = false;
+  double: number = 1;
   // 是否明牌
   isOpenCard: boolean = false;
   // 明牌倍数
