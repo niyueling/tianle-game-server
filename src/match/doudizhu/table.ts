@@ -284,9 +284,14 @@ abstract class Table implements Serializable {
     this.status.lastPattern = pattern
     this.status.lastCards = cards
     if (pattern.name === PatterNames.bomb) {
-      player.recordBomb(pattern)
+      player.recordBomb(pattern);
       // 添加炸弹次数
       this.audit.addBoomTime(player.model.shortId);
+      // 倍数翻倍
+      this.players.map(p => {
+        p.multiple *= 2;
+        p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}});
+      });
       const usedJoker = pattern.cards.filter(c => c.type === CardType.Joker).length
       player.unusedJokers -= usedJoker
     }
