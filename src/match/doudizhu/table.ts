@@ -386,8 +386,8 @@ abstract class Table implements Serializable {
       if (landlordCount > 0) {
         this.multiple *= 2;
         this.players.map((p) => {
-          p.multiple = this.multiple;
-          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: this.multiple, changeMultiple: 2}});
+          p.multiple = p.mode === enums.landlord ? this.multiple * 2 : this.multiple;
+          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}});
         })
       }
 
@@ -419,7 +419,7 @@ abstract class Table implements Serializable {
       if (this.multiple === 1) {
         this.multiple *= 2;
         this.players.map((p) => {
-          p.multiple = p.mode === enums.landlord ? this.multiple * 2 : this.multiple;
+          p.multiple = p.mode === enums.landlord ? this.multiple : this.multiple / 2;
           p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: this.multiple, changeMultiple: 2}});
         })
       }
@@ -427,7 +427,7 @@ abstract class Table implements Serializable {
       // 将地主牌发给用户
       const cards = this.cardManager.getLandlordCard();
       this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
-      this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, landlordCards: cards, multiple: this.multiple}});
+      this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, landlordCards: cards, multiple: this.players[firstLandlordIndex].multiple}});
 
       const startDaFunc = async() => {
         this.status.current.seatIndex = this.players[firstLandlordIndex].index;
@@ -559,7 +559,7 @@ abstract class Table implements Serializable {
         if (this.multiple === 1) {
           this.multiple *= 2;
           this.players.map((p) => {
-            p.multiple = p.mode === enums.landlord ? this.multiple * 2 : this.multiple;
+            p.multiple = p.mode === enums.landlord ? this.multiple : this.multiple / 2;
             p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}});
           })
         }
@@ -567,7 +567,7 @@ abstract class Table implements Serializable {
         // 将地主牌发给用户
         const cards = this.cardManager.getLandlordCard();
         this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
-        this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, multiple: this.multiple, landlordCards: cards}});
+        this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, multiple: this.players[firstLandlordIndex].multiple, landlordCards: cards}});
 
         const startDaFunc = async() => {
           this.status.current.seatIndex = this.players[firstLandlordIndex].index;
