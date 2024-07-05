@@ -612,7 +612,7 @@ abstract class Table implements Serializable {
   depositForPlayerChooseMultiple(player: PlayerState) {
     player.deposit(async () => {
       player.isMultiple = true;
-      const double = player.mode === enums.landlord ? 2 : 1;
+      const double = player.index === 1 ? 2 : 1;
       player.double = double;
       let addMultiple = 0;
       this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, isMultiple: player.isMultiple, double: player.double}});
