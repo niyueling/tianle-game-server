@@ -77,6 +77,9 @@ abstract class Table implements Serializable {
   // 本局明牌用户
   openCardPlayers: any[] = [];
 
+  // 叫地主或抢地主
+  callLandlord: number = 0;
+
   protected constructor(room, rule, restJushu) {
     this.restJushu = restJushu
     this.rule = rule
@@ -390,8 +393,7 @@ abstract class Table implements Serializable {
     let mode = msg.mode;
     if (mode === enums.landlord) {
       // 判断是叫地主还是抢地主，叫地主不翻倍，抢地主翻倍
-      let landlordCount = this.players.filter(p => p.mode === enums.landlord).length;
-      if (landlordCount > 0) {
+      if (this.callLandlord) {
         this.multiple *= 2;
         this.players.map((p) => {
           p.multiple = p.mode === enums.landlord ? this.multiple * 2 : this.multiple;
@@ -399,6 +401,7 @@ abstract class Table implements Serializable {
         })
       }
 
+      this.callLandlord++;
 
       // 如果用户已经选择叫地主，则重置其他用户为农民
       if (player.mode !== enums.unknown) {
@@ -424,7 +427,7 @@ abstract class Table implements Serializable {
     // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
     if (cIndex === -1 && landlordCount === 1) {
       // 如果倍数=1，表示无人抢地主，倍数翻倍
-      if (this.multiple === 1) {
+      if (this.callLandlord === 1) {
         this.multiple *= 2;
         this.players.map((p) => {
           p.multiple = (p.mode === enums.landlord ? this.multiple : this.multiple / 2);
@@ -565,7 +568,7 @@ abstract class Table implements Serializable {
       // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
       if (cIndex === -1 && landlordCount === 1) {
         // 如果倍数=1，表示无人抢地主，倍数翻倍
-        if (this.multiple === 1) {
+        if (this.callLandlord === 1) {
           this.multiple *= 2;
           this.players.map((p) => {
             p.multiple = (p.mode === enums.landlord ? this.multiple : this.multiple / 2);
