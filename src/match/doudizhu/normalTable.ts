@@ -71,9 +71,9 @@ export default class NormalTable extends Table {
     }
 
     // 测试多人明牌
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].emitter.emit(enums.openDeal, {multiple: i + 3});
-    }
+    // for (let i = 0; i < this.players.length; i++) {
+    //   this.players[i].emitter.emit(enums.openDeal, {multiple: i + 3});
+    // }
 
     // 判断是否有用户明牌，取明牌最高倍数
     let maxMultiple = 0;
