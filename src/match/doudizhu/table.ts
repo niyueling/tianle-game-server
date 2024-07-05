@@ -74,6 +74,9 @@ abstract class Table implements Serializable {
   // 不叫地主重复发牌次数
   resetCount: number = 0;
 
+  // 本局明牌用户
+  openCardPlayers: any[] = [];
+
   protected constructor(room, rule, restJushu) {
     this.restJushu = restJushu
     this.rule = rule
@@ -480,7 +483,7 @@ abstract class Table implements Serializable {
     if (player.double > 1) {
       addMultiple = player.multiple * player.double - player.multiple;
       player.multiple *= player.double;
-      this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: msg.double}});
+      player.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: msg.double}});
 
       // 翻倍用户为农民，地主跟着加翻倍倍数
       if (player.mode === enums.farmer) {
@@ -488,7 +491,7 @@ abstract class Table implements Serializable {
         if (playerIndex !== -1) {
           const p = this.players[playerIndex];
           p.multiple += addMultiple;
-          this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: -1}});
+          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: -1}});
         }
       }
 
@@ -498,7 +501,7 @@ abstract class Table implements Serializable {
           const p = this.players[i];
           if (p.mode === enums.farmer) {
             p.multiple *= msg.double;
-            this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: p.double}});
+            p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: p.double}});
           }
         }
       }
@@ -520,8 +523,9 @@ abstract class Table implements Serializable {
   onPlayerOpenCard(player, msg) {
     player.isOpenCard = true;
     player.openMultiple = msg.multiple;
+    this.openCardPlayers.push(player.index);
 
-    this.room.broadcast("game/openDealReply", {ok: true, data: {index: player.index, isOpenCard: player.isOpenCard, multiple: player.openMultiple}})
+    this.room.broadcast("game/openDealReply", {ok: true, data: {index: player.index, isOpenCard: player.isOpenCard, multiple: player.openMultiple}});
   }
 
   // 托管选择地主
@@ -625,7 +629,7 @@ abstract class Table implements Serializable {
       if (player.double > 1) {
         addMultiple = player.multiple * player.double - player.multiple;
         player.multiple *= double;
-        this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: double}});
+        player.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: double}});
 
         // 翻倍用户为农民，地主跟着加翻倍倍数
         if (player.mode === enums.farmer) {
@@ -633,7 +637,7 @@ abstract class Table implements Serializable {
           if (playerIndex !== -1) {
             const p = this.players[playerIndex];
             p.multiple += addMultiple;
-            this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: -1}});
+            p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: -1}});
           }
         }
 
@@ -643,7 +647,7 @@ abstract class Table implements Serializable {
             const p = this.players[i];
             if (p.mode === enums.farmer) {
               p.multiple *= double;
-              this.room.broadcast("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: -1}});
+              p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: -1}});
             }
           }
         }

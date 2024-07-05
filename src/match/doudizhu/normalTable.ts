@@ -70,6 +70,15 @@ export default class NormalTable extends Table {
       this.setFirstDa(0);
     }
 
+    // 判断是否有用户明牌，取明牌最高倍数
+    let maxMultiple = 0;
+    for (let i = 0; i < this.openCardPlayers.length; i++) {
+      if (this.players[this.openCardPlayers[i]].openMultiple > maxMultiple) {
+        maxMultiple = this.players[this.openCardPlayers[i]].openMultiple;
+      }
+    }
+    this.multiple = maxMultiple;
+
     // 如果已经重新叫地主第三轮，则设置0号位为地主，直接开局
     if (this.resetCount === 2) {
       this.broadcastLandlordAndPlayer();
