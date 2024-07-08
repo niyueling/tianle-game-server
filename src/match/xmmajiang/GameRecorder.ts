@@ -17,14 +17,18 @@ class GameRecorder implements  IGameRecorder {
 
   recordUserEvent(player, event, card, cards) {
     if (!cards) {
-      cards = player.getCardsArray()
+      cards = player.getCardsArray();
+    }
+
+    if (card && !Array.isArray(card)) {
+      card  = [card];
     }
 
     const index = player.seatIndex
     const suits = []
     const eventRecord = {
       index,
-      info: {cards, card: Array.isArray(card) ? card : [card], suits, chiCombol: []},
+      info: {cards, card, suits, chiCombol: []},
       type: event
     }
 
