@@ -906,25 +906,35 @@ class PlayerState implements Serializable {
         this.emitter.emit('recordZiMo', checkResult)
         this.room.recordPlayerEvent('ziMo', this.model._id)
         this.room.recordPlayerEvent(`fan${checkResult.fan}`, this.model._id)
+        let recordCount = 0;
 
         // 如果是游金，记录游金
         // console.warn("zimo checkResult-%s", JSON.stringify(checkResult));
         if (checkResult.isYouJin && checkResult.youJinTimes === 1) {
           this.recordGameEvent(Enums.youJin, card);
+          this.record(Enums.youJin, card)
+          recordCount++;
           this.room.recordPlayerEvent('youJin', this.model._id);
         }
 
         if (checkResult.isYouJin && checkResult.youJinTimes === 2) {
           this.recordGameEvent(Enums.shuangYou, card);
+          this.record(Enums.shuangYou, card)
+          recordCount++;
           this.room.recordPlayerEvent('shuangYou', this.model._id);
         }
 
         if (checkResult.isYouJin && checkResult.youJinTimes === 3) {
           this.recordGameEvent(Enums.sanYou, card);
+          this.record(Enums.sanYou, card)
+          recordCount++;
           this.room.recordPlayerEvent('sanYou', this.model._id);
         }
 
-        this.record('ziMo', card)
+        if (!recordCount) {
+          this.record('ziMo', card);
+        }
+
         return true
       }
     }
