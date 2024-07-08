@@ -654,6 +654,10 @@ class PlayerState implements Serializable {
     return count;
   }
 
+  onBuHua(cards) {
+    this.recorder.recordUserEvent(this, 'buHua', null, cards.sort((a, b) => a - b));
+  }
+
   // 添加花牌
   onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList) {
     cards.forEach(x => {

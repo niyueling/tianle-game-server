@@ -521,6 +521,9 @@ class TableState implements Serializable {
             }
           });
 
+          // 记录补花信息
+          p.onBuHua(result);
+
           this.room.broadcast('game/flowerResetCard', {ok: true, data: {restCards: this.remainCards, flowerList: p.flowerList, index: i, cards: result}})
         }
       }
