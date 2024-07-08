@@ -655,7 +655,7 @@ class PlayerState implements Serializable {
   }
 
   onBuHua(cards) {
-    this.recorder.recordUserEvent(this, 'buHua', null, cards.sort((a, b) => a - b));
+    this.recorder.recordUserEvent(this, 'buHua', cards.sort((a, b) => a - b), this.getCardsArray());
   }
 
   // 添加花牌
