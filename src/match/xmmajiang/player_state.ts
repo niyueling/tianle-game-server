@@ -390,11 +390,11 @@ class PlayerState implements Serializable {
 
     this.lastCardToken = card
     if (!this.room.gameState.isFlower(card)) {
-      this.cards[card]++
+      this.cards[card]++;
+      this.recorder.recordUserEvent(this, 'moPai', card, this.getCardsArray())
     }
 
     const msg = {card, turn, gang: null, hu: false, huInfo: null, qiangJin: false, bigCardList: []}
-    this.recorder.recordUserEvent(this, 'moPai', card)
     this.recordGameSingleEvent(Enums.lastPlayerTakeCard, card);
 
     if (!this.hadQiaoXiang) {
@@ -453,6 +453,7 @@ class PlayerState implements Serializable {
       this.sendMessage('game/TakeCard', {ok: true, data: msg})
 
       if (this.room.gameState.isFlower(card)) {
+        this.recorder.recordUserEvent(this, 'buHua', card, this.getCardsArray())
         const takeFlower = async() => {
           this.room.broadcast('game/takeFlower', {ok: true, data: {card, seatIndex: this.seatIndex, remainCards: this.room.gameState.remainCards}})
         }
