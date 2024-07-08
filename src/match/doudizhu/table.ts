@@ -363,7 +363,7 @@ abstract class Table implements Serializable {
     const playersCard = []
     this.players.forEach(p => {
       if (p.cards.length > 0) {
-        playersCard.push([p.seatIndex, p.cards])
+        playersCard.push({index: p.index, cards: p.cards})
       }
     })
     this.room.broadcast('game/gameOverPlayerCards', {ok: true, data: {
