@@ -509,7 +509,7 @@ class TableState implements Serializable {
     }
 
     // 记录金牌
-    this.zhuang.recorder.recordUserEvent(this, 'shuffle', [this.caishen], []);
+    this.zhuang.recorder.recordUserEvent(this, 'resetGold', [this.caishen], []);
 
     // 延迟0.5秒，花牌重新摸牌
     const flowerResetCard = async() => {
