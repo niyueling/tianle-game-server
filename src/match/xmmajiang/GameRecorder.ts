@@ -17,7 +17,7 @@ class GameRecorder implements  IGameRecorder {
   }
 
   recordUserEvent(player, event, card, cards) {
-    if (!cards.length) {
+    if (!cards) {
       cards = player.getCardsArray();
     }
 
