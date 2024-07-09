@@ -508,6 +508,9 @@ class TableState implements Serializable {
       await this.room.auditManager.playerTakeCardList(this.players[i].model._id, cardList[i].cards);
     }
 
+    // 记录金牌
+    this.zhuang.recorder.recordUserEvent(this, 'shuffle', [this.caishen], []);
+
     // 延迟0.5秒，花牌重新摸牌
     const flowerResetCard = async() => {
       for (let i = 0; i < this.players.length; i++) {
