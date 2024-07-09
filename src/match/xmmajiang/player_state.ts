@@ -909,18 +909,19 @@ class PlayerState implements Serializable {
         let recordCount = 0;
 
         // 如果是游金，记录游金
-        if (checkResult.hu && checkResult.huType === Enums.qiShouSanCai) {
-          this.recordGameEvent(Enums.sanJinDao, card);
-          this.record(Enums.sanJinDao, card)
-          recordCount++;
-          this.room.recordPlayerEvent('sanJinDao', this.model._id);
-        }
 
         if (qiangJin) {
-          this.recordGameEvent(Enums.qiangJin, card);
-          this.record(Enums.qiangJin, card)
-          recordCount++;
-          this.room.recordPlayerEvent('qiangJin', this.model._id);
+          if (checkResult.hu && checkResult.huType === Enums.qiShouSanCai) {
+            this.recordGameEvent(Enums.sanJinDao, card);
+            this.record(Enums.sanJinDao, card)
+            recordCount++;
+            this.room.recordPlayerEvent('sanJinDao', this.model._id);
+          } else {
+            this.recordGameEvent(Enums.qiangJin, card);
+            this.record(Enums.qiangJin, card)
+            recordCount++;
+            this.room.recordPlayerEvent('qiangJin', this.model._id);
+          }
         }
 
         if (checkResult.isYouJin && checkResult.youJinTimes === 1) {
