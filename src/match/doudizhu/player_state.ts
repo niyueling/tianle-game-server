@@ -314,7 +314,7 @@ class PlayerState implements Serializable {
 
   // 托管
   deposit(callback) {
-    const minutes = 15 * 1000
+    const minutes = 5 * 1000
 
     // if (!this.msgDispatcher) {
     //   return;

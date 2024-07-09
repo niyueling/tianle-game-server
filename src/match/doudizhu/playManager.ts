@@ -8,7 +8,6 @@ import StraightDoublesMatcher from "./patterns/StraightDoublesMatcher";
 import StraightMatcher from "./patterns/StraightMatcher";
 import StraightTriplePlus2Matcher from "./patterns/StraightTriplePlus2Matcher";
 import TriplePlus2Matcher from "./patterns/TriplePlus2Matcher";
-import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 import Rule from "./Rule";
 
 // 第一次出牌顺序
