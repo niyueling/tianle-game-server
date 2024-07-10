@@ -58,13 +58,22 @@ class CardManager {
       // 东南西北, 中发白
       return shunZi;
     }
+
     // 排第1位,第2位,第3位
     const pos = [[1, 2], [-1, 1], [-2, -1]]
     let list;
     let index;
-    // 金牌不让吃
+
+    // 金牌置为0
     const goldCount = cardMap[goldCard];
     cardMap[goldCard] = 0;
+
+    // 白板置为金牌
+    const baiCount = cardMap[Enums.bai];
+    cardMap[Enums.bai] = 0;
+    cardMap[goldCard] = baiCount;
+
+
     for (const p of pos) {
       if (cardMap[p[0] + card] > 0 && cardMap[p[1] + card] > 0) {
         // 可以吃
@@ -75,6 +84,7 @@ class CardManager {
         shunZi.push(list)
       }
     }
+    cardMap[Enums.bai] = baiCount;
     cardMap[goldCard] = goldCount;
     return shunZi;
   }
