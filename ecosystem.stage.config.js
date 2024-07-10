@@ -96,6 +96,20 @@ module.exports = {
         NODE_ENV: "production"
       },
       log_date_format: "YYYY-MM-DD HH:mm Z"
+    },
+    {
+      name: "stage-zhadan",
+      script: "dist/backend.zhadan.js",
+      instances: 1,
+      instance_var: 'INSTANCE_ID',
+      env: {
+        COMMON_VARIABLE: "true",
+        NODE_ENV: "stage",
+      },
+      env_production: {
+        NODE_ENV: "production"
+      },
+      log_date_format: "YYYY-MM-DD HH:mm Z"
     }
   ]
 }
