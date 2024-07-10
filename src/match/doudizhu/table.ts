@@ -381,7 +381,7 @@ abstract class Table implements Serializable {
       }
 
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
-      if (prompts.length > 0 && nextPlayerState.index !== 0) {
+      if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
         this.onPlayerGuo(nextPlayerState)
