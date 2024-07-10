@@ -273,7 +273,7 @@ abstract class Table implements Serializable {
     // if (player.cards.length === cards.length && !currentPattern) {
     //   currentPattern = triplePlusXMatcher.verify(cards) || straightTriplesPlusXMatcher.verify(cards)
     // }
-    if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0 && player.index !== 2) {
+    if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
       await this.daPai(player, cards, currentPattern)
     } else {
       console.warn("currentPattern-%s, this.status.lastPattern-%s, patternCompare-%s", JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
@@ -381,7 +381,7 @@ abstract class Table implements Serializable {
       }
 
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
-      if (prompts.length > 0) {
+      if (prompts.length > 0 && nextPlayerState.index !== 2) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
         this.onPlayerGuo(nextPlayerState)
