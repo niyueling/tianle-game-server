@@ -365,25 +365,6 @@ export class NewRobotManager {
     return flag;
   }
 
-  // 添加离线机器人
-  async addOfflineRobot() {
-    for (let i = 0; i < this.room.players.length; i++) {
-      const playerId = await this.getOfflinePlayerByIndex(i)
-      if (playerId !== "") {
-        // console.warn("playerId-%s offlineTimes-%s offlineDelayTime-%s", playerId, this.model.offlineTimes[playerId], config.game.offlineDelayTime);
-        // 有人离线
-        if (this.model.offlineTimes[playerId] > config.game.offlineDelayTime) {
-          // 离线时间超过 5s
-          await this.addRobot(playerId, i);
-          this.model.offlineTimes[playerId] = 0;
-          await this.save();
-          // 保存到redis中
-          await service.roomRegister.saveRoomInfoToRedis(this.room);
-        }
-      }
-    }
-  }
-
   async addRobotForPublicRoom() {
     if (this.waitPublicRobot < config.game.waitRubyPlayer || this.room.gameState) {
       // 时间未到，或者已经有机器人

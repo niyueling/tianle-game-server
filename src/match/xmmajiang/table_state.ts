@@ -128,15 +128,14 @@ export class ActionResolver implements Serializable {
   }
 
   requestAction(player: PlayerState, action: Action, resolve: () => void, reject: () => void) {
-    this.actionsOptions.filter(ao => ao.who === player)
-      .forEach(ao => {
-        ao.state = 'cancel'
-      })
-    const actionOption = this.actionsOptions.find(ao => ao.who === player && ao.action === action)
-    actionOption.state = 'try'
-
-    actionOption.onResolve = resolve
-    actionOption.onReject = reject
+    this.actionsOptions.filter(ao => ao.who._id.toString() === player._id.toString())
+      .forEach(ao => { ao.state = 'cancel' })
+    const actionOption = this.actionsOptions.find(ao => ao.who._id.toString() === player._id.toString() && ao.action === action);
+    if (actionOption) {
+      actionOption.state = 'try';
+      actionOption.onResolve = resolve;
+      actionOption.onReject = reject;
+    }
   }
 
   cancel(player: PlayerState) {
@@ -1115,8 +1114,11 @@ class TableState implements Serializable {
             const from = this.atIndex(this.lastDa);
 
             if (ok && player.daHuPai(card, this.players[from])) {
+              const removeIndex = this.stateData[Enums.hu].findIndex(p => p._id.toString() === player._id.toString());
+              if (removeIndex === -1) {
+                return ;
+              }
               this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
-              this.stateData[Enums.hu].remove(player);
               this.stateData = {};
 
               this.room.broadcast('game/showHuType', {
