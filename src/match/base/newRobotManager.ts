@@ -93,7 +93,10 @@ export class NewRobotManager {
   }
 
   async onMonit() {
-    console.log('monit start ', this.room._id);
+    if (!this.room.gameState) {
+      console.log('monit start ', this.room._id);
+    }
+
     if (this.room.gameRule.isPublic) {
       return this.publicRoomMonit();
     } else {
