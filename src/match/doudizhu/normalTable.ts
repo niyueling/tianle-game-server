@@ -245,22 +245,27 @@ export default class NormalTable extends Table {
 
   private shangYouSettler() {
     const multiples = [];
-    const winner = this.players.find(p => p.cards.length === 0)
-    const losers = this.players.filter(p => p.cards.length > 0)
-      .sort((p1, p2) => p2.cards.length - p1.cards.length);
+    const winner = this.players.find(p => p.cards.length === 0);
+
     // console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
-    this.players.map((v) => {multiples.push({index: v.index, multiple: v.multiple, mode: v.mode})})
+    this.players.map((v) => {multiples.push({index: v.index, multiple: v.multiple, mode: v.mode})});
     console.warn("multiples-%s", JSON.stringify(multiples));
 
-    let factor = 1;
-    if (losers[0].cards.length === 16) {
-      factor = 2;
+    // 如果赢家是地主
+    if (winner.mode === enums.landlord) {
+      const losers = this.players.filter(p => p.mode === enums.farmer);
+
+      // 计算积分
+      losers.map(p => winner.winFrom(p, p.multiple));
     }
-    winner.winFrom(losers[0], 2 * factor);
-    if (losers[0].cards.length === losers[1].cards.length) {
-      winner.winFrom(losers[1], 2 * factor);
-    } else {
-      winner.winFrom(losers[1], factor);
+
+    // 如果赢家是农民
+    if (winner.mode === enums.farmer) {
+      const loser = this.players.find(p => p.mode === enums.landlord);
+      const famers = this.players.filter(p => p.mode === enums.farmer);
+
+      // 计算积分
+      famers.map(p => p.winFrom(loser, p.multiple));
     }
   }
 
