@@ -1114,10 +1114,13 @@ class TableState implements Serializable {
             const from = this.atIndex(this.lastDa);
 
             if (ok && player.daHuPai(card, this.players[from])) {
-              const removeIndex = this.stateData[Enums.hu].findIndex(p => p._id.toString() === player._id.toString());
-              if (removeIndex === -1) {
-                return ;
+              if (this.stateData[Enums.hu]) {
+                const removeIndex = this.stateData[Enums.hu].findIndex(p => p._id.toString() === player._id.toString());
+                if (removeIndex === -1) {
+                  return ;
+                }
               }
+
               this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
               this.stateData = {};
 
