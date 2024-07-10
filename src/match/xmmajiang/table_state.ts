@@ -1777,6 +1777,11 @@ class TableState implements Serializable {
         }
       }
 
+      // 记录流局
+      if (isLiuJu) {
+        this.zhuang.recorder.recordUserEvent(this.zhuang, 'liuJu', null, []);
+      }
+
       await this.room.recordGameRecord(this, states);
       await this.room.recordRoomScore()
       this.players.forEach(x => x.gameOver())
@@ -1791,6 +1796,7 @@ class TableState implements Serializable {
         juShu: this.restJushu,
         juIndex: this.room.game.juIndex,
         states,
+        liuJu: isLiuJu,
         isYouJin,
         isSanJinDao,
         gameType: GameType.xmmj,
@@ -1800,11 +1806,6 @@ class TableState implements Serializable {
         caiShen: this.caishen,
         zhuangCount: this.room.zhuangCounter,
         caishen: [this.caishen]
-      }
-
-      // 记录流局
-      if (isLiuJu) {
-        this.zhuang.recorder.recordUserEvent(this.zhuang, 'liuJu', null, []);
       }
 
 
