@@ -250,6 +250,7 @@ export default class NormalTable extends Table {
       .sort((p1, p2) => p2.cards.length - p1.cards.length);
     // console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
     this.players.map((v) => {multiples.push({index: v.index, multiple: v.multiple, mode: v.mode})})
+    console.warn("multiples-%s", JSON.stringify(multiples));
 
     let factor = 1;
     if (losers[0].cards.length === 16) {
