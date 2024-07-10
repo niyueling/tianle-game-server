@@ -206,7 +206,7 @@ export default class NormalTable extends Table {
     this.updateRemainCards();
 
     this.settler();
-    console.warn("settler-%s", JSON.stringify(this.settler));
+    // console.warn("settler-%s", JSON.stringify(this.settler));
 
     // this.audit.print();
     const states = this.players.map(p => {
@@ -244,19 +244,22 @@ export default class NormalTable extends Table {
   }
 
   private shangYouSettler() {
+    const multiples = [];
     const winner = this.players.find(p => p.cards.length === 0)
     const losers = this.players.filter(p => p.cards.length > 0)
       .sort((p1, p2) => p2.cards.length - p1.cards.length);
-    console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
-    let factor = 1
+    // console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
+    this.players.map((v) => {multiples.push({index: v.index, multiple: v.multiple, mode: v.mode})})
+
+    let factor = 1;
     if (losers[0].cards.length === 16) {
-      factor = 2
+      factor = 2;
     }
-    winner.winFrom(losers[0], 2 * factor)
+    winner.winFrom(losers[0], 2 * factor);
     if (losers[0].cards.length === losers[1].cards.length) {
-      winner.winFrom(losers[1], 2 * factor)
+      winner.winFrom(losers[1], 2 * factor);
     } else {
-      winner.winFrom(losers[1], factor)
+      winner.winFrom(losers[1], factor);
     }
   }
 
