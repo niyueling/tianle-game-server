@@ -375,7 +375,10 @@ export class NewRobotManager {
     for (let i = 1; i < this.room.players.length; i++) {
       const playerId = await this.getOfflinePlayerByIndex(i)
       if (playerId !== "" || this.room.players[i]) {
-        console.warn("index-%s, playerId-%s is in room", i, playerId);
+        if (!this.room.gameState) {
+          console.warn("index-%s, playerId-%s is in room", i, playerId);
+        }
+
         continue;
       }
 
