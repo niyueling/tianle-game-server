@@ -367,8 +367,10 @@ export class NewRobotManager {
 
   async addRobotForPublicRoom() {
     if (this.waitPublicRobot < config.game.waitRubyPlayer || this.room.gameState) {
+      if (!this.room.gameState) {
+        console.warn("timeCheck-%s, gameState-%s", this.waitPublicRobot < config.game.waitRubyPlayer, !!this.room.gameState);
+      }
       // 时间未到，或者已经有机器人
-      console.warn("timeCheck-%s, gameState-%s", this.waitPublicRobot < config.game.waitRubyPlayer, !!this.room.gameState);
       return;
     }
 
