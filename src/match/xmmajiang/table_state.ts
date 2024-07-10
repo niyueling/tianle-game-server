@@ -1741,9 +1741,9 @@ class TableState implements Serializable {
 
       // 计算下一局庄家，计算底分
       const nextZhuang = this.nextZhuang(players);
-
       const states = players.map((player, idx) => player.genGameStatus(idx))
       const huPlayers = players.filter(p => p.huPai());
+      let isLiuJu = true;
 
       await this.recordRubyReward();
       for (const state1 of states) {
@@ -1765,6 +1765,10 @@ class TableState implements Serializable {
 
           // 记录胜率
           await this.setPlayerGameConfig(state1.model, state1.score);
+        }
+
+        if (state1.score !== 0) {
+          isLiuJu = false;
         }
       }
 
@@ -1792,6 +1796,12 @@ class TableState implements Serializable {
         zhuangCount: this.room.zhuangCounter,
         caishen: [this.caishen]
       }
+
+      // 记录流局
+      if (isLiuJu) {
+        this.zhuang.recorder.recordUserEvent(this.zhuang, 'liuJu', null, []);
+      }
+
 
       this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg});
       await this.room.gameOver(nextZhuang._id, states, this.zhuang._id);
