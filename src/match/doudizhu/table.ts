@@ -273,7 +273,7 @@ abstract class Table implements Serializable {
     // if (player.cards.length === cards.length && !currentPattern) {
     //   currentPattern = triplePlusXMatcher.verify(cards) || straightTriplesPlusXMatcher.verify(cards)
     // }
-    if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
+    if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0 && player.index !== 2) {
       await this.daPai(player, cards, currentPattern)
     } else {
       console.warn("currentPattern-%s, this.status.lastPattern-%s, patternCompare-%s", JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
