@@ -78,6 +78,10 @@ class CardManager {
       if (cardMap[p[0] + card] > 0 && cardMap[p[1] + card] > 0) {
         // 可以吃
         list = [p[0] + card, p[1] + card, card].sort();
+        const baiIndex = list.findIndex(c => c === goldCard);
+        if (baiIndex !== -1) {
+          list[baiIndex] = Enums.bai;
+        }
         index = list.indexOf(card);
         list[index] = originCard;
         list.push(originCard);
