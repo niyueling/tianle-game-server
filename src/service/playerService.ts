@@ -76,7 +76,7 @@ export default class PlayerService extends BaseService {
     randomPlayer.isGame = true;
     randomPlayer.gameTime = new Date();
 
-    console.warn("currency-%s", currency);
+    console.warn("shortId-%s, currency-%s", randomPlayer.shortId, currency);
 
     // 记录金豆日志
     await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
