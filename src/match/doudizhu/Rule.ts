@@ -52,11 +52,6 @@ class Rule {
   get winnerFirst() {
     return !!this.ro.winnerFirst
   }
-
-  // 是否计算反春天
-  get antiSpring() {
-    return !!this.ro.antiSpring;
-  }
 }
 
 export default Rule;

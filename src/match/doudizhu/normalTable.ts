@@ -249,11 +249,16 @@ export default class NormalTable extends Table {
 
     // console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
     this.players.map((v) => {multiples.push({index: v.index, multiple: v.multiple, mode: v.mode})});
-    console.warn("multiples-%s", JSON.stringify(multiples));
+    const springPlayers = this.audit.isSpring();
+    console.warn("multiples-%s, springPlayers-%s", JSON.stringify(multiples), JSON.stringify(springPlayers));
 
     // 如果赢家是地主
     if (winner.mode === enums.landlord) {
       const losers = this.players.filter(p => p.mode === enums.farmer);
+
+      // 判断是否春天
+      const isSpring = true;
+
 
       // 计算积分
       losers.map(p => winner.winFrom(p, p.multiple));

@@ -134,13 +134,11 @@ export class AuditPdk implements Serializable {
         })
         if (playCount.length > 0) {
           // 有人出牌，被反春天了
-          if (this.rule.antiSpring) {
-            // 要计算反春天
-            springPlayer.push(firstPlayId);
-          }
+          springPlayer.push(firstPlayId);
+
           if (noPlayCount.length > 0) {
             // 其它人被春天了
-            springPlayer.push(...noPlayCount)
+            springPlayer.push(...noPlayCount);
           }
         }
       }
@@ -161,22 +159,6 @@ export class AuditPdk implements Serializable {
       }
     }
     return list;
-  }
-
-  setSpringScore(shortId, score) {
-    const info = this.currentRound[shortId];
-    if (info.isFirstPlay) {
-      // 第一个出牌
-      if (score > 0) {
-        // 春天其它人
-        info.springScore += score;
-      } else {
-        // 被反春天
-        info.antSpringScore += score;
-      }
-    } else {
-      info.springScore += score;
-    }
   }
 
   recoverFromJson(jsonObject) {
