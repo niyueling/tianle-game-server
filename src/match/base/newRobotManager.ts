@@ -72,7 +72,6 @@ export class NewRobotManager {
 
   // 每秒开始监控
   startMonit() {
-    console.log('monit start ', this.room._id);
     this.watchTimer = setInterval(async () => {
       if (this.isWatching) {
         // 上次还没处理完
@@ -94,6 +93,7 @@ export class NewRobotManager {
   }
 
   async onMonit() {
+    console.log('monit start ', this.room._id);
     if (this.room.gameRule.isPublic) {
       return this.publicRoomMonit();
     } else {
@@ -368,12 +368,14 @@ export class NewRobotManager {
   async addRobotForPublicRoom() {
     if (this.waitPublicRobot < config.game.waitRubyPlayer || this.room.gameState) {
       // 时间未到，或者已经有机器人
+      console.warn("timeCheck-%s, gameState-%s", this.waitPublicRobot < config.game.waitRubyPlayer, !!this.room.gameState);
       return;
     }
 
     for (let i = 1; i < this.room.players.length; i++) {
       const playerId = await this.getOfflinePlayerByIndex(i)
-      if (playerId !== "" || this.room.players[i] ) {
+      if (playerId !== "" || this.room.players[i]) {
+        console.warn("index-%s, playerId-%s is in room", i, playerId);
         continue;
       }
 
