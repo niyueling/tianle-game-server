@@ -202,8 +202,12 @@ export default class NormalTable extends Table {
   }
 
   async gameOver() {
+    // 设置剩余牌数
     this.updateRemainCards();
+
     this.settler();
+    console.warn("settler-%s", JSON.stringify(this.settler));
+
     // this.audit.print();
     const states = this.players.map(p => {
       const auditInfo = this.audit.currentRound[p.model.shortId];

@@ -1768,7 +1768,7 @@ class TableState implements Serializable {
         }
       }
 
-      await this.room.recordGameRecord(this, states)
+      await this.room.recordGameRecord(this, states);
       await this.room.recordRoomScore()
       this.players.forEach(x => x.gameOver())
       this.room.removeListener('reconnect', this.onReconnect)
