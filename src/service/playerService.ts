@@ -46,6 +46,9 @@ export default class PlayerService extends BaseService {
 
   // 获取机器人
   async getRobot(categoryId, roomId, currency) {
+    if (!currency) {
+      currency = Enums.goldCurrency;
+    }
     // 金豆
     const rubyRequired = await service.gameConfig.getPublicRoomCategoryByCategory(categoryId);
     if (!rubyRequired) {
@@ -76,7 +79,7 @@ export default class PlayerService extends BaseService {
     randomPlayer.isGame = true;
     randomPlayer.gameTime = new Date();
 
-    console.warn("shortId-%s, currency-%s", randomPlayer.shortId, currency);
+    // console.warn("shortId-%s, currency-%s", randomPlayer.shortId, currency);
 
     // 记录金豆日志
     await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
