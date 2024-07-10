@@ -2224,8 +2224,8 @@ class TableState implements Serializable {
       }
     }
 
-    if (this.state !== stateWaitAction && this.state !== stateQiangGang && !player.onDeposit) {
-      player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceState});
+    if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
+      // player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceState});
     } else {
       player.sendMessage('game/guoReply', {ok: true, data: {}});
       player.guoOption(playCard)
