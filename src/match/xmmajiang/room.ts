@@ -423,7 +423,7 @@ class Room extends RoomBase {
       juShu: this.game.juIndex,
       players: players.map(p => p.model._id),
       playersInfo: players.map(player => (
-        {model: pick(player.model, ['nickname', 'avatar', 'diamond', 'gold', 'shortId', 'tlGold'])}
+        {model: pick(player.model, ['nickname', 'avatar', 'diamond', 'gold', 'shortId', 'tlGold', 'sex'])}
       )),
       record: playerArray,
       game: {
