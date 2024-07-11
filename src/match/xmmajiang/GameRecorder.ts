@@ -34,8 +34,7 @@ class GameRecorder implements  IGameRecorder {
     }
 
     if (event === 'chi') {
-      const lastChi = last(player.events.chi)
-      eventRecord.info.chiCombol = [lastChi[1], lastChi[2]]
+      eventRecord.info.chiCombol = last(player.events.chi);
     }
 
     for (const eventItem of player.events.chiPengGang || []) {
