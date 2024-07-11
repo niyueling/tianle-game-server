@@ -72,6 +72,7 @@ export class NewRobotManager {
 
   // 每秒开始监控
   startMonit() {
+    console.log('monit start ', this.room._id);
     this.watchTimer = setInterval(async () => {
       if (this.isWatching) {
         // 上次还没处理完
@@ -93,9 +94,6 @@ export class NewRobotManager {
   }
 
   async onMonit() {
-    if (!this.room.gameState) {
-      console.log('monit start ', this.room._id);
-    }
 
     if (this.room.gameRule.isPublic) {
       return this.publicRoomMonit();
