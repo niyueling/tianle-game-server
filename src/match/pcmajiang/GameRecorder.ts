@@ -1,7 +1,5 @@
-import {last} from 'lodash'
-
 export interface IGameRecorder {
-  recordUserEvent (player: any, event: string, card?: number): void;
+  recordUserEvent (player: any, event: string, card?: any, cards?: any): void;
   getEvents(): Array<any>;
 }
 
@@ -17,8 +15,14 @@ class GameRecorder implements  IGameRecorder{
   }
 
 
-  recordUserEvent(player, event, card) {
-    const cards = player.getCardsArray()
+  recordUserEvent(player, event, card, cards) {
+    if (!cards) {
+      cards = player.getCardsArray();
+    }
+
+    if (card && !Array.isArray(card)) {
+      card  = [card];
+    }
     const index = player.seatIndex
     const suits = []
     const eventRecord = {

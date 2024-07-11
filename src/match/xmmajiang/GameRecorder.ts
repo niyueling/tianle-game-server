@@ -1,5 +1,4 @@
 import {last} from 'lodash'
-import {length} from "moment";
 
 export interface IGameRecorder {
   recordUserEvent (player: any, event: string, card?: any, cards?: any): void;
