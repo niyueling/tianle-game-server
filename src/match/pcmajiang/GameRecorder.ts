@@ -27,23 +27,17 @@ class GameRecorder implements  IGameRecorder{
       type: event
     }
 
-    if (event === 'chi') {
-      let lastChi = last(player.events.chi)
-      eventRecord.info.chiCombol = [lastChi[1], lastChi[2]]
-    }
-
-    for (let event of player.events.chiPengGang || []) {
-      let [action, info] = event
+    for (const eventItem of player.events.chiPengGang || []) {
+      const [action, info] = eventItem
       switch (action) {
-        case 'chi':
-          suits.push(info)
-          break;
         case 'peng':
-          suits.push(new Array(3).fill(info))
+          suits.push(["peng", info]);
           break;
         case 'mingGang':
+          suits.push(["jieGang", info]);
+          break;
         case 'anGang':
-          suits.push(new Array(4).fill(info))
+          suits.push(["anGang", info]);
           break;
       }
     }

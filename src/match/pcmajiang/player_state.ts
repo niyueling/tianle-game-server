@@ -661,7 +661,7 @@ class PlayerState implements Serializable {
       daPlayer.consumeDropped()
       daPlayer.recordGameEvent(Enums.dianGang, card)
       this.recordContact(daPlayer)
-      this.record('gang', card)
+      this.record('jieGang', card)
       this.gangFrom.push(daPlayer)
 
       this.room.recordPlayerEvent('jieGang', this.model._id)
@@ -683,7 +683,7 @@ class PlayerState implements Serializable {
         info.type = 1
         this.emitter.emit('recordMingGangSelf', card)
         this.room.recordPlayerEvent('buGang', this.model._id)
-        this.record('gang', card)
+        this.record('buGang', card)
         return true
       }
     } else {
@@ -692,7 +692,7 @@ class PlayerState implements Serializable {
         info.type = 3
         this.recordGameEvent(Enums.anGang, card)
         this.emitter.emit('recordAnGang', card)
-        this.record('gang', card)
+        this.record('anGang', card)
         this.room.recordPlayerEvent('anGang', this.model._id)
         return true
       }
