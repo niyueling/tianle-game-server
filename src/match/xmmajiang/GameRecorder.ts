@@ -26,7 +26,7 @@ class GameRecorder implements  IGameRecorder {
     }
 
     const index = player.seatIndex
-    const suits = {chi: [], peng: [], anGang: [], jieGang: []}
+    const suits = [];
     const eventRecord = {
       index,
       info: {cards, card, suits, chiCombol: []},
@@ -41,16 +41,16 @@ class GameRecorder implements  IGameRecorder {
       const [action, info] = eventItem
       switch (action) {
         case 'chi':
-          suits.chi.push(info)
+          suits.push(["chi", info]);
           break;
         case 'peng':
-          suits.peng.push(new Array(3).fill(info))
+          suits.push(["peng", info]);
           break;
         case 'mingGang':
-          suits.jieGang.push(new Array(4).fill(info))
+          suits.push(["jieGang", info]);
           break;
         case 'anGang':
-          suits.anGang.push(new Array(4).fill(info))
+          suits.push(["anGang", info]);
           break;
       }
     }
