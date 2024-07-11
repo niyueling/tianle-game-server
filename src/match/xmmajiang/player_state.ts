@@ -924,6 +924,13 @@ class PlayerState implements Serializable {
           }
         }
 
+        if (checkResult.hu && checkResult.tianHu) {
+          this.recordGameEvent(Enums.tianHu, card);
+          this.record(Enums.tianHu, card)
+          recordCount++;
+          this.room.recordPlayerEvent('tianHu', this.model._id);
+        }
+
         if (checkResult.isYouJin && checkResult.youJinTimes === 1) {
           this.recordGameEvent(Enums.youJin, card);
           this.record(Enums.youJin, card)
