@@ -1,13 +1,6 @@
 module.exports = {
   database: {
     "url": "mongodb://localhost:27017/tianleServer",
-    opt: {
-      reconnectTries: 100,
-      reconnectInterval: 5000,
-      connectTimeoutMS: 60000,
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    }
   },
   "websocket": {
     "port": 9597

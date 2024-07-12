@@ -6,8 +6,6 @@ module.exports = {
       reconnectTries: 100,
       reconnectInterval: 5000,
       connectTimeoutMS: 60000,
-      useNewUrlParser: true,
-      useUnifiedTopology: true
     }
   },
   rabbitmq: {
