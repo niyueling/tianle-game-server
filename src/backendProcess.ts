@@ -42,18 +42,18 @@ export class BackendProcess {
   // 保存所有房间信息
 
   async getRoomIdsToRecover(): Promise<string[]> {
-    return this.redisClient.smembersAsync(`cluster-${this.cluster}`)
+    return this.redisClient.smembersAsync(`cluster-${this.cluster}`);
   }
 
   sendMessage(name: string, message: any, playerRouteKey: string) {
-    this.lobbyChannel.publish('userCenter', playerRouteKey, toBuffer({payload: message, name}))
+    this.lobbyChannel.publish('userCenter', playerRouteKey, toBuffer({payload: message, name}));
   }
 
   async execute() {
     // @ts-ignore
-    await Database.connect(this.dataBaseUrl, config.database.opt)
-    this.connection = await rabbitMq.connect(this.rabbitMqServer)
-    this.lobbyChannel = await this.connection.createChannel()
+    await Database.connect(this.dataBaseUrl, config.database.opt);
+    this.connection = await rabbitMq.connect(this.rabbitMqServer);
+    this.lobbyChannel = await this.connection.createChannel();
     // 子游戏大厅
     const lobbyQueueName = `${this.gameName}Lobby`
     const dealQuestionQueueName = `${this.gameName}DealQuestion`
@@ -63,10 +63,10 @@ export class BackendProcess {
     await this.lobbyChannel.assertExchange('exClubCenter', 'topic', {durable: false})
     await this.lobbyChannel.assertExchange('userCenter', 'topic', {durable: false})
 
-    const roomIds: string[] = await this.getRoomIdsToRecover()
+    const roomIds: string[] = await this.getRoomIdsToRecover();
 
     // 还原掉线房间
-    await this.recoverRooms(roomIds)
+    await this.recoverRooms(roomIds);
 
     await this.lobbyChannel.consume(lobbyQueueName, async message => {
       const messageBody = JSON.parse(message.content.toString())
@@ -215,13 +215,13 @@ export class BackendProcess {
       await roomProxy.joinAsCreator(playerRmqProxy);
 
       // 第一次进房间,保存信息
-      await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId)
-      await saveRoomDetail(room._id, JSON.stringify(room.toJSON()))
+      await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId);
+      await saveRoomDetail(room._id, JSON.stringify(room.toJSON()));
       await service.roomRegister.saveNewRoomRecord(room, messageBody.payload.gameType, playerModel, rule);
-      await this.redisClient.saddAsync('room', room._id)
-      await service.roomRegister.putPlayerInGameRoom(messageBody.from, this.gameName, room._id, room.rule.ro.playerCount)
-      await this.redisClient.saddAsync(`cluster-${this.cluster}`, room._id)
-      await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()))
+      await this.redisClient.saddAsync('room', room._id);
+      await service.roomRegister.putPlayerInGameRoom(messageBody.from, this.gameName, room._id, room.rule.ro.playerCount);
+      await this.redisClient.saddAsync(`cluster-${this.cluster}`, room._id);
+      await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()));
     } catch (e) {
       logger.error('create room error', e)
     }
