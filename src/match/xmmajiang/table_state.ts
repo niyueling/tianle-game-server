@@ -928,6 +928,7 @@ class TableState implements Serializable {
           const hangUpList = this.stateData.hangUp
           this.turn++
           this.state = stateWaitDa
+          this.stateData = {};
           const gangSelection = player.getAvailableGangs(true)
           const daCard = await this.promptWithPattern(player, null);
           this.stateData = {da: player, card: daCard, type: Enums.peng};
