@@ -20,7 +20,7 @@ import gameHandlers from './message-handlers-rmq/game'
 import {GameApi} from "./message-handlers-rmq/gameApi";
 import {GoodsApi} from "./message-handlers-rmq/goodsApi";
 import mailHandlers from './message-handlers-rmq/mail';
-import {createHandler, lobbyQueueNameFrom} from './message-handlers-rmq/match'
+import {createHandler} from './message-handlers-rmq/match'
 import resourceHandlers from './message-handlers-rmq/resource'
 import {ResourceApi} from "./message-handlers-rmq/resourceApi";
 import socialHandlers from './message-handlers-rmq/social'

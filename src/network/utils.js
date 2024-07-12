@@ -10,12 +10,6 @@ function deserializeMessage(data) {
   return JSON.parse(data);
 }
 
-const utils = {
-  serializeMessage,
-  deserializeMessage,
-};
-
-export default utils;
 export {
   serializeMessage,
   deserializeMessage,

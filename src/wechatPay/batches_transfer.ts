@@ -46,13 +46,13 @@ export class batches_transfer {
     }
 
     /**
-       * 构建请求签名参数
-       * @param method Http 请求方式
-       * @param url 请求接口 例如/v3/certificates
-       * @param timestamp 获取发起请求时的系统当前时间戳
-       * @param nonceStr 随机字符串
-       * @param body 请求报文主体
-       */
+     * 构建请求签名参数
+     * @param method Http 请求方式
+     * @param nonce_str
+     * @param url 请求接口 例如/v3/certificates
+     * @param timestamp 获取发起请求时的系统当前时间戳
+     * @param body 请求报文主体
+     */
     public getSignature(method: string, nonce_str: string, timestamp: string, url: string, body?: string | Record<string, any>): string {
         let str = method + '\n' + url + '\n' + timestamp + '\n' + nonce_str + '\n';
         if (body && body instanceof Object) body = JSON.stringify(body);
@@ -61,10 +61,9 @@ export class batches_transfer {
         return this.sha256WithRsa(str);
     }
     /**
-       * SHA256withRSA
-       * @param data 待加密字符
-       * @param privatekey 私钥key  key.pem   fs.readFileSync(keyPath)
-       */
+     * SHA256withRSA
+     * @param data 待加密字符
+     */
     public sha256WithRsa(data: string): string {
         if (!this.privateKey) throw new Error('缺少秘钥文件');
         return crypto
@@ -74,11 +73,11 @@ export class batches_transfer {
     }
 
     /**
-      * 获取授权认证信息
-      * @param nonceStr  请求随机串
-      * @param timestamp 时间戳
-      * @param signature 签名值
-      */
+     * 获取授权认证信息
+     * @param nonce_str
+     * @param timestamp 时间戳
+     * @param signature 签名值
+     */
     public getAuthorization(nonce_str: string, timestamp: string, signature: string): string {
         const _authorization =
             'mchid="' +
@@ -109,15 +108,16 @@ export class batches_transfer {
             timestamp = parseInt(+new Date() / 1000 + '').toString();
 
         const signature = this.getSignature(method, nonce_str, timestamp, url.replace('https://api.mch.weixin.qq.com', ''), params);
-        const authorization = this.getAuthorization(nonce_str, timestamp, signature);
-        return authorization;
+        return this.getAuthorization(nonce_str, timestamp, signature);
     }
 
     /**
-       * post 请求 V2
-       * @param url  请求接口
-       * @param params 请求参数
-       */
+     * post 请求 V2
+     * @param url  请求接口
+     * @param params 请求参数
+     * @param authorization
+     * @param headers
+     */
     protected async postRequestV2(url: string, params: Record<string, any>, authorization: string, headers = {}): Promise<object> {
         try {
             const result = await request
