@@ -42,18 +42,22 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   async gang(action, index = 0) {
     console.log(`${this.playerState.model.shortId}(${this.playerState.model.name})执行操作：${action}`)
 
-    switch (action) {
-      case Enums.gang:
-        await this.room.gameState.promptWithOther(Enums.gang, this.playerState);
-        break;
+    const choiceFunc = async() => {
+      switch (action) {
+        case Enums.gang:
+          await this.room.gameState.promptWithOther(Enums.gang, this.playerState);
+          break;
 
-      case Enums.anGang:
-        await this.room.gameState.promptWithOther(Enums.anGang, this.playerState, index);
-        break;
+        case Enums.anGang:
+          await this.room.gameState.promptWithOther(Enums.anGang, this.playerState, index);
+          break;
 
-      case Enums.buGang:
-        await this.room.gameState.promptWithOther(Enums.buGang, this.playerState, index);
-        break;
+        case Enums.buGang:
+          await this.room.gameState.promptWithOther(Enums.buGang, this.playerState, index);
+          break;
+      }
     }
+
+    setTimeout(choiceFunc, 1500);
   }
 }
