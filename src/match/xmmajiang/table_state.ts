@@ -1097,6 +1097,10 @@ class TableState implements Serializable {
       const isQiangJin = this.state === stateQiangJin || (huResult.hu && huResult.huType === Enums.qiShouSanCai);
       console.warn("jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s, caishen-%s, cards-%s", isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult), this.caishen, JSON.stringify(this.getCardArray(player.cards)));
 
+      if (!this.stateData[Enums.hu] || this.stateData[Enums.hu]._id.toString() !== player._id.toString()) {
+        return ;
+      }
+
       //双游只能自摸
       if (isJiePao && this.isSomeOne2youOr3you()) {
         player.sendMessage('game/huReply', {ok: false, info: TianleErrorCode.youJinNotHu});
