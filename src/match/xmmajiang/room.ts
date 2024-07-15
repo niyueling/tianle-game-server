@@ -439,12 +439,14 @@ class Room extends RoomBase {
   }
 
   async updatePosition() {
+    const positions = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       const position = i;
-
-      p.sendMessage("game/updatePosition", {ok: true, data: {_id: p._id, position}});
+      positions.push({_id: p._id, position});
     }
+
+    this.broadcast("game/updatePosition", {ok: true, data: {positions}});
   }
 
   async recordRoomScore(roomState = 'normal'): Promise<any> {
