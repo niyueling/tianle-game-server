@@ -40,7 +40,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   }
 
   async gang(action, index = 0) {
-    console.log(`${this.playerState.model.shortId}(${this.playerState.model.name})执行操作：${action}`)
+    console.log(`${this.playerState.model.shortId}(${this.playerState.model.name})执行操作：${action},操作时间：${new Date().getTime()}`)
 
     const choiceFunc = async() => {
       switch (action) {
