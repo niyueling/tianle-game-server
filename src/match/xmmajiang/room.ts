@@ -438,13 +438,12 @@ class Room extends RoomBase {
     })
   }
 
-  updatePosition(player, position) {
-    if (position) {
-      player.model.position = position
+  async updatePosition() {
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const position = i;
 
-      const positions = this.players.map(p => p && p.model)
-
-      this.broadcast('room/playersPosition', {ok: true, data: {positions}});
+      p.sendMessage("game/updatePosition", {ok: true, data: {_id: p._id, position}});
     }
   }
 
@@ -1039,6 +1038,9 @@ class Room extends RoomBase {
     this.clearReady()
     // 下一局
     await this.robotManager.nextRound();
+
+    // 更新玩家位置
+    await this.updatePosition();
 
     this.gameState.dissolve()
     this.gameState = null
