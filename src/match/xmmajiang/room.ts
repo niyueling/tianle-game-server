@@ -1042,7 +1042,9 @@ class Room extends RoomBase {
     await this.robotManager.nextRound();
 
     // 更新玩家位置
-    await this.updatePosition();
+    if (!this.isPublic) {
+      await this.updatePosition();
+    }
 
     this.gameState.dissolve()
     this.gameState = null
