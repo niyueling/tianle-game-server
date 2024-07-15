@@ -34,7 +34,7 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
         );
       }
 
-      setTimeout(choiceFunc, 1500);
+      setTimeout(choiceFunc, 900);
 
     }
   }
@@ -58,6 +58,6 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
       }
     }
 
-    setTimeout(choiceFunc, 1500);
+    setTimeout(choiceFunc, 900);
   }
 }
