@@ -1098,9 +1098,9 @@ class TableState implements Serializable {
       console.warn("jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s, caishen-%s, cards-%s， stateData-%s",
         isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult), this.caishen, JSON.stringify(this.getCardArray(player.cards)), JSON.stringify(this.stateData));
 
-      // if (!this.stateData[Enums.hu] || this.stateData[Enums.hu]._id.toString() !== player._id.toString()) {
-      //   return ;
-      // }
+      if (!this.stateData[Enums.hu] || this.stateData[Enums.hu]._id.toString() !== player._id.toString()) {
+        return ;
+      }
 
       //双游只能自摸
       if (isJiePao && this.isSomeOne2youOr3you()) {
@@ -2149,6 +2149,15 @@ class TableState implements Serializable {
     }
     const env = {card, from, turn: this.turn}
     this.actionResolver = new ActionResolver(env, async () => {
+      if (xiajia.huTurnList) {
+        const tIndex = xiajia.huTurnList.findIndex(t => t.card === card && t.turn === turn);
+        if (tIndex !== -1) {
+          return;
+        }
+
+        xiajia.huTurnList.push({card, turn});
+      }
+
       const newCard = await this.consumeCard(xiajia);
       const msg = await xiajia.takeCard(this.turn, newCard);
       if (!msg) {

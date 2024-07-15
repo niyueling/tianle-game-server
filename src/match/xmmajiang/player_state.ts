@@ -241,6 +241,8 @@ class PlayerState implements Serializable {
   // 是否游金状态
   isYouJin: boolean = false;
 
+  huTurnList: any[] = [];
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
