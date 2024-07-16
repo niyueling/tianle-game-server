@@ -1517,7 +1517,7 @@ class PlayerState implements Serializable {
 
     if (this.room.robotManager.model.step === RobotStep.selectMode || this.mode === 'unknown') {
       this.cancelTimeout()
-      console.warn("wait player select mode");
+      console.warn("wait player select mode, step %s, mode %s", this.room.robotManager.model.step, this.mode);
       return;
     }
 
