@@ -874,15 +874,15 @@ class TableState implements Serializable {
           this.stateData = {da: player, card: daCard, type: Enums.peng};
           const gangSelection = player.getAvailableGangs()
           const from = this.atIndex(this.lastDa)
-          const cards = [card, otherCard1, otherCard2].sort((a, b) => a - b);
-          // 将新牌添加到排序后数组的末尾
-          const cardsWithNewCard = [...cards, card];
+          // const cards = [card, otherCard1, otherCard2].sort((a, b) => a - b);
+          // // 将新牌添加到排序后数组的末尾
+          // const cardsWithNewCard = [...cards, card];
 
           player.sendMessage('game/chiReply', {ok: true, data: {
               turn: this.turn,
               card,
               from,
-              suit: cardsWithNewCard,
+              suit: shunZiList,
               gang: gangSelection.length > 0,
               bigCardList: await this.room.auditManager.getBigCardByPlayerId(player._id, player.seatIndex, player.cards),
               gangSelection,
@@ -893,7 +893,7 @@ class TableState implements Serializable {
               turn,
               from,
               index,
-              suit: cardsWithNewCard,
+              suit: shunZiList,
             }}, player.msgDispatcher);
         } else {
           player.emitter.emit(Enums.guo, turn, card);
