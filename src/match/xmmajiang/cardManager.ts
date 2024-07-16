@@ -77,7 +77,7 @@ class CardManager {
     for (const p of pos) {
       if (cardMap[p[0] + card] > 0 && cardMap[p[1] + card] > 0) {
         // 可以吃
-        list = [p[0] + card, p[1] + card, card].sort();
+        list = [p[0] + card, p[1] + card, card].sort().slice();
         const baiIndex = list.findIndex(c => c === goldCard);
         if (baiIndex !== -1) {
           list[baiIndex] = Enums.bai;
