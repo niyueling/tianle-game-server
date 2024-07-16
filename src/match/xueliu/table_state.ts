@@ -2688,7 +2688,7 @@ class TableState implements Serializable {
             if (ok) {
               player.lastOperateType = 3;
               this.turn++;
-              player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
+              // player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
               // 设置所有用户地胡状态为false
               this.players.map((p) => p.isDiHu = false)
               const from = this.atIndex(this.lastDa)
@@ -2776,17 +2776,17 @@ class TableState implements Serializable {
         return player.sendMessage('game/gangReply', {ok: false, info: TianleErrorCode.gangButPlayerPengGang});
       }
 
-      const isAnGang = player.cards[card] >= 3
+      const isAnGang = player.cards[card] >= 3;
       gangIndex = this.atIndex(player);
       const from = gangIndex;
       this.turn++;
 
-      const broadcastMsg = {turn: this.turn, card, index, isAnGang}
+      const broadcastMsg = {turn: this.turn, card, index, isAnGang};
       const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
       if (ok) {
         player.lastOperateType = 3;
         this.stateData = {}
-        player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
+        // player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
         // 设置所有用户地胡状态为false
         this.players.map((p) => p.isDiHu = false)
         player.sendMessage('game/gangReply', {
