@@ -926,7 +926,7 @@ class PlayerState implements Serializable {
           }
         }
 
-        if (checkResult.hu && checkResult.tianHu) {
+        if (checkResult.hu && checkResult.tianHu && checkResult.huType !== Enums.qiShouSanCai) {
           this.recordGameEvent(Enums.tianHu, card);
           this.record(Enums.tianHu, card)
           recordCount++;
