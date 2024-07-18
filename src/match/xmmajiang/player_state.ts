@@ -757,7 +757,7 @@ class PlayerState implements Serializable {
       daPlayer.fangGangCount += 1
       await this.room.auditManager.recordGangZi(this._id, card, daPlayer._id, Enums.mingGang);
 
-      await this.checkYouJin(card);
+      await this.checkYouJin(card, Enums.gang);
 
       return true
     }
@@ -780,7 +780,7 @@ class PlayerState implements Serializable {
         this.record('buGang', card)
         await this.room.auditManager.recordGangZi(this._id, card, this._id, Enums.buGang);
 
-        await this.checkYouJin(card);
+        await this.checkYouJin(card, Enums.gang);
         return true;
       }
     } else {
@@ -795,7 +795,7 @@ class PlayerState implements Serializable {
         this.room.recordPlayerEvent('anGang', this.model._id)
         await this.room.auditManager.recordGangZi(this._id, card, this._id, Enums.anGang);
 
-        await this.checkYouJin(card);
+        await this.checkYouJin(card, Enums.gang);
         return true;
       }
     }
@@ -995,7 +995,7 @@ class PlayerState implements Serializable {
       this.record('da', card)
       this.recordGameSingleEvent(Enums.lastPlayerDaCard, card);
 
-      await this.checkYouJin(card);
+      await this.checkYouJin(card, Enums.da);
 
       return true;
     }
@@ -1004,7 +1004,7 @@ class PlayerState implements Serializable {
     return false;
   }
 
-  async checkYouJin(card) {
+  async checkYouJin(card, event) {
     if (!this.events[Enums.youJinTimes]) {
       this.recordGameSingleEvent(Enums.youJinTimes, 0);
     }
@@ -1028,7 +1028,7 @@ class PlayerState implements Serializable {
         }
       } else {
         // 第一次游金
-        if (!this.events[Enums.youJinTimes]) {
+        if (((event !== Enums.da && !this.events[Enums.youJinTimes]) || event === Enums.da)) {
           const youJinTimes = this.events[Enums.youJinTimes];
           this.recordGameSingleEvent(Enums.youJinTimes, 1);
           this.isYouJin = false;
