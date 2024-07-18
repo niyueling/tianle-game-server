@@ -819,20 +819,6 @@ class TableState implements Serializable {
       }
     })
 
-    player.on("mayQiaoXiang", () => {
-      player.sendMessage("game/mayQiaoXiang", {info: '可以敲响'})
-      // this.logger.info('mayQiaoXiang player %s', index)
-    })
-
-    player.on("qiaoXiang", ({qiao}) => {
-      // this.logger.info('qiaoXiang player-%s qiao :%s ', index, qiao)
-      if (qiao) {
-        player.setQiaoXiang()
-        this.room.broadcast('game/otherQiaoXiang', {player: index})
-      }
-      player.stashPopTakeCard()
-    })
-
     player.on('flowerList', async () => {
       const flowerLists = [];
 
@@ -854,16 +840,8 @@ class TableState implements Serializable {
       }
       if (this.stateData[Enums.chi] && this.stateData[Enums.chi]._id.toString() !== player._id.toString()) {
         player.emitter.emit(Enums.guo, turn, card);
-        // player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiButPlayerChi})
         return
       }
-
-      // if (this.isSomeOne2youOr3you()) {
-      //   // 游金中，只能自摸
-      //   player.emitter.emit(Enums.guo, turn, card);
-      //   player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.youJinNotHu})
-      //   return;
-      // }
 
       this.actionResolver.requestAction(player, 'chi', async () => {
         const ok = await player.chiPai(card, otherCard1, otherCard2, this.lastDa);
@@ -874,9 +852,6 @@ class TableState implements Serializable {
           this.stateData = {da: player, card: daCard, type: Enums.peng};
           const gangSelection = player.getAvailableGangs()
           const from = this.atIndex(this.lastDa)
-          // const cards = [card, otherCard1, otherCard2].sort((a, b) => a - b);
-          // // 将新牌添加到排序后数组的末尾
-          // const cardsWithNewCard = [...cards, card];
 
           player.sendMessage('game/chiReply', {ok: true, data: {
               turn: this.turn,
@@ -897,11 +872,9 @@ class TableState implements Serializable {
             }}, player.msgDispatcher);
         } else {
           player.emitter.emit(Enums.guo, turn, card);
-          // player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiNotSuccess});
         }
       }, () => {
         player.emitter.emit(Enums.guo, turn, card);
-        // player.sendMessage('game/chiReply', {ok: false, info: TianleErrorCode.chiPriorityInsufficient});
       })
 
       await this.actionResolver.tryResolve()
@@ -916,12 +889,6 @@ class TableState implements Serializable {
         return
       }
 
-      // if (this.isSomeOne2youOr3you()) {
-      //   // 游金中，只能自摸
-      //   player.emitter.emit(Enums.guo, turn, card);
-      //   return;
-      // }
-
       this.actionResolver.requestAction(player, 'peng', async () => {
         const ok = await player.pengPai(card, this.lastDa);
         if (ok) {
@@ -929,7 +896,7 @@ class TableState implements Serializable {
           this.turn++
           this.state = stateWaitDa
           this.stateData = {};
-          const gangSelection = player.getAvailableGangs(true)
+          const gangSelection = player.getAvailableGangs(true);
           const daCard = await this.promptWithPattern(player, null);
           this.stateData = {da: player, card: daCard, type: Enums.peng};
           const from = this.atIndex(this.lastDa)
@@ -989,11 +956,6 @@ class TableState implements Serializable {
         player.emitter.emit(Enums.guo, turn, card);
         return
       }
-      // if (this.isSomeOne2youOr3you()) {
-      //   // 游金中，只能自摸
-      //   player.emitter.emit(Enums.guo, turn, card);
-      //   return;
-      // }
 
       this.actionResolver.requestAction(
         player, 'gang',
