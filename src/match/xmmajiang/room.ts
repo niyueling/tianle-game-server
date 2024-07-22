@@ -328,11 +328,11 @@ class Room extends RoomBase {
       return true
     }
 
-    if (this.players.filter(x => x != null).length > this.capacity) {
-      console.warn("playerCount-%s, disconnectedCount-%s, capacity-%s", this.players.filter(x => x != null).length, this.disconnected.length, this.capacity);
-      console.warn("players-%s", JSON.stringify(this.players.filter(x => x != null)));
+    if (this.players.filter(x => x !== null).length > this.capacity) {
+      console.warn("playerCount-%s, disconnectedCount-%s, capacity-%s", this.players.filter(x => x !== null).length, this.disconnected.length, this.capacity);
+      // console.warn("players-%s", JSON.stringify(this.players.filter(x => x != null)));
     }
-    return this.players.filter(x => x != null).length + this.disconnected.length < this.capacity
+    return this.players.filter(x => x !== null).length + this.disconnected.length < this.capacity
   }
 
   mergeOrder() {
@@ -712,7 +712,7 @@ class Room extends RoomBase {
     roomCreator.sendMessage('room/dissolve', {ok: true, data: {}})
     roomCreator.room = null
     this.players.forEach(player => {
-      if (player && player !== roomCreator) {
+      if (player && player._id.toString() !== roomCreator._id.toString()) {
         player.sendMessage('room/dissolve', {ok: true, data: {}})
         player.room = null
       }
