@@ -889,7 +889,7 @@ class Room extends RoomBase {
 
   onRequestDissolve(player) {
     if (Date.now() - this.dissolveTime < 60 * 1000) {
-      player.sendMessage('game/showInfo', {ok: false, info: TianleErrorCode.dissolveInsufficient})
+      player.sendMessage('room/dissolveReq', {ok: false, info: TianleErrorCode.dissolveInsufficient})
       return
     }
     const dissolveInfo = this.getDissolvePlayerInfo(player);
