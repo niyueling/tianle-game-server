@@ -2108,10 +2108,6 @@ class TableState implements Serializable {
 
     const xiajia = this.players[(index + 1) % this.players.length]
 
-    if (xiajia.contacted(this.lastDa) < 2) {
-      check = xiajia.checkChi(card, check)
-    }
-
     for (let j = 1; j < this.players.length; j++) {
       const i = (index + j) % this.players.length
       const p = this.players[i]
