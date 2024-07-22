@@ -352,7 +352,7 @@ class Room extends RoomBase {
         this.arrangePos(player)
       }
 
-      this.players[indexForPlayer] = player
+      this.players[indexForPlayer] = player;
       return
     }
     for (let i = 0; i < this.players.length; i++) {

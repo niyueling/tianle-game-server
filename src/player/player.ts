@@ -265,20 +265,25 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
   }
 
   async disconnect() {
-    this.isDone = true
-    logger.info(`Disconnect player: ${this._id}`, this.socketId)
+    try {
+      this.isDone = true
+      logger.info(`Disconnect player: ${this._id}`, this.socketId)
 
-    if (this.socket) {
-      const promise = new Promise(resolve => {
-        this.once('disconnect', () => resolve())
-      })
+      if (this.socket) {
+        const promise = new Promise(resolve => {
+          this.once('disconnect', () => resolve())
+        })
 
-      rediClient.decrAsync(`gameCounter.${this.gameName}`)
-        .then()
-      this.socket.close()
-      this.socket.terminate()
-      await promise
+        rediClient.decrAsync(`gameCounter.${this.gameName}`)
+          .then()
+        this.socket.close()
+        this.socket.terminate()
+        await promise
+      }
+    } catch(e) {
+      logger.info(e);
     }
+
   }
 
   sendMessage(name, message) {
