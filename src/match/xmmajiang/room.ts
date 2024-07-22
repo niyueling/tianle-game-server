@@ -320,6 +320,7 @@ class Room extends RoomBase {
 
   canJoin(player) {
     if (!player) {
+      console.warn("player is not exists");
       return false
     }
 
@@ -327,6 +328,7 @@ class Room extends RoomBase {
       return true
     }
 
+    console.warn("playerCount-%s, disconnectedCount-%s, capacity-%s", this.players.filter(x => x != null).length, this.disconnected.length, this.capacity);
     return this.players.filter(x => x != null).length + this.disconnected.length < this.capacity
   }
 

@@ -245,7 +245,7 @@ export class BackendProcess {
 
     const roomId = await this.redisClient.lpopAsync('roomIds')
     if (!roomId) {
-      this.sendMessage('room/createReply', {reason: `服务器错误,无法创建房间 [-9]`}, playerRouteKey);
+      this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomInvalid}, playerRouteKey);
       return
     }
 
