@@ -1119,7 +1119,7 @@ class TableState implements Serializable {
                     type: "jiepao"
                   }
                 });
-                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index}}, player.msgDispatcher);
+                this.room.broadcast('game/oppoHu', {ok: true, data: {turn, card, index, type: "jiepao"}}, player.msgDispatcher);
 
                 setTimeout(gameOver, 1000);
               }
@@ -1227,6 +1227,7 @@ class TableState implements Serializable {
               turn,
                 card,
                 index,
+                type: "zimo",
                 youJinTimes: player.events[Enums.youJinTimes] || 0,
                 tianHu: huTianHu,
                 youJin: huResult.isYouJin && player.events[Enums.youJinTimes] === 1,
