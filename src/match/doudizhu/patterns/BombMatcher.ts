@@ -42,7 +42,7 @@ export default class BombMatcher implements IMatcher {
   // @mustBeRealBomb
   // @verifyWithJoker
   verify(cards: Card[]): IPattern | null {
-    if (cards.length >= 4) {
+    if (cards.length === 4) {
       const firstCard = cards[0]
       const sameAsFirst = cards.filter(c => firstCard.point === c.point).length
       if (sameAsFirst === cards.length) {
@@ -54,9 +54,9 @@ export default class BombMatcher implements IMatcher {
       }
     }
 
-    if (cards.length === 4) {
+    if (cards.length === 2) {
       const jokers = cards.filter(c => c.type === CardType.Joker).length
-      if (jokers === 4) {
+      if (jokers === 2) {
         return {
           name: this.name,
           score: 1000,
