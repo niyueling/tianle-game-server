@@ -216,6 +216,7 @@ export default class NormalTable extends Table {
         index: p.index,
         score: p.balance,
         detail: p.detailBalance,
+        mode: p.mode,
         // 统计信息
         audit: {
           remainCards: auditInfo.remainCards,
