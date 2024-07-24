@@ -745,7 +745,6 @@ abstract class Table implements Serializable {
         score: p.balance,
         multiple: p.multiple,
         detail: p.detailBalance,
-        gameType: GameType.ddz,
         // 统计信息
         audit: {
           remainCards: auditInfo.remainCards,
@@ -759,6 +758,7 @@ abstract class Table implements Serializable {
 
     const gameOverMsg = {
       states,
+      gameType: GameType.ddz,
       juShu: this.restJushu,
       isPublic: this.room.isPublic,
       juIndex: this.room.game.juIndex,
