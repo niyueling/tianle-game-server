@@ -215,6 +215,7 @@ export default class NormalTable extends Table {
         model: p.model,
         index: p.index,
         score: p.balance,
+        multiple: p.multiple,
         detail: p.detailBalance,
         mode: p.mode,
         // 统计信息
@@ -230,6 +231,7 @@ export default class NormalTable extends Table {
 
     const gameOverMsg = {
       states,
+      gameType: GameType.ddz,
       juShu: this.restJushu,
       isPublic: this.room.isPublic,
       juIndex: this.room.game.juIndex,
