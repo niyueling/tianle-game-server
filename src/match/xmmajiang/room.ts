@@ -330,7 +330,7 @@ class Room extends RoomBase {
 
     if (this.players.filter(x => x !== null).length > this.capacity) {
       console.warn("playerCount-%s, disconnectedCount-%s, capacity-%s", this.players.filter(x => x !== null).length, this.disconnected.length, this.capacity);
-      // console.warn("players-%s", JSON.stringify(this.players.filter(x => x != null)));
+      console.warn("players-%s", JSON.stringify(this.players.filter(x => x != null)));
     }
     return this.players.filter(x => x !== null).length + this.disconnected.length < this.capacity
   }
