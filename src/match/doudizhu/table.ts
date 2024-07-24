@@ -150,9 +150,9 @@ abstract class Table implements Serializable {
     // 下一轮
     this.audit.startNewRound();
 
-    if (!payload || !payload.cards) {
-      payload.cards = [[53, 54, 1, 14, 27, 40, 2, 15, 3, 16]];
-    }
+    // if (!payload || !payload.cards) {
+    //   payload.cards = [[53, 54, 1, 14, 27, 40, 2, 15, 3, 16]];
+    // }
 
 
     const allPlayerCards = this.cardManager.genCardForEachPlayer(false, payload.cards || [], this.rule.test);
