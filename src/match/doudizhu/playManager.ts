@@ -148,16 +148,10 @@ export class PlayManager {
       new StraightDoublesMatcher(), // 连对
       new StraightTriplePlus2Matcher(), // 飞机
       new TriplePlus2Matcher(), // 三带二
+      new QuadruplePlusTwo(), // 4带二
       new BombMatcher(), // 炸弹
     ];
     this.boomPattern = [ new BombMatcher() ];
-    if (this.rule.boomPlus2) {
-      this.allowPattern.push(new QuadruplePlusTwo());
-    }
-    if (this.rule.triplePlusX) {
-      // 3张可以少带
-      // this.allowPattern.push(new TriplePlusXMatcher());
-    }
   }
 
   buildNoPattern() {
