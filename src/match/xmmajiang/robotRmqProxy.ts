@@ -11,9 +11,14 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
   // 出牌
   async playCard() {
     if (this.playerState) {
-      // 从牌堆中取出合适的牌
-      const index = await this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
-      await this.room.gameState.onPlayerDa(this.playerState, null, index);
+      const daFunc = async() => {
+        // 从牌堆中取出合适的牌
+        const index = await this.room.gameState.promptWithPattern(this.playerState, this.room.gameState.lastTakeCard);
+        await this.room.gameState.onPlayerDa(this.playerState, null, index);
+      }
+
+      setTimeout(daFunc, 500);
+
     }
   }
 
