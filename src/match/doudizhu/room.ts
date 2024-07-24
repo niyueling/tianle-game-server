@@ -560,7 +560,7 @@ class Room extends RoomBase {
     await this.robotManager.nextRound();
 
     // 结束当前房间
-    if (this.game.isAllOver()) {
+    if (this.game.isAllOver() && !this.isPublic) {
       const message = this.allOverMessage(1)
       this.broadcast('room/gameAllOverReply', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
