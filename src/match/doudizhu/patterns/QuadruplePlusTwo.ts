@@ -16,7 +16,7 @@ export default class QuadruplePlusTwo implements IMatcher {
     const quads = groups.filter(g => g.length === 4)
     if (quads.length === 1) {
       const quad = quads[0]
-      const remainingCards = arraySubtract(cards, quad)
+      const remainingCards = arraySubtract(cards, quad);
 
       // 检查剩余牌是否可以组成两对或四张单牌
       if (remainingCards.length === 2 || remainingCards.length === 4) {
