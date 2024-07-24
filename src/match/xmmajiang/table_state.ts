@@ -2862,7 +2862,7 @@ class TableState implements Serializable {
   // 用户是否有玩家在2游，3游
   is2youOr3youByMe(player) {
     const p = this.players.find(value => value.youJinTimes > 1);
-    return p && p._id.toString() === player._id.toString();
+    return (p && p._id.toString() === player._id.toString()) || !p;
   }
 
   // 是否有玩家在2游，3游
