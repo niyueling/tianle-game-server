@@ -743,6 +743,7 @@ abstract class Table implements Serializable {
         model: p.model,
         index: p.index,
         score: p.balance,
+        multiple: p.multiple,
         detail: p.detailBalance,
         // 统计信息
         audit: {
