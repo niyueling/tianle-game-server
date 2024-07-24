@@ -73,7 +73,7 @@ export default class BombMatcher implements IMatcher {
     if (target.name !== this.name) {
       return [];
     }
-    return groupBy(cards, c => c.point)
+    const bombs = groupBy(cards, c => c.point)
       .filter(grp => grp.length >= 4)
       .sort((grp1, grp2) => {
         if (grp1.length !== grp2.length) {
@@ -81,6 +81,15 @@ export default class BombMatcher implements IMatcher {
         }
         return grp1[0].point - grp2[0].point
       })
-      .filter(group => this.verify(group).score > target.score)
+      .filter(group => this.verify(group).score > target.score);
+
+    // 检查王炸
+    const jokers = cards.filter(c => c.type === CardType.Joker);
+    if (jokers.length === 2) {
+      // 创建一个只包含王炸的数组（作为单个数组元素）
+      bombs.push(jokers);
+    }
+
+    return bombs;
   }
 }
