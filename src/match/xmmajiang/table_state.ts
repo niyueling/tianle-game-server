@@ -1368,11 +1368,11 @@ class TableState implements Serializable {
     });
 
     player.on(Enums.da, async (turn, card) => {
-      await this.onPlayerDa(player, turn, card)
+      await this.onPlayerDa(player, turn, card);
     })
 
     player.on(Enums.guo, async (turn, card) => {
-      await this.onPlayerGuo(player, card)
+      await this.onPlayerGuo(player, card);
     })
 
     player.on(Enums.qiangJinHu, async () => {
@@ -2109,14 +2109,6 @@ class TableState implements Serializable {
     }
     const env = {card, from, turn: this.turn}
     this.actionResolver = new ActionResolver(env, async () => {
-      // if (xiajia.huTurnList) {
-      //   const tIndex = xiajia.huTurnList.findIndex(t => t.card === card && t.turn === turn);
-      //   if (tIndex !== -1) {
-      //     return;
-      //   }
-      //
-      //   xiajia.huTurnList.push({card, turn});
-      // }
 
       const newCard = await this.consumeCard(xiajia);
       const msg = await xiajia.takeCard(this.turn, newCard);
@@ -2139,7 +2131,7 @@ class TableState implements Serializable {
       }
     }
 
-    if (check[Enums.pengGang]) {
+    if (check[Enums.pengGang] && this.is2youOr3youByMe(check[Enums.pengGang])) {
       if (check[Enums.peng]) {
         this.actionResolver.appendAction(check[Enums.peng], 'peng')
       }
@@ -2151,7 +2143,7 @@ class TableState implements Serializable {
       }
     }
 
-    if (check[Enums.chi]) {
+    if (check[Enums.chi] && this.is2youOr3youByMe(check[Enums.chi])) {
       check[Enums.chi].chiCombol = check.chiCombol;
       this.actionResolver.appendAction(check[Enums.chi], 'chi', check.chiCombol)
     }
@@ -2171,10 +2163,10 @@ class TableState implements Serializable {
       }
     }
 
-    if (check[Enums.chi] || check[Enums.pengGang] || (check[Enums.hu] && !this.isSomeOne2youOr3you())) {
+    // 双游或三游，其他三家无法进行吃碰杠操作
+    if ((check[Enums.chi] && this.is2youOr3youByMe(check[Enums.chi])) || (check[Enums.pengGang] && this.is2youOr3youByMe(check[Enums.pengGang])) || (check[Enums.hu] && !this.isSomeOne2youOr3you())) {
       this.state = stateWaitAction;
       this.stateData = check;
-      // console.warn("index-%s, stateData-%s", player.seatIndex, JSON.stringify(this.stateData));
       this.stateData.hangUp = [];
     }
 
@@ -2865,6 +2857,12 @@ class TableState implements Serializable {
     this.cards.splice(cardIndex, 1);
     this.remainCards--;
     return card;
+  }
+
+  // 用户是否有玩家在2游，3游
+  is2youOr3youByMe(player) {
+    const p = this.players.find(value => value.youJinTimes > 1);
+    return p && p._id.toString() === player._id.toString();
   }
 
   // 是否有玩家在2游，3游
