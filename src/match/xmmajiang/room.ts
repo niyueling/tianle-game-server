@@ -1041,13 +1041,14 @@ class Room extends RoomBase {
       // console.warn("nextZhuangId-%s, currentZhuangId", nextZhuang._id, zhuangId);
     }
 
-    this.sortPlayer(nextZhuang)
-    this.clearReady()
-    // 下一局
-    await this.robotManager.nextRound();
-
-    // 更新玩家位置
     if (!this.isPublic) {
+      this.sortPlayer(nextZhuang)
+      this.clearReady()
+
+      // 下一局
+      await this.robotManager.nextRound();
+
+      // 更新玩家位置
       await this.updatePosition();
     }
 
