@@ -14,9 +14,11 @@ export default class QuadruplePlusTwo implements IMatcher {
 
     const groups = groupBy(cards, c => c.point)
     const quads = groups.filter(g => g.length === 4)
+    console.warn("quads-%s", JSON.stringify(quads));
     if (quads.length === 1) {
       const quad = quads[0]
       const remainingCards = arraySubtract(cards, quad);
+      console.warn("quad-%s, remainingCards-%s", JSON.stringify(quad), JSON.stringify(remainingCards));
 
       // 检查剩余牌是否可以组成两对或四张单牌
       if (remainingCards.length === 2 || remainingCards.length === 4) {
@@ -31,6 +33,7 @@ export default class QuadruplePlusTwo implements IMatcher {
         // 如果剩余4张，检查是否可以拆分为两对
         else if (remainingCards.length === 4) {
           const pairs = groupBy(remainingCards, c => c.point).filter(g => g.length === 2);
+          console.warn("pairs-%s", JSON.stringify(pairs));
           if (pairs.length === 2) {
             return {
               name: this.name,
