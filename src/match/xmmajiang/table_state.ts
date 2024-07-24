@@ -2504,9 +2504,9 @@ class TableState implements Serializable {
     // 从卡牌随机取一张牌
     else if (randCard.code) daCard = randCard.index;
 
-    if (player.cards[daCard] === 0) {
+    if (player.cards[daCard] === 0 || daCard === this.caishen) {
       // console.warn("card-%s, cardCount-%s", daCard, player.cards[daCard]);
-      daCard = player.cards.findIndex(cardCount => cardCount > 0);
+      daCard = player.cards.findIndex((cardCount, index) => cardCount > 0 && index !== this.caishen);
     }
 
     return daCard;
