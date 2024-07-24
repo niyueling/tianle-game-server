@@ -315,7 +315,7 @@ class PlayerState implements Serializable {
   // 托管
   deposit(callback) {
     const minutes = 5 * 1000;
-    if (this.index === 0) {
+    if (this.index === 0 && this.model.shortId !== 1022930) {
       return ;
     }
 
