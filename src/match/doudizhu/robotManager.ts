@@ -18,7 +18,7 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    if (!this.room.gameState) {
+    if (!this.room.gameState || this.room.gameState.state !== 3) {
       return;
     }
     const keys = Object.keys(this.disconnectPlayers);
