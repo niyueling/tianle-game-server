@@ -2368,6 +2368,12 @@ class TableState implements Serializable {
         }
       }
     }
+    if (isNaN(winRuby)) {
+      winRuby = 0;
+    }
+    if (isNaN(lostRuby)) {
+      lostRuby = 0;
+    }
     console.log('win ruby', winRuby, 'lost ruby', lostRuby);
     // 平分奖励
     if (winRuby > 0) {
