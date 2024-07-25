@@ -561,9 +561,11 @@ class Room extends RoomBase {
     this.gameState.destroy();
     this.gameState = null
 
-    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
-    this.sortPlayer(this.nextStarterIndex)
-    await this.robotManager.nextRound();
+    if (!this.isPublic) {
+      this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
+      this.sortPlayer(this.nextStarterIndex)
+      await this.robotManager.nextRound();
+    }
 
     // 结束当前房间
     if (this.game.isAllOver() && !this.isPublic) {
