@@ -315,7 +315,7 @@ class PlayerState implements Serializable {
   // 托管
   deposit(callback) {
     let minutes = 5 * 1000;
-    if (this.room.gameState.state === 3) {
+    if (this.room.gameState && this.room.gameState.state === 3) {
       minutes = 15 * 1000;
     }
 
@@ -333,7 +333,7 @@ class PlayerState implements Serializable {
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
-        if (this.room.gameState.currentPlayerStep === this.index) {
+        if (this.room.gameState && this.room.gameState.currentPlayerStep === this.index) {
           this.onDeposit = true
           if (this.room.gameState.state === 3) {
             this.sendMessage('game/startDepositReply', {ok: true, data: {}})
