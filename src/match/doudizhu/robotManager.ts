@@ -2,6 +2,7 @@
 import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
 import {RobotDDZ} from "./robotProxy";
+import Enums from "../xmmajiang/enums";
 
 export class RobotManager extends NewRobotManager {
   disconnectPlayers: { [key: string]: RobotDDZ }
@@ -17,6 +18,27 @@ export class RobotManager extends NewRobotManager {
 
   // 出牌
   async playCard() {
-    console.warn("robot playercard");
+    if (!this.room.gameState) {
+      return;
+    }
+    const keys = Object.keys(this.disconnectPlayers);
+    for (const key of keys) {
+      const proxy = this.disconnectPlayers[key];
+
+      console.warn("robot index %s", proxy.playerState.index);
+
+      if (this.isPlayerDa(proxy.playerState)) {
+        if (this.waitInterval[key] >= this.getWaitSecond()) {
+          await proxy.playCard();
+          // 重新计时
+          this.waitInterval[key] = 0;
+        }
+      }
+    }
+  }
+
+  // 打
+  isPlayerDa(player) {
+    return this.room.gameState.currentPlayerStep === player.index
   }
 }
