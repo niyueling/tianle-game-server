@@ -320,12 +320,17 @@ class Room extends RoomBase {
   async recordRoomScore(roomState = 'normal') {
     const players = this.snapshot.map(p => p._id);
     console.warn("playersOrder-%s", JSON.stringify(this.playersOrder));
-    const scores = this.playersOrder.map(player => ({
-      score: this.scoreMap[player._id] || 0,
-      name: player.model.nickname,
-      headImgUrl: player.model.avatar,
-      shortId: player.model.shortId
-    }))
+    const scores = this.playersOrder.map(player => {
+      if (player) {
+        return {
+          score: this.scoreMap[player._id] || 0,
+          name: player.model.nickname,
+          headImgUrl: player.model.avatar,
+          shortId: player.model.shortId
+        }
+      }
+
+    })
 
     if (!this.charged) {
       roomState = 'zero_ju'
