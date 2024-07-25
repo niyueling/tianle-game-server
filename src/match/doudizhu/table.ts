@@ -549,6 +549,10 @@ abstract class Table implements Serializable {
     // 如果明牌用户倍数更高，则设置对局倍数
     if (msg.multiple > this.multiple) {
       this.multiple = msg.multiple;
+      this.players.map((p) => {
+        p.multiple = this.multiple;
+        p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: msg.multiple}});
+      })
     }
 
     this.openCardPlayers.push(player.index);
