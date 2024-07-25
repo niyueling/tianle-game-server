@@ -202,17 +202,16 @@ export class BackendProcess {
       }
 
       await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}})
-      // if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
-      //   await roomProxy.joinAsCreator(playerRmqProxy)
-      // } else {
-      //   await room.join(playerRmqProxy);
-      // }
 
       if (room.rule.ro.gameType === GameType.xmmj) {
         room.fanShuMap[playerRmqProxy._id] = 16;
       }
 
-      await roomProxy.joinAsCreator(playerRmqProxy);
+      if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
+        await roomProxy.joinAsCreator(playerRmqProxy);
+      } else {
+        await room.join(playerRmqProxy);
+      }
 
       // 第一次进房间,保存信息
       await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId);
