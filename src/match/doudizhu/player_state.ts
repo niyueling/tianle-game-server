@@ -335,7 +335,9 @@ class PlayerState implements Serializable {
       this.timeoutTask = setTimeout(() => {
         if (this.room.gameState.currentPlayerStep === this.index) {
           this.onDeposit = true
-          this.sendMessage('game/startDepositReply', {ok: true, data: {}})
+          if (this.room.gameState.state === 3) {
+            this.sendMessage('game/startDepositReply', {ok: true, data: {}})
+          }
         }
 
         callback()
