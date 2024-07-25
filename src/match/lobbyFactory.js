@@ -34,11 +34,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       let found = null;
       for (const kv of this.publicRooms) {
         const room = kv[1];
-        if (!room.isFull() &&
-          room.isPublic &&
-          room.gameRule.categoryId === rule.categoryId &&
-          !room.gameState
-        ) {
+        if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
           found = room;
           break;
         }
