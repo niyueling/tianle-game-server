@@ -14,4 +14,9 @@ export class RobotManager extends NewRobotManager {
     }
     return new RobotDDZ(model);
   }
+
+  // 出牌
+  async playCard() {
+    console.warn("robot playercard");
+  }
 }
