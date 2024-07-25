@@ -314,7 +314,11 @@ class PlayerState implements Serializable {
 
   // 托管
   deposit(callback) {
-    const minutes = 5 * 1000;
+    let minutes = 5 * 1000;
+    if (this.room.gameState.state === 3) {
+      minutes = 15 * 1000;
+    }
+
     if (this.index === 0 && this.model.shortId !== 1023016) {
       return ;
     }

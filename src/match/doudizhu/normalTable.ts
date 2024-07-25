@@ -86,6 +86,11 @@ export default class NormalTable extends Table {
       this.multiple = maxMultiple;
     }
 
+    // 设置状态为抢地主
+    this.state = 1;
+    // 设置用户为不托管
+    this.players.map(p => p.onDeposit = false);
+
     // 如果已经重新叫地主第三轮，则设置0号位为地主，直接开局
     if (this.resetCount === 2) {
       this.broadcastLandlordAndPlayer();
@@ -105,6 +110,10 @@ export default class NormalTable extends Table {
 
     const startDaFunc = async() => {
       this.status.current.seatIndex = this.zhuang.index;
+      // 设置状态为选择翻倍
+      this.state = 2;
+      // 设置用户为不托管
+      this.players.map(p => p.onDeposit = false);
 
       // 下发开始翻倍消息
       this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
@@ -128,8 +137,6 @@ export default class NormalTable extends Table {
 
 
     const chooseModeFunc = async() => {
-      // this.players[this.currentPlayerStep].emitter.emit(enums.chooseMode, {mode: enums.farmer});
-      // this.depositForPlayerChooseMode(this.players[this.currentPlayerStep]);
       this.players[this.currentPlayerStep].emitter.emit(enums.waitForPlayerChooseMode);
     }
   }

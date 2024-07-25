@@ -16,6 +16,11 @@ import {GameType, TianleErrorCode} from "@fm/common/constants";
 import enums from "./enums";
 import GameCategory from "../../database/models/gameCategory";
 
+const stateWaitQiangLandload = 1 // 抢地主
+const stateWaitMultiple = 2 // 翻倍
+const stateWaitDa = 3 // 对局中
+const stateGameOver = 4 // 游戏结束
+
 class Status {
   current = {seatIndex: 0, step: 1}
   lastCards: Card[] = []
@@ -39,7 +44,7 @@ abstract class Table implements Serializable {
   rule: Rule
   room: Room
   @autoSerialize
-  state: string
+  state: number
 
   @autoSerialize
   status: Status
@@ -445,6 +450,11 @@ abstract class Table implements Serializable {
       this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
       this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, landlordCards: cards, multiple: this.players[firstLandlordIndex].multiple}});
 
+      //设置状态为选择翻倍
+      this.state = stateWaitMultiple;
+      // 设置用户为不托管
+      this.players.map(p => p.onDeposit = false);
+
       const startDaFunc = async() => {
         this.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
@@ -519,6 +529,11 @@ abstract class Table implements Serializable {
 
     if (isAllChoose) {
       const startDa = async() => {
+        //设置状态为对局中
+        this.state = stateWaitDa;
+        // 设置用户为不托管
+        this.players.map(p => p.onDeposit = false);
+
         this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
         this.players[this.currentPlayerStep].emitter.emit('waitForDa');
         // this.depositForPlayer(this.players[this.currentPlayerStep]);
@@ -592,6 +607,11 @@ abstract class Table implements Serializable {
         this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
         this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, multiple: this.players[firstLandlordIndex].multiple, landlordCards: cards}});
 
+        //设置状态为选择翻倍
+        this.state = stateWaitMultiple;
+        // 设置用户为不托管
+        this.players.map(p => p.onDeposit = false);
+
         const startDaFunc = async() => {
           this.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
@@ -621,7 +641,6 @@ abstract class Table implements Serializable {
         }
       }
 
-      console.warn("nextPlayerIndex-%s", nextPlayer);
       if (this.players[nextPlayer]) {
         const nextPlayerState = this.players[nextPlayer];
         this.room.broadcast('game/startChooseMode', {ok: true, data: {index: nextPlayer}})
@@ -671,6 +690,11 @@ abstract class Table implements Serializable {
 
       if (isAllChoose) {
         const startDa = async() => {
+          //设置状态为选择翻倍
+          this.state = stateWaitDa;
+          // 设置用户为不托管
+          this.players.map(p => p.onDeposit = false);
+
           this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
           this.players[this.currentPlayerStep].emitter.emit('waitForDa');
           // this.depositForPlayer(this.players[this.currentPlayerStep]);
