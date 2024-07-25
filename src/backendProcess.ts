@@ -207,11 +207,11 @@ export class BackendProcess {
         room.fanShuMap[playerRmqProxy._id] = 16;
       }
 
-      // if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
+      if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
         await roomProxy.joinAsCreator(playerRmqProxy);
-      // } else {
-      //   await room.join(playerRmqProxy);
-      // }
+      } else {
+        await room.join(playerRmqProxy);
+      }
 
       // 第一次进房间,保存信息
       await saveRoomInfo(room._id, messageBody.payload.gameType, room.clubId);
