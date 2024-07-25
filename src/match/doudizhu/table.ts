@@ -539,7 +539,7 @@ abstract class Table implements Serializable {
         // this.depositForPlayer(this.players[this.currentPlayerStep]);
       }
 
-      setTimeout(startDa, 500);
+      setTimeout(startDa, 2000);
     }
   }
 
@@ -700,7 +700,7 @@ abstract class Table implements Serializable {
           // this.depositForPlayer(this.players[this.currentPlayerStep]);
         }
 
-        setTimeout(startDa, 500);
+        setTimeout(startDa, 2000);
       }
     })
   }
