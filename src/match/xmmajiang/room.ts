@@ -238,6 +238,7 @@ class Room extends RoomBase {
       room.gameState = new TableState(room, room.rule, room.game.juShu)
       room.gameState.resume(json)
     }
+    console.warn(room.roomState);
     if (room.roomState === 'dissolve') {
       const delayTime = room.dissolveTime + 180 * 1000 - Date.now();
       room.dissolveTimeout = setTimeout(() => {
