@@ -506,7 +506,7 @@ class TableState implements Serializable {
     cardList.map(value => allFlowerList.push(value.flowerList));
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].onShuffle(this.remainCards, this.caishen, this.restJushu, cardList[i].cards, i, this.room.game.juIndex,
-        needShuffle, cardList[i].flowerList, allFlowerList);
+        needShuffle, cardList[i].flowerList, allFlowerList, this.zhuangIndex);
       // 记录发牌
       await this.room.auditManager.playerTakeCardList(this.players[i].model._id, cardList[i].cards);
     }

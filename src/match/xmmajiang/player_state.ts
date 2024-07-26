@@ -662,7 +662,7 @@ class PlayerState implements Serializable {
   }
 
   // 添加花牌
-  onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList) {
+  onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList, zhuangIndex) {
     cards.forEach(x => {
       if (!this.room.gameState.isFlower(x)) {
         this.cards[x]++;
@@ -674,7 +674,7 @@ class PlayerState implements Serializable {
     this.recorder.recordUserEvent(this, 'shuffle', null, cards.sort((a, b) => a - b));
     this.sendMessage('game/Shuffle', {ok: true, data: {
         juShu, cards, caiShen: [caiShen], remainCards, juIndex,
-        needShuffle: !!needShuffle, flowerList, allFlowerList
+        needShuffle: !!needShuffle, flowerList, allFlowerList, zhuang: zhuangIndex
       }})
   }
 
