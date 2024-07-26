@@ -524,6 +524,8 @@ class TableState implements Serializable {
       this.testMoCards = payload.moCards;
     }
 
+    const zhuangIndex = 0;
+
     // 判断麻将补助是否开房
     // const isMajongOpen = await service.utils.getGlobalConfigByName("majiangHelp");
     // if (!this.room.rule.isPublic && Number(isMajongOpen) === 1) await this.checkPlayerHelper();
@@ -545,7 +547,7 @@ class TableState implements Serializable {
         }
       }
 
-      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle)
+      p.onShuffle(restCards, this.caishen, this.restJushu, cards13, i, this.room.game.juIndex, needShuffle, zhuangIndex)
     }
 
     //设置对局已经开始

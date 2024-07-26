@@ -585,7 +585,7 @@ class PlayerState implements Serializable {
     return HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex)
   }
 
-  onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle?: boolean) {
+  onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, zhuangIndex) {
     cards.forEach(x => {
       this.cards[x]++
     })
@@ -594,7 +594,7 @@ class PlayerState implements Serializable {
     this.seatIndex = seatIndex
 
     this.recorder.recordUserEvent(this, 'shuffle')
-    this.sendMessage('game/Shuffle', {ok: true, data: {juShu, cards, caiShen: [caiShen], remainCards, juIndex, needShuffle: !!needShuffle, zhuang: this.zhuang}})
+    this.sendMessage('game/Shuffle', {ok: true, data: {juShu, cards, caiShen: [caiShen], remainCards, juIndex, needShuffle: !!needShuffle, zhuang: zhuangIndex}})
   }
 
   @triggerAfterAction
