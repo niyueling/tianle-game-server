@@ -32,17 +32,17 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
     }
 
     async getAvailablePublicRoom(playerId, roomId, rule) {
-      let found = null;
-      for (let i = 0; i < this.canJoinRooms.length; i++) {
-        const room = this.canJoinRooms[i];
-        if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
-          found = room;
-          break;
-        }
-      }
-      if (found) {
-        return found;
-      }
+      // let found = null;
+      // for (let i = 0; i < this.canJoinRooms.length; i++) {
+      //   const room = this.canJoinRooms[i];
+      //   if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
+      //     found = room;
+      //     break;
+      //   }
+      // }
+      // if (found) {
+      //   return found;
+      // }
       const ret = await this.createRoom(true, roomId, rule);
       ret.ownerId = playerId;
       this.publicRooms.set(roomId, ret);
