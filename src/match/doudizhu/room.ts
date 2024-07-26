@@ -567,7 +567,7 @@ class Room extends RoomBase {
       await this.robotManager.nextRound();
     }
 
-    // 结束当前房间
+    // 好友房总结算
     if (this.game.isAllOver() && !this.isPublic) {
       const message = this.allOverMessage(1)
       this.broadcast('room/gameAllOverReply', {ok: true, data: message})

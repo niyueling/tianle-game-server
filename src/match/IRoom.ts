@@ -362,6 +362,11 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
     this.removeReadyPlayer(player._id.toString());
     this.clearScore(player._id.toString());
+
+    if (!this.gameState && this.isPublic) {
+      this.forceDissolve();
+    }
+
     return true
   }
 
