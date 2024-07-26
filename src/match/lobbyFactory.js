@@ -98,6 +98,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
         this.publicRooms.delete(room._id);
         if (room.robotManager) {
           // 删除机器人
+          console.warn("room empty dissolve");
           await room.robotManager.gameOver();
           room.robotManager = null;
         }
