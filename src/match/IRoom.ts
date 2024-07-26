@@ -285,7 +285,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async broadcastStartGame(payload) {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
     // @ts-ignore
-    await this.redisClient.hdelAsync("canJoinRooms", roomId);
+    await this.redisClient.hdelAsync("canJoinRooms", this._id);
     const canJoinRooms = await this.redisClient.hgetallAsync("canJoinRooms");
     console.warn("start game canJoinRooms %s", JSON.stringify(canJoinRooms));
 
