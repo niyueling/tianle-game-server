@@ -359,11 +359,11 @@ export default class RoomProxy {
 
         this.room.once('empty', async () => {
           logger.info('room ', room._id, 'spinner clean ', JSON.stringify(this.room.players))
-          if (room.robotManager) {
-            // 通知机器人解散
-            room.robotManager.gameOver();
-            room.robotManager = null;
-          }
+          // if (room.robotManager) {
+          //   // 通知机器人解散
+          //   room.robotManager.gameOver();
+          //   room.robotManager = null;
+          // }
 
           logger.info('room', room.playersOrder.filter(p => p).forEach(({_id}) => {
             service.roomRegister.removePlayerFromGameRoom(_id, gameType, room._id)
