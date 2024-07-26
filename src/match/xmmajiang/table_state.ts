@@ -567,7 +567,7 @@ class TableState implements Serializable {
       }
       this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
 
-      const index = 0
+      const index = this.zhuangIndex;
       this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
 
       // 判断抢金和非庄家三金倒为抢金状态
