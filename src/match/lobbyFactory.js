@@ -49,7 +49,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       // await redisClient.sadd('canJoinRoomIds', roomId);
       await redisClient.hsetAsync("canJoinRooms", roomId, JSON.stringify(ret));
       const canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
-      console.warn("create room canJoinRooms %s", JSON.stringify(canJoinRooms));
+      console.warn("create room canJoinRooms %s", canJoinRooms);
       return ret;
     }
 
