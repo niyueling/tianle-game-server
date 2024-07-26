@@ -271,22 +271,26 @@ class TableState implements Serializable {
   // 是否已经执行抢金
   isRunQiangJin: boolean = false;
 
+  // 庄家位置
+  zhuangIndex: number = -1;
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
     const players = room.players.map(playerSocket => new PlayerState(playerSocket, room, rule))
-    players[0].zhuang = true;
-    players[0].zhuangCount++;
+    players[this.zhuangIndex].zhuang = true;
+    players[this.zhuangIndex].zhuangCount++;
 
     this.cards = generateCards(rule.noBigCard)
     this.room = room
     this.listenRoom(room)
     this.remainCards = this.cards.length
     this.players = players
-    this.zhuang = players[0]
+    let random_number = Math.floor(Math.random() * 4) + 1;
+    this.zhuangIndex = random_number - 1;
+    this.zhuang = players[this.zhuangIndex]
     for (let i = 0; i < players.length; i++) {
       const p = players[i];
-      // console.warn("_id-%s, fanShu-%s, zhuang-%s", p._id, p.fanShu, p.zhuang);
       this.listenPlayer(p);
     }
     this.turn = 1
