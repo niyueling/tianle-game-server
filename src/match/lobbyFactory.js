@@ -32,23 +32,30 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
     }
 
     async getAvailablePublicRoom(playerId, roomId, rule) {
-      // let found = null;
-      // for (let i = 0; i < this.canJoinRooms.length; i++) {
-      //   const room = this.canJoinRooms[i];
-      //   if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
-      //     found = room;
-      //     break;
-      //   }
-      // }
-      // if (found) {
-      //   return found;
-      // }
+      let found = null;
+      let canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
+      if (canJoinRooms) {
+        canJoinRooms = JSON.parse(canJoinRooms);
+        for (let i = 0; i < Object.keys(canJoinRooms).length; i++) {
+          const roomId = Object.keys(canJoinRooms)[i];
+          const room = canJoinRooms[roomId];
+          console.warn("roomId %s data %s", roomId, JSON.stringify(room));
+          if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
+            found = room;
+            break;
+          }
+        }
+      }
+
+      if (found) {
+        return found;
+      }
       const ret = await this.createRoom(true, roomId, rule);
       ret.ownerId = playerId;
       this.publicRooms.set(roomId, ret);
       // await redisClient.sadd('canJoinRoomIds', roomId);
       await redisClient.hsetAsync("canJoinRooms", roomId, JSON.stringify(ret));
-      const canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
+      canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
       console.warn("create room canJoinRooms %s", JSON.stringify(canJoinRooms));
       return ret;
     }
