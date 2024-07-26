@@ -673,7 +673,7 @@ class PlayerState implements Serializable {
     this.seatIndex = seatIndex
     this.recorder.recordUserEvent(this, 'shuffle', null, cards.sort((a, b) => a - b));
     this.sendMessage('game/Shuffle', {ok: true, data: {
-        juShu, cards, caiShen: [caiShen], remainCards, juIndex,
+        juShu, cards, caiShen: [caiShen], remainCards, juIndex, zhuangCounter: this.room.zhuangCounter,
         needShuffle: !!needShuffle, flowerList, allFlowerList, zhuang: zhuangIndex
       }})
   }
