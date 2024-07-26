@@ -40,7 +40,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
           let room = canJoinRooms[roomId];
           room = JSON.parse(room);
           console.warn("roomId %s data %s", roomId, JSON.stringify(room));
-          if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
+          if (room.isPublic && room.gameRule.categoryId === rule.categoryId) {
             found = room;
             break;
           }
