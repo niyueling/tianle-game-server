@@ -35,10 +35,10 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       let found = null;
       let canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
       if (canJoinRooms) {
-        // canJoinRooms = JSON.parse(canJoinRooms);
         for (let i = 0; i < Object.keys(canJoinRooms).length; i++) {
           const roomId = Object.keys(canJoinRooms)[i];
-          const room = canJoinRooms[roomId];
+          let room = canJoinRooms[roomId];
+          room = JSON.parse(room);
           console.warn("roomId %s data %s", roomId, JSON.stringify(room));
           if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
             found = room;
