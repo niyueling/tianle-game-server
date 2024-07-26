@@ -27,6 +27,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
 
     constructor() {
       this.publicRooms = new Map();
+      this.canJoinRooms = new Map();
       this.playerRoomTable = new Map();
     }
 
@@ -45,19 +46,10 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       const ret = await this.createRoom(true, roomId, rule);
       ret.ownerId = playerId;
       this.publicRooms.set(roomId, ret);
+      await redisClient.sadd('canJoinRoomIds', roomId);
+      this.canJoinRooms = await redisClient.smembersAsync("canJoinRoomIds");
+      console.warn("create room canJoinRoomIds %s", JSON.stringify(this.canJoinRooms));
       return ret;
-    }
-
-    hasRoom(id) {
-      return Boolean(this.publicRooms.get(id));
-    }
-
-    getRoom(id) {
-      if (id) {
-        return this.publicRooms.get(id);
-      }
-
-      return null;
     }
 
     /**

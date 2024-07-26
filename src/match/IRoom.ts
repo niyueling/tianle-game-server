@@ -1,24 +1,21 @@
 import {ConsumeLogType, GameType, playerAttributes, TianleErrorCode} from "@fm/common/constants";
 import * as EventEmitter from 'events'
-import * as lodash from 'lodash'
 import * as logger from 'winston'
 import * as config from "../config";
 import Club from '../database/models/club'
 import ClubGoldRecord from "../database/models/clubGoldRecord";
 import ClubMember from '../database/models/clubMember'
-import ConsumeRecord from '../database/models/consumeRecord'
 import GoodsLive from "../database/models/goodsLive";
 import LuckyBless from "../database/models/luckyBless";
 import Player from "../database/models/player";
 import PlayerModel from '../database/models/player'
-import {RedPocketRecordModel} from "../database/models/redPocketRecord";
 import RoomRecord from "../database/models/roomRecord";
 import {service} from "../service/importService";
 import { IGame, IRoom, ITable, SimplePlayer } from './interfaces';
 import {once} from "./onceDecorator"
 import {autoSerialize, Serializable, serialize, serializeHelp} from "./serializeDecorator"
 import {eqlModelId} from "./pcmajiang/modelId";
-import Enums from "./majiang/enums";
+import createClient from "../utils/redis";
 
 export const playerInClub = async (clubShortId: string, playerId: string) => {
   if (!clubShortId) {
@@ -44,7 +41,6 @@ export interface RedPocketConfig {
 }
 
 export abstract class RoomBase extends EventEmitter implements IRoom, Serializable {
-
   @autoSerialize
   dissolveTime: number
 
@@ -67,6 +63,8 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   @autoSerialize
   scoreMap: any
+
+  redisClient = createClient()
 
   @serialize
   gameState: ITable
@@ -286,6 +284,10 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   async broadcastStartGame(payload) {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
+    // @ts-ignore
+    await this.redisClient.srem('canJoinRoomIds', this._id);
+    const canJoinRooms = await this.redisClient.smembersAsync("canJoinRoomIds");
+    console.warn("create room canJoinRoomIds %s", JSON.stringify(canJoinRooms));
 
     const startGame = async() => {
       this.broadcast('room/startGame', {ok: true, data: {
