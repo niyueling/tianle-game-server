@@ -2015,10 +2015,10 @@ class TableState implements Serializable {
         return;
       }
     }
-    if (this.state === stateWaitAction) {
+    if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
       player.sendMessage('game/daReply', {
         ok: false,
-        info: TianleErrorCode.cardDaError,
+        info: TianleErrorCode.notDaRound,
         data: {
           index: this.atIndex(player),
           daIndex: this.atIndex(this.stateData[Enums.da]),
@@ -2029,10 +2029,10 @@ class TableState implements Serializable {
       })
       return
     }
-    if (!this.stateData[Enums.da] || this.stateData[Enums.da]._id !== player._id) {
+    if (this.state === stateWaitAction) {
       player.sendMessage('game/daReply', {
         ok: false,
-        info: TianleErrorCode.notDaRound,
+        info: TianleErrorCode.cardDaError,
         data: {
           index: this.atIndex(player),
           daIndex: this.atIndex(this.stateData[Enums.da]),
