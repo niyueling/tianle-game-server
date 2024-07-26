@@ -37,12 +37,17 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       if (canJoinRooms) {
         for (let i = 0; i < Object.keys(canJoinRooms).length; i++) {
           const roomId = Object.keys(canJoinRooms)[i];
-          let room = canJoinRooms[roomId];
-          room = JSON.parse(room);
-          console.warn("roomId %s data %s", roomId, JSON.stringify(room));
-          if (room.isPublic && room.gameRule.categoryId === rule.categoryId) {
-            found = room;
-            break;
+          for (const kv of this.publicRooms) {
+            if (kv[0] === roomId) {
+              const room = kv[1];
+              if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
+                found = room;
+                break;
+              }
+            }
+          }
+          if (found) {
+            return found;
           }
         }
       }
