@@ -32,7 +32,7 @@ export class PlayerRmqProxy extends EventEmitter implements SimplePlayer {
   constructor(model, channel, readonly gameName: GameTypes | string) {
     super()
     this.model = model
-    this.ip = model.ip;
+    this.ip = model && model.ip ? model.ip : "127.0.0.1";
     this.channel = channel
     this.myQueue = `user:${this._id}`
     this.myRouteKey = `user.${this._id}.${this.gameName}`
