@@ -288,7 +288,7 @@ export class NewRobotManager {
   async gameOver() {
     clearInterval(this.watchTimer);
     if (this.disconnectPlayers) {
-      console.log('destroy robot', this.room._id);
+      console.log('destroy robot disconnectPlayers %s', this.room._id, JSON.stringify(this.disconnectPlayers));
 
       // 扣除房间数
       this.disconnectPlayers = null;
