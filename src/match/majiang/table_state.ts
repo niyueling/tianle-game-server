@@ -6362,14 +6362,13 @@ class TableState implements Serializable {
     const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
     // 一炮多响
     if (this.room.gameState.isManyHu) {
-      // 一炮多响
-      if (!this.manyHuPlayers.includes(this.zhuang._id.toString()) && this.canManyHuPlayers.includes(this.zhuang._id.toString())) {
-        // console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
-        return;
+      for (let i = 0; i < this.canManyHuPlayers.length; i++) {
+        const pp = this.players.find(p => p._id.toString() === this.canManyHuPlayers[i]);
+        if (pp && !this.manyHuPlayers.includes(pp._id.toString())) {
+          console.warn("player index-%s not choice card-%s", this.atIndex(pp), this.stateData.card);
+          return ;
+        }
       }
-
-      // console.warn("manyHuPlayers-%s canManyHuPlayers-%s manyHuArray-%s playerId-%s flag-%s todo-%s isRunMultiple-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers),
-      //   JSON.stringify(this.manyHuArray), player._id, this.manyHuPlayers.includes(player._id.toString()), todo, this.isRunMultiple);
 
       // 如果机器人没有操作，则push到数组
       if (!this.manyHuPlayers.includes(player._id.toString())) {
