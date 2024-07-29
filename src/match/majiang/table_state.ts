@@ -3239,7 +3239,7 @@ class TableState implements Serializable {
       }
 
       // 一炮多响（金豆房）
-      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && !player.isRobot && this.room.isPublic) {
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.peng);
         // console.warn("player index-%s choice peng card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.peng);
@@ -3345,7 +3345,7 @@ class TableState implements Serializable {
       }
 
       // 一炮多响(金豆房)
-      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && !player.isRobot && this.room.isPublic) {
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.gang);
 
@@ -3575,7 +3575,7 @@ class TableState implements Serializable {
 
       if (isJiePao) {
         // 一炮多响(金豆房)
-        if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && !player.isRobot && this.room.isPublic) {
+        if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
           this.manyHuPlayers.push(player._id.toString());
           this.setManyAction(player, Enums.hu);
           player.sendMessage("game/chooseMultiple", {
@@ -6312,7 +6312,7 @@ class TableState implements Serializable {
 
   async onPlayerGuo(player, playTurn, playCard) {
     // 一炮多响(金豆房)
-    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && !player.isRobot && this.room.isPublic) {
+    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
       this.manyHuPlayers.push(player._id.toString());
       this.setManyAction(player, Enums.guo);
       // console.warn("player index-%s choice guo card-%s manyHuArray-%s action-%s", this.atIndex(player), playCard, JSON.stringify(this.manyHuArray), Enums.guo);
@@ -6359,7 +6359,7 @@ class TableState implements Serializable {
     const simpleCount = this.checkPlayerSimpleCrdCount(player);
     const specialCardCount = player.cards[Enums.poseidon] + player.cards[Enums.zeus] + player.cards[Enums.athena];
     // 一炮多响
-    if (this.room.gameState.isManyHu) {
+    if (this.isManyHu) {
       for (let i = 0; i < this.canManyHuPlayers.length; i++) {
         const pp = this.players.find(p => p._id.toString() === this.canManyHuPlayers[i]);
         if (pp && !pp.isRobot && !this.manyHuPlayers.includes(pp._id.toString())) {
