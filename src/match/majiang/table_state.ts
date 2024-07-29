@@ -6364,7 +6364,7 @@ class TableState implements Serializable {
     if (this.room.gameState.isManyHu) {
       for (let i = 0; i < this.canManyHuPlayers.length; i++) {
         const pp = this.players.find(p => p._id.toString() === this.canManyHuPlayers[i]);
-        if (pp && !this.manyHuPlayers.includes(pp._id.toString())) {
+        if (pp && !pp.isRobot && !this.manyHuPlayers.includes(pp._id.toString())) {
           console.warn("player index-%s not choice card-%s", this.atIndex(pp), this.stateData.card);
           return ;
         }
