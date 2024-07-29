@@ -5769,6 +5769,7 @@ class TableState implements Serializable {
     const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
     const gameOverMsg = {
       niaos,
+      index: p.seatIndex,
       creator: this.room.creator.model._id,
       juShu: this.restJushu,
       juIndex: this.room.game.juIndex,
@@ -5825,7 +5826,7 @@ class TableState implements Serializable {
       score: p.juScore
     });
 
-    p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
+    this.room.broadcast('game/player-over', {ok: true, data: gameOverMsg})
 
     // 如果目前打牌的是破产用户，找到下一个正常用户
     if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
