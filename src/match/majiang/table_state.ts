@@ -3197,7 +3197,7 @@ class TableState implements Serializable {
           this.stateData = {da: player, card: this.lastTakeCard};
         }
 
-        await player.sendMessage('game/restoreGameReply', {
+        await this.room.broadcast('game/restoreGameReply', {
           ok: true,
           data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
         });
