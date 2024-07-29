@@ -435,7 +435,6 @@ class TableState implements Serializable {
     this.rule = rule
     const players = room.players.map(playerSocket => new PlayerState(playerSocket, room, rule));
     players[0].zhuang = true
-    players[0].msgDispatcher.isRobot()
 
     this.cards = generateCards()
     this.room = room
@@ -4771,6 +4770,7 @@ class TableState implements Serializable {
       const p = this.players[i];
       let params = {
         index: this.atIndex(p),
+        robot: p.isRobot,
         _id: p.model._id.toString(),
         shortId: p.model.shortId,
         gold: p.balance,
@@ -4779,7 +4779,7 @@ class TableState implements Serializable {
         huType: this.cardTypes
       };
       if (await this.PlayerGoldCurrency(p._id) <= 0) {
-        if (params.index === 0) {
+        if (!params.robot) {
           if (!p.isBroke) {
             waits.push(params);
           } else {
@@ -4988,6 +4988,7 @@ class TableState implements Serializable {
       const currency = await this.PlayerGoldCurrency(p._id);
       let params = {
         index: this.atIndex(p),
+        robot: p.isRobot,
         _id: p.model._id.toString(),
         shortId: p.model.shortId,
         gold: p.balance,
@@ -4996,7 +4997,7 @@ class TableState implements Serializable {
         huType: this.cardTypes
       };
       if (currency <= 0) {
-        if (params.index === 0) {
+        if (!params.robot) {
           if (!p.isBroke) {
             waits.push(params);
           } else {
@@ -5556,13 +5557,14 @@ class TableState implements Serializable {
       const currency = await this.PlayerGoldCurrency(p._id);
       let params = {
         index: this.atIndex(p),
+        robot: p.isRobot,
         _id: p.model._id.toString(),
         gold: p.balance,
         currentGold: currency,
         isBroke: p.isBroke
       };
       if (currency <= 0) {
-        if (p.zhuang) {
+        if (!p.isRobot) {
           if (!p.isBroke) {
             if (isWait) {
               waits.push(params);

@@ -284,7 +284,6 @@ class PlayerState implements Serializable {
     this.onDeposit = false
     this.ai = userSocket.isRobot() ? basicAi : playerAi
     this.isRobot = !!userSocket.isRobot();
-    console.warn(this.isRobot);
 
     this.timeoutTask = null
     this.msgHook = {}
