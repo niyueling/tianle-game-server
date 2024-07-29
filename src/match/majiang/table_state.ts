@@ -3184,7 +3184,7 @@ class TableState implements Serializable {
         player.isMingCard = true;
         await this.room.broadcast('game/openCardReply', {
           ok: true,
-          data: {roomId: this.room._id, index: this.atIndex(player)}
+          data: {roomId: this.room._id, index: this.atIndex(player), cards: player.getCardsArray()}
         });
       } else {
         await player.sendMessage('game/openCardReply', {ok: false, data: {}});
