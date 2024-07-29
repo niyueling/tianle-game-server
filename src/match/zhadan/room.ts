@@ -3,6 +3,7 @@
  */
 import {GameType} from "@fm/common/constants";
 import {Channel} from 'amqplib'
+// @ts-ignore
 import {pick} from 'lodash'
 import * as mongoose from 'mongoose'
 import * as logger from 'winston'
@@ -742,7 +743,7 @@ class Room extends RoomBase {
       if (!this.isRoomAllOver()) {
         this.playersOrder = this.players.slice()
         this.clearReady()
-        await this.startGame()
+        await this.startGame({})
       }
     }
   }

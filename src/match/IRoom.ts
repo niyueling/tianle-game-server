@@ -284,6 +284,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   async broadcastStartGame(payload) {
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
+
     // @ts-ignore
     await this.redisClient.hdelAsync("canJoinRooms", this._id);
     const canJoinRooms = await this.redisClient.hgetallAsync("canJoinRooms");
@@ -727,6 +728,12 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     clearTimeout(this.autoDissolveTimer)
     const lowScoreTimes = await this.recordDrawGameScore()
     const allOverMessage = this.dissolveOverMassage(lowScoreTimes)
+
+    // @ts-ignore
+    await this.redisClient.hdelAsync("canJoinRooms", this._id);
+    const canJoinRooms = await this.redisClient.hgetallAsync("canJoinRooms");
+    console.warn("forceDissolve room %s canJoinRooms %s", this._id, JSON.stringify(canJoinRooms));
+
     clearTimeout(this.dissolveTimeout)
     this.roomState = ''
     this.dissolveTimeout = null
