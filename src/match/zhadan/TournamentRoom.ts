@@ -1,4 +1,5 @@
 import {Channel} from "amqplib"
+// @ts-ignore
 import {pick} from "lodash"
 import {AsyncRedisClient} from "../../utils/redis"
 import {IMessageEmitter} from "../messageBus"

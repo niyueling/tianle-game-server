@@ -255,6 +255,9 @@ class PlayerState implements Serializable {
   // 是否待摸牌状态
   waitMo: boolean = false;
 
+  // 是否机器人
+  isRobot: boolean = false;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -280,6 +283,7 @@ class PlayerState implements Serializable {
     // 不激活旧的机器人托管
     this.onDeposit = false
     this.ai = userSocket.isRobot() ? basicAi : playerAi
+    this.isRobot = !!userSocket.isRobot();
 
     this.timeoutTask = null
     this.msgHook = {}
