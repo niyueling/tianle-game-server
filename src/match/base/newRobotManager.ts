@@ -151,7 +151,7 @@ export class NewRobotManager {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
       console.warn("roomId-%s, resp-%s", this.room._id, JSON.stringify(resp));
-      if (resp.isNeedRuby) {
+      if (resp.isNeedRuby || resp.isUpgrade) {
         // 如果场次最高无限制，则最高携带金豆为门槛*10
         if (resp.conf.maxAmount === -1) {
           resp.conf.maxAmount = resp.conf.minAmount * 10;
