@@ -422,6 +422,12 @@ class TableState implements Serializable {
   // 是否正在执行一炮多响
   isRunMultiple: boolean = false;
 
+  // 等待复活人数
+  waitRechargeCount: number = 0;
+
+  // 已经复活人数
+  alreadyRechargeCount: number = 0;
+
   // 牌局摸牌状态
   gameMoStatus: {
     state: boolean;
@@ -3190,7 +3196,11 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.restoreGame, async () => {
-      this.room.robotManager.model.step = RobotStep.running;
+      this.alreadyRechargeCount++;
+      if (this.alreadyRechargeCount >= this.waitRechargeCount) {
+        this.room.robotManager.model.step = RobotStep.running;
+      }
+
       if (this.stateData[Enums.da] && this.stateData[Enums.da]._id === player._id) {
         this.state = stateWaitDa;
         this.stateData = {da: player, card: this.lastTakeCard};
@@ -4798,6 +4808,7 @@ class TableState implements Serializable {
 
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
+      this.waitRechargeCount = waits.length;
       const waitRecharge = async () => {
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
@@ -5016,6 +5027,7 @@ class TableState implements Serializable {
 
     if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
       this.room.robotManager.model.step = RobotStep.waitRuby;
+      this.waitRechargeCount = waits.length;
       const waitRecharge = async () => {
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
@@ -5604,6 +5616,7 @@ class TableState implements Serializable {
     const waitRecharge = async () => {
       if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
         this.room.robotManager.model.step = RobotStep.waitRuby;
+        this.waitRechargeCount = waits.length;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
     }
