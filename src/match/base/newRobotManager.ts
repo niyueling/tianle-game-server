@@ -119,13 +119,15 @@ export class NewRobotManager {
     await this.addRobotForPublicRoom();
 
     // 查看金豆
-    await this.updateNoRuby();
-    await this.save();
+    if (this.model.step === RobotStep.waitRuby) {
+      await this.updateNoRuby();
+      await this.save();
+    }
 
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐
-      console.log('some one absent %s', this.room._id);
+      // console.log('some one absent %s', this.room._id);
       // if (!this.room.gameState) {
       //   await this.room.forceDissolve();
       // }

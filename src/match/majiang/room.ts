@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {ConsumeLogType, GameType, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
@@ -1019,6 +1019,7 @@ class Room extends RoomBase {
     this.gameState.dissolve()
     this.gameState = null
     this.readyPlayers = [];
+    this.robotManager.model.step = RobotStep.waitRuby;
 
     if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
