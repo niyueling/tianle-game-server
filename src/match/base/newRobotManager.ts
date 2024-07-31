@@ -150,7 +150,6 @@ export class NewRobotManager {
       }
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
-      console.warn("roomId-%s, resp-%s", this.room._id, JSON.stringify(resp));
       if (resp.isNeedRuby || resp.isUpgrade) {
         // 如果场次最高无限制，则最高携带金豆为门槛*10
         if (resp.conf.maxAmount === -1) {
@@ -162,10 +161,10 @@ export class NewRobotManager {
         const gold = service.utils.randomIntBetweenNumber(resp.conf.minAmount, max);
         const randomPlayer = await service.playerService.getPlayerModel(p._id);
         // 重新随机设置 ruby
-        if (this.room.gameRule === Enums.goldCurrency) {
+        if (this.room.gameRule.currency === Enums.goldCurrency) {
           randomPlayer.gold = gold;
         }
-        if (this.room.gameRule === Enums.tlGoldCurrency) {
+        if (this.room.gameRule.currency === Enums.tlGoldCurrency) {
           randomPlayer.tlGold = gold;
         }
         randomPlayer.isGame = true;
