@@ -393,7 +393,7 @@ export class NewRobotManager {
 
   // 机器人准备
   async robotPlayerReady() {
-    console.warn(this.room.readyPlayers.length, this.room.capacity);
+    // console.warn(this.room.readyPlayers.length, this.room.capacity);
     if (this.room.gameState || this.room.readyPlayers.length === this.room.capacity) {
       // 不需要准备
       return true;
@@ -536,7 +536,7 @@ export class NewRobotManager {
 
   async readyAndPlay() {
     let isOk;
-    if (this.model.step === RobotStep.start) {
+    if (this.model.step === RobotStep.start && !this.room.gameState) {
       // 离线用户准备
       const flag = await this.robotPlayerReady();
       isOk = await this.isHumanPlayerReady();
