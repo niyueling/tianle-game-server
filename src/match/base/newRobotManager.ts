@@ -122,6 +122,7 @@ export class NewRobotManager {
     if (this.model.step === RobotStep.waitRuby) {
       await this.updateNoRuby();
       await this.save();
+      this.model.step = RobotStep.start;
     }
 
     isOk = await this.isNoPlayerAbsent();
