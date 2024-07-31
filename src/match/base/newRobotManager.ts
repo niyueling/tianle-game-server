@@ -118,7 +118,7 @@ export class NewRobotManager {
     // 添加公共房机器人
     await this.addRobotForPublicRoom();
 
-    console.warn("step-%s", this.model.step);
+    console.warn("roomId-%s, step-%s", this.room._id, this.model.step);
 
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby) {
