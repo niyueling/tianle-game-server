@@ -118,8 +118,6 @@ export class NewRobotManager {
     // 添加公共房机器人
     await this.addRobotForPublicRoom();
 
-    console.warn("roomId-%s, step-%s", this.room._id, this.model.step);
-
     // 查看金豆
     await this.updateNoRuby();
     await this.save();
@@ -127,7 +125,7 @@ export class NewRobotManager {
     isOk = await this.isNoPlayerAbsent();
     if (!isOk) {
       // 人没到齐
-      console.log('some one absent %s', this.room._id);
+      // console.log('some one absent %s', this.room._id);
       // if (!this.room.gameState) {
       //   await this.room.forceDissolve();
       // }
