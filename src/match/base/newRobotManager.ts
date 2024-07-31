@@ -121,13 +121,7 @@ export class NewRobotManager {
     console.warn("roomId-%s, step-%s", this.room._id, this.model.step);
 
     // 查看金豆
-    isOk = await this.updateNoRuby();
-    if (isOk) {
-      // 继续等
-      console.log('wait for ruby', this.room._id)
-      return;
-    }
-    this.model.step = RobotStep.start;
+    await this.updateNoRuby();
     await this.save();
 
     isOk = await this.isNoPlayerAbsent();
