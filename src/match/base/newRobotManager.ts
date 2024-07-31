@@ -118,6 +118,8 @@ export class NewRobotManager {
     // 添加公共房机器人
     await this.addRobotForPublicRoom();
 
+    console.warn("step-%s", this.model.step);
+
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby) {
       isOk = await this.updateNoRuby();
