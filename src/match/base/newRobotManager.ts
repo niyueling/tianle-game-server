@@ -151,13 +151,13 @@ export class NewRobotManager {
 
   // 检查金豆情况
   async updateNoRuby() {
-    for (let i = 0; i < this.room.gameState.players.length; i++) {
-      const p = this.room.gameState.players[i];
+    for (let i = 0; i < this.room.players.length; i++) {
+      const p = this.room.players[i];
       if (!p || p.isBroke || this.room.gameState) {
         continue;
       }
 
-      const resp = await service.gameConfig.rubyRequired(p.model._id.toString(), this.room.gameRule.categoryId);
+      const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule.categoryId);
       if (resp.isNeedRuby) {
         // 如果场次最高无限制，则最高携带金豆为门槛*10
         if (resp.conf.maxAmount === -1) {
