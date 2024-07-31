@@ -3190,28 +3190,24 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.restoreGame, async () => {
-      if (this.room.robotManager.model.step === RobotStep.waitRuby) {
-        this.room.robotManager.model.step = RobotStep.running;
-        if (this.stateData[Enums.da] && this.stateData[Enums.da]._id === player._id) {
-          this.state = stateWaitDa;
-          this.stateData = {da: player, card: this.lastTakeCard};
+      this.room.robotManager.model.step = RobotStep.running;
+      if (this.stateData[Enums.da] && this.stateData[Enums.da]._id === player._id) {
+        this.state = stateWaitDa;
+        this.stateData = {da: player, card: this.lastTakeCard};
+      }
+
+      await this.room.broadcast('game/restoreGameReply', {
+        ok: true,
+        data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
+      });
+
+      // 如果当前是摸牌状态，则给下家摸牌
+      if (this.gameMoStatus.state) {
+        const huTakeCard = async () => {
+          this.players[this.gameMoStatus.index].emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
         }
 
-        await this.room.broadcast('game/restoreGameReply', {
-          ok: true,
-          data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
-        });
-
-        // 如果当前是摸牌状态，则给下家摸牌
-        if (this.gameMoStatus.state) {
-          const huTakeCard = async () => {
-            this.players[this.gameMoStatus.index].emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
-          }
-
-          setTimeout(huTakeCard, 1000);
-        }
-      } else {
-        await player.sendMessage('game/restoreGameReply', {ok: false, data: {}});
+        setTimeout(huTakeCard, 1000);
       }
     })
 
