@@ -145,7 +145,6 @@ export class PublicRoom extends Room {
     }
     // 检查金豆
     const resp = await service.gameConfig.rubyRequired(thePlayer.model._id, this.gameRule);
-    console.warn("resp-%s", JSON.stringify(resp));
     if (resp.isNeedRuby) {
       return this.broadcast('room/joinReply', {ok: false, info: TianleErrorCode.goldInsufficient, data: {index: thePlayer.seatIndex}})
     }

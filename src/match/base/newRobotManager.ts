@@ -150,6 +150,7 @@ export class NewRobotManager {
       }
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule.categoryId);
+      console.warn("resp-%s", JSON.stringify(resp));
       if (resp.isNeedRuby) {
         // 如果场次最高无限制，则最高携带金豆为门槛*10
         if (resp.conf.maxAmount === -1) {
