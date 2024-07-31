@@ -1018,6 +1018,7 @@ class Room extends RoomBase {
 
     this.gameState.dissolve()
     this.gameState = null
+    this.readyPlayers = [];
 
     if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()

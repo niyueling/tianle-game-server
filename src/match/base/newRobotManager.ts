@@ -448,42 +448,6 @@ export class NewRobotManager {
     return false;
   }
 
-  // 检查金豆情况
-  async updateNoRuby() {
-    let waitRuby = false;
-    for (let i = 0; i < this.room.gameState.players.length; i++) {
-      const p = this.room.gameState.players[i];
-      if (!p || p.isBroke || !this.room.gameState) {
-        continue;
-      }
-      const resp = await service.gameConfig.rubyRequired(
-        p.model._id.toString(),
-        this.room.gameRule.categoryId);
-      if (resp.isResurrection) {
-        if (!this.noRubyInterval[p.model._id.toString()]) {
-          this.noRubyInterval[p.model._id.toString()] = 0;
-        }
-        this.noRubyInterval[p.model._id.toString()]++;
-        // 等待 30s 充值时间
-        if (this.noRubyInterval[p.model._id.toString()] > config.game.waitForRuby) {
-          // 30s 过了，金豆还是不够，用户破产
-          console.warn("index-%s is already broke", i);
-          // p.emitter.emit(Enums.broke);
-        } else {
-          waitRuby = true;
-        }
-      } else {
-        // 删除等待时间
-        delete this.noRubyInterval[p.model._id.toString()];
-      }
-
-      this.waitInterval[p._id] = 0;
-    }
-
-
-    return waitRuby;
-  }
-
   // 更新出牌时间
   async updateWaitPlayTime() {
     if (!this.room.gameState) {
