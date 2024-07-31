@@ -100,7 +100,7 @@ export default class GameConfig extends BaseService {
 
     const model = await service.playerService.getPlayerModel(playerId);
     // 房间要升级
-    const isUpgrade = rule.currency === Enums.goldCurrency ? model.gold > conf.maxAmount : model.tlGold > conf.maxAmount;
+    const isUpgrade = conf.maxAmount !== -1 && (rule.currency === Enums.goldCurrency ? model.gold > conf.maxAmount : model.tlGold > conf.maxAmount);
     // 需要更金豆
     const isNeedRuby = rule.currency === Enums.goldCurrency ? model.gold < conf.minAmount : model.tlGold < conf.minAmount;
     // 是否复活成功
