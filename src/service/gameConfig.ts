@@ -99,7 +99,6 @@ export default class GameConfig extends BaseService {
     }
 
     const model = await service.playerService.getPlayerModel(playerId);
-    console.warn("gameRule-%s", JSON.stringify(rule));
     // 房间要升级
     const isUpgrade = rule.currency === Enums.goldCurrency ? model.gold > conf.maxAmount : model.tlGold > conf.maxAmount;
     // 需要更金豆
