@@ -5826,7 +5826,8 @@ class TableState implements Serializable {
       score: p.juScore
     });
 
-    this.room.broadcast('game/player-over', {ok: true, data: gameOverMsg})
+    p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
+    this.room.broadcast("game/playerBankruptcy", {ok: true, data: {index: p.seatIndex}});
 
     // 如果目前打牌的是破产用户，找到下一个正常用户
     if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
