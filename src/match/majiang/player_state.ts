@@ -1368,6 +1368,7 @@ class PlayerState implements Serializable {
     }
 
     this.events.huCards = this.huCards.slice();
+    this.cards['caiShen'] = this.caiShen;
 
     return {
       index,
@@ -1399,6 +1400,8 @@ class PlayerState implements Serializable {
       }
     }
     this.events.huCards = this.huCards.slice();
+    this.cards['caiShen'] = this.caiShen;
+
     const info = {
       index,
       cardCount,
