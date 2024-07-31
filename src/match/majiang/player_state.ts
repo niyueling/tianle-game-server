@@ -1421,6 +1421,8 @@ class PlayerState implements Serializable {
     if (this.isMingCard) {
       info["cards"] = cards;
     }
+
+    return info;
   }
 
   isHu() {
