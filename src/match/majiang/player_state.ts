@@ -1372,6 +1372,7 @@ class PlayerState implements Serializable {
     return {
       index,
       cards,
+      openCard: this.isMingCard,
       tingPai: this.tingPai,
       locked: this.locked,
       dropped: this.dropped,
@@ -1390,10 +1391,18 @@ class PlayerState implements Serializable {
 
   genOppoStates(index) {
     const cardCount = HuPaiDetect.remain(this.cards);
+    const cards = []
+    for (let i = 0; i < this.cards.length; i++) {
+      const c = this.cards[i]
+      for (let j = 0; j < c; j++) {
+        cards.push(i)
+      }
+    }
     this.events.huCards = this.huCards.slice();
-    return {
+    const info = {
       index,
       cardCount,
+      openCard: this.isMingCard,
       tingPai: this.tingPai,
       locked: this.locked,
       huCards: this.huCards,
@@ -1407,6 +1416,10 @@ class PlayerState implements Serializable {
       caiShen: this.caiShen,
       rule: this.rule,
       room: this.room._id
+    }
+
+    if (this.isMingCard) {
+      info["cards"] = cards;
     }
   }
 
