@@ -16,10 +16,8 @@ import {GameType, TianleErrorCode} from "@fm/common/constants";
 import enums from "./enums";
 import GameCategory from "../../database/models/gameCategory";
 
-const stateWaitQiangLandload = 1 // 抢地主
 const stateWaitMultiple = 2 // 翻倍
 const stateWaitDa = 3 // 对局中
-const stateGameOver = 4 // 游戏结束
 
 class Status {
   current = {seatIndex: 0, step: 1}

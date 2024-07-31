@@ -5,7 +5,7 @@ const dissolveRecordSchema = new mongoose.Schema({
   roomNum: {type: String, required: true},
   juIndex: {type: String, required: true},
   time: {type: Date, default: Date.now},
-  category: {type: String, required: true, default: 'paodekuai'},
+  category: {type: String, required: true, default: 'shisanshui'},
   dissolveReqInfo: {type: Array, default: []},
 })
 

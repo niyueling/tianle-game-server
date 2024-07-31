@@ -211,7 +211,7 @@ export default {
         }
         const playerManager = PlayerManager.getInstance();
         const oldPlayer = playerManager.getPlayer(message._id);
-        const gameName = message.gameType || 'paodekuai'
+        const gameName = message.gameType || 'shisanshui'
         if (oldPlayer) {
             if (oldPlayer._id === message._id) {
                 logger.warn(`重复的登录消息：${message._id}`);

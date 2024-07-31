@@ -426,7 +426,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
   }
 
   setGameName(gameType) {
-    this.gameName = gameType || 'paodekuai';
+    this.gameName = gameType || 'shisanshui';
   }
 
   requestToRoom(roomId, name, message) {

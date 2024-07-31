@@ -102,7 +102,7 @@ async function createClubRoom(player, message) {
     }
   }
 
-  const gameType = rule.type || 'paodekuai'
+  const gameType = rule.type || 'shisanshui'
   player.setGameName(message.gameType)
   player.requestTo(lobbyQueueNameFrom(gameType), 'createClubRoom', { rule, clubId: club._id })
 }
@@ -1370,7 +1370,7 @@ export default {
     //             data.getGem = baJuTimes + shierJuJuTimes || 0
     //           }
     //         }
-    //         if (message.gameType === 'paodekuai') {
+    //         if (message.gameType === 'shisanshui') {
     //           if (shibaJuJuTimes >= 100) {
     //             data.getGem = shierJuJuTimes + shibaJuJuTimes * 2 || 0
     //           } else if (shierJuJuTimes + shibaJuJuTimes >= 30) {

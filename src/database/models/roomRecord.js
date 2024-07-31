@@ -11,7 +11,7 @@ const RoomRecordSchema = new Schema({
     roomNum: {type: Number, required: true},
     creatorId: {type: Number },
     rule: {type: Object, required: true},
-    category: {type: String, required: true, default: 'paodekuai'},
+    category: {type: String, required: true, default: 'shisanshui'},
     roomState: {type: String, required: true, default: 'normal'},
     // 该房间玩到第几局
     juIndex: {type: Number, required: false,},
