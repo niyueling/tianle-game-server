@@ -1,8 +1,10 @@
-import {RobotStep} from "@fm/common/constants";
+import {ConsumeLogType, RobotStep} from "@fm/common/constants";
 import * as config from '../../config'
 import {RobotMangerModel} from '../../database/models/robotManager';
 import {service} from "../../service/importService";
 import { RobotRmqProxy } from "./robotRmqProxy";
+import Player from "../../database/models/player";
+import Enums from "../majiang/enums";
 
 // 机器人出牌
 export class NewRobotManager {
@@ -118,7 +120,14 @@ export class NewRobotManager {
 
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby) {
-      return ;
+      isOk = await this.updateNoRuby();
+      if (isOk) {
+        // 继续等
+        console.log('wait for ruby', this.room._id)
+        return;
+      }
+      this.model.step = RobotStep.start;
+      await this.save();
     }
 
     isOk = await this.isNoPlayerAbsent();
@@ -138,6 +147,45 @@ export class NewRobotManager {
     }
 
     await this.readyAndPlay();
+  }
+
+  // 检查金豆情况
+  async updateNoRuby() {
+    for (let i = 0; i < this.room.gameState.players.length; i++) {
+      const p = this.room.gameState.players[i];
+      if (!p || p.isBroke || this.room.gameState) {
+        continue;
+      }
+
+      const resp = await service.gameConfig.rubyRequired(p.model._id.toString(), this.room.gameRule.categoryId);
+
+      // 如果场次最高无限制，则最高携带金豆为门槛*10
+      if (resp.conf.maxAmount === -1) {
+        resp.conf.maxAmount = resp.conf.minAmount * 10;
+      }
+      // 最高为随机下限的 20% - 30%
+      const rand = service.utils.randomIntBetweenNumber(10, 100) / 100;
+      const max = resp.conf.minAmount + Math.floor(rand * (resp.conf.maxAmount - resp.conf.minAmount));
+      const gold = service.utils.randomIntBetweenNumber(resp.conf.minAmount, max);
+      const randomPlayer = await service.playerService.getPlayerModel(p._id);
+      // 重新随机设置 ruby
+      if (this.room.gameRule === Enums.goldCurrency) {
+        randomPlayer.gold = gold;
+      }
+      if (this.room.gameRule === Enums.tlGoldCurrency) {
+        randomPlayer.tlGold = gold;
+      }
+      randomPlayer.isGame = true;
+      randomPlayer.gameTime = new Date();
+
+      // 记录金豆日志
+      await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
+        randomPlayer.gold, `机器人开局设置金豆:${this.room._id}`);
+
+      await randomPlayer.save();
+    }
+
+    return true;
   }
 
   // 房卡房

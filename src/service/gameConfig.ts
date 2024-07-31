@@ -106,7 +106,7 @@ export default class GameConfig extends BaseService {
     // 是否复活成功
     const isResurrection = Enums.goldCurrency ? model.gold <= 0 : model.tlGold <= 0;
 
-    return {isUpgrade, isNeedRuby, isResurrection, minAmount: conf.minAmount}
+    return {isUpgrade, isNeedRuby, isResurrection, minAmount: conf.minAmount, conf}
   }
 
   // 复活礼包倍数
