@@ -6010,13 +6010,12 @@ class TableState implements Serializable {
           base: this.room.currentBase
         }
 
-        if (gameOverMsg.states.length > 0) {
-          pp.sendMessage('game/game-over', {ok: true, data: gameOverMsg});
-        }
+        pp.sendMessage('game/game-over', {ok: true, data: gameOverMsg});
       }
 
       setTimeout(nextDo1, 500);
     }
+
     setTimeout(nextDo, 2000);
 
     const nextDo1 = async () => {
