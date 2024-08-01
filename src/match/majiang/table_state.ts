@@ -5915,109 +5915,110 @@ class TableState implements Serializable {
   }
 
   async gameAllOver(states, niaos, nextZhuang) {
-    this.state = stateGameOver;
+    if (this.state !== stateGameOver) {
+      this.state = stateGameOver;
 
-    const winner = this.players.filter(x => x.events.jiePao)[0]
+      const winner = this.players.filter(x => x.events.jiePao)[0]
 
-    // 没胡牌 也没放冲
-    if (winner) {
-      this.players.filter(x => !x.events.jiePao && !x.events.dianPao)
-        .forEach(x => {
-          x.events.hunhun = winner.events.hu
-        })
-    }
-    this.players.forEach(x => x.gameOver())
-    this.room.removeListener('reconnect', this.onReconnect)
-    this.room.removeListener('empty', this.onRoomEmpty)
-
-    const scores = [];
-    const players = [];
-    this.players.map(async (player, idx) => {
-      if (player) {
-        players.push(player._id.toString())
-        const state = player.genGameStatus(idx, 1);
-        scores.push({
-          score: state.score,
-          name: player.model.nickname,
-          headImgUrl: player.model.avatar,
-          shortId: player.model.shortId
-        })
+      // 没胡牌 也没放冲
+      if (winner) {
+        this.players.filter(x => !x.events.jiePao && !x.events.dianPao)
+          .forEach(x => {
+            x.events.hunhun = winner.events.hu
+          })
       }
-    })
+      this.players.forEach(x => x.gameOver())
+      this.room.removeListener('reconnect', this.onReconnect)
+      this.room.removeListener('empty', this.onRoomEmpty)
 
-    if (states.length > 0) {
-      await this.room.recordGameRecord(this, states);
-      await this.room.recordRoomScore('dissolve', scores, players)
-      await this.room.RoomScoreRecord(scores, players)
-    }
+      const scores = [];
+      const players = [];
+      this.players.map(async (player, idx) => {
+        if (player) {
+          players.push(player._id.toString())
+          const state = player.genGameStatus(idx, 1);
+          scores.push({
+            score: state.score,
+            name: player.model.nickname,
+            headImgUrl: player.model.avatar,
+            shortId: player.model.shortId
+          })
+        }
+      })
 
-    // 更新战绩
-    for (let i = 0; i < states.length; i++) {
-      // 判断是否已经录入战绩
-      const exists = await CombatGain.count({
-        playerId: states[i].model._id,
-        uid: this.room._id,
-        juIndex: this.room.game.juIndex
-      });
+      if (states.length > 0) {
+        await this.room.recordGameRecord(this, states);
+        await this.room.recordRoomScore('dissolve', scores, players)
+        await this.room.RoomScoreRecord(scores, players)
+      }
 
-      if (!exists) {
-        const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
-
-        await CombatGain.create({
-          uid: this.room._id,
-          room: this.room.uid,
-          juIndex: this.room.game.juIndex,
+      // 更新战绩
+      for (let i = 0; i < states.length; i++) {
+        // 判断是否已经录入战绩
+        const exists = await CombatGain.count({
           playerId: states[i].model._id,
-          gameName: "十二星座",
-          caregoryName: category.title,
-          currency: this.rule.currency,
-          time: new Date(),
-          score: states[i].score
+          uid: this.room._id,
+          juIndex: this.room.game.juIndex
         });
-      }
-    }
 
-    // 计算胜率
-    await this.calcJuRank();
+        if (!exists) {
+          const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
 
-    const nextDo = async () => {
-      for (let j = 0; j < this.players.length; j++) {
-        const pp = this.players[j];
-        //获取用户当局对局流水
-        const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
-        const scoreRecords = [];
-
-        for (let i = 0; i < records.length; i++) {
-          if (states.length > 0 && states[j].score >= 0 && states[j].model._id === records[i].winnerId) {
-            scoreRecords.push(records[i]);
-          }
-
-          if (states.length > 0 && states[j].score < 0 && records[i].failList.includes(states[j].model._id)) {
-            scoreRecords.push(records[i]);
-          }
+          await CombatGain.create({
+            uid: this.room._id,
+            room: this.room.uid,
+            juIndex: this.room.game.juIndex,
+            playerId: states[i].model._id,
+            gameName: "十二星座",
+            caregoryName: category.title,
+            currency: this.rule.currency,
+            time: new Date(),
+            score: states[i].score
+          });
         }
-
-        const gameOverMsg = {
-          niaos,
-          creator: this.room.creator.model._id,
-          juShu: this.restJushu,
-          juIndex: this.room.game.juIndex,
-          states,
-          gameType: GameType.mj,
-          records: scoreRecords,
-          isPublic: this.room.isPublic,
-          caiShen: this.caishen,
-          base: this.room.currentBase
-        }
-
-        pp.sendMessage('game/game-over', {ok: true, data: gameOverMsg});
       }
 
-      await this.room.gameOver();
+      // 计算胜率
+      await this.calcJuRank();
+
+      const nextDo = async () => {
+        for (let j = 0; j < this.players.length; j++) {
+          const pp = this.players[j];
+          //获取用户当局对局流水
+          const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
+          const scoreRecords = [];
+
+          for (let i = 0; i < records.length; i++) {
+            if (states.length > 0 && states[j].score >= 0 && states[j].model._id === records[i].winnerId) {
+              scoreRecords.push(records[i]);
+            }
+
+            if (states.length > 0 && states[j].score < 0 && records[i].failList.includes(states[j].model._id)) {
+              scoreRecords.push(records[i]);
+            }
+          }
+
+          const gameOverMsg = {
+            niaos,
+            creator: this.room.creator.model._id,
+            juShu: this.restJushu,
+            juIndex: this.room.game.juIndex,
+            states,
+            gameType: GameType.mj,
+            records: scoreRecords,
+            isPublic: this.room.isPublic,
+            caiShen: this.caishen,
+            base: this.room.currentBase
+          }
+
+          pp.sendMessage('game/game-over', {ok: true, data: gameOverMsg});
+        }
+
+        await this.room.gameOver();
+      }
+
+      setTimeout(nextDo, 2000);
     }
-
-    setTimeout(nextDo, 2000);
-
   }
 
   async calcJuRank() {
