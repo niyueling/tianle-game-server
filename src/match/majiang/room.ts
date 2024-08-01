@@ -1008,7 +1008,7 @@ class Room extends RoomBase {
     return this.game.juShu < -1;
   }
 
-  async gameOver(nextZhuangId, states) {
+  async gameOver() {
     // 清除洗牌
     this.shuffleData = []
     this.clearReady()

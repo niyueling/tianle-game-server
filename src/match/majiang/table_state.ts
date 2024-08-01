@@ -5999,6 +5999,7 @@ class TableState implements Serializable {
       states,
       gameType: GameType.mj,
       records: scoreRecords,
+      goldRecord: records,
       isPublic: this.room.isPublic,
       caiShen: this.caishen,
       base: this.room.currentBase
@@ -6041,7 +6042,7 @@ class TableState implements Serializable {
     }
 
     if (gameOverMsg.states.length > 0) {
-      await this.room.gameOver(nextZhuang._id.toString(), states)
+      await this.room.gameOver()
       // this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
 
       const nextDo = async () => {

@@ -536,7 +536,7 @@ export class NewRobotManager {
 
   async readyAndPlay() {
     let isOk;
-    if (this.model.step === RobotStep.start && !this.room.gameState) {
+    if (this.model.step === RobotStep.start) {
       // 离线用户准备
       const flag = await this.robotPlayerReady();
       isOk = await this.isHumanPlayerReady();
