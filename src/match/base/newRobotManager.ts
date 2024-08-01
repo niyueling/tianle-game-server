@@ -549,10 +549,10 @@ export class NewRobotManager {
         return;
       }
       if ((flag && this.room.isPublic) || !this.room.isPublic) {
-        const index = this.room.players.findIndex(p => !p.isRobot());
-        if (index !== -1) {
-          this.room.broadcast("game/startGameIndex", {ok: true, data: {index}});
-        }
+        // const index = this.room.players.findIndex(p => !p.isRobot());
+        // if (index !== -1) {
+        //   this.room.broadcast("game/startGameIndex", {ok: true, data: {index}});
+        // }
         this.model.step = RobotStep.running;
       }
       await this.save();

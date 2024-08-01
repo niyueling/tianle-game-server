@@ -586,6 +586,7 @@ class Room extends RoomBase {
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
       owner: this.ownerId,
+      startIndex: !!newJoinPlayer.isRobot(),
       zhuangJia: newJoinPlayer.zhuang,
       score: newJoinPlayer.juScore || 0,
       base: this.currentBase,
