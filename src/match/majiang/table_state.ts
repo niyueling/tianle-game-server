@@ -5982,13 +5982,14 @@ class TableState implements Serializable {
       await this.calcJuRank();
 
       const nextDo = async () => {
-        for (let j = 0; j < this.players.length; j++) {
+        for (let j = 0; j < states.length; j++) {
           const pp = this.players[j];
           //获取用户当局对局流水
           const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
           const scoreRecords = [];
 
           for (let i = 0; i < records.length; i++) {
+            console.warn(states.length, states[j].score, states[j].model._id, records[i].winnerId, states[j].model._id === records[i].winnerId);
             if (states.length > 0 && states[j].score >= 0 && states[j].model._id === records[i].winnerId) {
               scoreRecords.push(records[i]);
             }
