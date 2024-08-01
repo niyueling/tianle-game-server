@@ -6003,6 +6003,7 @@ class TableState implements Serializable {
             creator: this.room.creator.model._id,
             juShu: this.restJushu,
             juIndex: this.room.game.juIndex,
+            index: pp.seatIndex,
             states,
             gameType: GameType.mj,
             records: scoreRecords,
