@@ -6013,14 +6013,11 @@ class TableState implements Serializable {
         pp.sendMessage('game/game-over', {ok: true, data: gameOverMsg});
       }
 
-      setTimeout(nextDo1, 500);
+      await this.room.gameOver();
     }
 
     setTimeout(nextDo, 2000);
 
-    const nextDo1 = async () => {
-      await this.room.gameOver();
-    }
   }
 
   async calcJuRank() {
