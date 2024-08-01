@@ -121,7 +121,7 @@ export class NewRobotManager {
     await this.addRobotForPublicRoom();
 
     // 查看金豆
-    if (this.model.step === RobotStep.waitRuby) {
+    if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
       await this.updateNoRuby();
       await this.save();
       this.model.step = RobotStep.start;
