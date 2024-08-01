@@ -20,6 +20,7 @@ export class NewRobotManager {
   watchTimer: any
   isWatching: boolean
   waitPublicRobot: number
+  waitPublicRobotSecond: number
   isPlayed: boolean
   selectModeTimes: number
   constructor(room, depositCount) {
@@ -31,6 +32,7 @@ export class NewRobotManager {
     this.waitInterval = {};
     this.isWatching = false;
     this.waitPublicRobot = 0;
+    this.waitPublicRobotSecond = 0;
     this.isPlayed = true;
     this.selectModeTimes = 0;
     this.startMonit();
@@ -412,10 +414,10 @@ export class NewRobotManager {
   }
 
   async addRobotForPublicRoom() {
-    if (this.waitPublicRobot < config.game.waitRubyPlayer || this.room.gameState) {
-      if (!this.room.gameState) {
-        // console.warn("timeCheck-%s, gameState-%s", this.waitPublicRobot < config.game.waitRubyPlayer, !!this.room.gameState);
-      }
+    if (!this.waitPublicRobotSecond) {
+      this.waitPublicRobotSecond = Math.floor(Math.random() * config.game.waitRubyPlayer + 1);
+    }
+    if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState) {
       // 时间未到，或者已经有机器人
       return;
     }
@@ -423,12 +425,12 @@ export class NewRobotManager {
     for (let i = 1; i < this.room.players.length; i++) {
       const playerId = await this.getOfflinePlayerByIndex(i)
       if (playerId !== "" || this.room.players[i]) {
-        if (!this.room.gameState) {
-          // console.warn("index-%s, playerId-%s is in room", i, playerId);
-        }
-
         continue;
       }
+
+      // 重新计时
+      this.waitPublicRobotSecond = 0;
+      this.waitPublicRobot = 0;
 
       const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id, this.room.game.rule.currency);
       const robotProxy = await this.createProxy(model._id.toString());
@@ -444,6 +446,8 @@ export class NewRobotManager {
         // 添加离线时间
         this.model.offlineTimes[model._id] = config.game.offlineDelayTime;
       }
+
+      break;
     }
     // 保存房间信息
     await service.roomRegister.saveRoomInfoToRedis(this.room);
