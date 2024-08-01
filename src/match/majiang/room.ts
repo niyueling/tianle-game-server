@@ -574,6 +574,7 @@ class Room extends RoomBase {
     }
 
     const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
+    const index = this.players.findIndex(p => !p.isRobot());
 
     return {
       _id: this._id,
@@ -586,7 +587,7 @@ class Room extends RoomBase {
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
       owner: this.ownerId,
-      startIndex: !!newJoinPlayer.isRobot(),
+      startIndex: index,
       zhuangJia: newJoinPlayer.zhuang,
       score: newJoinPlayer.juScore || 0,
       base: this.currentBase,
