@@ -6012,11 +6012,10 @@ class TableState implements Serializable {
             caiShen: this.caishen,
             base: this.room.currentBase
           }
-
-          pp.sendMessage('game/game-over', {ok: true, data: gameOverMsg});
+          if (this.room.players[j]) {
+            pp.sendMessage('game/game-over', {ok: true, data: gameOverMsg});
+          }
         }
-
-        console.warn("players-%s", JSON.stringify(this.room.players))
 
         await this.room.gameOver();
       }
