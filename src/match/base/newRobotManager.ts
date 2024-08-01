@@ -345,7 +345,7 @@ export class NewRobotManager {
   // 玩家是否到齐
   async isNoPlayerAbsent() {
     const count = this.room.players.filter(x => x).length;
-    return count === this.room.gameRule.playerCount;
+    return count === this.room.gameRule.playerCount || this.room.gameState;
   }
 
   // 代理用户是否在线
