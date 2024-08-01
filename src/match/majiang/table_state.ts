@@ -5977,35 +5977,54 @@ class TableState implements Serializable {
       }
     }
 
-    //获取用户当局对局流水
-    const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
-    const scoreRecords = [];
-
-    for (let i = 0; i < records.length; i++) {
-      if (states.length > 0 && states[0].score >= 0 && states[0].model._id === records[i].winnerId) {
-        scoreRecords.push(records[i]);
-      }
-
-      if (states.length > 0 && states[0].score < 0 && records[i].failList.includes(states[0].model._id)) {
-        scoreRecords.push(records[i]);
-      }
-    }
-
-    const gameOverMsg = {
-      niaos,
-      creator: this.room.creator.model._id,
-      juShu: this.restJushu,
-      juIndex: this.room.game.juIndex,
-      states,
-      gameType: GameType.mj,
-      records: scoreRecords,
-      goldRecord: records,
-      isPublic: this.room.isPublic,
-      caiShen: this.caishen,
-      base: this.room.currentBase
-    }
-
     // 计算胜率
+    await this.calcJuRank();
+
+    const nextDo = async () => {
+      for (let j = 0; j < this.players.length; j++) {
+        const pp = this.players[j];
+        //获取用户当局对局流水
+        const records = await RoomGoldRecord.where({roomId: this.room._id, juIndex: this.room.game.juIndex}).find();
+        const scoreRecords = [];
+
+        for (let i = 0; i < records.length; i++) {
+          if (states.length > 0 && states[j].score >= 0 && states[j].model._id === records[i].winnerId) {
+            scoreRecords.push(records[i]);
+          }
+
+          if (states.length > 0 && states[j].score < 0 && records[i].failList.includes(states[j].model._id)) {
+            scoreRecords.push(records[i]);
+          }
+        }
+
+        const gameOverMsg = {
+          niaos,
+          creator: this.room.creator.model._id,
+          juShu: this.restJushu,
+          juIndex: this.room.game.juIndex,
+          states,
+          gameType: GameType.mj,
+          records: scoreRecords,
+          isPublic: this.room.isPublic,
+          caiShen: this.caishen,
+          base: this.room.currentBase
+        }
+
+        if (gameOverMsg.states.length > 0) {
+          pp.sendMessage('game/game-over', {ok: true, data: gameOverMsg});
+        }
+      }
+
+      setTimeout(nextDo1, 500);
+    }
+    setTimeout(nextDo, 2000);
+
+    const nextDo1 = async () => {
+      await this.room.gameOver();
+    }
+  }
+
+  async calcJuRank() {
     for (let i = 0; i < this.players.length; i++) {
       const model = await Player.findOne({_id: this.players[i]._id});
       model.isGame = false;
@@ -6039,16 +6058,6 @@ class TableState implements Serializable {
       }
 
       await model.save();
-    }
-
-    if (gameOverMsg.states.length > 0) {
-      await this.room.gameOver()
-      // this.logger.info('game/game-over %s', JSON.stringify(gameOverMsg))
-
-      const nextDo = async () => {
-        this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
-      }
-      setTimeout(nextDo, 2000)
     }
   }
 
