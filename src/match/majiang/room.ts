@@ -668,6 +668,12 @@ class Room extends RoomBase {
     thePlayer.sendMessage("room/nextGameReply", {ok: true, data: {roomId: this._id, juIndex: this.game.juIndex}})
 
     await this.announcePlayerJoin(thePlayer)
+
+    const joinFunc = async() => {
+      this.robotManager.model.step = RobotStep.waitRuby;
+    }
+
+    setTimeout(joinFunc, 1000);
     return true
   }
 
@@ -1019,7 +1025,6 @@ class Room extends RoomBase {
     this.gameState.dissolve()
     this.gameState = null
     this.readyPlayers = [];
-    this.robotManager.model.step = RobotStep.waitRuby;
 
     if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
