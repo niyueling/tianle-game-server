@@ -6007,7 +6007,7 @@ class TableState implements Serializable {
             states,
             gameType: GameType.mj,
             records: scoreRecords,
-            goldRecords: records,
+            roomId: this.room._id,
             isPublic: this.room.isPublic,
             caiShen: this.caishen,
             base: this.room.currentBase
