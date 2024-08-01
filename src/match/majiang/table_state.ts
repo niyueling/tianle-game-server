@@ -5989,8 +5989,8 @@ class TableState implements Serializable {
           const scoreRecords = [];
 
           for (let i = 0; i < records.length; i++) {
-            console.warn(states.length, states[j].score, states[j].model._id, records[i].winnerId.toString(), states[j].model._id === records[i].winnerId.toString());
-            if (states.length > 0 && states[j].score >= 0 && states[j].model._id === records[i].winnerId.toString()) {
+            console.warn(states.length, states[j].score, states[j].model._id.toString(), records[i].winnerId.toString(), states[j].model._id.toString() === records[i].winnerId.toString());
+            if (states.length > 0 && states[j].score >= 0 && states[j].model._id.toString() === records[i].winnerId.toString()) {
               scoreRecords.push(records[i]);
             }
 
