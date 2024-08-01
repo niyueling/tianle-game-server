@@ -148,7 +148,7 @@ export class NewRobotManager {
   async updateNoRuby() {
     for (let i = 0; i < this.room.players.length; i++) {
       const p = this.room.players[i];
-      if (!p  || p.isRobot()|| this.room.gameState) {
+      if (!p  || !p.isRobot()|| this.room.gameState) {
         continue;
       }
 
