@@ -428,6 +428,8 @@ export class NewRobotManager {
         continue;
       }
 
+      console.warn(playerId, this.room.players[i]);
+
       // 重新计时
       this.waitPublicRobotSecond = 0;
       this.waitPublicRobot = 0;
