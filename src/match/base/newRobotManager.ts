@@ -422,7 +422,7 @@ export class NewRobotManager {
       return;
     }
 
-    for (let i = 1; i < this.room.players.length; i++) {
+    for (let i = 0; i < this.room.players.length; i++) {
       const playerId = await this.getOfflinePlayerByIndex(i)
       if (playerId !== "" || this.room.players[i]) {
         continue;
