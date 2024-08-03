@@ -1,3 +1,4 @@
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 // @ts-ignore
 import {pick} from 'lodash'
@@ -8,6 +9,7 @@ import DissolveRecord from '../../database/models/dissolveRecord'
 import GameRecord from '../../database/models/gameRecord'
 import RoomRecord from '../../database/models/roomRecord'
 import {getPlayerRmqProxy} from "../../player/PlayerRmqProxy"
+import {service} from "../../service/importService";
 import '../../utils/algorithm'
 import {GameTypes} from "../gameTypes"
 import {RoomBase} from "../IRoom"
@@ -17,8 +19,6 @@ import Game from './game'
 import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
 import Table from "./table"
-import {GameType, TianleErrorCode} from "@fm/common/constants";
-import {service} from "../../service/importService";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -354,10 +354,6 @@ class Room extends RoomBase {
       rule: this.rule.getOriginData(),
     }
 
-    if (this.clubId) {
-      roomRecord.club = this.clubId;
-    }
-
     try {
       await RoomRecord.update({room: this.uid}, roomRecord, {
         upsert: true,
@@ -382,7 +378,7 @@ class Room extends RoomBase {
   }
 
   async broadcastStartGame(payload) {
-    let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
 
     // @ts-ignore
     await this.redisClient.hdelAsync("canJoinRooms", this._id);
@@ -442,10 +438,12 @@ class Room extends RoomBase {
   }
 
   joinMessageFor(newJoinPlayer): any {
+    const index = this.players.findIndex(p => !p.isRobot());
     return {
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
       _id: this._id,
+      startIndex: index,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
       owner: this.ownerId,

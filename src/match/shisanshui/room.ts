@@ -419,10 +419,12 @@ class Room extends RoomBase {
   }
 
   joinMessageFor(newJoinPlayer): any {
+    const index = this.players.findIndex(p => !p.isRobot());
     return {
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),
+      startIndex: index,
       location: newJoinPlayer.location,
       owner: this.ownerId,
       score: this.getScore(newJoinPlayer),

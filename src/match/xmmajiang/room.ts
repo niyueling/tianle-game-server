@@ -576,11 +576,13 @@ class Room extends RoomBase {
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
+    const index = this.players.findIndex(p => !p.isRobot());
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),
+      startIndex: index,
       isGameRunning: !!this.gameState && this.gameState.state !== stateGameOver,
       location: newJoinPlayer.location,
       owner: this.ownerId,
