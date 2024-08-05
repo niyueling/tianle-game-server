@@ -445,7 +445,7 @@ class Room extends RoomBase {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       const position = i;
-      positions.push({_id: p._id, position});
+      positions.push({_id: p._id, shortId: p.model.shortId, position});
     }
 
     this.broadcast("game/updatePosition", {ok: true, data: {positions}});
