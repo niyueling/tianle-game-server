@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {GameType} from "@fm/common/constants";
+import {GameType, RobotStep} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 // @ts-ignore
 import {pick} from 'lodash'
@@ -535,6 +535,12 @@ class Room extends RoomBase {
     await this.announcePlayerJoin(thePlayer)
     // this.evictFromOldTable(thePlayer)
 
+    const joinFunc = async() => {
+      this.robotManager.model.step = RobotStep.start;
+    }
+
+    setTimeout(joinFunc, 1000);
+
     return true
   }
 
@@ -780,6 +786,8 @@ class Room extends RoomBase {
     await this.charge();
     this.gameState.destroy()
     this.gameState = null
+    this.readyPlayers = [];
+    this.robotManager.model.step = RobotStep.waitRuby;
 
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id === firstPlayerId)
     this.sortPlayer(this.nextStarterIndex)

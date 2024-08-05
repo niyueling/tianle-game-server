@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {GameType, TianleErrorCode} from "@fm/common/constants";
+import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
@@ -677,7 +677,7 @@ class Room extends RoomBase {
   // }
 
   async nextGame(thePlayer) {
-    if (this.game.juShu <= 0) {
+    if (this.game.juShu <= 0 && !this.isPublic) {
       thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
       return false;
     }
@@ -689,8 +689,11 @@ class Room extends RoomBase {
 
     await this.announcePlayerJoin(thePlayer);
 
-    // 测试洗牌
-    // await this.addShuffle(thePlayer);
+    const joinFunc = async() => {
+      this.robotManager.model.step = RobotStep.start;
+    }
+
+    setTimeout(joinFunc, 1000);
     return true;
   }
 
@@ -1056,6 +1059,8 @@ class Room extends RoomBase {
 
     this.gameState.dissolve();
     this.gameState = null;
+    this.readyPlayers = [];
+    this.robotManager.model.step = RobotStep.waitRuby;
 
     if (this.isRoomAllOver(states) && !this.isPublic) {
       const message = this.allOverMessage();

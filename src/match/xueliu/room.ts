@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {ConsumeLogType, GameType, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
@@ -666,6 +666,13 @@ class Room extends RoomBase {
     thePlayer.sendMessage("room/nextGameReply", {ok: true, data: {}})
 
     await this.announcePlayerJoin(thePlayer)
+
+    const joinFunc = async() => {
+      this.robotManager.model.step = RobotStep.start;
+    }
+
+    setTimeout(joinFunc, 1000);
+
     return true
   }
 
@@ -1007,6 +1014,8 @@ class Room extends RoomBase {
     if (this.gameState) {
       this.gameState.dissolve()
       this.gameState = null
+      this.readyPlayers = [];
+      this.robotManager.model.step = RobotStep.waitRuby;
     }
 
     if (this.isRoomAllOver()) {

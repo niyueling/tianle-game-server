@@ -17,7 +17,7 @@ import Game from './game'
 import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
 import Table from "./table"
-import {GameType, TianleErrorCode} from "@fm/common/constants";
+import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {service} from "../../service/importService";
 
 const ObjectId = mongoose.Types.ObjectId
@@ -565,6 +565,8 @@ class Room extends RoomBase {
     // await this.updateClubGoldByScore(stateScore);
     this.gameState.destroy();
     this.gameState = null
+    this.readyPlayers = [];
+    this.robotManager.model.step = RobotStep.waitRuby;
 
     if (!this.isPublic) {
       this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
