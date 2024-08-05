@@ -336,6 +336,12 @@ class TableState implements Serializable {
     index: number;
   }
 
+  // 等待复活人数
+  waitRechargeCount: number = 0;
+
+  // 已经复活人数
+  alreadyRechargeCount: number = 0;
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu
     this.rule = rule
@@ -2479,7 +2485,7 @@ class TableState implements Serializable {
         player.mingMultiple = 6;
         await player.sendMessage('game/openCardReply', {
           ok: true,
-          data: {roomId: this.room._id, index: this.atIndex(player)}
+          data: {roomId: this.room._id, index: this.atIndex(player), cards: player.getCardsArray()}
         });
       } else {
         await player.sendMessage('game/openCardReply', {ok: false, data: {}});
@@ -2505,30 +2511,28 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.restoreGame, async () => {
-      if (this.room.robotManager.model.step === RobotStep.waitRuby) {
+      this.alreadyRechargeCount++;
+      if (this.alreadyRechargeCount >= this.waitRechargeCount) {
         this.room.robotManager.model.step = RobotStep.running;
+      }
 
-        // 如果当前是复活用户打牌，则重新设置stateData,以激活托管机器人
-        if (this.stateData[Enums.da] && this.stateData[Enums.da]._id === player._id) {
-          this.state = stateWaitDa;
-          this.stateData = {da: player, card: this.lastTakeCard};
+      if (this.stateData[Enums.da] && this.stateData[Enums.da]._id === player._id) {
+        this.state = stateWaitDa;
+        this.stateData = {da: player, card: this.lastTakeCard};
+      }
+
+      this.room.broadcast('game/restoreGameReply', {
+        ok: true,
+        data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
+      });
+
+      // 如果当前是摸牌状态，则给下家摸牌
+      if (this.gameMoStatus.state) {
+        const huTakeCard = async () => {
+          this.players[this.gameMoStatus.index].emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
         }
 
-        await player.sendMessage('game/restoreGameReply', {
-          ok: true,
-          data: {roomId: this.room._id, index: this.atIndex(player), step: this.room.robotManager.model.step}
-        });
-
-        // 如果当前是摸牌状态，则给下家摸牌
-        if (this.gameMoStatus.state) {
-          const huTakeCard = async () => {
-            this.players[this.gameMoStatus.index].emitter.emit(Enums.huTakeCard, {from: this.gameMoStatus.from, type: this.gameMoStatus.type});
-          }
-
-          setTimeout(huTakeCard, 1000);
-        }
-      } else {
-        await player.sendMessage('game/restoreGameReply', {ok: false, data: {}});
+        setTimeout(huTakeCard, 1000);
       }
     })
 
@@ -2559,7 +2563,7 @@ class TableState implements Serializable {
       }
 
       // 一炮多响（金豆房）
-      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.peng);
 
@@ -2655,7 +2659,7 @@ class TableState implements Serializable {
       }
 
       // 一炮多响(金豆房)
-      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.gang);
         // console.warn("player index-%s choice gang card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.gang);
@@ -2870,7 +2874,7 @@ class TableState implements Serializable {
 
         if (isJiePao) {
           // 一炮多响(金豆房)
-          if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
+          if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
             this.manyHuPlayers.push(player._id.toString());
             this.setManyAction(player, Enums.hu);
             player.sendMessage("game/chooseMultiple", {ok: true, data: {action: Enums.hu, card, index: this.atIndex(player)}})
@@ -4642,6 +4646,7 @@ class TableState implements Serializable {
     });
 
     p.sendMessage('game/player-over', {ok: true, data: gameOverMsg})
+    this.room.broadcast("game/playerBankruptcy", {ok: true, data: {index: p.seatIndex}});
 
     // 如果目前打牌的是破产用户，找到下一个正常用户
     if (this.stateData[Enums.da] && this.stateData[Enums.da]._id.toString() === p.model._id.toString()) {
@@ -5079,7 +5084,7 @@ class TableState implements Serializable {
 
   async onPlayerGuo(player, playTurn, playCard) {
     // 一炮多响(金豆房)
-    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
+    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
       this.manyHuPlayers.push(player._id.toString());
       this.setManyAction(player, Enums.guo);
 
@@ -5118,13 +5123,13 @@ class TableState implements Serializable {
     // 一炮多响
     if (this.isManyHu) {
       // 一炮多响
-      if (!this.manyHuPlayers.includes(this.zhuang._id.toString()) && this.canManyHuPlayers.includes(this.zhuang._id.toString())) {
-        // console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
-        return ;
+      for (let i = 0; i < this.canManyHuPlayers.length; i++) {
+        const pp = this.players.find(p => p._id.toString() === this.canManyHuPlayers[i]);
+        if (pp && !pp.isRobot && !this.manyHuPlayers.includes(pp._id.toString())) {
+          console.warn("player index-%s not choice card-%s", this.atIndex(pp), this.stateData.card);
+          return ;
+        }
       }
-
-      // console.warn("manyHuPlayers-%s canManyHuPlayers-%s manyHuArray-%s playerId-%s flag-%s todo-%s isRunMultiple-%s", JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers),
-      //   JSON.stringify(this.manyHuArray), player._id, this.manyHuPlayers.includes(player._id.toString()), todo, this.isRunMultiple);
 
       // 如果机器人没有操作，则push到数组
       if (!this.manyHuPlayers.includes(player._id.toString())) {

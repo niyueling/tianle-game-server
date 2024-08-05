@@ -446,7 +446,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       return
     }
     for (let i = 0; i < this.players.length; i++) {
-      if (this.players[i] == null && this.playersOrder[i] == null) {
+      if (this.players[i] == null) {
         this.players[i] = player
         break
       }
