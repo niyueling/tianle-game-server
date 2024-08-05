@@ -1751,7 +1751,7 @@ class TableState implements Serializable {
       }
 
       // 记录流局
-      if (isLiuJu) {
+      if (isLiuJu && this.zhuang.recorder) {
         this.zhuang.recorder.recordUserEvent(this.zhuang, 'liuJu', null, []);
       }
 
