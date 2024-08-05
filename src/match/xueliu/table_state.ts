@@ -2405,7 +2405,7 @@ class TableState implements Serializable {
     })
     player.on('waitForDoSomeThing', msg => {
       player.deposit(async () => {
-        if (!player.zhuang) {
+        if (player.isRobot) {
           return ;
         }
 

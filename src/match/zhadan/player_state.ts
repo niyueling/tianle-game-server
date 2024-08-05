@@ -1,4 +1,5 @@
 import * as EventEmitter from 'events'
+// @ts-ignore
 import {pick} from 'lodash'
 import {DummyRecorder, IGameRecorder} from '../GameRecorder'
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serializeHelp} from "../serializeDecorator"

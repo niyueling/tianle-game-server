@@ -3823,8 +3823,8 @@ class TableState implements Serializable {
 
     player.on('waitForDa', async msg => {
       player.deposit(async () => {
-        if (!player.zhuang) {
-          return;
+        if (player.isRobot) {
+          return ;
         }
         if (this.room.robotManager.model.step === RobotStep.waitRuby) {
           return;
@@ -3903,8 +3903,8 @@ class TableState implements Serializable {
     })
     player.on('waitForDoSomeThing', msg => {
       player.deposit(async () => {
-        if (!player.zhuang) {
-          return;
+        if (player.isRobot) {
+          return ;
         }
         if (this.room.robotManager.model.step === RobotStep.waitRuby) {
           return ;
