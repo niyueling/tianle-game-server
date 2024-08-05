@@ -279,8 +279,7 @@ class TableState implements Serializable {
     this.rule = rule;
     const players = room.players.map(playerSocket => new PlayerState(playerSocket, room, rule));
     let random_number = Math.floor(Math.random() * 4) + 1;
-    console.warn("juIndex-%s", this.room.game.juIndex);
-    this.zhuangIndex = random_number - 1;
+    this.zhuangIndex = 0;
     players[this.zhuangIndex].zhuang = true;
     players[this.zhuangIndex].zhuangCount++;
 
