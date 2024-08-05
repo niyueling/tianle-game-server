@@ -3587,6 +3587,7 @@ class TableState implements Serializable {
       let params = {
         index: this.atIndex(p),
         _id: p.model._id.toString(),
+        isRobot: p.isRobot,
         shortId: p.model.shortId,
         gold: p.balance,
         currentGold: model.gold,
@@ -3594,7 +3595,7 @@ class TableState implements Serializable {
         huType: this.cardTypes
       };
       if (model.gold <= 0) {
-        if (params.index === 0) {
+        if (!params.isRobot) {
           if (!p.isBroke) {
             waits.push(params);
           } else {
@@ -3965,13 +3966,14 @@ class TableState implements Serializable {
       const model = await service.playerService.getPlayerModel(p.model._id.toString());
       let params = {
         index: this.atIndex(p),
+        isRobot: p.isRobot,
         _id: p.model._id.toString(),
         gold: p.balance,
         currentGold: model.gold,
         isBroke: p.isBroke
       };
       if (model.gold <= 0) {
-        if (params.index === 0) {
+        if (!params.isRobot) {
           if (!p.isBroke) {
             if (isWait) {
               waits.push(params);
