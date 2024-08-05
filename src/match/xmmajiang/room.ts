@@ -238,7 +238,7 @@ class Room extends RoomBase {
       room.gameState = new TableState(room, room.rule, room.game.juShu)
       room.gameState.resume(json)
     }
-    console.warn(room.roomState);
+
     if (room.roomState === 'dissolve') {
       const delayTime = room.dissolveTime + 180 * 1000 - Date.now();
       room.dissolveTimeout = setTimeout(() => {
@@ -733,7 +733,7 @@ class Room extends RoomBase {
     // @ts-ignore
     await this.redisClient.hdelAsync("canJoinRooms", this._id);
     const canJoinRooms = await this.redisClient.hgetallAsync("canJoinRooms");
-    console.warn("forceDissolve room %s canJoinRooms %s", this._id, JSON.stringify(canJoinRooms));
+    // console.warn("forceDissolve room %s canJoinRooms %s", this._id, JSON.stringify(canJoinRooms));
 
     clearTimeout(this.dissolveTimeout)
     this.roomState = ''
