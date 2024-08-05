@@ -1,13 +1,14 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {ConsumeLogType, GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, GameType, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
 import {pick, values} from 'lodash'
 import * as mongoose from 'mongoose'
 import * as logger from 'winston'
+import Club from '../../database/models/club'
 import ConsumeRecord from '../../database/models/consumeRecord'
 import DiamondRecord from "../../database/models/diamondRecord";
 import DissolveRecord from '../../database/models/dissolveRecord'
@@ -24,15 +25,10 @@ import Game from './game'
 import {eqlModelId} from "./modelId"
 import {RobotManager} from "./robotManager";
 import TableState from "./table_state"
-import roomScoreRecord from "../../database/models/roomScoreRecord";
-import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
-import PlayerMedal from "../../database/models/PlayerMedal";
-import {service} from "../../service/importService";
-import Player from "../../database/models/player";
 
 const ObjectId = mongoose.Types.ObjectId
 
-const gameType: GameTypes = "xueliu"
+const gameType: GameTypes = "pcmj"
 
 class Room extends RoomBase {
   dissolveTimeout: NodeJS.Timer;
@@ -104,6 +100,7 @@ class Room extends RoomBase {
   lunZhuangCount: number
 
   @autoSerialize
+    // tslint:disable-next-line:variable-name
   _id: string
 
   @autoSerialize
@@ -125,7 +122,7 @@ class Room extends RoomBase {
   clubOwner: any
 
   @autoSerialize
-  dissolveReqInfo: Array<{ name: string, _id: string, type: string }> = []
+  dissolveReqInfo: Array<{ name: string, _id: string, avatar: string, type: string }> = []
 
   @serialize
   waitNextGamePlayers: any[] = []
@@ -146,6 +143,9 @@ class Room extends RoomBase {
 
   robotManager: RobotManager
 
+  // 用户是否加入房间
+  joinRoomPlayers: any[] = [];
+
   constructor(rule: any) {
     super()
     this.game = new Game(rule)
@@ -153,11 +153,13 @@ class Room extends RoomBase {
     this.capacity = rule.playerCount || 4
     this.players = new Array(this.capacity).fill(null)
     this.playersOrder = new Array(this.capacity).fill(null)
+    this.joinRoomPlayers = [];
     this.snapshot = []
     this.isPublic = rule.isPublic
-    this.disconnectCallback = async messageBoyd => {
+    this.disconnectCallback = messageBoyd => {
+
       const disconnectPlayer = this.getPlayerById(messageBoyd.from)
-      await this.playerDisconnect(disconnectPlayer)
+      this.playerDisconnect(disconnectPlayer)
     }
 
     this.readyPlayers = []
@@ -166,6 +168,8 @@ class Room extends RoomBase {
     this.disconnected = []
     this.counterMap = {}
     this.charged = false
+
+    // this.charge = rule.share ? this.chargeAllPlayers.bind(this) : this.chargeCreator.bind(this)
 
     this.glodPerFan = rule.difen || 1
     this.initBase = this.currentBase = rule.base || 1
@@ -211,6 +215,8 @@ class Room extends RoomBase {
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
     const room = new Room(json.gameRule)
+    // Object.assign(room.game.rule.ro, json.game.rule.ro)
+    //
     const gameAutoKeys = autoSerializePropertyKeys(room.game)
     Object.assign(room.game, pick(json.game, gameAutoKeys))
 
@@ -254,7 +260,7 @@ class Room extends RoomBase {
     player.on('disconnect', this.disconnectCallback)
     player.on('game/disableRobot', async () => {
       if (this.robotManager) {
-        this.robotManager.disableRobot(player.model._id.toString());
+        this.robotManager.disableRobot(player._id);
       }
     })
   }
@@ -283,7 +289,7 @@ class Room extends RoomBase {
   }
 
   getPlayerById(id: string) {
-    return this.players.find(p => p && p.model._id.toString() === id)
+    return this.players.find(p => p && p._id === id)
   }
 
   privateRoomFee(rule): number {
@@ -298,8 +304,8 @@ class Room extends RoomBase {
   }
 
   initScore(player) {
-    if (this.scoreMap[player.model._id.toString()] === undefined) {
-      this.scoreMap[player.model._id.toString()] = this.game.rule.initScore
+    if (this.scoreMap[player._id] === undefined) {
+      this.scoreMap[player._id] = this.game.rule.initScore
     }
   }
 
@@ -315,6 +321,7 @@ class Room extends RoomBase {
 
   canJoin(player) {
     if (!player) {
+      console.warn("player is not exists");
       return false
     }
 
@@ -322,7 +329,7 @@ class Room extends RoomBase {
       return true
     }
 
-    return this.players.filter(x => x != null).length + this.disconnected.length < this.capacity
+    return true;
   }
 
   mergeOrder() {
@@ -335,7 +342,6 @@ class Room extends RoomBase {
 
   arrangePos(player, reconnect?) {
     if (reconnect) {
-
       const indexForPlayer = this.indexOf(player)
 
       if (indexForPlayer < 0) {
@@ -355,7 +361,7 @@ class Room extends RoomBase {
 
   removePlayer(player) {
     for (let i = 0; i < this.players.length; i++) {
-      if (this.players[i] && player && this.players[i]._id.toString() === player._id.toString()) {
+      if (this.players[i] === player) {
         this.players[i] = null
         break
       }
@@ -372,16 +378,23 @@ class Room extends RoomBase {
   }
 
   getScore(player) {
-    return this.scoreMap[player.model._id.toString()]
+    return this.scoreMap[player._id.toString()]
   }
 
   async recordGameRecord(table, states) {
     const {players} = table
+    const club = this.clubId && await Club.findOne({_id: this.clubId})
 
     for (let index = 0; index < states.length; index++) {
       const state = states[index]
-      const id = state.model._id.toString()
+      const id = state.model._id
       const score = state.score
+      if (club && this.gameRule.useClubGold) {
+        state.model.clubGold += score;
+        if (state) {
+          await this.adjustPlayerClubGold(club, score, state.model._id, "游戏输赢，房间号：" + this._id)
+        }
+      }
 
       if (this.playerGainRecord[id]) {
         this.playerGainRecord[id] += score
@@ -409,7 +422,7 @@ class Room extends RoomBase {
       juShu: this.game.juIndex,
       players: players.map(p => p.model._id),
       playersInfo: players.map(player => (
-        {model: pick(player.model, ['name', 'headImgUrl', 'sex', 'gold', 'shortId'])}
+        {model: pick(player.model, ['nickname', 'avatar', 'diamond', 'gold', 'shortId', 'tlGold', 'sex'])}
       )),
       record: playerArray,
       game: {
@@ -419,7 +432,7 @@ class Room extends RoomBase {
       roomId: this._id,
       winner,
       states,
-      type: 'xueliu',
+      type: 'pcmj',
       events: table.recorder.getEvents()
     })
   }
@@ -430,63 +443,74 @@ class Room extends RoomBase {
 
       const positions = this.players.map(p => p && p.model)
 
-      this.broadcast('room/playersPosition', {positions});
+      this.broadcast('room/playersPosition', {ok: true, data: {positions}});
     }
   }
 
-  async recordRoomScore(roomState = 'normal', scores = [], players = []): Promise<any> {
+  async recordRoomScore(roomState = 'normal'): Promise<any> {
+    const players = Object.keys(this.playerGainRecord)
+
+    // const scores = this.playersOrder.map(player => ({
+    //
+    // }))
+    const scores = [];
+    this.playersOrder.forEach(player => {
+      if (player) {
+        scores.push({
+          score: this.playerGainRecord[player.model._id] || 0,
+          name: player.model.nickname,
+          headImgUrl: player.model.avatar,
+          shortId: player.model.shortId
+        })
+      }
+    })
+
+    // if (!this.charged) {
+    //   roomState = 'zero_ju'
+    // }
+    const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
+    if (this.isPayClubGold(roomState)) {
+      await this.updatePlayerClubGold();
+    }
 
     const roomRecord = {
       players, scores,
       roomNum: this._id, room: this.uid,
-      category: 'xueliu',
+      category: 'pcmj',
       club: null,
       creatorId: this.creator.model.shortId || 0,
       createAt: Date.now(),
-      roomState: roomState,
+      roomState: stateInfo,
       juIndex: this.game.juIndex,
       rule: this.rule.getOriginData()
     }
 
+    if (this.clubId) {
+      roomRecord.club = this.clubId;
+    }
 
-    await RoomRecord.update({room: this.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})
+    logger.info('roomState:', roomState);
+
+    RoomRecord
+      .update({room: this.uid}, roomRecord, {upsert: true, setDefaultsOnInsert: true})
       .catch(e => {
-        console.error('recordRoomScore error', e)
+        logger.error('recordRoomScore error', e)
       })
 
     return roomRecord
   }
 
-    async RoomScoreRecord(scores = [], players = []): Promise<any> {
-
-        const roomRecord = {
-            players, scores,
-            roomNum: this._id,
-            room: this.uid,
-            category: 'xueliu',
-            creatorId: this.creator.model.shortId,
-            createAt: Date.now(),
-            rule: this.rule.getOriginData(),
-            roomState: "dissolve"
-        }
-
-
-        await roomScoreRecord.create(roomRecord);
-
-        return roomRecord
-    }
-
-  async recordDrawGameScore(scores = []) {
+  async recordDrawGameScore() {
     // logger.info('gameState:', this.gameState);
     if (this.gameState) {
       await this.gameState.drawGame()
     }
 
-    await this.recordRoomScore('dissolve', scores)
+    await this.recordRoomScore('dissolve')
     DissolveRecord.create({
         roomNum: this._id,
         juIndex: this.game.juIndex,
-        category: 'xueliu',
+        category: 'pcmj',
         dissolveReqInfo: this.dissolveReqInfo,
       },
       err => {
@@ -496,18 +520,26 @@ class Room extends RoomBase {
       }
     )
     // 更新大赢家
-    // await this.updateBigWinner();
+    await this.updateBigWinner();
   }
 
-  async shuffleDataApply(payload) {
-    if (this.allReady && !this.gameState) {
-      return await this.startGame(payload);
-    }
-  }
+  async addScore(playerId: string, gains: number) {
+    const p = PlayerManager.getInstance().getPlayer(playerId)
+    this.scoreMap[playerId] += gains
 
-  async addScore(playerId: string, gains: number, cardTypes) {
-    this.scoreMap[playerId] += gains;
-    await PlayerModel.update({_id: playerId}, {$inc: {gold: gains}});
+    // if (gains > 0) {
+    //   if (p) {
+    //     p.addGold(gains)
+    //   } else {
+    //     PlayerModel.update({_id: playerId}, {$inc: {gold: gains}}, err => {
+    //       if (err) {
+    //         logger.error(err)
+    //       } else {
+    //         return;
+    //       }
+    //     })
+    //   }
+    // }
   }
 
   removeDisconnected(item) {
@@ -519,11 +551,11 @@ class Room extends RoomBase {
   }
 
   async reconnect(reconnectPlayer) {
-    // console.warn("room reconnect")
-    const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer.model._id.toString()))
+    const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer._id))
     reconnectPlayer.room = this
     this.arrangePos(reconnectPlayer, true)
     this.mergeOrder()
+    this.listen(reconnectPlayer);
     if (disconnectedItem) {
       this.removeDisconnected(disconnectedItem)
     }
@@ -537,61 +569,42 @@ class Room extends RoomBase {
         await this.announcePlayerJoin(reconnectPlayer);
       }
     }
-    // Fixme the index may be wrong
-    const i = this.snapshot.findIndex(p => p.model._id.toString() === reconnectPlayer.model._id.toString())
-    await this.broadcastRejoin(reconnectPlayer)
-    if (this.dissolveTimeout) {
-      this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
+
+    const i = this.snapshot.findIndex(p => p._id.toString() === reconnectPlayer._id.toString())
+    await this.broadcastRejoin(reconnectPlayer);
+
+    const reconnectFunc = async () => {
+      this.emit('reconnect', reconnectPlayer, i);
+      if (this.dissolveTimeout) {
+        this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
+      }
     }
 
-    this.emit('reconnect', reconnectPlayer, i);
+    setTimeout(reconnectFunc, 500);
 
-    return true;
+    return true
   }
 
   async broadcastRejoin(reconnectPlayer) {
-    this.broadcast('room/rejoin', {ok: true, data: await this.joinMessageFor(reconnectPlayer)})
-
-    this.listen(reconnectPlayer);
+    const joinInfo = await this.joinMessageFor(reconnectPlayer);
+    this.broadcast('room/rejoin', {ok: true, data: joinInfo})
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
-    let medalId = null;
-    let headerBorderId = null;
-    // 获取用户称号
-    const playerMedal = await PlayerMedal.findOne({playerId: newJoinPlayer._id, isUse: true});
-    if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
-      medalId = playerMedal.propId;
-    }
-
-    // 获取用户头像框
-    const playerHeadBorder = await PlayerHeadBorder.findOne({playerId: newJoinPlayer._id, isUse: true});
-    if (playerHeadBorder && (playerHeadBorder.times === -1 || playerHeadBorder.times > new Date().getTime())) {
-      headerBorderId = playerHeadBorder.propId;
-    }
-
-    const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
-    const index = this.players.findIndex(p => !p.isRobot());
-
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
-      model: newModel,
-      medalId,
-      headerBorderId,
-      startIndex: index,
-      isGameRunning: !!this.gameState,
-      isZhuang: newJoinPlayer.zhuang,
+      model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
       owner: this.ownerId,
-      zhuangJia: newJoinPlayer.zhuang,
       score: this.getScore(newJoinPlayer),
+      isGameRunning: !!this.gameState,
       base: this.currentBase,
       zhuangCounter: this.zhuangCounter,
       juIndex: this.game.juIndex,
       readyPlayers: this.readyPlayers.map(playerId => {
-        const readyPlayer = this.inRoomPlayers.find(p => p.model._id.toString() === playerId)
+        const readyPlayer = this.inRoomPlayers.find(p => p._id.toString() === playerId)
         return this.players.indexOf(readyPlayer)
       }),
       disconnectedPlayers: this.disconnected.map(item => this.indexOf({_id: item[0]})),
@@ -600,33 +613,42 @@ class Room extends RoomBase {
   }
 
   async announcePlayerJoin(newJoinPlayer) {
-    this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
+    this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)});
+    this.joinRoomPlayers.push(newJoinPlayer._id.toString());
+    console.warn("joinRoomPlayers-%s", JSON.stringify(this.joinRoomPlayers));
+
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
+      .filter(x => x !== null && x.model._id.toString() !== newJoinPlayer.model._id.toString() && this.joinRoomPlayers.includes(x._id.toString()))) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
 
   indexOf(player) {
-    return this.playersOrder.findIndex(playerOrder => playerOrder && player && playerOrder.model._id.toString() === player.model._id.toString())
+    return this.playersOrder.findIndex(playerOrder => playerOrder && playerOrder._id.toString() === player._id.toString())
+  }
+
+  async shuffleDataApply(payload) {
+    if (this.allReady && !this.gameState) {
+      return await this.startGame(payload);
+    }
   }
 
   async join(newJoinPlayer) {
     const isReconnect = this.indexOf(newJoinPlayer) >= 0
-    if (isReconnect || this.disconnected.find(x => x[0] === newJoinPlayer._id.toString())) {
+    if (isReconnect || this.disconnected.find(x => x[0].toString() === newJoinPlayer._id.toString())) {
       return this.reconnect(newJoinPlayer)
     }
 
     if (!this.canJoin(newJoinPlayer)) {
       return false
     }
-
     this.listen(newJoinPlayer);
     newJoinPlayer.room = this
     this.arrangePos(newJoinPlayer, false)
+
     this.mergeOrder()
 
     this.initScore(newJoinPlayer)
@@ -654,28 +676,18 @@ class Room extends RoomBase {
   }
 
   async nextGame(thePlayer) {
-    if (this.game.juShu <= 0 && !this.isPublic) {
-      // console.warn("room error start")
+    if (this.game.juShu <= 0) {
       thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
-      return
+      return false;
     }
 
     if (this.indexOf(thePlayer) < 0) {
       thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
-      return false
+      return false;
     }
 
-    thePlayer.sendMessage("room/nextGameReply", {ok: true, data: {}})
-
-    await this.announcePlayerJoin(thePlayer)
-
-    const joinFunc = async() => {
-      this.robotManager.model.step = RobotStep.start;
-    }
-
-    setTimeout(joinFunc, 1000);
-
-    return true
+    await this.announcePlayerJoin(thePlayer);
+    return true;
   }
 
   async dissolve(roomCreator) {
@@ -718,38 +730,27 @@ class Room extends RoomBase {
     this.roomState = ''
     this.dissolveTimeout = null
 
-    for (let i = 0; i < this.players.length; i++) {
-      if (this.players[i]) {
-        const model = await Player.findOne({_id: this.players[i]._id});
-        model.isGame = false;
-        this.players[i].sendMessage('room/dissolve', {ok: true, data: allOverMessage})
-        this.players[i].room = null
-
-        await model.save();
-      }
-    }
-
+    this.players
+      .filter(p => p)
+      .forEach(player => {
+        player.sendMessage('room/dissolve', {ok: true, data: allOverMessage})
+        player.room = null
+      })
     // await this.refundClubOwner();
     this.players.fill(null)
     this.emit('empty', this.disconnected.map(x => x[0]))
     return true
   }
 
-  async playerDisconnect(player) {
+  playerDisconnect(player) {
     const p = player
     const index = this.players.indexOf(player)
     if (index === -1) {
       return false;
     }
     p.room = null
-    const readyIndex = this.readyPlayers.indexOf(p._id);
-
-    const model = await service.playerService.getPlayerModel(p._id);
-
-    console.warn("gameState-%s readyIndex-%s gold-%s", this.gameState, readyIndex, model.gold);
-    if (!this.gameState || readyIndex === -1 || model.gold <= 0) {
-      // this.removeReadyPlayer(p.model._id.toString())
-      this.forceDissolve();
+    if (!this.gameState) {
+      this.removeReadyPlayer(p._id)
     }
 
     if (this.dissolveTimeout) {
@@ -758,12 +759,12 @@ class Room extends RoomBase {
 
     this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
     this.removePlayer(player)
-    this.disconnected.push([player.model._id.toString(), index])
-    this.emit('disconnect', p.model._id.toString())
+    this.disconnected.push([player._id, index])
+    this.emit('disconnect', p._id)
   }
 
   removeReadyPlayer(playerId: string) {
-    const index = this.readyPlayers.findIndex((p) => { p.toString() === playerId })
+    const index = this.readyPlayers.indexOf(playerId)
     if (index >= 0) {
       this.readyPlayers.splice(index, 1)
       return true
@@ -772,27 +773,29 @@ class Room extends RoomBase {
   }
 
   leave(player) {
-    // console.warn("room")
-    if (!player) {
-      // 玩家不存在
-      console.warn("玩家不存在");
-      return false;
+    if (this.gameState || !player) {
+      console.warn("player is disconnect in room %s", this._id)
+      // 游戏已开始 or 玩家不存在
+      return false
     }
     const p = player
     if (p.room !== this) {
-      console.warn("用户不在此房间");
+      console.warn("player is not in this room %s", this._id)
       return false
     }
 
     if (this.indexOf(player) < 0) {
-      console.warn("用户已经离开房间");
+      console.warn("player is already leave room %s", this._id)
       return true
     }
 
-    // if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
+    if (this.game.juIndex > 0 && !this.game.isAllOver()) {
+      console.warn("room %s is not finish", this._id)
+      return false
+    }
 
     p.removeListener('disconnect', this.disconnectCallback)
-    this.emit('leave', {_id: player._id.toString()})
+    this.emit('leave', {_id: player._id})
     this.removePlayer(player)
 
     for (let i = 0; i < this.playersOrder.length; i++) {
@@ -803,7 +806,12 @@ class Room extends RoomBase {
     }
 
     p.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id.toString(), roomId: this._id}})
+    // if (this.players.every(x => (x == null || x.isRobot()))) {
+    //   for (let i = 0; i < this.players.length; i++) {
+    //     this.players[i] = null
+    //   }
+    // }
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id, roomId: this._id}})
     this.removeReadyPlayer(p._id.toString())
     this.clearScore(player._id.toString())
 
@@ -869,7 +877,7 @@ class Room extends RoomBase {
       return
     }
     const dissolveInfo = this.getDissolvePlayerInfo(player);
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime}});
     if (this.canDissolve()) {
       this.forceDissolve()
       return
@@ -891,12 +899,12 @@ class Room extends RoomBase {
     }
 
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === player.model._id;
+      return x._id.toString() === player.model._id.toString();
     });
     if (item) {
       item.type = 'agree';
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
 
     if (this.canDissolve()) {
       this.forceDissolve()
@@ -919,7 +927,7 @@ class Room extends RoomBase {
       this.roomState = ''
       this.dissolveTimeout = null
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
     return true;
   }
 
@@ -928,25 +936,22 @@ class Room extends RoomBase {
     this.dissolveTime = Date.now();
     this.dissolveReqInfo.push({
       type: 'originator',
-      name: player.model.name,
+      name: player.model.nickname,
+      avatar: player.model.avatar,
       _id: player.model._id
     });
     for (let i = 0; i < this.players.length; i++) {
       const pp = this.players[i];
-      if (pp && pp.isRobot()) {
-        this.dissolveReqInfo.push({
-          type: 'agree',
-          name: pp.model.name,
-          _id: pp.model._id
-        });
-      } else if (pp && pp !== player) {
+      if (pp && pp._id.toString() !== player._id.toString()) {
         this.dissolveReqInfo.push({
           type: 'waitConfirm',
-          name: pp.model.name,
+          name: pp.model.nickname,
+          avatar: pp.model.avatar,
           _id: pp.model._id
         });
       }
     }
+
     return this.dissolveReqInfo;
   }
 
@@ -961,12 +966,12 @@ class Room extends RoomBase {
         item.type = 'waitConfirm';
       }
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}, player);
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}}, player);
   }
 
   updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer) {
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === reconnectPlayer.model._id.toString()
+      return x._id.toString() === reconnectPlayer._id.toString()
     })
     if (item) {
       if (item.type === 'agree_offline') {
@@ -975,13 +980,12 @@ class Room extends RoomBase {
         item.type = 'waitConfirm'
       }
     }
-    this.broadcast('room/dissolveReq',
-      {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
     const item = this.dissolveReqInfo.find(x => {
-      return x._id === player.model._id
+      return x._id.toString() === player.model._id.toString()
     })
     if (item) {
       if (item.type === 'agree') {
@@ -990,7 +994,7 @@ class Room extends RoomBase {
         item.type = 'offline'
       }
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
   changeZhuang() {
@@ -998,67 +1002,94 @@ class Room extends RoomBase {
   }
 
   isRoomAllOver(): boolean {
-    return this.game.juShu < -1;
+    return this.game.juShu <= 0
   }
 
   someoneOverLostLimit() {
     return values(this.scoreMap).some(score => score <= this.rule.lostLimit)
   }
 
-  async gameOver() {
+  // clearDisconnected() {
+  //   this.disconnected.forEach(arr => {
+  //     const disConnectedPlayer = arr[0]
+  //     lobby.getInstance().clearDisConnectedPlayer(disConnectedPlayer)
+  //   })
+  //   this.disconnected = []
+  // }
+
+  async gameOver(nextZhuangId, states) {
     // 清除洗牌
     this.shuffleData = []
+    const nextZhuang = this.players.find(x => x != null && x._id === nextZhuangId)
+    if (nextZhuang === this.players[0]) {
+      const zhuangState = states.filter(state => state.model._id === nextZhuangId)[0]
+
+      if (zhuangState.events.hu && zhuangState.events.hu.length > 0) {
+        this.zhuangCounter += 1
+        this.currentBase += 1
+      }
+    } else {
+      this.currentBase = this.initBase
+      this.zhuangCounter = 1
+      this.changeZhuang()
+    }
+    this.sortPlayer(nextZhuang)
     this.clearReady()
     await this.delPlayerBless();
+    this.readyPlayers = [];
+    this.joinRoomPlayers = [];
     // 下一局
     // await this.robotManager.nextRound();
 
-    if (this.gameState) {
-      this.gameState.dissolve()
-      this.gameState = null
-      this.readyPlayers = [];
-      this.robotManager.model.step = RobotStep.waitRuby;
-    }
+    this.gameState.dissolve()
+    this.gameState = null
 
-    if (this.isRoomAllOver()) {
+    if (this.isRoomAllOver() && !this.isPublic) {
       const message = this.allOverMessage()
-      this.broadcast('room/allOver', message)
-      this.players.forEach(x => x && this.leave(x))
+      this.broadcast('room/allOver', {ok: true, data: message});
+      this.players.forEach(x => {
+        // console.warn(x);
+        if (x) {
+          this.leave(x);
+        }
+      });
       this.emit('empty', this.disconnected)
     }
   }
 
   allOverMessage(): any {
-
-    const message = {players: {}, roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.xueliu}
+    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.pcmj}
     this.snapshot
       .filter(p => p)
       .forEach(player => {
-        message.players[player.model._id] = {
-          userName: player.model.name,
-          headImgUrl: player.model.headImgUrl
-        }
+        message.players.push({
+          _id: player._id.toString(),
+          userName: player.model.nickname,
+          avatar: player.model.avatar,
+          shortId: player.model.shortId
+        });
       })
     Object.keys(this.counterMap).forEach(x => {
       this.counterMap[x].forEach(p => {
-        if (message.players[p]) {
-          // 玩家未离开房间
-          message.players[p][x] = (message.players[p][x] || 0) + 1
+        const index = message.players.findIndex(p1 => p1._id === p);
+        if (index !== -1) {
+          message.players[index][x] = (message.players[index][x] || 0) + 1;
         }
       })
     })
     Object.keys(this.scoreMap).forEach(playerId => {
-      if (message.players[playerId]) {
-        (message.players[playerId].score = this.playerGainRecord[playerId])
+      const index = message.players.findIndex(p1 => p1._id === playerId);
+      if (index !== -1) {
+        message.players[index].score = this.playerGainRecord[playerId];
       }
     })
 
-    const creator = message.players[this.creator.model._id]
-    if (creator) {
-      creator['isCreator'] = true
+    const index = message.players.findIndex(p1 => p1._id === this.creator.model._id.toString());
+    if (index !== -1) {
+      message.players[index].isCreator = true;
     }
 
-    return message
+    return message;
   }
 
   async chargeCreator() {
@@ -1071,9 +1102,9 @@ class Room extends RoomBase {
       const payee = playerManager.getPlayer(creatorId) || this.creator
 
       payee.model.gem -= createRoomNeed
-      payee.sendMessage('resource/createRoomUsedGem', {
-        createRoomNeed,
-      })
+      payee.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
+          createRoomNeed,
+        }})
 
       PlayerModel.update({_id: creatorId},
         {
@@ -1108,9 +1139,9 @@ class Room extends RoomBase {
         const payee = playerManager.getPlayer(player.model._id) || player
 
         payee.model.gem -= share
-        payee.sendMessage('resource/createRoomUsedGem', {
-          createRoomNeed: share
-        })
+        payee.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
+            createRoomNeed: share
+          }})
         PlayerModel.update({_id: player.model._id},
           {
             $inc: {
@@ -1148,9 +1179,9 @@ class Room extends RoomBase {
         }
       })
 
-    this.clubOwner.sendMessage('resource/createRoomUsedGem', {
-      createRoomNeed: fee
-    })
+    this.clubOwner.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
+        createRoomNeed: fee
+      }})
   }
 
   sortPlayer(zhuang) {
@@ -1174,4 +1205,5 @@ class Room extends RoomBase {
     this.robotManager = new RobotManager(this, this.gameRule.depositCount);
   }
 }
+
 export default Room
