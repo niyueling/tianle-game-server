@@ -4777,11 +4777,11 @@ class TableState implements Serializable {
     const scoreRecords = [];
 
     for (let i = 0; i < records.length; i++) {
-      if (states.length > 0 && states[0].score >= 0 && states[0].model._id === records[i].winnerId) {
+      if (states.length > 0 && states[0].score >= 0 && states[0].model._id.toString() === records[i].winnerId.toString()) {
         scoreRecords.push(records[i]);
       }
 
-      if (states.length > 0 && states[0].score < 0 && records[i].failList.includes(states[0].model._id)) {
+      if (states.length > 0 && states[0].score < 0 && records[i].failList.includes(states[0].model._id.toString())) {
         scoreRecords.push(records[i]);
       }
     }
@@ -4801,6 +4801,42 @@ class TableState implements Serializable {
     }
 
     // 计算胜率
+    await this.calcJuRank();
+
+    if (states.length > 0) {
+      await this.room.recordGameRecord(this, states);
+      await this.room.recordRoomScore('dissolve', scores, players);
+      await this.room.RoomScoreRecord(scores, players);
+
+      const nextDo1 = async () => {
+        // 退税，对局结束，未听牌的玩家需返还杠牌所得
+        const flag = await this.refundShui();
+        setTimeout(nextDo2, flag ? 2000 : 0);
+      }
+
+      setTimeout(nextDo1, 1000);
+
+      // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
+      const nextDo2 = async () => {
+        const flag = await this.searchFlowerPig();
+        setTimeout(nextDo3, flag ? 2000 : 0);
+      }
+
+      // 未听牌：对局结束时，未听牌玩家赔给听牌的玩家最大叫点数的金豆
+      const nextDo3 = async () => {
+        const flag = await this.NoTingCard();
+
+        setTimeout(nextDo4, flag ? 2000 : 0);
+      }
+
+      const nextDo4 = async () => {
+        await this.room.gameOver()
+        this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
+      }
+    }
+  }
+
+  async calcJuRank() {
     for (let i = 0; i < this.players.length; i++) {
       const model = await Player.findOne({_id: this.players[i]._id});
       model.isGame = false;
@@ -4834,38 +4870,6 @@ class TableState implements Serializable {
       }
 
       await model.save();
-    }
-
-    if (states.length > 0) {
-      await this.room.recordGameRecord(this, states);
-      await this.room.recordRoomScore('dissolve', scores, players);
-      await this.room.RoomScoreRecord(scores, players);
-
-      const nextDo1 = async () => {
-        // 退税，对局结束，未听牌的玩家需返还杠牌所得
-        const flag = await this.refundShui();
-        setTimeout(nextDo2, flag ? 2000 : 0);
-      }
-
-      setTimeout(nextDo1, 1000);
-
-      // 查花猪手上拿着3门牌的玩家为花猪，花猪赔给非花猪玩家封顶点数
-      const nextDo2 = async () => {
-        const flag = await this.searchFlowerPig();
-        setTimeout(nextDo3, flag ? 2000 : 0);
-      }
-
-      // 未听牌：对局结束时，未听牌玩家赔给听牌的玩家最大叫点数的金豆
-      const nextDo3 = async () => {
-        const flag = await this.NoTingCard();
-
-        setTimeout(nextDo4, flag ? 2000 : 0);
-      }
-
-      const nextDo4 = async () => {
-        await this.room.gameOver()
-        this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
-      }
     }
   }
 
