@@ -386,8 +386,6 @@ class Room extends RoomBase {
 
     // @ts-ignore
     await this.redisClient.hdelAsync("canJoinRooms", this._id);
-    const canJoinRooms = await this.redisClient.hgetallAsync("canJoinRooms");
-    console.warn("start game %s canJoinRooms %s", this._id, JSON.stringify(canJoinRooms));
 
     const startGame = async() => {
       this.broadcast('room/startGame', {ok: true, data: {
