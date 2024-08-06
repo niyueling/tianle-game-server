@@ -2382,6 +2382,7 @@ class TableState implements Serializable {
           if (msg) {
             const takenCard = msg.card;
             const todo = player.ai.onWaitForDa(msg, player.cards);
+            console.warn("todo-%s, msg-%s", todo, JSON.stringify(msg));
 
             if (todo === Enums.gang && !player.isGameHu) {
               const gangCard = msg.gang[0][0];
@@ -2397,6 +2398,8 @@ class TableState implements Serializable {
               const card = this.promptWithPattern(player, this.lastTakeCard);
               player.emitter.emit(Enums.da, this.turn, card);
             }
+          } else {
+            console.warn("no msg waitForDa");
           }
         }
 
