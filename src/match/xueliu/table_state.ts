@@ -4035,20 +4035,20 @@ class TableState implements Serializable {
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
 
-    if (this.remainCards <= 0 && isWait) {
-      return await this.gameAllOver(states, [], nextZhuang);
-    }
-
-    if ((this.isGameOver || brokePlayers.length >= 3) && isWait) {
-      await this.gameAllOver(states, [], nextZhuang);
-    }
-
     const waitRecharge = async () => {
       console.warn("waits-%s, isGameOver-%s, step-%s", JSON.stringify(waits), this.isGameOver, this.room.robotManager.model.step);
       if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
         this.room.robotManager.model.step = RobotStep.waitRuby;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
       }
+    }
+
+    if (this.remainCards <= 0 && isWait) {
+      return await this.gameAllOver(states, [], nextZhuang);
+    }
+
+    if ((this.isGameOver || brokePlayers.length >= 3) && isWait) {
+      await this.gameAllOver(states, [], nextZhuang);
     }
 
     return true;
@@ -4597,6 +4597,13 @@ class TableState implements Serializable {
   async playerGameOver(p, niaos, states) {
     p.gameOver();
     this.room.removeReadyPlayer(p._id.toString());
+
+    if (!p.isRobot) {
+      this.alreadyRechargeCount++;
+      if (this.alreadyRechargeCount >= this.waitRechargeCount) {
+        this.room.robotManager.model.step = RobotStep.running;
+      }
+    }
 
     // 记录破产人数
     if (!this.brokeList.includes(p._id.toString())) {

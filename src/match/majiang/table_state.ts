@@ -4018,7 +4018,7 @@ class TableState implements Serializable {
       setTimeout(huTakeCard, 1000);
     }
 
-    await this.playerGameOver(player, [], player.genGameStatus(this.atIndex(player), 1));
+    await this.playerGameOver(player, [], player.genGameStatus(player.seatIndex, 1));
   }
 
   arraysAreEqual(arr1, arr2) {
@@ -5780,8 +5780,11 @@ class TableState implements Serializable {
     p.gameOver();
     this.room.removeReadyPlayer(p._id.toString());
 
-    if (p.zhuang) {
-      this.room.robotManager.model.step = RobotStep.running;
+    if (!p.isRobot) {
+      this.alreadyRechargeCount++;
+      if (this.alreadyRechargeCount >= this.waitRechargeCount) {
+        this.room.robotManager.model.step = RobotStep.running;
+      }
     }
 
     if (!this.brokeList.includes(p._id.toString())) {
