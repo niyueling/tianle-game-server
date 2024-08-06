@@ -3085,6 +3085,9 @@ class TableState implements Serializable {
                 player.emitter.emit(Enums.da, this.turn, card);
               }
             }
+          } else {
+            const card = this.promptWithPattern(player, null);
+            player.emitter.emit(Enums.da, this.turn, card);
           }
         }
 
@@ -6494,15 +6497,15 @@ class TableState implements Serializable {
   promptWithPattern(player: PlayerState, lastTakeCard) {
     // 获取摸牌前的卡牌
     const cards = player.cards.slice();
-    if (cards[lastTakeCard] > 0) cards[lastTakeCard]--;
+    if (lastTakeCard && cards[lastTakeCard] > 0) cards[lastTakeCard]--;
     // 如果用户听牌，则直接打摸牌
     const ting = player.isRobotTing(cards);
     if (ting.hu) {
-      if (player.cards[lastTakeCard] > 0 && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(lastTakeCard)) return lastTakeCard;
+      if (lastTakeCard && player.cards[lastTakeCard] > 0 && ![Enums.zeus, Enums.poseidon, Enums.athena].includes(lastTakeCard)) return lastTakeCard;
     }
 
     // 如果用户已经胡牌，则直接打摸牌
-    if (player.isGameHu && player.cards[lastTakeCard] > 0) {
+    if (lastTakeCard && player.isGameHu && player.cards[lastTakeCard] > 0) {
       return lastTakeCard;
     }
 
