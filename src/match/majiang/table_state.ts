@@ -3248,12 +3248,17 @@ class TableState implements Serializable {
       if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.peng);
-        // console.warn("player index-%s choice peng card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.peng);
-
         player.sendMessage("game/chooseMultiple", {
           ok: true,
           data: {action: Enums.peng, card, index: this.atIndex(player)}
         })
+
+        if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+          this.isRunMultiple = true;
+          player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+          // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
+        }
+
         return;
       }
 
@@ -3354,11 +3359,17 @@ class TableState implements Serializable {
       if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.gang);
-
         player.sendMessage("game/chooseMultiple", {
           ok: true,
           data: {action: Enums.gang, card, index: this.atIndex(player)}
         })
+
+        if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+          this.isRunMultiple = true;
+          player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+          // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
+        }
+
         return;
       }
 
@@ -3588,6 +3599,11 @@ class TableState implements Serializable {
             ok: true,
             data: {action: Enums.hu, card, index: this.atIndex(player)}
           })
+
+          if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+            this.isRunMultiple = true;
+            player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+          }
 
           return;
         }
@@ -6335,12 +6351,17 @@ class TableState implements Serializable {
     if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
       this.manyHuPlayers.push(player._id.toString());
       this.setManyAction(player, Enums.guo);
-      // console.warn("player index-%s choice guo card-%s manyHuArray-%s action-%s", this.atIndex(player), playCard, JSON.stringify(this.manyHuArray), Enums.guo);
-
       player.sendMessage("game/chooseMultiple", {
         ok: true,
         data: {action: Enums.guo, card: playCard, index: this.atIndex(player)}
       })
+
+      if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+        this.isRunMultiple = true;
+        player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+        // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
+      }
+
       return;
     }
 
