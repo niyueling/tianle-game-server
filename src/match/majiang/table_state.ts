@@ -3127,10 +3127,8 @@ class TableState implements Serializable {
           if (todo === Enums.peng && !player.isGameHu && !this.isAllHu) {
             player.emitter.emit(Enums.peng, this.turn, card);
           } else if (todo === Enums.gang && !player.isGameHu && !this.isAllHu) {
-            // console.warn("gang index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             player.emitter.emit(Enums.gangByOtherDa, this.turn, card);
           } else if (todo === Enums.hu) {
-            // console.warn("hu index-%s card-%s todo-%s", this.atIndex(player), msg.data.card, todo);
             const simpleCount = this.checkPlayerSimpleCrdCount(player);
 
             if ((simpleCount > 1 || specialCardCount === 0) && !player.isGameHu) {
@@ -6387,12 +6385,9 @@ class TableState implements Serializable {
       if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
         this.isRunMultiple = true;
         player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
-        // console.warn("manyHuArray-%s manyHuPlayers-%s canManyHuPlayers-%s card-%s can many hu", JSON.stringify(this.manyHuArray), JSON.stringify(this.manyHuPlayers), JSON.stringify(this.canManyHuPlayers), this.stateData.card);
       }
     }
 
-    const index = this.players.indexOf(player);
-    // const from = this.atIndex(this.lastDa)
     if (this.turn !== playTurn) {
       player.sendMessage('game/guoReply', {ok: false, info: TianleErrorCode.notChoiceAction});
     } else if (this.state !== stateWaitAction && this.state !== stateQiangGang) {
