@@ -591,8 +591,10 @@ class Room extends RoomBase {
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
+    const index = this.players.findIndex(p => p && !p.isRobot());
     return {
       _id: this._id,
+      startIndex: index,
       index: this.indexOf(newJoinPlayer),
       model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),

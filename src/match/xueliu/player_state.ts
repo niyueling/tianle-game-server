@@ -1531,7 +1531,7 @@ class PlayerState implements Serializable {
   deposit(callback) {
     let minutes = 15 * 1000;
 
-    if (!this.msgDispatcher || !this.zhuang) {
+    if (!this.msgDispatcher || this.isRobot) {
       this.cancelTimeout()
       return ;
     }

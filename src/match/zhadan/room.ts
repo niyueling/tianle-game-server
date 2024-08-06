@@ -475,7 +475,7 @@ class Room extends RoomBase {
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
-    const index = this.players.findIndex(p => !p.isRobot());
+    const index = this.players.findIndex(p => p && !p.isRobot());
     return {
       index: this.indexOf(newJoinPlayer),
       model: await service.playerService.getPlayerPlainModel(newJoinPlayer.model._id),
