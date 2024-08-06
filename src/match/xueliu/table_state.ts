@@ -2600,11 +2600,12 @@ class TableState implements Serializable {
         const ok = player.pengPai(card, this.lastDa);
         if (ok) {
           player.lastOperateType = 2;
+
           const hangUpList = this.stateData.hangUp;
-          // 设置所有用户地胡状态为false
-          this.players.map((p) => p.isDiHu = false)
           this.turn++;
           this.state = stateWaitDa;
+          // 设置所有用户地胡状态为false
+          this.players.map((p) => p.isDiHu = false);
           const nextStateData = {da: player};
           const gangSelection = player.getAvailableGangs();
           this.stateData = nextStateData;
