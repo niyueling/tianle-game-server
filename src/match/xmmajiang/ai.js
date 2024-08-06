@@ -96,6 +96,7 @@ export const playerAi = {
     if (actions.gang) {
       return Enums.gang;
     }
+
     return Enums.guo;
   },
 

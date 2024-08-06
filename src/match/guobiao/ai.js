@@ -56,23 +56,7 @@ function onCanDoSomething(actions, cards, card) {
   }
 
   if (actions.peng) {
-    let dui = 0;
-    for (let i = 0; i < cards.length; i++) {
-      if (cards[i] > 1) {
-        dui++;
-      }
-    }
-    if (dui > 2) {
-      return Enums.peng;
-    } else if (dui === 2) {
-      if (Math.random() < 0.5) {
-        return Enums.peng;
-      }
-    } else if (dui === 1) {
-      if (Math.random() < 0.25) {
-        return Enums.peng;
-      }
-    }
+    return Enums.peng;
   }
 
   return Enums.guo;
@@ -88,6 +72,10 @@ export default {
 
     if (actions.gang) {
       return Enums.gang;
+    }
+
+    if (actions.peng) {
+      return Enums.peng;
     }
 
     return Enums.guo;
@@ -110,6 +98,11 @@ export const playerAi = {
     if (actions.gang) {
       return Enums.gang;
     }
+
+    if (actions.peng) {
+      return Enums.peng;
+    }
+
     return Enums.guo;
   },
 
