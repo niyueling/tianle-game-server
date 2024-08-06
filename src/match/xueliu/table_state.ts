@@ -2419,6 +2419,12 @@ class TableState implements Serializable {
           // console.warn("player index-%s deposit choice card-%s", this.atIndex(player), card);
 
           player.sendMessage("game/chooseMultiple", {ok: true, data: {action: todo, card, index: this.atIndex(player)}});
+
+          if (this.manyHuPlayers.length >= this.manyHuArray.length && !this.isRunMultiple) {
+            this.isRunMultiple = true;
+            player.emitter.emit(Enums.multipleHu, this.turn, this.stateData.card);
+          }
+
           return ;
         }
 
