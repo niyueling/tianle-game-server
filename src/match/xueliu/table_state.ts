@@ -2382,7 +2382,6 @@ class TableState implements Serializable {
           if (msg) {
             const takenCard = msg.card;
             const todo = player.ai.onWaitForDa(msg, player.cards);
-            console.warn("todo-%s, msg-%s", todo, JSON.stringify(msg));
 
             if (todo === Enums.gang && !player.isGameHu) {
               const gangCard = msg.gang[0][0];
@@ -4045,6 +4044,7 @@ class TableState implements Serializable {
     }
 
     const waitRecharge = async () => {
+      console.warn("waits-%s, isGameOver-%s, step-%s", JSON.stringify(waits), this.isGameOver, this.room.robotManager.model.step);
       if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
         this.room.robotManager.model.step = RobotStep.waitRuby;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
