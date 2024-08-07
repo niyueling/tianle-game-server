@@ -761,8 +761,8 @@ class Room extends RoomBase {
     }
 
     this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
-    this.removePlayer(player)
-    this.disconnected.push([player.model._id.toString(), index])
+    // this.removePlayer(player)
+    // this.disconnected.push([player.model._id.toString(), index])
     this.emit('disconnect', p.model._id.toString())
   }
 
