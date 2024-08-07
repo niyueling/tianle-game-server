@@ -391,7 +391,7 @@ export class NewRobotManager {
 
           // 在线用户超过10秒没有点击继续就踢出局
           if (this.waitKickOutTime >= config.game.waitKickOutTime) {
-            this.room.broadcast("game/kickOutPlayer", {ok: true, data: {index}})
+            this.room.broadcast("game/kickOutPlayer", {ok: true, data: {index: this.room.players.findIndex(p => p._id.toString() === proxy.model._id.toString())}})
             await this.room.leave(proxy);
           }
 
