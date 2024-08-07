@@ -2514,10 +2514,11 @@ class TableState implements Serializable {
           id: this.cardTypes.cardId,
           multiple: this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple > conf.maxMultiple ? conf.maxMultiple : this.cardTypes.multiple * conf.base * conf.Ante * player.mingMultiple
         }, false);
+      msg["seatIndex"] = this.zhuang.seatIndex;
 
       // player.emitter.emit('waitForDa', msg)
 
-      await player.sendMessage('game/getActionsReply', {ok: true, data: msg});
+      await this.room.broadcast('game/getActionsReply', {ok: true, data: msg});
     })
 
     player.on(Enums.restoreGame, async () => {
