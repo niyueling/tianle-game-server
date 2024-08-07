@@ -4754,8 +4754,11 @@ class TableState implements Serializable {
   }
 
   async gameAllOver(states, niaos, nextZhuang) {
-    this.state = stateGameOver;
+    if (this.state === stateGameOver) {
+      return ;
+    }
 
+    this.state = stateGameOver;
     this.players.forEach(x => x.gameOver())
     this.room.removeListener('reconnect', this.onReconnect)
     this.room.removeListener('empty', this.onRoomEmpty)
