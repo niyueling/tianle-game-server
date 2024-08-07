@@ -21,6 +21,7 @@ export class NewRobotManager {
   isWatching: boolean
   waitPublicRobot: number
   waitPublicRobotSecond: number
+  waitKickOutTime: number
   isPlayed: boolean
   selectModeTimes: number
   constructor(room, depositCount) {
@@ -33,6 +34,7 @@ export class NewRobotManager {
     this.isWatching = false;
     this.waitPublicRobot = 0;
     this.waitPublicRobotSecond = 0;
+    this.waitKickOutTime = 0;
     this.isPlayed = true;
     this.selectModeTimes = 0;
     this.startMonit();
@@ -385,11 +387,19 @@ export class NewRobotManager {
         index = this.room.readyPlayers.findIndex((p: any) => p.toString() === proxy.model._id.toString());
         if (index === -1) {
           // 有在线用户没点下一局
-          // console.log(`human player ${proxy.model.shortId} not ready in room ${this.room._id}`);
+          this.waitKickOutTime++;
+
+          // 在线用户超过10秒没有点击继续就踢出局
+          if (this.waitKickOutTime >= config.game.waitKickOutTime) {
+            await this.room.leave(proxy);
+          }
+
           return false;
         }
       }
     }
+
+    this.waitKickOutTime = 0;
     return true;
   }
 
