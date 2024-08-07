@@ -2493,7 +2493,7 @@ class TableState implements Serializable {
       if (!player.onDeposit) {
         player.isMingCard = true;
         player.mingMultiple = 6;
-        await player.sendMessage('game/openCardReply', {
+        await this.room.broadcast('game/openCardReply', {
           ok: true,
           data: {roomId: this.room._id, index: this.atIndex(player), cards: player.getCardsArray()}
         });
@@ -2518,7 +2518,7 @@ class TableState implements Serializable {
 
       // player.emitter.emit('waitForDa', msg)
 
-      await this.room.broadcast('game/getActionsReply', {ok: true, data: msg});
+      this.room.broadcast('game/getActionsReply', {ok: true, data: msg});
     })
 
     player.on(Enums.restoreGame, async () => {
