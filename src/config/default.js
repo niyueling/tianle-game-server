@@ -97,7 +97,7 @@ module.exports = {
     // 出牌等待时间(秒)
     waitDelayTime: 5,
     // 等待用户加入金豆房的时间
-    waitRubyPlayer: 3,
+    waitRubyPlayer: 5,
     // 结算不准备踢出时间
     waitKickOutTime: 10,
     // 房卡兑换金豆
