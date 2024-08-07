@@ -776,9 +776,9 @@ class Room extends RoomBase {
   }
 
   removeReadyPlayer(playerId: string) {
-    const index = this.readyPlayers.findIndex((p) => { p.toString() === playerId })
-    if (index >= 0) {
-      this.readyPlayers.splice(index, 1)
+    const index = this.readyPlayers.findIndex(_id => _id.toString() === playerId);
+    if (index !== -1) {
+      this.readyPlayers.splice(index, 1);
       return true
     }
     return false
