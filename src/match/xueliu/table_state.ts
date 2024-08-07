@@ -3023,7 +3023,7 @@ class TableState implements Serializable {
                   }, player.msgDispatcher);
 
                   //第一次胡牌自动托管
-                  if (!player.onDeposit && player.zhuang && this.room.isPublic) {
+                  if (!player.onDeposit && !player.isRobot && this.room.isPublic) {
                     player.onDeposit = true
                     await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                   }
@@ -3132,7 +3132,7 @@ class TableState implements Serializable {
               }, player.msgDispatcher);
 
               // 第一次胡牌自动托管
-              if (!player.onDeposit && player.zhuang && this.room.isPublic) {
+              if (!player.onDeposit && !player.isRobot && this.room.isPublic) {
                 player.onDeposit = true
                 await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
               }
@@ -3410,7 +3410,7 @@ class TableState implements Serializable {
           }
 
           //第一次胡牌自动托管
-          if (!huPlayer.onDeposit && huPlayer.zhuang && this.room.isPublic) {
+          if (!huPlayer.onDeposit && !huPlayer.isRobot && this.room.isPublic) {
             huPlayer.onDeposit = true;
             await huPlayer.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
@@ -4741,10 +4741,6 @@ class TableState implements Serializable {
               data: sendMsg
             }, xiajia.msgDispatcher)
           }
-
-          if (p.zhuang) {
-            this.room.robotManager.model.step = RobotStep.running;
-          }
         }
 
         setTimeout(nextDo, 200);
@@ -4752,10 +4748,6 @@ class TableState implements Serializable {
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
         const nextZhuang = this.nextZhuang()
         await this.gameAllOver(states, [], nextZhuang);
-      }
-    } else {
-      if (p.zhuang) {
-        this.room.robotManager.model.step = RobotStep.running;
       }
     }
   }

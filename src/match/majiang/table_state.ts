@@ -3406,7 +3406,7 @@ class TableState implements Serializable {
             if (ok) {
               player.lastOperateType = 3;
               this.turn++;
-              player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
+              // player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
               const from = this.atIndex(this.lastDa)
               const me = this.atIndex(player)
               // 设置所有用户地胡状态为false
@@ -3496,7 +3496,7 @@ class TableState implements Serializable {
       const ok = player.gangBySelf(card, broadcastMsg, gangIndex);
       if (ok) {
         player.lastOperateType = 3;
-        player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
+        // player.onDeposit = !!(player.isGameHu && !player.onDeposit && player.zhuang);
         // 设置所有用户地胡状态为false
         this.players.map((p) => p.isDiHu = false)
         player.sendMessage('game/gangReply', {
@@ -3769,7 +3769,7 @@ class TableState implements Serializable {
                 }, player.msgDispatcher);
 
                 //第一次胡牌自动托管
-                if (!player.onDeposit && !this.isAllHu && player.zhuang && this.room.isPublic) {
+                if (!player.onDeposit && !this.isAllHu && !player.isRobot && this.room.isPublic) {
                   player.onDeposit = true
                   await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
                 }
@@ -3925,7 +3925,7 @@ class TableState implements Serializable {
             }, player.msgDispatcher);
 
             // 第一次胡牌自动托管
-            if (!player.onDeposit && !this.isAllHu && player.zhuang && this.room.isPublic) {
+            if (!player.onDeposit && !this.isAllHu && !player.isRobot && this.room.isPublic) {
               player.onDeposit = true
               await player.sendMessage('game/startDepositReply', {ok: true, data: {}})
             }
@@ -4488,7 +4488,7 @@ class TableState implements Serializable {
       setTimeout(gameAllOver, 2200);
     }
 
-    if (player.zhuang) {
+    if (!player.isRobot) {
       player.onDeposit = true;
     }
 
@@ -4565,7 +4565,7 @@ class TableState implements Serializable {
 
         if (huMsg) {
           //第一次胡牌自动托管
-          if (!huPlayer.onDeposit && huPlayer.zhuang && this.room.isPublic) {
+          if (!huPlayer.onDeposit && !huPlayer.isRobot && this.room.isPublic) {
             huPlayer.onDeposit = true;
             await huPlayer.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
