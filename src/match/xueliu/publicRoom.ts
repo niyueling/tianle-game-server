@@ -73,10 +73,6 @@ export class PublicRoom extends Room {
       return true
     }
 
-    p.removeListener('disconnect', this.disconnectCallback)
-    this.emit('leave', {_id: player._id.toString()})
-    this.removePlayer(player)
-
     for (let i = 0; i < this.playersOrder.length; i++) {
       const po = this.playersOrder[i]
       if (po && po.model._id.toString() === player.model._id.toString()) {
@@ -86,6 +82,9 @@ export class PublicRoom extends Room {
 
     p.room = null
     this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id.toString(), roomId: this._id, index: this.indexOf(player)}})
+    p.removeListener('disconnect', this.disconnectCallback)
+    this.emit('leave', {_id: player._id.toString()})
+    this.removePlayer(player)
     this.removeReadyPlayer(p._id.toString())
     this.clearScore(player._id.toString())
 

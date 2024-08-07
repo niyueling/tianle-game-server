@@ -789,7 +789,6 @@ class Room extends RoomBase {
 
     p.removeListener('disconnect', this.disconnectCallback)
     this.emit('leave', {_id: player._id.toString()})
-    this.removePlayer(player)
 
     for (let i = 0; i < this.playersOrder.length; i++) {
       const po = this.playersOrder[i]
@@ -802,6 +801,7 @@ class Room extends RoomBase {
     this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id.toString(), roomId: this._id, index: this.indexOf(player)}})
     this.removeReadyPlayer(p._id.toString())
     this.clearScore(player._id.toString())
+    this.removePlayer(player)
 
     return true
   }
