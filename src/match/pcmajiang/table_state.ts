@@ -718,7 +718,7 @@ class TableState implements Serializable {
       }
 
       // 一炮多响（金豆房）
-      if (this.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
+      if (this.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.peng);
 
@@ -822,7 +822,7 @@ class TableState implements Serializable {
       }
 
       // 一炮多响(金豆房)
-      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
+      if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
         this.manyHuPlayers.push(player._id.toString());
         this.setManyAction(player, Enums.gang);
         // console.warn("player index-%s choice gang card-%s manyHuArray-%s action-%s", this.atIndex(player), card, JSON.stringify(this.manyHuArray), Enums.gang);
@@ -994,7 +994,7 @@ class TableState implements Serializable {
 
       if (isJiePao) {
         // 一炮多响(金豆房)
-        if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
+        if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
           this.manyHuPlayers.push(player._id.toString());
           this.setManyAction(player, Enums.hu);
           player.sendMessage("game/chooseMultiple", {
@@ -2193,7 +2193,7 @@ class TableState implements Serializable {
 
   async onPlayerGuo(player, playTurn, playCard) {
     // 一炮多响(金豆房)
-    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && player.zhuang && this.room.isPublic) {
+    if (this.room.gameState.isManyHu && !this.manyHuPlayers.includes(player._id) && this.room.isPublic) {
       this.manyHuPlayers.push(player._id.toString());
       this.setManyAction(player, Enums.guo);
 

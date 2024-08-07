@@ -4036,7 +4036,6 @@ class TableState implements Serializable {
     const nextZhuang = this.nextZhuang()
 
     const waitRecharge = async () => {
-      console.warn("waits-%s, isGameOver-%s, step-%s", JSON.stringify(waits), this.isGameOver, this.room.robotManager.model.step);
       if (waits.length > 0 && !this.isGameOver && this.room.robotManager.model.step === RobotStep.running) {
         this.room.robotManager.model.step = RobotStep.waitRuby;
         this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});

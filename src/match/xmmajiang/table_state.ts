@@ -716,7 +716,7 @@ class TableState implements Serializable {
             default:
               if (this.state === stateQiangJin && this.qiangJinData.findIndex(p => p.index === player.seatIndex) !== -1) {
                 // 抢金(金豆房)
-                if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
+                if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic) {
                   this.qiangJinPlayer.push(player._id.toString());
                   this.setQiangJinAction(player, Enums.qiangJin);
                   player.sendMessage("game/chooseQiangJin", {
@@ -755,7 +755,7 @@ class TableState implements Serializable {
         } else {
           if (this.state === stateQiangJin && this.qiangJinData.findIndex(p => p.index === player.seatIndex) !== -1) {
             // 抢金(金豆房)
-            if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
+            if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic) {
               this.qiangJinPlayer.push(player._id.toString());
               this.setQiangJinAction(player, Enums.qiangJin);
               player.sendMessage("game/chooseQiangJin", {
@@ -1147,7 +1147,7 @@ class TableState implements Serializable {
           const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
           // console.warn("qiangJinData-%s, seatIndex-%s, qiangDataIndex-%s, cards-%s", JSON.stringify(this.qiangJinData), player.seatIndex, qiangDataIndex, JSON.stringify(this.getCardArray(player.cards)));
           if (qiangDataIndex !== -1) {
-            if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
+            if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic && this.qiangJinData[qiangDataIndex].tianHu) {
               this.qiangJinPlayer.push(player._id.toString());
               this.setQiangJinAction(player, Enums.tianHu);
               player.sendMessage("game/chooseQiangJin", {
@@ -1250,7 +1250,7 @@ class TableState implements Serializable {
         }
       } else if (isQiangJin) {
         // 抢金(金豆房)
-        if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
+        if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
           this.setQiangJinAction(player, huResult.hu && huResult.huType === Enums.qiShouSanCai ? Enums.sanJinDao : Enums.qiangJin);
           const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
@@ -2182,7 +2182,7 @@ class TableState implements Serializable {
       // 天胡(金豆房)
       const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
       if (qiangDataIndex !== -1) {
-        if (!this.qiangJinPlayer.includes(player._id.toString()) && player.zhuang && this.room.isPublic) {
+        if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
           this.setQiangJinAction(player, Enums.guo);
           player.sendMessage("game/chooseQiangJin", {
@@ -2419,9 +2419,17 @@ class TableState implements Serializable {
       case Enums.qiangJin:
         // 抢金
         if (this.state === stateQiangJin) {
-          const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex);
+          const qiangDatas = this.qiangJinData.filter(p => !p.isRobot);
+          let flag = true;
+          for (let i = 0; i < qiangDatas.length; i++) {
+            flag = !this.qiangJinPlayer.includes(this.players[qiangDatas[i].index]._id.toString());
+
+            if (!flag) {
+              break;
+            }
+          }
           // 抢金，如果庄家未操作，则机器人禁止操作
-          if (!this.qiangJinPlayer.includes(this.zhuang._id.toString()) && qiangDataIndex !== -1) {
+          if (qiangDatas.length > 0 && !flag) {
             // console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
             return;
           }
