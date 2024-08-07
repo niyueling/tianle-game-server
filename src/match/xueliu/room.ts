@@ -611,6 +611,7 @@ class Room extends RoomBase {
   }
 
   indexOf(player) {
+    console.warn("playerOrder-%s, player-%s", JSON.stringify(this.playersOrder), JSON.stringify(player));
     return this.playersOrder.findIndex(playerOrder => playerOrder && player && playerOrder.model._id.toString() === player.model._id.toString())
   }
 
