@@ -2306,7 +2306,7 @@ class TableState implements Serializable {
 
   async checkMiaoShouHuiChun(player) {
     const isZiMo = player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
-    console.warn("isZiMo-%s, remainCards-%s", isZiMo, this.remainCards);
+    console.warn("isZiMo-%s, remainCards-%s, flag-%s", isZiMo, this.remainCards, this.remainCards === 0 && isZiMo);
     return this.remainCards === 0 && isZiMo;
   }
 
