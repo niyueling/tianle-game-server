@@ -761,9 +761,10 @@ class Room extends RoomBase {
   }
 
   removeReadyPlayer(playerId: string) {
-    const index = this.readyPlayers.findIndex((p) => { p.toString() === playerId })
-    if (index >= 0) {
-      this.readyPlayers.splice(index, 1)
+    const index = this.readyPlayers.findIndex(_id => _id.toString() === playerId);
+    console.warn("index-%s", index);
+    if (index !== -1) {
+      this.readyPlayers.splice(index, 1);
       return true
     }
     return false
@@ -777,7 +778,7 @@ class Room extends RoomBase {
       return false;
     }
     const p = player
-    if (p.room !== this) {
+    if (p.room._id !== this._id) {
       console.warn("用户不在此房间");
       return false
     }
@@ -786,8 +787,6 @@ class Room extends RoomBase {
       console.warn("用户已经离开房间");
       return true
     }
-
-    // if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
 
     p.removeListener('disconnect', this.disconnectCallback)
     this.emit('leave', {_id: player._id.toString()})
