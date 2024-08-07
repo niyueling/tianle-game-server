@@ -335,7 +335,6 @@ class Room extends RoomBase {
 
   arrangePos(player, reconnect?) {
     if (reconnect) {
-
       const indexForPlayer = this.indexOf(player)
 
       if (indexForPlayer < 0) {
@@ -519,7 +518,6 @@ class Room extends RoomBase {
   }
 
   async reconnect(reconnectPlayer) {
-    // console.warn("room reconnect")
     const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer.model._id.toString()))
     reconnectPlayer.room = this
     this.arrangePos(reconnectPlayer, true)
@@ -745,7 +743,6 @@ class Room extends RoomBase {
 
     const model = await service.playerService.getPlayerModel(p._id);
 
-    console.warn("gameState-%s readyIndex-%s gold-%s", this.gameState, readyIndex, model.gold);
     if (!this.gameState || readyIndex === -1 || model.gold <= 0) {
       // this.removeReadyPlayer(p.model._id.toString())
       this.forceDissolve();
@@ -756,8 +753,8 @@ class Room extends RoomBase {
     }
 
     this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
-    this.removePlayer(player)
-    this.disconnected.push([player.model._id.toString(), index])
+    // this.removePlayer(player)
+    // this.disconnected.push([player.model._id.toString(), index])
     this.emit('disconnect', p.model._id.toString())
   }
 
