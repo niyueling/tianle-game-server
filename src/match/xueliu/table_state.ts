@@ -4940,11 +4940,6 @@ class TableState implements Serializable {
 
   async generateReconnectMsg(index) {
     const player = this.players[index];
-    let roomRubyReward = 0;
-    const lastRecord = await service.rubyReward.getLastRubyRecord(this.room.uid);
-    if (lastRecord) {
-      roomRubyReward = lastRecord.balance;
-    }
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
     const pushMsg = {
       index, status: [], _id: this.room._id, rule: this.rule,
@@ -4984,13 +4979,11 @@ class TableState implements Serializable {
 
       if (i === index) {
         msg = this.players[i].genSelfStates(i);
-        msg.roomRubyReward = roomRubyReward;
         msg.events.huCards = msg.huCards.slice();
         msg.onDeposit = this.players[i].onDeposit;
         pushMsg.status.push(msg);
       } else {
         msg = this.players[i].genOppoStates(i);
-        msg.roomRubyReward = roomRubyReward;
         msg.events.huCards = msg.huCards.slice();
         msg.onDeposit = this.players[i].onDeposit;
         pushMsg.status.push(msg);
@@ -5011,16 +5004,6 @@ class TableState implements Serializable {
           }
         } else {
           pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'};
-          // if (!daPlayer) {
-          //   await this.room.forceDissolve();
-          // } else {
-          //   const index = this.atIndex(daPlayer);
-          //   if (index === -1) {
-          //     await this.room.forceDissolve();
-          //   } else {
-          //     pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'};
-          //   }
-          // }
         }
         break
       }
@@ -5041,62 +5024,6 @@ class TableState implements Serializable {
           }
         } else {
           await this.room.forceDissolve();
-        }
-        break
-      }
-      case stateWaitGangShangHua: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'waitGangShangHua',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'waitGangShangHua'}
-        }
-        break
-      }
-      case stateWaitGangShangAction: {
-        const indices = this.stateData.currentIndex
-        for (let i = 0; i < indices.length; i++) {
-          if (indices[i] === index) {
-            pushMsg.current = {index, state: 'waitGangShangAction', msg: this.stateData.lastMsg[i]}
-            break
-          }
-        }
-        break
-      }
-      case stateQiangHaiDi: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'qiangHaiDi',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'qiangHaiDi'}
-        }
-        break
-      }
-      case stateWaitDaHaiDi: {
-        if (this.stateData.player === player) {
-          pushMsg.current = {
-            index,
-            state: 'waitDaHaiDi',
-            msg: this.stateData.msg,
-          }
-        } else {
-          pushMsg.current = {index: this.atIndex(this.stateData.player), state: 'waitDaHaiDi'}
-        }
-        break;
-      }
-      case stateWaitHaiDiPao: {
-        const indices = this.stateData.currentIndex
-        for (let i = 0; i < indices.length; i++) {
-          if (indices[i] === index) {
-            pushMsg.current = {index, state: 'waitHaiDiPao', msg: this.stateData.lastMsg[i]}
-            break
-          }
         }
         break
       }
