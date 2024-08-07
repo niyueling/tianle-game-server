@@ -2398,7 +2398,6 @@ class TableState implements Serializable {
   }
 
   promptWithOther(todo, player, card) {
-    // console.warn("todo-%s, seatIndex-%s, card-%s, chiCombol-%s", todo, player.seatIndex, card, JSON.stringify(player.chiCombol));
     switch (todo) {
       case Enums.peng:
         player.emitter.emit(Enums.peng, this.turn, this.stateData.card)
