@@ -5004,10 +5004,10 @@ class TableState implements Serializable {
             msg: this.stateData.msg ?? {},
           }
         } else {
-          pushMsg.current = {index: daPlayer.seatIndex, state: 'waitDa'};
+          pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'};
         }
 
-        this.players[daPlayer.seatIndex].emitter.emit('waitForDa', this.stateData.msg);
+        this.players[this.atIndex(daPlayer)].emitter.emit('waitForDa', this.stateData.msg);
         break
       }
       case stateWaitAction: {
