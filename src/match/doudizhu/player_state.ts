@@ -362,6 +362,11 @@ class PlayerState implements Serializable {
     const cards = this.cards
     this.clearDepositTask();
     this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
+
+    const daPlayer = this.room.gameState.stateData[Enums.da];
+    if (daPlayer && daPlayer._id.toString() === this._id.toString()) {
+      this.emitter.emit('waitForDa', this.room.gameState.stateData.msg);
+    }
   }
 
   // // 是否存在该卡

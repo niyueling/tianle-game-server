@@ -1213,6 +1213,11 @@ class PlayerState implements Serializable {
       const cards = genCardArray(this.cards)
       this.cancelTimeout()
       this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
+
+      const daPlayer = this.room.gameState.stateData[Enums.da];
+      if (daPlayer && daPlayer._id.toString() === this._id.toString()) {
+        this.emitter.emit('waitForDa', this.room.gameState.stateData.msg);
+      }
     })
     playerSocket.on('game/refreshQuiet', () => {
       this.emitter.emit('refreshQuiet', playerSocket, this.seatIndex)
