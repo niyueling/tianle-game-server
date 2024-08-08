@@ -461,13 +461,12 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   // 通知其它人，有玩家加入
   async announcePlayerJoin(newJoinPlayer) {
     this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
-    const oldPlayer = this.players
+    for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x && x._id.toString() !== newJoinPlayer._id.toString());
-    for (const alreadyInRoomPlayer of oldPlayer) {
-      alreadyInRoomPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)});
+      .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
+      newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
 
