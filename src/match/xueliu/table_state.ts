@@ -4997,9 +4997,6 @@ class TableState implements Serializable {
       case stateWaitDa: {
         const daPlayer = this.stateData[Enums.da];
         // 重连无法托管，需要设置允许托管
-        if (daPlayer) {
-          daPlayer.emitter.emit('waitForDa', this.stateData.msg);
-        }
         if (daPlayer && daPlayer._id.toString() === player._id.toString()) {
           pushMsg.current = {
             index,
@@ -5009,6 +5006,8 @@ class TableState implements Serializable {
         } else {
           pushMsg.current = {index: daPlayer.seatIndex, state: 'waitDa'};
         }
+
+        this.players[daPlayer.seatIndex].emitter.emit('waitForDa', this.stateData.msg);
         break
       }
       case stateWaitAction: {
