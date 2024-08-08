@@ -319,9 +319,6 @@ class PlayerState implements Serializable {
       minutes = 15 * 1000;
     }
 
-    if (this.index === 0 && this.model.shortId !== 1023016) {
-      return ;
-    }
 
     // if (!this.msgDispatcher) {
     //   return;
