@@ -5007,10 +5007,6 @@ class TableState implements Serializable {
           pushMsg.current = {index: this.atIndex(daPlayer), state: 'waitDa'};
         }
 
-        if (daPlayer && !daPlayer.isRobot) {
-          this.players[this.atIndex(daPlayer)].emitter.emit('waitForDa', this.stateData.msg);
-        }
-
         break
       }
       case stateWaitAction: {
