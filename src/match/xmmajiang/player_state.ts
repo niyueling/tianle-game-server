@@ -1224,23 +1224,6 @@ class PlayerState implements Serializable {
     })
   }
 
-  // checkQiaoXiang() {
-  //   const caiCount = this.cards[this.caiShen]
-  //   if (caiCount) {
-  //     if (HuPaiDetect.checkQiaoXiang(this.cards)) {
-  //       return true
-  //     }
-  //   }
-  //   return false
-  // }
-
-  // mayCaiShenTou(card) {
-  //   this.cards[card]++
-  //   const pass = HuPaiDetect.mayCaiShenTou(this.cards)
-  //   this.cards[card]--
-  //   return pass
-  // }
-
   setQiaoXiang() {
     this.hadQiaoXiang = true
   }
