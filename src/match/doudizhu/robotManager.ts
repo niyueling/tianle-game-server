@@ -26,11 +26,11 @@ export class RobotManager extends NewRobotManager {
       const proxy = this.disconnectPlayers[key];
 
       if (this.isPlayerDa(proxy.playerState)) {
-        console.warn("robotManager", proxy.playerState.index);
         if (this.waitInterval[key] >= this.getWaitSecond()) {
-          proxy.playCard();
+          console.warn("robotManager", proxy.playerState.index);
           // 重新计时
           this.waitInterval[key] = 0;
+          proxy.playCard();
         }
       }
     }
