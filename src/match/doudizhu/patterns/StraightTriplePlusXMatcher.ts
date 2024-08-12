@@ -3,7 +3,7 @@ import Enums from "../enums"
 import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames, patternCompare} from "./base";
 
 export default class StraightTriplesPlusXMatcher implements IMatcher {
-  name: string = PatterNames.straightTriplePlus2;
+  name: string = PatterNames.straightTriplePlusX;
 
   verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     let pattern: IPattern = null

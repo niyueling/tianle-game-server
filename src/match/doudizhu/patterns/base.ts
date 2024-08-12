@@ -35,6 +35,7 @@ export const PatterNames = {
   triplePlusX: 'tripleX',
   // 飞机
   straightTriplePlus2: 'triples++_',
+  straightTriplePlusX: 'triplesX_',
   // 顺子
   straight: 'straight_',
   // 4带3
