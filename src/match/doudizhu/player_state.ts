@@ -101,6 +101,8 @@ class PlayerState implements Serializable {
   // 小局倍数
   multiple: number = 1;
 
+  isRobot: boolean = false;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
@@ -116,6 +118,7 @@ class PlayerState implements Serializable {
       }
     }
     this.listenDispatcher(userSocket)
+    this.isRobot = !!userSocket.isRobot();
     this.msgDispatcher = userSocket
     this.events = {}
 

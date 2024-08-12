@@ -384,7 +384,7 @@ abstract class Table implements Serializable {
   // 托管出牌
   depositForPlayer(nextPlayerState: PlayerState) {
     nextPlayerState.deposit(async () => {
-      if (this.currentPlayerStep !== nextPlayerState.index) {
+      if (this.currentPlayerStep !== nextPlayerState.index || nextPlayerState.isRobot) {
         return ;
       }
 
