@@ -182,8 +182,8 @@ export class PlayManager {
   firstPlayCard(cards: Card[]) {
     let res;
     let remain;
-    // const sortFirstCardPatternOrder = this.shuffleArray(firstCardPatternOrder);
-    for (const p of firstCardPatternOrder) {
+    const sortFirstCardPatternOrder = this.shuffleArray(firstCardPatternOrder);
+    for (const p of sortFirstCardPatternOrder) {
       for (const allowPattern of this.allowPattern) {
         res = allowPattern.promptWithPattern(p as IPattern, cards);
         if (res.length > 0) {
