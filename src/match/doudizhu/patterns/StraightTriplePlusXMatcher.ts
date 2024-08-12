@@ -71,6 +71,7 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
   }
 
   private isFit(stripes: Card[], allCards: Card[]): boolean {
+    console.warn("stripes-%s, allCards-%s", JSON.stringify(stripes), JSON.stringify(allCards));
     const nLeftCards = allCards.length - stripes.length
     const nTriples = stripes.length / 3
 
