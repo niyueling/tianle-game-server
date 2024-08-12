@@ -6,7 +6,7 @@ import {
 // 4带3
 export default class QuadruplePlusThree implements IMatcher {
   name: string = PatterNames.quadPlus3;
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length !== 7) {
       return null
     }

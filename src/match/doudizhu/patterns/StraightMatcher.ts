@@ -5,7 +5,7 @@ import {groupBy, IMatcher, IPattern, last, PatterNames} from "./base";
 // 顺子
 export default class StraightMatcher implements IMatcher {
   name: string = PatterNames.straight;
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length >= 5) {
       const copyCards = cards.slice().sort(Card.compare)
 

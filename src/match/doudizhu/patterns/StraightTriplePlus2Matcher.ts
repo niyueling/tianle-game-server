@@ -9,7 +9,7 @@ import {
 // 飞机带翅膀 333444 5566
 export default class StraightTriplePlus2Matcher implements IMatcher {
   name: string = PatterNames.straightTriplePlus2;
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     let pattern: IPattern = null
     if (cards.length % 4 === 0) {
       const allTriplesLen = (cards.length / 4) * 3

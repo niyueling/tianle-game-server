@@ -3,7 +3,7 @@ import {groupBy, IMatcher, IPattern, lengthFirstThenPointGroupComparator, Patter
 
 export default class TripleMatcher implements IMatcher {
   name: string = PatterNames.triple;
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length === 3) {
       const sameCount = cards.filter(c => c.point === cards[0].point).length
       if (sameCount === 3) {

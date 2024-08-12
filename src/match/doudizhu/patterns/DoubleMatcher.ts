@@ -6,7 +6,7 @@ import {
 export default class DoubleMatcher implements IMatcher {
   name: string = PatterNames.double;
   // 出对子
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length === 2 && cards[0].point === cards[1].point) {
       return {
         name: this.name,

@@ -5,7 +5,7 @@ import {groupBy, IMatcher, IPattern, last, PatterNames} from "./base";
 // 连对
 export default class StraightDoublesMatcher implements IMatcher {
   name: string = PatterNames.doubles;
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length >= 6 && cards.length % 2 === 0) {
       const sortedGroups = groupBy(cards.slice(), card => card.point)
         .sort((grp1, grp2) => {

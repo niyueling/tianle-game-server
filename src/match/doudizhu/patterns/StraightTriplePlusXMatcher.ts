@@ -5,7 +5,7 @@ import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames, patternCompare}
 export default class StraightTriplesPlusXMatcher implements IMatcher {
   name: string = PatterNames.straightTriplePlus2;
 
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     let pattern: IPattern = null
     if (cards.length >= 6) {
       const groups = groupBy(cards, (card: Card) => card.point)
@@ -22,7 +22,7 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
           if (currentGroup[0].point - prevGroup[0].point === 1) {
             prevGroup = currentGroup
             stripes.push(...currentGroup)
-            if (this.isFit(stripes, cards)) {
+            if (this.isFit(stripes, cards, allCards)) {
               const newPattern = {
                 name: this.name + Math.round(stripes.length / 3),
                 score: stripes[0].point,
@@ -71,14 +71,19 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
     return nameCompareResult > 0
   }
 
-  private isFit(stripes: Card[], allCards: Card[]): boolean {
+  private isFit(stripes: Card[], allCards: Card[], playerCards: Card[]): boolean {
     const nLeftCards = allCards.length - stripes.length;// 带出去的牌数
     const nTriples = stripes.length / 3; // 飞机连续的数量
     const residueCards = this.filterCards(allCards, stripes);
     console.warn("stripes-%s, allCards-%s, residueCards-%s", JSON.stringify(stripes), JSON.stringify(allCards), JSON.stringify(residueCards));
 
-    // 带单张或者少带，则直接出牌成功
-    if (nLeftCards <= nTriples) {
+    // 少带，如果是最后的牌，则直接出牌成功
+    if (nLeftCards < nTriples && playerCards.length === allCards.length) {
+      return true;
+    }
+
+    // 带单张，则直接出牌成功
+    if (nLeftCards === nTriples) {
       return true;
     }
 

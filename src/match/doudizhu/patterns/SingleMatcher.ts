@@ -3,7 +3,7 @@ import {groupBy, IMatcher, IPattern, lengthFirstThenPointGroupComparator, Patter
 
 export default class SingleMatcher implements IMatcher {
   name: string = PatterNames.single;
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length === 1) {
       return {
         name: this.name,

@@ -44,7 +44,7 @@ export const PatterNames = {
 }
 
 export interface IMatcher {
-  verify (cards: Card[]): IPattern | null
+  verify (cards: Card[], allCards?: Card[]): IPattern | null
   promptWithPattern (target: IPattern, cards: Card[]): Card[][]
 }
 

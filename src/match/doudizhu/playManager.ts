@@ -102,7 +102,7 @@ export class PlayManager {
   // 获取出牌的牌型
   getPatternByCard(playCard: Card[], remainCard: Card[]) {
     for (const matcher of this.allowPattern) {
-      const pattern = matcher.verify(playCard)
+      const pattern = matcher.verify(playCard, remainCard)
       if (pattern) return pattern
     }
     // 没有找到出牌的牌型

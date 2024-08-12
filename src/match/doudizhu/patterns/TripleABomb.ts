@@ -3,7 +3,7 @@ import {IMatcher, IPattern, PatterNames} from "./base";
 
 export default class TripleABomb implements IMatcher {
   name: string = PatterNames.bomb;
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length !== 3) {
       return null
     }

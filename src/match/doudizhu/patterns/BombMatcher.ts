@@ -41,7 +41,7 @@ export default class BombMatcher implements IMatcher {
   name: string = PatterNames.bomb;
   // @mustBeRealBomb
   // @verifyWithJoker
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length === 4) {
       const firstCard = cards[0]
       const sameAsFirst = cards.filter(c => firstCard.point === c.point).length

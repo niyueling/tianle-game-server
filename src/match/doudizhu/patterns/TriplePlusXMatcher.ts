@@ -4,7 +4,7 @@ import {groupBy, IMatcher, IPattern, PatterNames, patternCompare} from "./base";
 // 最后3张带1
 export default class TriplePlusXMatcher implements IMatcher {
   name: string = PatterNames.triplePlusX;
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     if (cards.length >= 3 && cards.length <= 4) {
       const groups = groupBy(cards, (card: Card) => card.point).sort((grp1, grp2) => {
         return grp2.length - grp1.length
