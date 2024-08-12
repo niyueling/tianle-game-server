@@ -154,7 +154,10 @@ abstract class Table implements Serializable {
     this.audit.startNewRound();
 
     if (!payload || !payload.cards) {
-      payload.cards = [[53, 54, 1, 14, 27, 13, 26, 39, 12, 25, 38, 3, 16, 4, 17, 5, 18]];
+      payload.cards = [
+        [53, 54, 1, 14, 27, 13, 26, 39, 12, 25, 38, 3, 16, 4, 17, 5, 18],
+      [8, 21, 34, 10, 23, 36],
+      [6, 19, 32]];
     }
 
 
