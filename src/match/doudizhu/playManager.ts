@@ -182,7 +182,8 @@ export class PlayManager {
   firstPlayCard(cards: Card[]) {
     let res;
     let remain;
-    for (const p of firstCardPatternOrder) {
+    const sortFirstCardPatternOrder = this.shuffleArray(firstCardPatternOrder);
+    for (const p of sortFirstCardPatternOrder) {
       for (const allowPattern of this.allowPattern) {
         res = allowPattern.promptWithPattern(p as IPattern, cards);
         if (res.length > 0) {
@@ -196,5 +197,13 @@ export class PlayManager {
     }
     // 没有牌能出
     return [];
+  }
+
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]]; // 使用ES6的数组解构来交换元素
+    }
+    return array;
   }
 }
