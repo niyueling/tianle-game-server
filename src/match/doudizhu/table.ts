@@ -388,6 +388,8 @@ abstract class Table implements Serializable {
         return ;
       }
 
+      console.warn("depositForPlayer", nextPlayerState.index);
+
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
