@@ -44,6 +44,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       const triple = group.slice(0, 3);
       const remainingCards = arraySubtract(cards, triple);
       const leftGroupedByPoint = groupBy(remainingCards, c => c.point).filter(grp1 => grp1.length === 2).sort(lengthFirstThenPointGroupComparator);
+      console.warn("triple-%s, leftCards-%s", JSON.stringify(triple), JSON.stringify(leftGroupedByPoint));
 
       if (leftGroupedByPoint.length < 2) {
         // 如果没有足够的对子来匹配三个一组，则跳过当前的三张组合
@@ -51,9 +52,6 @@ export default class TriplePlus2Matcher implements IMatcher {
       }
 
       const simpleCards = leftGroupedByPoint.slice(0, 2); // 假设每个组都是一个数组，我们需要将它们展平
-
-      // 如果需要，可以在这里添加额外的检查或逻辑
-
       results.push([...triple, ...simpleCards]);
     }
 
