@@ -9,17 +9,21 @@ export class RobotDDZ extends RobotRmqProxy {
 
   // 出牌
   playCard() {
-    if (this.room.gameState.canGuo()) {
-      // 自动托管
-      const cards = this.room.gameState.promptWithPattern(this.playerState);
-      if (cards.length > 0) {
-        this.room.gameState.onPlayerDa(this.playerState, { cards })
+    const playCard = async() => {
+      if (this.room.gameState.canGuo()) {
+        // 自动托管
+        const cards = this.room.gameState.promptWithPattern(this.playerState);
+        if (cards.length > 0) {
+          this.room.gameState.onPlayerDa(this.playerState, { cards })
+        } else {
+          this.room.gameState.guoPai(this.playerState);
+        }
       } else {
-        this.room.gameState.guoPai(this.playerState);
+        const cards = this.room.gameState.playManager.firstPlayCard(this.playerState.cards);
+        this.room.gameState.onPlayerDa(this.playerState, { cards })
       }
-    } else {
-      const cards = this.room.gameState.playManager.firstPlayCard(this.playerState.cards);
-      this.room.gameState.onPlayerDa(this.playerState, { cards })
     }
+
+    setTimeout(playCard, 1000);
   }
 }
