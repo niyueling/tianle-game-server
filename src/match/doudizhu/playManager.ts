@@ -16,24 +16,24 @@ import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 
 // 第一次出牌顺序
 const firstCardPatternOrder = [
-  // {
-  //   // 飞机带翅膀
-  //   name: PatterNames.straightTriplePlus2 + '2',
-  //   score: 0,
-  //   cards:  Array.from({ length: 8 }),
-  // },
-  // {
-  //   // 连对(6张)
-  //   name: PatterNames.doubles,
-  //   score: 0,
-  //   cards:  Array.from({ length: 6 }),
-  // },
-  // {
-  //   // 顺子(5)
-  //   name: PatterNames.straight,
-  //   score: 0,
-  //   cards:  Array.from({ length: 5 }),
-  // },
+  {
+    // 飞机带翅膀
+    name: PatterNames.straightTriplePlus2 + '2',
+    score: 0,
+    cards:  Array.from({ length: 8 }),
+  },
+  {
+    // 连对(6张)
+    name: PatterNames.doubles,
+    score: 0,
+    cards:  Array.from({ length: 6 }),
+  },
+  {
+    // 顺子(5)
+    name: PatterNames.straight,
+    score: 0,
+    cards:  Array.from({ length: 5 }),
+  },
   {
     // 3带2
     name: PatterNames.triplePlus2,
@@ -41,7 +41,7 @@ const firstCardPatternOrder = [
     cards:  Array.from({ length: 5 }),
   },
   {
-    // 3带0, 1
+    // 3带1
     name: PatterNames.triplePlusX,
     score: 0,
     cards: [],
