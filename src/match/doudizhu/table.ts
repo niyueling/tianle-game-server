@@ -564,6 +564,7 @@ abstract class Table implements Serializable {
       if (this.currentPlayerStep !== player.index) {
         return ;
       }
+      player.onDeposit = false;
       let mode = enums.farmer;
       const index = this.players.findIndex(p => p.mode === enums.landlord);
       if (player.mode !== enums.farmer && index === -1) {
@@ -656,6 +657,7 @@ abstract class Table implements Serializable {
   depositForPlayerChooseMultiple(player: PlayerState) {
     player.deposit(async () => {
       player.isMultiple = true;
+      player.onDeposit = false;
       const double = player.index === 1 ? 2 : 1;
       player.double = double;
       let addMultiple = 0;
