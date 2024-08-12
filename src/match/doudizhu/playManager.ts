@@ -46,12 +46,12 @@ const firstCardPatternOrder = [
     score: 0,
     cards: [],
   },
-  {
-    // 4带2
-    name: PatterNames.quadPlus2,
-    score: 0,
-    cards: [],
-  },
+  // {
+  //   // 4带2
+  //   name: PatterNames.quadPlus2,
+  //   score: 0,
+  //   cards: [],
+  // },
   {
     // 对子
     name: PatterNames.double,
