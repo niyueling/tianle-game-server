@@ -27,7 +27,6 @@ export class RobotManager extends NewRobotManager {
 
       if (this.isPlayerDa(proxy.playerState)) {
         if (this.waitInterval[key] >= this.getWaitSecond()) {
-          console.warn("robotManager", proxy.playerState.index);
           // 重新计时
           this.waitInterval[key] = 0;
           proxy.playCard();
