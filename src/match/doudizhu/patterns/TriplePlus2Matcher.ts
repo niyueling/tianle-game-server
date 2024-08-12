@@ -37,10 +37,10 @@ export default class TriplePlus2Matcher implements IMatcher {
       .filter(grp => grp.length === 3)
       .sort(lengthFirstThenPointGroupComparator)
       .map(group => {
-        // console.warn("cards-%s, group-%s", JSON.stringify(cards), JSON.stringify(group));
         const triple = group.slice(0, 3);
         const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point)
-          .filter(grp => grp.length === 2).sort(lengthFirstThenPointGroupComparator));
+          .filter(grp1 => grp1.length === 2).sort(lengthFirstThenPointGroupComparator));
+        console.warn("triple-%s, leftCards-%s", JSON.stringify(triple), JSON.stringify(leftCards));
         let simpleCards = [];
         if (leftCards.length < 2) {
           return [];
