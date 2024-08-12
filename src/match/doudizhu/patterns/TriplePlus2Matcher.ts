@@ -14,9 +14,10 @@ export default class TriplePlus2Matcher implements IMatcher {
       })
       console.warn("groups-%s", JSON.stringify(groups));
       if (groups[0].length >= 3) {
-        if (groups[0].length === 4 && groups[0][0].point === groups[0][3].point) {
+        if (groups.length > 2) {
           return null;
         }
+
         return {
           name: this.name,
           score: groups[0][0].point,
