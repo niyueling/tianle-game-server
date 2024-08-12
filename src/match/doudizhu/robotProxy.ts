@@ -1,5 +1,6 @@
 import {RobotRmqProxy} from "../base/robotRmqProxy";
 import {GameType} from "@fm/common/constants";
+import {random} from "lodash";
 
 // 跑得快机器人
 export class RobotDDZ extends RobotRmqProxy {
@@ -24,6 +25,6 @@ export class RobotDDZ extends RobotRmqProxy {
       }
     }
 
-    setTimeout(playCard, 1000);
+    setTimeout(playCard, random(1000, 2000));
   }
 }
