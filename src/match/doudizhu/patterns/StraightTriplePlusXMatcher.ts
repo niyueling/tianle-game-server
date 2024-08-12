@@ -78,9 +78,9 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
     console.warn("stripes-%s, allCards-%s, residueCards-%s", JSON.stringify(stripes), JSON.stringify(allCards), JSON.stringify(residueCards));
 
     // 带单张，则直接出牌成功
-    if (nLeftCards === nTriples || nLeftCards === 0) {
-      return true;
-    }
+    // if (nLeftCards === nTriples || nLeftCards === 0) {
+    //   return true;
+    // }
 
     // 检查是否符合带牌都为对子
     if (nLeftCards === nTriples * 2) {

@@ -147,8 +147,8 @@ export class PlayManager {
       new DoubleMatcher(), // 对子
       new StraightMatcher(), // 顺子
       new StraightDoublesMatcher(), // 连对
-      new StraightTriplePlus2Matcher(), // 飞机
-      new StraightTriplesPlusXMatcher(), // 飞机
+      new StraightTriplePlus2Matcher(), // 飞机+2单张
+      new StraightTriplesPlusXMatcher(), // 飞机+2对子
       new TriplePlus2Matcher(), // 三带二
       new QuadruplePlusTwo(), // 4带二
       new BombMatcher(), // 炸弹
