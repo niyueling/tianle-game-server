@@ -3,7 +3,8 @@ import Enums from "../enums"
 import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames, patternCompare} from "./base";
 
 export default class StraightTriplesPlusXMatcher implements IMatcher {
-  name: string =  PatterNames.straightTriplePlus2;
+  name: string = PatterNames.straightTriplePlus2;
+
   verify(cards: Card[]): IPattern | null {
     let pattern: IPattern = null
     if (cards.length >= 6) {
@@ -25,7 +26,7 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
               const newPattern = {
                 name: this.name + Math.round(stripes.length / 3),
                 score: stripes[0].point,
-                cards: [...stripes, ... arraySubtract(cards, stripes)]
+                cards: [...stripes, ...arraySubtract(cards, stripes)]
               }
               if (this.isGreater(newPattern, pattern)) {
                 pattern = newPattern
@@ -71,10 +72,53 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
   }
 
   private isFit(stripes: Card[], allCards: Card[]): boolean {
-    console.warn("stripes-%s, allCards-%s", JSON.stringify(stripes), JSON.stringify(allCards));
-    const nLeftCards = allCards.length - stripes.length
-    const nTriples = stripes.length / 3
+    const nLeftCards = allCards.length - stripes.length;// 带出去的牌数
+    const nTriples = stripes.length / 3; // 飞机连续的数量
+    const residueCards = this.filterCards(allCards, stripes);
+    console.warn("stripes-%s, allCards-%s, residueCards-%s", JSON.stringify(stripes), JSON.stringify(allCards), JSON.stringify(residueCards));
 
-    return nLeftCards <= nTriples * 2
+    // 带单张或者少带，则直接出牌成功
+    if (nLeftCards <= nTriples) {
+      return true;
+    }
+
+    // 检查是否符合带牌都为对子
+    if (nLeftCards === nTriples * 2) {
+      return this.areAllPairs(residueCards);
+    }
+
+    return false;
+  }
+
+  private areAllPairs(cards: Card[]): boolean {
+    // 使用一个Map来记录每个point出现的次数
+    const pointCounts = new Map<number, number>();
+
+    // 遍历每张牌，更新point的计数
+    for (const card of cards) {
+      const count = pointCounts.get(card.point) || 0;
+      pointCounts.set(card.point, count + 1);
+    }
+
+    // 检查每个point的计数是否都是偶数
+    for (const count of pointCounts.values()) {
+      if (count % 2 !== 0) {
+        // 如果存在奇数计数的point，则不能全部组成对子
+        return false;
+      }
+    }
+
+    // 如果没有奇数计数的point，则可以全部组成对子
+    return true;
+  }
+
+  private filterCards(allCards: Card[], stripes: Card[]): Card[] {
+    return allCards.filter(card => {
+      return !stripes.find(stripe =>
+        stripe.type === card.type &&
+        stripe.value === card.value &&
+        stripe.point === card.point
+      );
+    });
   }
 }
