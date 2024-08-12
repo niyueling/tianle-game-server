@@ -9,6 +9,7 @@ import StraightMatcher from "./patterns/StraightMatcher";
 import StraightTriplePlus2Matcher from "./patterns/StraightTriplePlus2Matcher";
 import TriplePlus2Matcher from "./patterns/TriplePlus2Matcher";
 import Rule from "./Rule";
+import StraightTriplesPlusXMatcher from "./patterns/StraightTriplePlusXMatcher";
 
 // 第一次出牌顺序
 const firstCardPatternOrder = [
@@ -147,6 +148,7 @@ export class PlayManager {
       new StraightMatcher(), // 顺子
       new StraightDoublesMatcher(), // 连对
       new StraightTriplePlus2Matcher(), // 飞机
+      new StraightTriplesPlusXMatcher(), // 飞机
       new TriplePlus2Matcher(), // 三带二
       new QuadruplePlusTwo(), // 4带二
       new BombMatcher(), // 炸弹
