@@ -10,6 +10,7 @@ import StraightTriplePlus2Matcher from "./patterns/StraightTriplePlus2Matcher";
 import TriplePlus2Matcher from "./patterns/TriplePlus2Matcher";
 import Rule from "./Rule";
 import StraightTriplesPlusXMatcher from "./patterns/StraightTriplePlusXMatcher";
+import StraightTriplePlusMatcher from "./patterns/StraightTriplePlusMatcher";
 
 // 第一次出牌顺序
 const firstCardPatternOrder = [
@@ -147,6 +148,7 @@ export class PlayManager {
       new DoubleMatcher(), // 对子
       new StraightMatcher(), // 顺子
       new StraightDoublesMatcher(), // 连对
+      new StraightTriplePlusMatcher(), // 飞机不带
       new StraightTriplePlus2Matcher(), // 飞机+2单张
       new StraightTriplesPlusXMatcher(), // 飞机+2对子
       new TriplePlus2Matcher(), // 三带二
