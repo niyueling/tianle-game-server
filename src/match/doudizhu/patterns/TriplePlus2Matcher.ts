@@ -31,23 +31,32 @@ export default class TriplePlus2Matcher implements IMatcher {
 
   promptWithPattern(target, cards: Card[]): Card[][] {
     if (target.name !== this.name || cards.length < 5) {
-      return []
+      return [];
     }
-    return groupBy(cards.filter(c => c.point > target.score), c => c.point)
-      .filter(grp => grp.length === 3)
-      .sort(lengthFirstThenPointGroupComparator)
-      .map(group => {
-        const triple = group.slice(0, 3);
-        const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point)
-          .filter(grp1 => grp1.length === 2).sort(lengthFirstThenPointGroupComparator));
-        console.warn("triple-%s, leftCards-%s", JSON.stringify(triple), JSON.stringify(leftCards));
-        let simpleCards = [];
-        if (leftCards.length < 2) {
-          return [];
-        }
-        simpleCards = leftCards.slice(0, 2);
 
-        return [...triple, ...simpleCards];
-      })
+    // 假设groupBy和arraySubtract函数已经定义并可以正确使用
+    const filteredCards = cards.filter(c => c.point > target.score);
+    const groupedByPoint = groupBy(filteredCards, c => c.point);
+    const triples = groupedByPoint.filter(grp => grp.length === 3).sort(lengthFirstThenPointGroupComparator);
+
+    let results = [];
+    for (const group of triples) {
+      const triple = group.slice(0, 3);
+      const remainingCards = arraySubtract(cards, triple);
+      const leftGroupedByPoint = groupBy(remainingCards, c => c.point).filter(grp1 => grp1.length === 2).sort(lengthFirstThenPointGroupComparator);
+
+      if (leftGroupedByPoint.length < 2) {
+        // 如果没有足够的对子来匹配三个一组，则跳过当前的三张组合
+        continue; // 使用continue来跳过当前循环的剩余部分
+      }
+
+      const simpleCards = leftGroupedByPoint.slice(0, 2); // 假设每个组都是一个数组，我们需要将它们展平
+
+      // 如果需要，可以在这里添加额外的检查或逻辑
+
+      results.push([...triple, ...simpleCards]);
+    }
+
+    return results;
   }
 }
