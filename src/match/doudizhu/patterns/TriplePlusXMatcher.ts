@@ -5,7 +5,7 @@ import {groupBy, IMatcher, IPattern, PatterNames, patternCompare} from "./base";
 export default class TriplePlusXMatcher implements IMatcher {
   name: string = PatterNames.triplePlusX;
   verify(cards: Card[], allCards: Card[] = []): IPattern | null {
-    if (cards.length >= 3 && cards.length <= 4) {
+    if (cards.length === 4) {
       const groups = groupBy(cards, (card: Card) => card.point).sort((grp1, grp2) => {
         return grp2.length - grp1.length
       })
@@ -23,10 +23,10 @@ export default class TriplePlusXMatcher implements IMatcher {
   }
 
   promptWithPattern(target, cards: Card[]): Card[][] {
-    if (target.name !== this.name || cards.length < 3) {
+    if (target.name !== this.name || cards.length < 4) {
       return []
     }
-    const pattern = this.verify(cards)
+    const pattern = this.verify(cards);
     if (patternCompare(pattern, target) > 0) {
       return [cards]
     }

@@ -75,12 +75,6 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
     const nLeftCards = allCards.length - stripes.length;// 带出去的牌数
     const nTriples = stripes.length / 3; // 飞机连续的数量
     const residueCards = this.filterCards(allCards, stripes);
-    console.warn("stripes-%s, allCards-%s, residueCards-%s", JSON.stringify(stripes), JSON.stringify(allCards), JSON.stringify(residueCards));
-
-    // 带单张，则直接出牌成功
-    // if (nLeftCards === nTriples || nLeftCards === 0) {
-    //   return true;
-    // }
 
     // 检查是否符合带牌都为对子
     if (nLeftCards === nTriples * 2) {

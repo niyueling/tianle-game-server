@@ -8,11 +8,11 @@ import {
 export default class TriplePlus2Matcher implements IMatcher {
   name: string = PatterNames.triplePlus2;
   verify(cards: Card[], allCards: Card[] = []): IPattern | null {
-    if ([3, 4, 5].includes(cards.length)) {
+    if (cards.length === 5) {
       const groups = groupBy(cards, (card: Card) => card.point).sort((grp1, grp2) => {
         return grp2.length - grp1.length
       })
-      // console.warn("groups-%s", JSON.stringify(groups));
+      console.warn("groups-%s", JSON.stringify(groups));
       if (groups[0].length >= 3) {
         if (groups[0].length === 4 && groups[0][0].point === groups[0][3].point) {
           return null;
@@ -29,7 +29,7 @@ export default class TriplePlus2Matcher implements IMatcher {
   }
 
   promptWithPattern(target, cards: Card[]): Card[][] {
-    if (target.name !== this.name || cards.length < 3) {
+    if (target.name !== this.name || cards.length < 5) {
       return []
     }
     return groupBy(cards.filter(c => c.point > target.score), c => c.point)
@@ -37,16 +37,14 @@ export default class TriplePlus2Matcher implements IMatcher {
       .sort(lengthFirstThenPointGroupComparator)
       .map(group => {
         // console.warn("cards-%s, group-%s", JSON.stringify(cards), JSON.stringify(group));
-        const triple = group.slice(0, 3)
-        const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point).sort(lengthFirstThenPointGroupComparator));
+        const triple = group.slice(0, 3);
+        const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point)
+          .filter(grp => grp.length === 2).sort(lengthFirstThenPointGroupComparator));
         let simpleCards = [];
-        if (leftCards.length === 1) {
-          simpleCards.push(leftCards[0]);
+        if (leftCards.length < 2) {
+          return [];
         }
-        if (leftCards.length > 1) {
-          leftCards[0] === leftCards[1] ? simpleCards = [...simpleCards, ...leftCards] : simpleCards.push(leftCards[0]);
-        }
-
+        simpleCards = leftCards.slice(0, 2);
 
         return [...triple, ...simpleCards];
       })

@@ -30,8 +30,9 @@ export const PatterNames = {
   triples: 'triples_',
   bomb: 'bomb',
   triple: 'triple',
+  // 三张带对子
   triplePlus2: 'triple++',
-  // 3带0，带1
+  // 3带1
   triplePlusX: 'tripleX',
   // 飞机不带
   straightTriples: 'triples',

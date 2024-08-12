@@ -73,47 +73,7 @@ export default class StraightTriplePlusMatcher implements IMatcher {
 
   private isFit(stripes: Card[], allCards: Card[], playerCards: Card[]): boolean {
     const nLeftCards = allCards.length - stripes.length;// 带出去的牌数
-    const nTriples = stripes.length / 3; // 飞机连续的数量
-    const residueCards = this.filterCards(allCards, stripes);
-    console.warn("stripes-%s, allCards-%s, residueCards-%s", JSON.stringify(stripes), JSON.stringify(allCards), JSON.stringify(residueCards));
-
     // 带单张，则直接出牌成功
-    if (nLeftCards === 0) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private areAllPairs(cards: Card[]): boolean {
-    // 使用一个Map来记录每个point出现的次数
-    const pointCounts = new Map<number, number>();
-
-    // 遍历每张牌，更新point的计数
-    for (const card of cards) {
-      const count = pointCounts.get(card.point) || 0;
-      pointCounts.set(card.point, count + 1);
-    }
-
-    // 检查每个point的计数是否都是偶数
-    for (const count of pointCounts.values()) {
-      if (count % 2 !== 0) {
-        // 如果存在奇数计数的point，则不能全部组成对子
-        return false;
-      }
-    }
-
-    // 如果没有奇数计数的point，则可以全部组成对子
-    return true;
-  }
-
-  private filterCards(allCards: Card[], stripes: Card[]): Card[] {
-    return allCards.filter(card => {
-      return !stripes.find(stripe =>
-        stripe.type === card.type &&
-        stripe.value === card.value &&
-        stripe.point === card.point
-      );
-    });
+    return nLeftCards === 0;
   }
 }
