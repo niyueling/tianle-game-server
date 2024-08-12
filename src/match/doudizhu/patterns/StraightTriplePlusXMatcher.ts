@@ -77,13 +77,8 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
     const residueCards = this.filterCards(allCards, stripes);
     console.warn("stripes-%s, allCards-%s, residueCards-%s", JSON.stringify(stripes), JSON.stringify(allCards), JSON.stringify(residueCards));
 
-    // 少带，如果是最后的牌，则直接出牌成功
-    if (nLeftCards < nTriples && playerCards.length === allCards.length) {
-      return true;
-    }
-
     // 带单张，则直接出牌成功
-    if (nLeftCards === nTriples) {
+    if (nLeftCards === nTriples || nLeftCards === 0) {
       return true;
     }
 
