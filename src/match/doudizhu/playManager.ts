@@ -36,9 +36,9 @@ const firstCardPatternOrder = [
   // },
   {
     // 3带2
-    name: PatterNames.triplePlusX,
+    name: PatterNames.triplePlus2,
     score: 0,
-    cards:  Array.from({ length: 4 }),
+    cards:  Array.from({ length: 5 }),
   },
   {
     // 3带0, 1
