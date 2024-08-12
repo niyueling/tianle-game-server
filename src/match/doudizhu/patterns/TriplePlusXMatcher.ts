@@ -11,6 +11,10 @@ export default class TriplePlusXMatcher implements IMatcher {
       })
 
       if (groups[0].length >= 3) {
+        if (groups[0].length === 4 && groups[0][0].point === groups[0][3].point) {
+          return null;
+        }
+
         return {
           name: this.name,
           score: groups[0][0].point,
