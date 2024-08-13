@@ -117,6 +117,32 @@ export class CardManager {
     return cards;
   }
 
+  // 转换成 Card Value
+  getCardValueByType(initCards) {
+    const cards = [[], [], []];
+    for (let i = 0; i < initCards.length; i++) {
+      for (const playerCards of initCards) {
+        if (playerCards.type === CardType.Spades) {
+          cards[i].push(CardTag.sa + playerCards.value - 1);
+        }
+        if (playerCards.type === CardType.Heart) {
+          cards[i].push(CardTag.ha + playerCards.value - 1);
+        }
+        if (playerCards.type === CardType.Club) {
+          cards[i].push(CardTag.ca + playerCards.value - 1);
+        }
+        if (playerCards.type === CardType.Diamond) {
+          cards[i].push(CardTag.da + playerCards.value - 1);
+        }
+        if (playerCards.type === CardType.Joker) {
+          cards[i].push(CardTag.bigJoker + playerCards.value - 16);
+        }
+      }
+
+    }
+    return cards;
+  }
+
   // // 随机类型
   // randomCardType() {
   //   return algorithm.randomPickFromArray([cardTag.ha, cardTag.ca, cardTag.sa, cardTag.da]);

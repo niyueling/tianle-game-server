@@ -160,6 +160,9 @@ abstract class Table implements Serializable {
       [6, 19, 32]];
     }
 
+    if (payload && payload.cards) {
+      payload.cards = this.cardManager.getCardValueByType(payload.cards);
+    }
 
     const allPlayerCards = this.cardManager.genCardForEachPlayer(false, payload.cards || [], this.rule.test);
     this.cards = this.cardManager.allCards();
