@@ -121,7 +121,7 @@ export class CardManager {
   getCardValueByType(initCards) {
     const cards = [[], [], []];
     for (let i = 0; i < initCards.length; i++) {
-      for (const playerCards of initCards) {
+      for (const playerCards of initCards[i]) {
         if (playerCards.type === CardType.Spades) {
           cards[i].push(CardTag.sa + playerCards.value - 1);
         }
