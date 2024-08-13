@@ -19,6 +19,9 @@ import {RobotManager} from "./robotManager";
 import Table from "./table"
 import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {service} from "../../service/importService";
+import GameCategory from "../../database/models/gameCategory";
+import CombatGain from "../../database/models/combatGain";
+import Player from "../../database/models/player";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -544,14 +547,72 @@ class Room extends RoomBase {
     this.playersOrder = newOrders
   }
 
+  async savePublicCombatGain(player, score) {
+    const category = await GameCategory.findOne({_id: this.gameRule.categoryId}).lean();
+
+    await CombatGain.create({
+      uid: this._id,
+      room: this.uid,
+      juIndex: this.game.juIndex,
+      playerId: player._id,
+      gameName: "斗地主",
+      caregoryName: category.title,
+      currency: this.rule.currency,
+      time: new Date(),
+      score
+    });
+  }
+
+  async setPlayerGameConfig(player, score) {
+    const model = await Player.findOne({_id: player._id});
+
+    model.isGame = false;
+    model.juCount++;
+    if (score > 0) {
+      model.juWinCount++;
+    }
+    model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+    model.goVillageCount++;
+
+    if (score > 0) {
+      model.juContinueWinCount++;
+
+      if (score > model.reapingMachineAmount) {
+        model.reapingMachineAmount = score;
+      }
+    }
+
+    if (score === 0) {
+      model.noStrokeCount++;
+    }
+
+    if (score < 0) {
+      model.juContinueWinCount = 0;
+
+      if (Math.abs(score) > model.looseMoneyBoyAmount) {
+        model.looseMoneyBoyAmount = Math.abs(score);
+      }
+    }
+
+    await model.save();
+  }
+
   async gameOver(states, firstPlayerId) {
     this.shuffleData = [];
     let stateScore = {};
-    states.forEach(state => {
+    for (let i = 0; i < states.length; i++) {
+      const player = this.players[i];
+      const state = states[i];
+      console.warn(state);
+      if (this.isPublic) {
+        await this.savePublicCombatGain(player, state.score);
+        await this.setPlayerGameConfig(player, state.score);
+      }
+
       state.model.played += 1
       this.addScore(state.model._id, state.score);
       stateScore[state.model._id] = state.score;
-    })
+    }
     this.clearReady();
 
     // 最后一局才翻
