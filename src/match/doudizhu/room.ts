@@ -603,13 +603,13 @@ class Room extends RoomBase {
     for (let i = 0; i < states.length; i++) {
       const player = this.players[i];
       const state = states[i];
-      console.warn(state);
       if (this.isPublic) {
         await this.savePublicCombatGain(player, state.score);
         await this.setPlayerGameConfig(player, state.score);
       }
 
       state.model.played += 1
+      console.warn("_id-%s, score-%s", state.model._id, state.score);
       this.addScore(state.model._id, state.score);
       stateScore[state.model._id] = state.score;
     }
