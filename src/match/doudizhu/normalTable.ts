@@ -348,10 +348,8 @@ export default class NormalTable extends Table {
     const states = this.players.map(async p => {
       if (this.room.isPublic) {
         await this.savePublicCombatGain(p, p.balance);
+        await this.setPlayerGameConfig(p.model, p.balance);
       }
-
-      await this.room.addScore(p._id, p.balance);
-      await this.setPlayerGameConfig(p.model, p.balance);
 
       const auditInfo = this.audit.currentRound[p.model.shortId];
       return {
