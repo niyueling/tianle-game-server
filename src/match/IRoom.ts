@@ -1058,6 +1058,11 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     await record.save();
   }
 
+  async init() {
+    console.log('init room');
+    this.preventTimes = {};
+  }
+
   // 兑换复活礼包
   async exchangeLiveGift(player, msg) {
     const key = 'game/exchangeLiveGift';

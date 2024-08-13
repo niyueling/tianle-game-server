@@ -98,15 +98,8 @@ class Room extends RoomBase {
         room.forceDissolve()
       }, delayTime)
     }
-    await room.init();
+    // await room.init();
     return room
-  }
-
-  async init() {
-    // 初始化以后，再开启机器人
-    this.robotManager = new RobotManager(this, this.gameRule.depositCount);
-    this.auditManager = new AuditManager(this.gameRule, this.uid, this._id);
-    await this.auditManager.init();
   }
 
   constructor(rule: any, roomNum: number) {

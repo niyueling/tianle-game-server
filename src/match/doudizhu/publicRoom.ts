@@ -63,7 +63,7 @@ export class PublicRoom extends Room {
       }, delayTime)
     }
 
-    await room.init();
+    // await room.init();
 
     return room;
   }
