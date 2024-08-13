@@ -618,10 +618,6 @@ class Room extends RoomBase {
     // 最后一局才翻
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
-    // 扣除房卡
-    // await this.charge()
-    // 金币场扣金币
-    // await this.updateClubGoldByScore(stateScore);
     this.gameState.destroy();
     this.gameState = null
     this.readyPlayers = [];

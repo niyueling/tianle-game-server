@@ -8,6 +8,7 @@ import {autoSerializePropertyKeys} from "../serializeDecorator";
 import Room from "./room";
 import NormalTable from "./normalTable"
 import {GameTypes} from "../gameTypes";
+import Enums from "../xmmajiang/enums";
 
 const gameType: GameTypes = GameType.ddz
 
@@ -75,39 +76,45 @@ export class PublicRoom extends Room {
     const findPlayer = this.players.find(player => {
       return player && player.model._id.toString() === playerId.toString()
     })
+    console.warn("playerId-%s, score-%s", playerId, v);
     await this.updatePlayer(playerId, v);
     findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
     findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
   }
 
   // 更新 player model
-  async updatePlayer(playerId, addRuby = 0, addGem = 0) {
-    const model = await service.playerService.getPlayerModel(playerId);
-    if (!model) {
-      console.error('player not exists');
-      return;
-    }
+  async updatePlayer(playerId, addRuby = 0) {
     // 添加金豆
-    if (!isNaN(addRuby)) {
-      if (model.gold + addRuby <= 0) {
-        model.gold = 0;
-      } else {
-        model.gold += addRuby;
-      }
+    const currency = await this.PlayerGoldCurrency(playerId);
+    if (currency + addRuby <= 0) {
+      await this.setPlayerGoldCurrency(playerId, 0);
+    } else {
+      await this.setPlayerGoldCurrency(playerId, currency + addRuby);
+    }
+    return await service.playerService.getPlayerModel(playerId);
+  }
+
+  async PlayerGoldCurrency(playerId) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.game.rule.currency === Enums.goldCurrency) {
+      return model.gold;
     }
 
-    // 添加房卡
-    if (!isNaN(addGem)) {
-      if (model.diamond + addGem <= 0) {
-        model.diamond = 0;
-      } else {
-        model.diamond += addGem;
-      }
+    return model.tlGold;
+  }
+
+  // 根据币种类型设置币种余额
+  async setPlayerGoldCurrency(playerId, currency) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.game.rule.currency === Enums.goldCurrency) {
+      model.gold = currency;
+    } else {
+      model.tlGold = currency;
     }
 
     await model.save();
-
-    return model;
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
