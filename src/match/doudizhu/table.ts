@@ -153,15 +153,16 @@ abstract class Table implements Serializable {
     // 下一轮
     this.audit.startNewRound();
 
-    if (!payload || !payload.cards) {
-      payload.cards = [
-        [53, 54, 1, 14, 27, 13, 26, 39, 12, 25, 38, 3, 16, 4, 17, 5, 18],
-      [8, 21, 34, 10, 23, 36],
-      [6, 19, 32]];
-    }
+    // if (!payload || !payload.cards) {
+    //   payload.cards = [
+    //     [53, 54, 1, 14, 27, 13, 26, 39, 12, 25, 38, 3, 16, 4, 17, 5, 18],
+    //   [8, 21, 34, 10, 23, 36],
+    //   [6, 19, 32]];
+    // }
 
     if (payload && payload.cards) {
       payload.cards = this.cardManager.getCardValueByType(payload.cards);
+      console.warn("cards-%s", JSON.stringify(payload.cards));
     }
 
     const allPlayerCards = this.cardManager.genCardForEachPlayer(false, payload.cards || [], this.rule.test);
