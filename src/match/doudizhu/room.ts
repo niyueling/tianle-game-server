@@ -22,6 +22,7 @@ import {service} from "../../service/importService";
 import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
 import Player from "../../database/models/player";
+import {AuditManager} from "../xmmajiang/auditManager";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -64,6 +65,7 @@ class Room extends RoomBase {
   clubOwner: any
 
   robotManager: RobotManager
+  auditManager: AuditManager
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
 
@@ -96,7 +98,15 @@ class Room extends RoomBase {
         room.forceDissolve()
       }, delayTime)
     }
+    await room.init();
     return room
+  }
+
+  async init() {
+    // 初始化以后，再开启机器人
+    this.robotManager = new RobotManager(this, this.gameRule.depositCount);
+    this.auditManager = new AuditManager(this.gameRule, this.uid, this._id);
+    await this.auditManager.init();
   }
 
   constructor(rule: any, roomNum: number) {
@@ -610,7 +620,7 @@ class Room extends RoomBase {
       }
 
       state.model.played += 1
-      // this.addScore(state.model._id, state.score);
+      this.addScore(state.model._id, state.score);
       stateScore[state.model._id] = state.score;
     }
     this.clearReady();

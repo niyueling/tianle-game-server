@@ -297,7 +297,6 @@ export default class NormalTable extends Table {
 
     const states = this.players.map(p => {
       const auditInfo = this.audit.currentRound[p.model.shortId];
-      this.room.addScore(p._id, p.balance);
       return {
         model: p.model,
         index: p.index,

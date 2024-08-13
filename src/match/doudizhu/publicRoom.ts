@@ -8,7 +8,7 @@ import {autoSerializePropertyKeys} from "../serializeDecorator";
 import Room from "./room";
 import NormalTable from "./normalTable"
 import {GameTypes} from "../gameTypes";
-import Enums from "../xmmajiang/enums";
+import Enums from "./enums";
 
 const gameType: GameTypes = GameType.ddz
 
@@ -23,15 +23,28 @@ export class PublicRoom extends Room {
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
 
     const room = new PublicRoom(json.gameRule, json._id);
+    room.uid = json.uid;
     const gameAutoKeys = autoSerializePropertyKeys(room.game);
     Object.assign(room.game, pick(json.game, gameAutoKeys));
 
     const keys = autoSerializePropertyKeys(room);
     Object.assign(room, pick(json, keys));
-    for (const [index, playerId] of json.snapshot.entries()) {
-      room.playersOrder[index] = room.players[index] = room.snapshot[index] = await getPlayerRmqProxy(playerId,
-        repository.channel, gameType);
+
+    for (const [index, playerId] of json.playersOrder.entries()) {
+      if (playerId) {
+        const playerRmq = await getPlayerRmqProxy(playerId, repository.channel, GameType.mj);
+        playerRmq.room = room;
+        if (json.players[index]) {
+          room.players[index] = playerRmq
+        }
+        room.playersOrder[index] = playerRmq;
+      }
     }
+
+    for (const [index, playerId] of json.snapshot.entries()) {
+      room.snapshot[index] = await getPlayerRmqProxy(playerId, repository.channel, GameType.mj);
+    }
+
     room.creator = await getPlayerRmqProxy(json.creator, repository.channel, gameType);
 
     if (json.gameState) {
@@ -49,6 +62,8 @@ export class PublicRoom extends Room {
         room.forceDissolve()
       }, delayTime)
     }
+
+    await room.init();
 
     return room;
   }
