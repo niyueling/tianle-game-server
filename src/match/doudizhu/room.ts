@@ -610,7 +610,7 @@ class Room extends RoomBase {
       }
 
       state.model.played += 1
-      this.addScore(state.model._id, state.score);
+      // this.addScore(state.model._id, state.score);
       stateScore[state.model._id] = state.score;
     }
     this.clearReady();
