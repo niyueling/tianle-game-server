@@ -373,6 +373,7 @@ class Room extends RoomBase {
   }
 
   addScore(playerId, v) {
+    console.warn("_id-%s, score-%s", playerId, v);
     this.scoreMap[playerId] += v;
   }
 
@@ -609,7 +610,6 @@ class Room extends RoomBase {
       }
 
       state.model.played += 1
-      console.warn("_id-%s, score-%s", state.model._id, state.score);
       this.addScore(state.model._id, state.score);
       stateScore[state.model._id] = state.score;
     }

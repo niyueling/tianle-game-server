@@ -836,7 +836,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     roomCreator.sendMessage('room/dissolve', {ok: true, data: {}})
     roomCreator.room = null
     this.players.forEach(player => {
-      if (player && player !== roomCreator) {
+      if (player && player._id.toString() !== roomCreator._id.toString()) {
         player.sendMessage('room/dissolve', {})
         player.room = null
       }
