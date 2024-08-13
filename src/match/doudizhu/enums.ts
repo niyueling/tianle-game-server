@@ -5,6 +5,9 @@ const enums = {
   landlord: "landlord",
   farmer: "farmer",
 
+  goldCurrency: "gold",
+  tlGoldCurrency: "tlGold",
+
   chooseMode: "chooseMode",
   chooseMultiple: "chooseMultiple",
   openDeal: "openDeal",

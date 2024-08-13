@@ -9,6 +9,8 @@ import Rule from './Rule'
 import Table from './table'
 import {GameType} from "@fm/common/constants";
 import enums from "./enums";
+import {service} from "../../service/importService";
+import Enums from "./enums";
 
 function once(target, propertyKey: string, descriptor: PropertyDescriptor) {
   const originCall = descriptor.value
@@ -208,14 +210,88 @@ export default class NormalTable extends Table {
     await super.onPlayerDa(player, {cards: plainCards})
   }
 
+  async recordRubyReward() {
+    if (!this.room.isPublic) {
+      return null;
+    }
+    // 金豆房记录奖励
+    await this.getBigWinner();
+  }
+
+  async getBigWinner() {
+    let winner = [];
+    let tempScore = 0;
+    // 将分数 * 倍率
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+    let times = 1;
+    if (!conf) {
+      // 配置失败
+      console.error('invalid room level');
+    } else {
+      times = conf.base * conf.Ante;
+    }
+    let winRuby = 0;
+    let lostRuby = 0;
+    const winnerList = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i]
+      if (p) {
+        p.balance *= times;
+        if (p.balance > 0) {
+          winRuby += p.balance;
+          winnerList.push(p);
+        } else {
+          const currency = await this.PlayerGoldCurrency(p._id);
+          if (currency < -p.balance) {
+            p.balance = -currency;
+          }
+          lostRuby += p.balance;
+        }
+        const score = p.balance || 0;
+        if (tempScore === score && score > 0) {
+          winner.push(p.model.shortId)
+        }
+        if (tempScore < score && score > 0) {
+          tempScore = score;
+          winner = [p.model.shortId]
+        }
+      }
+    }
+    if (isNaN(winRuby)) {
+      winRuby = 0;
+    }
+    if (isNaN(lostRuby)) {
+      lostRuby = 0;
+    }
+    console.log('win ruby', winRuby, 'lost ruby', lostRuby);
+    // 平分奖励
+    if (winRuby > 0) {
+      for (const p of winnerList) {
+        p.balance = Math.floor(p.balance / winRuby * lostRuby * -1);
+        console.log('after balance', p.balance, p.model.shortId)
+      }
+    }
+  }
+
+  // 根据币种类型获取币种余额
+  async PlayerGoldCurrency(playerId) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.rule.currency === Enums.goldCurrency) {
+      return model.gold;
+    }
+
+    return model.tlGold;
+  }
+
   async gameOver() {
     // 设置剩余牌数
     this.updateRemainCards();
 
     this.settler();
-    // console.warn("settler-%s", JSON.stringify(this.settler));
 
-    // this.audit.print();
+    await this.recordRubyReward();
+
     const states = this.players.map(p => {
       const auditInfo = this.audit.currentRound[p.model.shortId];
       return {
