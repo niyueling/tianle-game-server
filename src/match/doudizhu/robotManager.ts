@@ -37,6 +37,10 @@ export class RobotManager extends NewRobotManager {
 
   // 打
   isPlayerDa(player) {
-    return this.room.gameState.currentPlayerStep === player.index
+    if(player) {
+      return this.room.gameState.currentPlayerStep === player.index
+    }
+
+    return false
   }
 }

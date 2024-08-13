@@ -332,7 +332,7 @@ class Room extends RoomBase {
 
   async recordRoomScore(roomState = 'normal') {
     const players = this.snapshot.map(p => p._id);
-    console.warn("playersOrder-%s", JSON.stringify(this.playersOrder));
+    // console.warn("playersOrder-%s", JSON.stringify(this.playersOrder));
     const scores = this.playersOrder.map(player => {
       if (player) {
         return {
