@@ -446,7 +446,7 @@ abstract class Table implements Serializable {
         this.multiple *= 2;
         this.players.map((p) => {
           p.multiple = (p.mode === enums.landlord ? this.multiple : this.multiple / 2);
-          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: this.multiple, changeMultiple: 2}});
+          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}});
         })
       }
 
