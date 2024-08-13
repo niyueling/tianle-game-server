@@ -11,6 +11,9 @@ import {GameType} from "@fm/common/constants";
 import enums from "./enums";
 import {service} from "../../service/importService";
 import Enums from "./enums";
+import GameCategory from "../../database/models/gameCategory";
+import CombatGain from "../../database/models/combatGain";
+import Player from "../../database/models/player";
 
 function once(target, propertyKey: string, descriptor: PropertyDescriptor) {
   const originCall = descriptor.value
@@ -284,6 +287,56 @@ export default class NormalTable extends Table {
     return model.tlGold;
   }
 
+  async savePublicCombatGain(player, score) {
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
+
+    await CombatGain.create({
+      uid: this.room._id,
+      room: this.room.uid,
+      juIndex: this.room.game.juIndex,
+      playerId: player._id,
+      gameName: "斗地主",
+      caregoryName: category.title,
+      currency: this.rule.currency,
+      time: new Date(),
+      score
+    });
+  }
+
+  async setPlayerGameConfig(player, score) {
+    const model = await Player.findOne({_id: player._id});
+
+    model.isGame = false;
+    model.juCount++;
+    if (score > 0) {
+      model.juWinCount++;
+    }
+    model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+    model.goVillageCount++;
+
+    if (score > 0) {
+      model.juContinueWinCount++;
+
+      if (score > model.reapingMachineAmount) {
+        model.reapingMachineAmount = score;
+      }
+    }
+
+    if (score === 0) {
+      model.noStrokeCount++;
+    }
+
+    if (score < 0) {
+      model.juContinueWinCount = 0;
+
+      if (Math.abs(score) > model.looseMoneyBoyAmount) {
+        model.looseMoneyBoyAmount = Math.abs(score);
+      }
+    }
+
+    await model.save();
+  }
+
   async gameOver() {
     // 设置剩余牌数
     this.updateRemainCards();
@@ -292,7 +345,14 @@ export default class NormalTable extends Table {
 
     await this.recordRubyReward();
 
-    const states = this.players.map(p => {
+    const states = this.players.map(async p => {
+      if (this.room.isPublic) {
+        await this.savePublicCombatGain(p, p.balance);
+      }
+
+      await this.room.addScore(p._id, p.balance);
+      await this.setPlayerGameConfig(p.model, p.balance);
+
       const auditInfo = this.audit.currentRound[p.model.shortId];
       return {
         model: p.model,
