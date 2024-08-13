@@ -40,11 +40,6 @@ export default class QuadruplePlusTwo implements IMatcher {
           }
         }
       }
-      // return {
-      //   name: this.name,
-      //   score: quads[0][0].point,
-      //   cards: [...quad, ...reset]
-      // }
     }
     return null;
   }
@@ -69,5 +64,4 @@ export default class QuadruplePlusTwo implements IMatcher {
         return this.verify(grp).score > target.score
       })
   }
-
 }

@@ -659,6 +659,10 @@ abstract class Table implements Serializable {
   // 托管选择翻倍
   depositForPlayerChooseMultiple(player: PlayerState) {
     player.deposit(async () => {
+      if (this.currentPlayerStep !== player.index) {
+        return ;
+      }
+
       player.isMultiple = true;
       player.onDeposit = false;
       const double = player.index === 1 ? 2 : 1;
