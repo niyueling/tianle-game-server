@@ -106,11 +106,17 @@ export default class NormalTable extends Table {
     this.zhuang.cards = [...this.zhuang.cards, ...cards];
     this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.zhuang.index, landlordCards: cards, cards: this.zhuang.cards}});
 
+    // 设置用户为不托管
+    this.players.map(p => {
+      p.onDeposit = false;
+
+      if (p._id.toString() !== this.zhuang._id.toString()) {
+        p.mode = enums.farmer;
+      }
+    });
+
     const startDaFunc = async() => {
       this.status.current.seatIndex = this.zhuang.index;
-
-      // 设置用户为不托管
-      this.players.map(p => p.onDeposit = false);
 
       // 设置状态为选择翻倍
       this.state = 2;
