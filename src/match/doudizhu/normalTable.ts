@@ -108,10 +108,12 @@ export default class NormalTable extends Table {
 
     const startDaFunc = async() => {
       this.status.current.seatIndex = this.zhuang.index;
-      // 设置状态为选择翻倍
-      this.state = 2;
+
       // 设置用户为不托管
       this.players.map(p => p.onDeposit = false);
+
+      // 设置状态为选择翻倍
+      this.state = 2;
 
       // 下发开始翻倍消息
       this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
