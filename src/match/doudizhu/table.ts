@@ -205,7 +205,7 @@ abstract class Table implements Serializable {
     player.on(enums.waitForDa, async () => this.depositForPlayer(player))
     player.on(enums.waitForPlayerChooseMode, async () => this.depositForPlayerChooseMode(player))
     player.on(enums.waitForPlayerChooseMultiple, async () => this.depositForPlayerChooseMultiple(player))
-    player.on(enums.guo, () => this.onPlayerGuo(player))
+    player.on(enums.guo, async () => await this.onPlayerGuo(player))
     player.on(enums.cancelDeposit, () => this.onCancelDeposit(player))
     player.on(enums.refresh, async () => {
       player.sendMessage('room/refreshReply', {ok: true, data: await this.restoreMessageForPlayer(player)});
@@ -420,7 +420,7 @@ abstract class Table implements Serializable {
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
-        this.onPlayerGuo(nextPlayerState)
+        await this.onPlayerGuo(nextPlayerState)
       }
     })
   }
@@ -826,7 +826,7 @@ abstract class Table implements Serializable {
     return this.status.lastPattern !== null
   }
 
-  onPlayerGuo(player) {
+  async onPlayerGuo(player) {
     if (!this.isCurrentStep(player)) {
       this.guoPaiFail(player, TianleErrorCode.notDaRound)
       return
@@ -843,8 +843,14 @@ abstract class Table implements Serializable {
 
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer]
+      const checkNextPlayerDa = await this.checkNextPlayerDa(nextPlayer);
+      console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
+      if (!checkNextPlayerDa) {
+        nextPlayerState.depositTime = 5;
+        nextPlayerState.isGuoDeposit = true;
+      }
+
       nextPlayerState.emitter.emit('waitForDa');
-      // this.depositForPlayer(nextPlayerState)
     }
   }
 
