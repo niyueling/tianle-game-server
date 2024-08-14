@@ -349,6 +349,7 @@ abstract class Table implements Serializable {
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer];
       const checkNextPlayerDa = await this.checkNextPlayerDa(nextPlayer);
+      console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
       if (!checkNextPlayerDa) {
         nextPlayerState.depositTime = 5;
         nextPlayerState.isGuoDeposit = true;
@@ -854,6 +855,7 @@ abstract class Table implements Serializable {
       player.isGuoDeposit = false;
       player.depositTime = 15;
     }
+
     player.sendMessage("game/guoCardReply", {ok: true, data: {}})
     this.moveToNext(true)
     this.room.broadcast("game/otherGuo", {ok: true, data: {
