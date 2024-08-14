@@ -301,6 +301,7 @@ abstract class Table implements Serializable {
 
   async daPai(player: PlayerState, cards: Card[], pattern: IPattern) {
     player.daPai(cards.slice(), pattern);
+    player.depositTime = 15;
     // 出牌次数+1
     this.audit.addPlayTime(player.model.shortId, cards);
     const remains = player.remains
@@ -841,6 +842,7 @@ abstract class Table implements Serializable {
 
   guoPai(player: PlayerState) {
     player.guo()
+    player.depositTime = 15;
     player.sendMessage("game/guoCardReply", {ok: true, data: {}})
     this.moveToNext(true)
     this.room.broadcast("game/otherGuo", {ok: true, data: {
