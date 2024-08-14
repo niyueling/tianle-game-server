@@ -100,8 +100,10 @@ class PlayerState implements Serializable {
   openMultiple: number = 1;
   // 小局倍数
   multiple: number = 1;
-
+  // 是否机器人
   isRobot: boolean = false;
+  // 托管时间
+  depositTime: number = 15;
 
   constructor(userSocket, room, rule) {
     this.room = room
@@ -319,7 +321,7 @@ class PlayerState implements Serializable {
   deposit(callback) {
     let minutes = 5 * 1000;
     if (this.room.gameState && this.room.gameState.state === 3) {
-      minutes = 15 * 1000;
+      minutes = this.depositTime * 1000;
     }
 
     // 不在对局中不进入托管

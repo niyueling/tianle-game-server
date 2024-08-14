@@ -343,7 +343,10 @@ abstract class Table implements Serializable {
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer];
       nextPlayerState.emitter.emit('waitForDa');
-      // this.depositForPlayer(nextPlayerState)
+      const checkNextPlayerDa = this.checkNextPlayerDa(nextPlayer);
+      if (!checkNextPlayerDa) {
+        nextPlayerState.depositTime = 5;
+      }
     }
     if (isGameOver) {
       this.showGameOverPlayerCards()
@@ -351,6 +354,12 @@ abstract class Table implements Serializable {
       this.status.current.seatIndex = -1
       await this.gameOver()
     }
+  }
+
+  async checkNextPlayerDa(index) {
+    const nextPlayerState = this.players[index];
+    const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
+    return prompts.length > 0;
   }
 
   async restoreMessageForPlayer(player: PlayerState) {
