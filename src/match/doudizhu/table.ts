@@ -162,7 +162,6 @@ abstract class Table implements Serializable {
 
     if (payload && payload.cards) {
       payload.cards = this.cardManager.getCardValueByType(payload.cards);
-      console.warn("cards-%s", JSON.stringify(payload.cards));
     }
 
     const allPlayerCards = this.cardManager.genCardForEachPlayer(false, payload.cards || [], this.rule.test);
@@ -477,7 +476,10 @@ abstract class Table implements Serializable {
     // 所有人都选择模式，并且没人选择地主,则重新发牌
     if (cIndex === -1 && landlordCount === 0) {
       this.resetCount++;
-      this.players.map(p => p.mode = enums.unknown);
+      this.players.map(p => {
+        p.mode = enums.unknown;
+        p.onDeposit = false;
+      });
       this.start(this.startParams);
       return ;
     }
