@@ -534,6 +534,27 @@ class Room extends RoomBase {
     return this.players
   }
 
+  async nextGame(thePlayer) {
+    if (this.game.juShu <= 0 && !this.isPublic) {
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
+      return false;
+    }
+
+    if (this.indexOf(thePlayer) < 0) {
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
+      return false;
+    }
+
+    await this.announcePlayerJoin(thePlayer);
+
+    const joinFunc = async() => {
+      this.robotManager.model.step = RobotStep.start;
+    }
+
+    setTimeout(joinFunc, 1000);
+    return true;
+  }
+
   private sortPlayer(nextStarterIndex: number) {
     if (nextStarterIndex === 0) {
       return

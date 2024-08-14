@@ -146,7 +146,6 @@ export class PublicRoom extends Room {
   // 检查房间是否升级
   async nextGame(thePlayer) {
     if (!this.robotManager && thePlayer) {
-      // console.warn("public room error start")
       return thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
     }
     // 检查金豆
