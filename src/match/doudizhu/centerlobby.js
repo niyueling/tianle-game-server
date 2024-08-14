@@ -5,11 +5,17 @@
 import Room from './room';
 import {LobbyFactory} from '../lobbyFactory'
 import {GameType} from "@fm/common/constants";
+import {PublicRoom} from "../xmmajiang/publicRoom";
 
 const Lobby = LobbyFactory({
   gameName: GameType.ddz,
   roomFactory: function (id, rule) {
-    const room = new Room(rule, id);
+    let room;
+    if (rule.isPublic) {
+      room = new PublicRoom(rule, id);
+    } else {
+      room = new Room(rule, id);
+    }
     room._id = id;
     return room
   },

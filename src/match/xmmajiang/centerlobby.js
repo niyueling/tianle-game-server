@@ -13,7 +13,7 @@ const Lobby = LobbyFactory({
   roomFactory: function (id, rule, roomType = '', extraObj = {}) {
     let room;
     if (rule.isPublic) {
-      room = new PublicRoom(rule);
+      room = new PublicRoom(rule, id);
     } else {
       room = new Room(rule, id);
     }
