@@ -128,7 +128,7 @@ export default class NormalTable extends Table {
       this.players.map(p => this.depositForPlayerChooseMultiple(p));
     }
 
-    setTimeout(startDaFunc, 500);
+    setTimeout(startDaFunc, 5000);
   }
 
   broadcastChooseMode() {
