@@ -84,6 +84,9 @@ abstract class Table implements Serializable {
   // 叫地主或抢地主
   callLandlord: number = 0;
 
+  // 全部操作完并且有多人选择抢地主
+  callLandlordStatus: boolean = false;
+
   protected constructor(room, rule, restJushu) {
     this.restJushu = restJushu
     this.rule = rule
@@ -412,6 +415,12 @@ abstract class Table implements Serializable {
         this.multiple *= 2;
         this.players.map((p) => {
           p.multiple = this.multiple;
+
+          // 如果是农民，倍数减半
+          if (p.mode === enums.farmer && this.callLandlordStatus) {
+            p.multiple = p.multiple / 2;
+          }
+
           p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}});
         })
       }
@@ -491,6 +500,8 @@ abstract class Table implements Serializable {
     if (cIndex === -1 && landlordCount > 1) {
       if (firstLandlordIndex !== -1) {
         nextPlayer = firstLandlordIndex;
+
+        this.callLandlordStatus = true;
       }
     }
 
@@ -654,6 +665,7 @@ abstract class Table implements Serializable {
       if (cIndex === -1 && landlordCount > 1) {
         if (firstLandlordIndex !== -1) {
           nextPlayer = firstLandlordIndex;
+          this.callLandlordStatus = true;
         }
       }
 
