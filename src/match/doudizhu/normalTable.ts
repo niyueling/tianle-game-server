@@ -86,8 +86,6 @@ export default class NormalTable extends Table {
       this.multiple = maxMultiple;
     }
 
-    // 设置状态为抢地主
-    this.state = 1;
     // 设置用户为不托管
     this.players.map(p => p.onDeposit = false);
 
@@ -127,7 +125,8 @@ export default class NormalTable extends Table {
 
   broadcastChooseMode() {
     const startChooseModeFunc = async() => {
-      this.tableState = ''
+      this.tableState = '';
+      this.state = 1;
       this.room.broadcast('game/startChooseMode', {ok: true, data: {index: this.currentPlayerStep}})
 
       setTimeout(chooseModeFunc, 1000);

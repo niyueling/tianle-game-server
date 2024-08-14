@@ -18,6 +18,7 @@ import GameCategory from "../../database/models/gameCategory";
 
 const stateWaitMultiple = 2 // 翻倍
 const stateWaitDa = 3 // 对局中
+const stateGameOver = 4 // 不在对局中
 
 class Status {
   current = {seatIndex: 0, step: 1}
@@ -480,6 +481,7 @@ abstract class Table implements Serializable {
         p.mode = enums.unknown;
         p.onDeposit = false;
       });
+      this.state = stateGameOver;
       this.start(this.startParams);
       return ;
     }
@@ -570,7 +572,7 @@ abstract class Table implements Serializable {
   // 托管选择地主
   depositForPlayerChooseMode(player: PlayerState) {
     player.deposit(async () => {
-      if (this.currentPlayerStep !== player.index) {
+      if (this.currentPlayerStep !== player.index && player.onDeposit) {
         return ;
       }
       player.onDeposit = false;
@@ -642,6 +644,7 @@ abstract class Table implements Serializable {
       if (cIndex === -1 && landlordCount === 0) {
         this.resetCount++;
         this.players.map(p => p.mode = enums.unknown);
+        this.state = stateGameOver;
         this.start(this.startParams);
         return ;
       }

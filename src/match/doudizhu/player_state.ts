@@ -322,10 +322,10 @@ class PlayerState implements Serializable {
       minutes = 15 * 1000;
     }
 
-
-    // if (!this.msgDispatcher) {
-    //   return;
-    // }
+    // 不在对局中不进入托管
+    if (this.room.gameState && this.room.gameState.state === 4) {
+      return;
+    }
 
     // console.warn("canDeposit-%s, timeoutTask-%s", this.canDeposit, !!this.timeoutTask);
 
