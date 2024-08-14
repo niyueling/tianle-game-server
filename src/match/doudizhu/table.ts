@@ -410,6 +410,11 @@ abstract class Table implements Serializable {
   broadcastLandlordAndPlayer() {
     // 庄家成为地主
     this.zhuang.mode = enums.landlord;
+
+    // 修改地主倍数
+    this.zhuang.multiple = this.multiple * 2;
+    this.zhuang.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: this.zhuang.index, multiple: this.zhuang.multiple, changeMultiple: 2}});
+
     // 将地主牌发给用户
     const cards = this.cardManager.getLandlordCard();
     this.zhuang.cards = [...this.zhuang.cards, ...cards];
