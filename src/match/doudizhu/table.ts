@@ -350,7 +350,7 @@ abstract class Table implements Serializable {
       const nextPlayerState = this.players[nextPlayer];
       const checkNextPlayerDa = await this.checkNextPlayerDa(nextPlayer);
       console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
-      if (!checkNextPlayerDa) {
+      if (!checkNextPlayerDa && !nextPlayerState.onDeposit) {
         nextPlayerState.depositTime = 5;
         nextPlayerState.isGuoDeposit = true;
       }
@@ -845,7 +845,7 @@ abstract class Table implements Serializable {
       const nextPlayerState = this.players[nextPlayer]
       const checkNextPlayerDa = await this.checkNextPlayerDa(nextPlayer);
       console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
-      if (!checkNextPlayerDa) {
+      if (!checkNextPlayerDa && !nextPlayerState.onDeposit) {
         nextPlayerState.depositTime = 5;
         nextPlayerState.isGuoDeposit = true;
       }
