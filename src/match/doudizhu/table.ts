@@ -429,7 +429,7 @@ abstract class Table implements Serializable {
     }
 
     player.mode = mode;
-    this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple}});
+    this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple, deposit: false}});
     this.moveToNext();
 
     // 如果所有人都选择模式
@@ -593,7 +593,7 @@ abstract class Table implements Serializable {
       }
 
       player.mode = mode;
-      this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple}});
+      this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple, deposit: true}});
       this.moveToNext();
 
       // 如果所有人都选择模式
