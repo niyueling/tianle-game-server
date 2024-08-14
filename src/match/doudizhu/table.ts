@@ -431,7 +431,7 @@ abstract class Table implements Serializable {
       this.players.map(p => this.depositForPlayerChooseMultiple(p));
     }
 
-    setTimeout(startDaFunc, 5000);
+    setTimeout(startDaFunc, 1000);
   }
 
   onPlayerChooseMode(player, msg) {
