@@ -90,45 +90,7 @@ export default class NormalTable extends Table {
     this.players.map(p => p.onDeposit = false);
 
     // 如果已经重新叫地主第三轮，则设置0号位为地主，直接开局
-    if (this.resetCount === 2) {
-      this.broadcastLandlordAndPlayer();
-    } else {
-      this.broadcastChooseMode();
-    }
-
-  }
-
-  broadcastLandlordAndPlayer() {
-    // 庄家成为地主
-    this.zhuang.mode = enums.landlord;
-    // 将地主牌发给用户
-    const cards = this.cardManager.getLandlordCard();
-    this.zhuang.cards = [...this.zhuang.cards, ...cards];
-    this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.zhuang.index, landlordCards: cards, cards: this.zhuang.cards}});
-
-    // 设置用户为不托管
-    this.players.map(p => {
-      p.onDeposit = false;
-
-      if (p._id.toString() !== this.zhuang._id.toString()) {
-        p.mode = enums.farmer;
-      }
-    });
-
-    const startDaFunc = async() => {
-      this.status.current.seatIndex = this.zhuang.index;
-
-      // 设置状态为选择翻倍
-      this.state = 2;
-
-      // 下发开始翻倍消息
-      this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
-
-      // 托管状态自动选择不翻倍
-      this.players.map(p => this.depositForPlayerChooseMultiple(p));
-    }
-
-    setTimeout(startDaFunc, 5000);
+    this.broadcastChooseMode();
   }
 
   broadcastChooseMode() {

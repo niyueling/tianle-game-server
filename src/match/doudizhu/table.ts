@@ -407,6 +407,39 @@ abstract class Table implements Serializable {
     })
   }
 
+  broadcastLandlordAndPlayer() {
+    // 庄家成为地主
+    this.zhuang.mode = enums.landlord;
+    // 将地主牌发给用户
+    const cards = this.cardManager.getLandlordCard();
+    this.zhuang.cards = [...this.zhuang.cards, ...cards];
+    this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.zhuang.index, landlordCards: cards, cards: this.zhuang.cards}});
+
+    // 设置用户为不托管
+    this.players.map(p => {
+      p.onDeposit = false;
+
+      if (p._id.toString() !== this.zhuang._id.toString()) {
+        p.mode = enums.farmer;
+      }
+    });
+
+    const startDaFunc = async() => {
+      this.status.current.seatIndex = this.zhuang.index;
+
+      // 设置状态为选择翻倍
+      this.state = 2;
+
+      // 下发开始翻倍消息
+      this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
+
+      // 托管状态自动选择不翻倍
+      this.players.map(p => this.depositForPlayerChooseMultiple(p));
+    }
+
+    setTimeout(startDaFunc, 5000);
+  }
+
   onPlayerChooseMode(player, msg) {
     let mode = msg.mode;
     if (mode === enums.landlord) {
@@ -493,6 +526,10 @@ abstract class Table implements Serializable {
 
     // 所有人都选择模式，并且没人选择地主,则重新发牌
     if (cIndex === -1 && landlordCount === 0) {
+      if (this.resetCount === 2) {
+        return this.broadcastLandlordAndPlayer();
+      }
+
       this.resetCount++;
       this.players.map(p => {
         p.mode = enums.unknown;
@@ -635,6 +672,14 @@ abstract class Table implements Serializable {
           })
         }
 
+        // 进入第二轮抢地主，并且用户选择农民，地主翻倍
+        if (mode === enums.farmer && this.callLandlordStatus) {
+          this.players.map((p) => {
+            p.multiple = (p.mode === enums.landlord ? this.multiple * 2 : this.multiple);
+            p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}});
+          })
+        }
+
         // 将地主牌发给用户
         const cards = this.cardManager.getLandlordCard();
         this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
@@ -661,6 +706,10 @@ abstract class Table implements Serializable {
 
       // 所有人都选择模式，并且没人选择地主,则重新发牌
       if (cIndex === -1 && landlordCount === 0) {
+        if (this.resetCount === 2) {
+          return this.broadcastLandlordAndPlayer();
+        }
+
         this.resetCount++;
         this.players.map(p => p.mode = enums.unknown);
         this.state = stateGameOver;
