@@ -126,8 +126,8 @@ export default class NormalTable extends Table {
   broadcastChooseMode() {
     const startChooseModeFunc = async() => {
       this.tableState = '';
-      this.state = 1;
       this.room.broadcast('game/startChooseMode', {ok: true, data: {index: this.currentPlayerStep}})
+      console.warn("state-%s", this.state);
 
       setTimeout(chooseModeFunc, 1000);
     }
@@ -136,6 +136,7 @@ export default class NormalTable extends Table {
 
 
     const chooseModeFunc = async() => {
+      this.state = 1;
       this.players[this.currentPlayerStep].emitter.emit(enums.waitForPlayerChooseMode);
     }
   }
