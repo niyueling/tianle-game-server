@@ -269,7 +269,7 @@ abstract class Table implements Serializable {
   }
 
   daPaiFail(player, info = TianleErrorCode.systemError) {
-    player.sendMessage('game/daCardReply', {ok: false, info})
+    player.sendMessage('game/daCardReply', {ok: false, info, data: {roomId: this.room._id}})
   }
 
   guoPaiFail(player, info = TianleErrorCode.systemError) {
