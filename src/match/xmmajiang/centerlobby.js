@@ -26,7 +26,6 @@ const Lobby = LobbyFactory({
 
     return rule
   }
-
 })
 
 export default Lobby;

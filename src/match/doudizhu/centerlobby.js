@@ -5,7 +5,7 @@
 import Room from './room';
 import {LobbyFactory} from '../lobbyFactory'
 import {GameType} from "@fm/common/constants";
-import {PublicRoom} from "../xmmajiang/publicRoom";
+import {PublicRoom} from "./publicRoom";
 
 const Lobby = LobbyFactory({
   gameName: GameType.ddz,
