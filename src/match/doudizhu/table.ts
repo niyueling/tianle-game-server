@@ -343,11 +343,13 @@ abstract class Table implements Serializable {
 
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer];
-      nextPlayerState.emitter.emit('waitForDa');
       const checkNextPlayerDa = await this.checkNextPlayerDa(nextPlayer);
+      console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
       if (!checkNextPlayerDa) {
         nextPlayerState.depositTime = 5;
       }
+
+      nextPlayerState.emitter.emit('waitForDa');
     }
     if (isGameOver) {
       this.showGameOverPlayerCards()
