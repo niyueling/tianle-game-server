@@ -572,7 +572,7 @@ abstract class Table implements Serializable {
   // 托管选择地主
   depositForPlayerChooseMode(player: PlayerState) {
     player.deposit(async () => {
-      if (this.currentPlayerStep !== player.index && this.state !== stateGameOver) {
+      if (this.currentPlayerStep !== player.index || this.state === stateGameOver) {
         return ;
       }
       player.onDeposit = false;
