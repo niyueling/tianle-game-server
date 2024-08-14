@@ -416,13 +416,7 @@ abstract class Table implements Serializable {
     this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.zhuang.index, landlordCards: cards, cards: this.zhuang.cards}});
 
     // 设置用户为不托管
-    this.players.map(p => {
-      p.onDeposit = false;
-
-      if (p._id.toString() !== this.zhuang._id.toString()) {
-        p.mode = enums.farmer;
-      }
-    });
+    this.players.map(p => p.onDeposit = false);
 
     const startDaFunc = async() => {
       this.status.current.seatIndex = this.zhuang.index;
