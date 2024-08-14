@@ -444,6 +444,7 @@ abstract class Table implements Serializable {
       // 如果倍数=1，表示无人抢地主，倍数翻倍
       if (this.callLandlord === 1) {
         this.multiple *= 2;
+        console.warn("multiple-%s", this.multiple);
         this.players.map((p) => {
           p.multiple = (p.mode === enums.landlord ? this.multiple : this.multiple / 2);
           p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}});
