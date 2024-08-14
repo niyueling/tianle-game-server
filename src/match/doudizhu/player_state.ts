@@ -104,6 +104,8 @@ class PlayerState implements Serializable {
   isRobot: boolean = false;
   // 托管时间
   depositTime: number = 15;
+  // 是否过牌托管
+  isGuoDeposit: boolean = false;
 
   constructor(userSocket, room, rule) {
     this.room = room
@@ -329,15 +331,13 @@ class PlayerState implements Serializable {
       return;
     }
 
-    // console.warn("canDeposit-%s, timeoutTask-%s", this.canDeposit, !!this.timeoutTask);
-
     this.cancelTimeout()
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
         if (this.room.gameState && this.room.gameState.currentPlayerStep === this.index) {
           this.onDeposit = true
-          if (this.room.gameState && this.room.gameState.state === 3) {
+          if (this.room.gameState && this.room.gameState.state === 3 && !this.isGuoDeposit) {
             this.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
         }

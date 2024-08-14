@@ -301,7 +301,12 @@ abstract class Table implements Serializable {
 
   async daPai(player: PlayerState, cards: Card[], pattern: IPattern) {
     player.daPai(cards.slice(), pattern);
-    player.depositTime = 15;
+    if (player.isGuoDeposit) {
+      player.onDeposit = false;
+      player.isGuoDeposit = false;
+      player.depositTime = 15;
+    }
+
     // 出牌次数+1
     this.audit.addPlayTime(player.model.shortId, cards);
     const remains = player.remains
@@ -344,9 +349,9 @@ abstract class Table implements Serializable {
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer];
       const checkNextPlayerDa = await this.checkNextPlayerDa(nextPlayer);
-      console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
       if (!checkNextPlayerDa) {
         nextPlayerState.depositTime = 5;
+        nextPlayerState.isGuoDeposit = true;
       }
 
       nextPlayerState.emitter.emit('waitForDa');
@@ -844,7 +849,11 @@ abstract class Table implements Serializable {
 
   guoPai(player: PlayerState) {
     player.guo()
-    player.depositTime = 15;
+    if (player.isGuoDeposit) {
+      player.onDeposit = false;
+      player.isGuoDeposit = false;
+      player.depositTime = 15;
+    }
     player.sendMessage("game/guoCardReply", {ok: true, data: {}})
     this.moveToNext(true)
     this.room.broadcast("game/otherGuo", {ok: true, data: {
