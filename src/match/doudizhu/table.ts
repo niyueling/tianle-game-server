@@ -268,7 +268,7 @@ abstract class Table implements Serializable {
   }
 
   get currentPlayerStep() {
-    return this.room.gameState.status.current.seatIndex
+    return this.status.current.seatIndex
   }
 
   isCurrentStep(player) {
@@ -498,16 +498,14 @@ abstract class Table implements Serializable {
 
     player.mode = mode;
     this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple, deposit: false}});
-    console.warn("---------------------");
-    this.moveToNext();
-    console.warn("---------------------");
 
     // 如果所有人都选择模式
     let cIndex = this.players.findIndex(p => p.mode === enums.unknown);
     let landlordCount = this.players.filter(p => p.mode === enums.landlord).length;
     // 找到第一个选择地主重新选择
     const firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
-    let nextPlayer = this.currentPlayerStep;
+    let nextPlayer = (player.index + 1) % this.rule.playerCount;
+    this.status.current.seatIndex = nextPlayer;
 
     // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
     if (cIndex === -1 && landlordCount === 1) {
