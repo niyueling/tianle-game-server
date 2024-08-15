@@ -74,14 +74,14 @@ export class BackendProcess {
 
       const unfinishedRoomId = await service.roomRegister.getDisconnectedRoom(messageBody.from, this.gameName);
       if (unfinishedRoomId) {
-        return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
+        return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish, data: {roomId: unfinishedRoomId, gameName: this.gameName}}, playerRouteKey);
       }
 
       const playerModel = await service.playerService.getPlayerPlainModel(messageBody.from)
       if (playerModel) {
         const alreadyInRoom = await service.roomRegister.roomNumber(playerModel._id, this.gameName)
         if (alreadyInRoom) {
-          return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish}, playerRouteKey);
+          return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish, data: {roomId: alreadyInRoom, gameName: this.gameName}}, playerRouteKey);
         }
 
         if (messageBody.payload.rule.isPublic) {
