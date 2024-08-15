@@ -588,6 +588,10 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMultiple(player, msg) {
+    if (this.currentPlayerStep !== player.index || this.state === stateGameOver) {
+      return ;
+    }
+
     player.isMultiple = true;
     player.double = msg.double;
     let addMultiple = 0;
