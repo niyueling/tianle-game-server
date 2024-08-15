@@ -179,7 +179,7 @@ class PlayerState implements Serializable {
     this.recorder.recordUserEvent(this, 'shuffle')
     this.unusedJokers = this.cards.filter(c => c.type === CardType.Joker).length
 
-    this.sendMessage('game/Shuffle', {juShu, cards, remainCards, juIndex, needShuffle})
+    this.sendMessage('game/Shuffle', {ok: true, data: {juShu, cards, remainCards, juIndex, needShuffle}})
   }
 
   tryDaPai(daCards) {

@@ -1,3 +1,4 @@
+// @ts-ignore
 import {pick, remove} from 'lodash'
 import * as winston from 'winston'
 import PlayerModel from "../../database/models/player";
@@ -13,14 +14,12 @@ import {eqlModelId} from "../modelId"
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, serializeHelp} from "../serializeDecorator"
 import Card, {CardType} from "./card"
 import {manager} from "./cardManager";
-import Enums from "./enums";
 import {
   findFullMatchedPattern,
   findMatchedPatternByPattern,
   firstPlayCard,
   isGreaterThanPattern,
   isGreaterThanPatternForPlainCards,
-  publicRoomFirstPlayCard
 } from "./patterns"
 import {groupBy, IPattern, PatterNames, patternCompare} from "./patterns/base"
 import BombMatcher from './patterns/BombMatcher'
@@ -28,6 +27,7 @@ import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher"
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
+import {TianleErrorCode} from "@fm/common/constants";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -92,8 +92,8 @@ export function cardChangeDebugger<T extends new (...args: any[]) => {
     changePlayerCards(player, cards) {
       const tempCards = cards.map(card => Card.from(card))
       player.cards = tempCards
-      this.room.broadcast('game/changeCards', {index: player.seatIndex, cards: tempCards})
-      player.sendMessage('game/changePlayerCardsReply', {ok: true, info: '换牌成功！'})
+      this.room.broadcast('game/changeCards', {ok: true, data: {index: player.seatIndex, cards: tempCards}})
+      player.sendMessage('game/changePlayerCardsReply', {ok: true, data: {}})
     }
   }
 }
@@ -602,7 +602,7 @@ abstract class Table implements Serializable {
     player.msgDispatcher.on('game/cancelDeposit', msg => this.onCancelDeposit(player))
     // 手动刷新
     player.msgDispatcher.on('game/refresh', async () => {
-      player.sendMessage('room/refresh', await this.restoreMessageForPlayer(player));
+      player.sendMessage('room/refresh', {ok: true, data: await this.restoreMessageForPlayer(player)});
     })
   }
 
@@ -673,12 +673,12 @@ abstract class Table implements Serializable {
     return this.currentPlayerStep === player.seatIndex
   }
 
-  daPaiFail(player) {
-    player.sendMessage('game/daReply', {ok: false, info: '不是您的阶段'})
+  daPaiFail(player, info = TianleErrorCode.systemError) {
+    player.sendMessage('game/daCardReply', {ok: false, info, data: {roomId: this.room._id, deposit: player.onDeposit}})
   }
 
-  guoPaiFail(player) {
-    player.sendMessage('game/guoReply', {ok: false, info: '不是您的阶段'})
+  guoPaiFail(player, info = TianleErrorCode.systemError) {
+    player.sendMessage('game/guoCardReply', {ok: false, info})
   }
 
   autoCommitFunc(playerIsOndeposit = false) {
