@@ -983,6 +983,7 @@ abstract class Table implements Serializable {
   destroy() {
     this.removeRoomListener()
     // this.removeAllPlayerListeners()
+    this.status = null;
     this.players = [];
   }
 
