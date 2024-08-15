@@ -466,7 +466,7 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMode(player, msg) {
-    console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status));
+    console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s, status1-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status), JSON.stringify(this.room.gameState.status));
     let mode = msg.mode;
     if (mode === enums.landlord) {
       // 如果用户已经选择叫地主，则重置其他用户为农民
