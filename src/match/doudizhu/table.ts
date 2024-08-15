@@ -280,6 +280,7 @@ abstract class Table implements Serializable {
 
   async onPlayerDa(player: PlayerState, {cards: plainCards}) {
     if (!this.isCurrentStep(player)) {
+      console.warn("index-%s, currentIndex-%s", player.index, this.currentPlayerStep);
       this.daPaiFail(player, TianleErrorCode.notDaRound);
       return;
     }
