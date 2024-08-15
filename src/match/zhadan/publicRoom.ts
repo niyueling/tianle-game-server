@@ -1,6 +1,7 @@
 import {GameType} from "@fm/common/constants";
 import {Errors, getCodeByError} from "@fm/common/errors";
 import {Channel} from "amqplib";
+// @ts-ignore
 import {pick} from "lodash";
 import {service} from "../../service/importService";
 import {getPlayerRmqProxy, PlayerRmqProxy} from "../PlayerRmqProxy";
@@ -57,6 +58,12 @@ export class PublicRoom extends Room {
     }
     await room.init();
     return room
+  }
+
+  async shuffleDataApply(payload) {
+    if (this.allReady && !this.gameState) {
+      return await this.startGame(payload);
+    }
   }
 
   // 有人离开房间，牌局已开始，不让离开
