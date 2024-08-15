@@ -534,12 +534,12 @@ abstract class Table implements Serializable {
             createAt: new Date(), from: `四王奖励 room:${this.room._id}`
           })
           const playerIndex = this.atIndex(p)
-          this.room.broadcast('room/fourJokersReward', {
-            playerId: p._id,
-            playerName: p.model.name,
-            index: playerIndex,
-            amountInFen: fourJokerReward
-          })
+          this.room.broadcast('room/fourJokersReward', {ok: true, data: {
+              playerId: p._id,
+              playerName: p.model.name,
+              index: playerIndex,
+              amountInFen: fourJokerReward
+            }})
         }
       })
     }
@@ -664,7 +664,7 @@ abstract class Table implements Serializable {
       return
     }
 
-    this.room.broadcast('game/cleanCards', {index: player.index})
+    this.room.broadcast('game/cleanCards', {ok: true, data: {index: player.index}})
     player.cleaned = true
 
   }
@@ -696,15 +696,8 @@ abstract class Table implements Serializable {
   }
 
   onPlayerDa(player, {cards: plainCards}, onDeposit?) {
-    if (Date.now() - this.shuffleDelayTime < 0) {
-      player.sendMessage('game/daReply', {
-        ok: false,
-        info: '错误',
-      })
-      return
-    }
     if (!this.isCurrentStep(player)) {
-      this.daPaiFail(player)
+      this.daPaiFail(player, TianleErrorCode.notDaRound)
       return
     }
     const cards = plainCards.map(Card.from)
@@ -744,24 +737,27 @@ abstract class Table implements Serializable {
     }
 
     this.moveToNext()
-    player.sendMessage('game/daReply', {
-      ok: true, remains, teamMateCards,
-      onDeposit: player.onDeposit || !!onDeposit
+    player.sendMessage('game/daCardReply', {
+      ok: true,
+      data: {
+        remains, teamMateCards,
+        onDeposit: player.onDeposit || !!onDeposit
+      }
     })
 
     const isGameOver = this.isGameOver()
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
 
-    this.room.broadcast('game/otherDa', {
-      cards,
-      remains,
-      index: player.seatIndex,
-      next: nextPlayer,
-      pattern: this.status.lastPattern,
-      fen: this.status.fen,
-      bomb: this.bombScorer(pattern),
-      newBombScore: player.bombScore(this.bombScorer.bind(this))
-    })
+    this.room.broadcast('game/otherDa', {ok: true, data: {
+        cards,
+        remains,
+        index: player.seatIndex,
+        next: nextPlayer,
+        pattern: this.status.lastPattern,
+        fen: this.status.fen,
+        bomb: this.bombScorer(pattern),
+        newBombScore: player.bombScore(this.bombScorer.bind(this))
+      }})
     this.notifyTeamMateWhenTeamMateWin(player, cards)
     if (this.players[nextPlayer]) {
       this.autoCommitFunc(this.players[nextPlayer].onDeposit)
@@ -824,9 +820,9 @@ abstract class Table implements Serializable {
         playersCard.push([p.seatIndex, p.cards])
       }
     })
-    this.room.broadcast('game/gameOverPlayerCards', {
-      playersCard
-    })
+    this.room.broadcast('game/gameOverPlayerCards', {ok: true, data: {
+        playersCard
+      }})
   }
 
   homeTeamPlayers(): PlayerState[] {
@@ -863,11 +859,10 @@ abstract class Table implements Serializable {
   }
 
   cannotDaPai(player, cards) {
-    player.sendMessage('game/daReply', {
+    this.room.broadcast('game/daCardReply', {
       ok: false,
-      info: '打牌错误',
-      daCards: cards,
-      inHandle: player.cards
+      info: TianleErrorCode.cardDaError,
+      data: {index: player.index, daCards: cards, inHandle: player.cards}
     })
   }
 
@@ -882,7 +877,7 @@ abstract class Table implements Serializable {
     }
 
     if (!this.canGuo()) {
-      player.sendMessage("game/guoReply", {ok: false, info: '不能过'})
+      player.sendMessage("game/guoCardReply", {ok: false, info: TianleErrorCode.guoError});
       return
     }
 
@@ -892,7 +887,7 @@ abstract class Table implements Serializable {
   guoPai(player: PlayerState, onDeposit?) {
 
     player.guo()
-    player.sendMessage("game/guoReply", {ok: true, onDeposit: player.onDeposit || !!onDeposit})
+    player.sendMessage("game/guoCardReply", {ok: true, data: {onDeposit: player.onDeposit || !!onDeposit}})
 
     this.moveToNext()
 
@@ -900,20 +895,20 @@ abstract class Table implements Serializable {
       const zhuaFenPlayer = this.players[this.status.from]
       zhuaFenPlayer.zhua(this.status.fen)
 
-      this.room.broadcast('game/zhuaFen', {
-        index: this.status.from,
-        win: this.status.fen,
-        zhuaFen: zhuaFenPlayer.zhuaFen
-      })
+      this.room.broadcast('game/zhuaFen', {ok: true, data: {
+          index: this.status.from,
+          win: this.status.fen,
+          zhuaFen: zhuaFenPlayer.zhuaFen
+        }})
 
       this.status.fen = 0
     }
-    this.room.broadcast("game/otherGuo", {
-      index: player.seatIndex,
-      next: this.currentPlayerStep,
-      pattern: this.status.lastPattern,
-      fen: this.status.fen
-    })
+    this.room.broadcast("game/otherGuo", {ok: true, data: {
+        index: player.seatIndex,
+        next: this.currentPlayerStep,
+        pattern: this.status.lastPattern,
+        fen: this.status.fen
+      }})
 
     const isGameOver = this.isGameOver()
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
@@ -1082,7 +1077,7 @@ abstract class Table implements Serializable {
       const player = this.players[index]
       this.replaceSocketAndListen(player, playerMsgDispatcher)
       const content = this.reconnectContent(index, player)
-      player.sendMessage('game/reconnect', content)
+      player.sendMessage('game/reconnect', {ok: true, data: content})
     })
 
     room.once('empty', this.onRoomEmpty = () => {
@@ -1297,7 +1292,7 @@ abstract class Table implements Serializable {
   private notifyTeamMateWhenTeamMateWin(player: PlayerState, daCards: Card[]) {
     const teamMate = this.players[player.teamMate]
     if (teamMate && teamMate.cards.length === 0) {
-      teamMate.sendMessage('game/teamMateCards', {cards: player.cards, daCards})
+      teamMate.sendMessage('game/teamMateCards', {ok: true, data: {cards: player.cards, daCards}})
     }
   }
 

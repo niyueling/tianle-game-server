@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {GameType, RobotStep} from "@fm/common/constants";
+import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 // @ts-ignore
 import {pick} from 'lodash'
@@ -230,7 +230,7 @@ class Room extends RoomBase {
     this.dissolveAndDestroyTable()
     this.players.forEach(player => {
       if (player) {
-        player.sendMessage('room/dissolve', {})
+        player.sendMessage('room/dissolve', {ok: true, data: {}})
         player.room = null
       }
     })
@@ -270,11 +270,11 @@ class Room extends RoomBase {
     const room = this.uid
     const players = states.map(state => state.model._id)
     const playersInfo = states.map(player => ({
-      model: pick(player.model, ['name', 'headImgUrl', 'sex', 'gold', 'shortId'])
+      model: pick(player.model, ['nickname', 'avatar', 'tlGold', 'gold', 'shortId'])
     }))
     const playerArray = states.map(state => ({
-      name: state.model.name,
-      headImgUrl: state.model.headImgUrl,
+      name: state.model.nickname,
+      avatar: state.model.avatar,
       score: state.score,
       _id: state.model._id,
     }))
@@ -304,7 +304,7 @@ class Room extends RoomBase {
 
       const positions = this.players.map(p => p && p.model)
 
-      this.broadcast('room/playersPosition', {positions});
+      this.broadcast('room/playersPosition', {ok: true, data: {positions}});
     }
   }
 
@@ -321,8 +321,8 @@ class Room extends RoomBase {
     this.snapshot.forEach(player => {
       scores.push({
         score: this.scoreMap[player.model._id] || 0,
-        name: player.model.name,
-        headImgUrl: player.model.headImgUrl,
+        name: player.model.nickname,
+        avatar: player.model.avatar,
         shortId: player.model.shortId
       })
     })
@@ -406,7 +406,7 @@ class Room extends RoomBase {
         creator: this.creator.model._id,
       }
 
-      this.broadcast('game/game-over', gameOverMsg)
+      this.broadcast('game/game-over', {ok: true, data: gameOverMsg})
 
       this.recordGameRecord(states, this.gameState.recorder.getEvents())
 
@@ -532,30 +532,29 @@ class Room extends RoomBase {
   }
 
   async nextGame(thePlayer) {
-    if (!this.isPublic && this.game.juShu <= 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '牌局已经结束.'})
-      return
-    }
-    if (this.indexOf(thePlayer) < 0) {
-      thePlayer.sendMessage('room/join-fail', {reason: '您已经不属于这个房间.'})
-      return false
+    if (this.game.juShu <= 0 && !this.isPublic) {
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsFinish})
+      return false;
     }
 
-    await this.announcePlayerJoin(thePlayer)
-    // this.evictFromOldTable(thePlayer)
+    if (this.indexOf(thePlayer) < 0) {
+      thePlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
+      return false;
+    }
+
+    await this.announcePlayerJoin(thePlayer);
 
     const joinFunc = async() => {
       this.robotManager.model.step = RobotStep.start;
     }
 
     setTimeout(joinFunc, 1000);
-
-    return true
+    return true;
   }
 
   onRequestDissolve(player) {
     const dissolveInfo = this.getDissolvePlayerInfo(player);
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: dissolveInfo, startTime: this.dissolveTime}});
     if (this.canDissolve()) {
       this.forceDissolve()
       return
@@ -582,7 +581,7 @@ class Room extends RoomBase {
     if (item) {
       item.type = 'agree';
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
 
     if (this.canDissolve()) {
       this.forceDissolve()
@@ -605,7 +604,7 @@ class Room extends RoomBase {
       this.roomState = ''
       this.dissolveTimeout = null
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo}});
     return true;
   }
 
@@ -619,7 +618,7 @@ class Room extends RoomBase {
     this.dissolveTime = Date.now();
     this.dissolveReqInfo.push({
       type: 'originator',
-      name: player.model.name,
+      name: player.model.nickname,
       _id: player.model._id
     });
     for (let i = 0; i < this.players.length; i++) {
@@ -627,13 +626,13 @@ class Room extends RoomBase {
       if (pp && pp.isRobot()) {
         this.dissolveReqInfo.push({
           type: 'agree',
-          name: pp.model.name,
+          name: pp.model.nickname,
           _id: pp.model._id
         });
       } else if (pp && pp !== player) {
         this.dissolveReqInfo.push({
           type: 'waitConfirm',
-          name: pp.model.name,
+          name: pp.model.nickname,
           _id: pp.model._id
         });
       }
@@ -666,7 +665,7 @@ class Room extends RoomBase {
       }
     }
     this.broadcast('room/dissolveReq',
-      {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime});
+      {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}});
   }
 
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
@@ -680,7 +679,7 @@ class Room extends RoomBase {
         item.type = 'offline';
       }
     }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime});
+    this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}});
   }
 
   async playerDisconnect(player) {
@@ -729,7 +728,6 @@ class Room extends RoomBase {
 
     player.room = null
 
-    this.broadcast('room/leave', {_id: player._id})
     this.cancelReady(player._id)
 
     this.emit('leave', {_id: player._id})
@@ -737,7 +735,7 @@ class Room extends RoomBase {
       this.emit('empty', this.disconnected);
       this.readyPlayers = [];
     }
-    this.broadcast('room/leave', {_id: player._id});
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player._id, roomId: this._id}})
     this.removeReadyPlayer(player._id);
     return true
   }
@@ -785,7 +783,7 @@ class Room extends RoomBase {
 
     if (this.isRoomAllOver()) {
       const message = this.allOverMessage()
-      this.broadcast('room/allOver', message);
+      this.broadcast('room/allOver', {ok: true, data: message});
       this.players.forEach(x => x && this.leave(x));
       this.emit('empty', this.disconnected);
       // 更新大赢家
@@ -811,8 +809,8 @@ class Room extends RoomBase {
       .filter(p => p)
       .forEach(player => {
         message.players[player.model._id] = {
-          userName: player.model.name,
-          headImgUrl: player.model.headImgUrl
+          userName: player.model.nickname,
+          avatar: player.model.avatar
         }
       })
 
@@ -840,12 +838,12 @@ class Room extends RoomBase {
 
   applyAgain(player) {
     if (player !== this.creator) {
-      player.sendMessage('room/againReply', {ok: false, info: '不是房主'})
+      player.sendMessage('room/againReply', {ok: false, info: TianleErrorCode.isNotCreator})
       return
     }
 
     if (!this.enoughCurrency(player)) {
-      player.sendMessage('room/againReply', {ok: false, info: '余额不足'})
+      player.sendMessage('room/againReply', {ok: false, info: TianleErrorCode.diamondInsufficient})
       return
     }
 
@@ -866,7 +864,7 @@ class Room extends RoomBase {
 
   noticeAnother() {
     const excludeCreator = this.inRoomPlayers.filter(s => s !== this.creator)
-    excludeCreator.forEach(pSocket => pSocket.sendMessage('room/inviteAgain', {}))
+    excludeCreator.forEach(pSocket => pSocket.sendMessage('room/inviteAgain', {ok: true, data: {}}))
   }
 
   playerOnExit(player) {

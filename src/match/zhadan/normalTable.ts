@@ -60,7 +60,7 @@ export default class NormalTable extends Table {
       return p.index
     })
     this.shuffleDelayTime = Date.now() + this.room.shuffleData.length * 5000
-    this.room.broadcast('game/shuffleData', {shuffleData})
+    this.room.broadcast('game/shuffleData', {ok: true, data: {shuffleData}})
     this.status.current.seatIndex = -1
     // console.log('fai pa seatIndex -1');
     // 金豆房扣除开局金豆
@@ -122,7 +122,7 @@ export default class NormalTable extends Table {
           await this.onSelectMode(player, mode)
           this.room.emit('selectMode', {});
         })
-        player.sendMessage('game/startSelectMode', {})
+        player.sendMessage('game/startSelectMode', {ok: true, data: {}})
       }
     }
     this.autoModeTimeFunc()
@@ -207,11 +207,11 @@ export default class NormalTable extends Table {
         break;
       }
     }
-    this.room.broadcast('game/gameMode', {
-      mode: 'solo',
-      soloPlayer: startPlayerIndex,
-      soloPlayerName: this.players[startPlayerIndex].model.name
-    })
+    this.room.broadcast('game/gameMode', {ok: true, data: {
+        mode: 'solo',
+        soloPlayer: startPlayerIndex,
+        soloPlayerName: this.players[startPlayerIndex].model.name
+      }})
     this.setFirstDa(startPlayerIndex)
     this.players.forEach(p => p.team = Team.AwayTeam)
     this.players[startPlayerIndex].team = Team.HomeTeam
@@ -221,7 +221,7 @@ export default class NormalTable extends Table {
   }
 
   broadcastFirstDa() {
-    this.room.broadcast('game/startDa', {index: this.currentPlayerStep})
+    this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
   }
 
   private beTeamMate(team: PlayerState[]) {
@@ -249,7 +249,7 @@ export default class NormalTable extends Table {
 
     this.setFirstDa(0)
     this.mode = 'teamwork'
-    this.room.broadcast('game/gameMode', {mode: 'teamwork', friendCard: this.friendCard})
+    this.room.broadcast('game/gameMode', {ok: true, data: {mode: 'teamwork', friendCard: this.friendCard}})
     this.broadcastFirstDa()
   }
 
@@ -399,10 +399,10 @@ export default class NormalTable extends Table {
     this.players.forEach(ps => {
       ps.foundFriend = true
     })
-    this.room.broadcast('game/showFriend', {
-      homeTeam: this.homeTeamPlayers().map(p => p.index),
-      awayTeam: this.awayTeamPlayers().map(p => p.index)
-    })
+    this.room.broadcast('game/showFriend', {ok: true, data: {
+        homeTeam: this.homeTeamPlayers().map(p => p.index),
+        awayTeam: this.awayTeamPlayers().map(p => p.index)
+      }})
   }
 
   daPai(player: PlayerState, cards: Card[], pattern: IPattern, onDeposit?) {
@@ -538,7 +538,7 @@ export default class NormalTable extends Table {
       awayTeam: this.awayTeamPlayers().map(p => p.index),
       creator: this.room.creator.model._id,
     }
-    this.room.broadcast('game/game-over', gameOverMsg)
+    this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
     this.stateData.gameOver = gameOverMsg
     const firstPlayer = this.players.slice()
       .sort((p1, p2) => p1.winOrder - p2.winOrder)[0]
