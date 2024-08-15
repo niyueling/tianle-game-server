@@ -466,6 +466,10 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMode(player, msg) {
+    if (this.currentPlayerStep !== player.index || this.state === stateGameOver) {
+      return ;
+    }
+
     console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s, status1-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status), JSON.stringify(this.room.gameState.status));
     let mode = msg.mode;
     if (mode === enums.landlord) {
