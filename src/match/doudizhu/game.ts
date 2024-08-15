@@ -33,6 +33,10 @@ export default class Game implements Serializable {
       this.juIndex++
     }
 
+    if (room.isPublic) {
+      this.juIndex++
+    }
+
     return this.createTable(room)
   }
 
