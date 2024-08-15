@@ -58,21 +58,21 @@ export default class NormalTable extends Table {
   async start(payload) {
     await this.fapai(payload)
     this.status.current.seatIndex = -1
-    this.startStateUpdate()
+    await this.startStateUpdate()
   }
 
-  startStateUpdate() {
+  async startStateUpdate() {
     if (this.room.game.lastWinnerShortId !== -1) {
       // 有上一局赢的人,则赢家先选择地主
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         if (p.model.shortId === this.room.game.lastWinnerShortId) {
-          this.setFirstDa(i);
+          await this.setFirstDa(i);
           break;
         }
       }
     } else {
-      this.setFirstDa(0);
+      await this.setFirstDa(0);
     }
 
     console.warn("firstDa-%s", this.status.current.seatIndex);
@@ -111,7 +111,7 @@ export default class NormalTable extends Table {
     }
   }
 
-  setFirstDa(startPlayerIndex: number) {
+  async setFirstDa(startPlayerIndex: number) {
     this.status.current.seatIndex = startPlayerIndex;
     // 第一个打的
     this.audit.setFirstPlay(this.players[startPlayerIndex].model.shortId);
