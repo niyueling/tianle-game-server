@@ -649,11 +649,9 @@ class Room extends RoomBase {
     this.readyPlayers = [];
     this.robotManager.model.step = RobotStep.waitRuby;
 
-    if (!this.isPublic) {
-      this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
-      this.sortPlayer(this.nextStarterIndex)
-      await this.robotManager.nextRound();
-    }
+    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
+    this.sortPlayer(this.nextStarterIndex)
+    await this.robotManager.nextRound();
 
     // 好友房总结算
     if (this.game.isAllOver() && !this.isPublic) {
