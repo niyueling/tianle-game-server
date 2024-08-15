@@ -256,6 +256,8 @@ export default class NormalTable extends Table {
   }
 
   async gameOver() {
+    this.state = 4;
+
     // 设置剩余牌数
     this.updateRemainCards();
 
