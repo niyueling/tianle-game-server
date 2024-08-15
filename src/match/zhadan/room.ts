@@ -735,29 +735,6 @@ class Room extends RoomBase {
     return true
   }
 
-  // TODO should delete?
-  async ready(player) {
-    if (this.isReadyPlayer(player._id)) {
-      return
-    }
-
-    if (this.gameState) {
-      return
-    }
-    this.readyPlayers.push(player._id)
-    this.broadcast('room/playerReady', {
-      index: this.players.indexOf(player),
-      readyPlayers: this.readyPlayers
-    })
-    if (this.allReady) {
-      if (!this.isRoomAllOver()) {
-        this.playersOrder = this.players.slice()
-        this.clearReady()
-        await this.startGame({})
-      }
-    }
-  }
-
   isRoomAllOver(): boolean {
     return this.game.isAllOver()
   }
