@@ -224,6 +224,7 @@ abstract class Table implements Serializable {
 
   moveToNext(deposit = false) {
     let nextSeatIndex = this.currentPlayerStep
+    console.warn("nextSeatIndex-%s", nextSeatIndex);
 
     let findNext = false
     while (!findNext) {
@@ -495,7 +496,9 @@ abstract class Table implements Serializable {
 
     player.mode = mode;
     this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple, deposit: false}});
+    console.warn("---------------------");
     this.moveToNext();
+    console.warn("---------------------");
 
     // 如果所有人都选择模式
     let cIndex = this.players.findIndex(p => p.mode === enums.unknown);
