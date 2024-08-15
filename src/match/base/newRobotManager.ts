@@ -390,10 +390,10 @@ export class NewRobotManager {
           this.waitKickOutTime++;
 
           // 在线用户超过10秒没有点击继续就踢出局
-          if (this.waitKickOutTime >= config.game.waitKickOutTime && this.room.gameRule.gameType !== GameType.ddz) {
+          if (this.waitKickOutTime >= config.game.waitKickOutTime && ![GameType.ddz, GameType.zd].includes(this.room.gameRule.gameType)) {
             const playerIndex = this.room.players.findIndex(p => p._id.toString() === proxy.model._id.toString());
             if (playerIndex !== -1) {
-              this.room.broadcast("game/kickOutPlayer", {ok: true, data: {index: playerIndex}})
+              this.room.broadcast("game/kickOutPlayer", {ok: true, data: {index: playerIndex}});
               await this.room.leave(proxy);
             }
           }

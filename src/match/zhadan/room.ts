@@ -483,6 +483,7 @@ class Room extends RoomBase {
       location: newJoinPlayer.location,
       owner: this.ownerId,
       startIndex: index,
+      _id: this._id,
       score: this.getScore(newJoinPlayer),
       base: this.currentBase,
       zhuangCounter: this.zhuangCounter,
