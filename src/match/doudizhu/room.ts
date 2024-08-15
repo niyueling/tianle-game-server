@@ -640,14 +640,13 @@ class Room extends RoomBase {
       this.addScore(state.model._id, state.score);
       stateScore[state.model._id] = state.score;
     }
+    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
+    this.sortPlayer(this.nextStarterIndex)
     this.clearReady();
+    await this.robotManager.nextRound();
 
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
-
-    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
-    this.sortPlayer(this.nextStarterIndex)
-    await this.robotManager.nextRound();
 
     // 更新玩家位置
     await this.updatePosition();
