@@ -100,6 +100,10 @@ abstract class Table implements Serializable {
     this.playManager = new PlayManager(rule);
     this.audit = new AuditPdk(rule);
     this.resetCount = 0;
+    this.callLandlord = 0;
+    this.multiple = 1;
+    this.callLandlordStatus = false;
+    this.openCardPlayers = [];
     // 结算玩家
     for (const p of this.players) {
       this.audit.initData(p.model.shortId);
