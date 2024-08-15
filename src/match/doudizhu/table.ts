@@ -639,6 +639,9 @@ abstract class Table implements Serializable {
   }
 
   onPlayerOpenCard(player, msg) {
+    if (this.currentPlayerStep !== player.index || this.state === stateGameOver) {
+      return ;
+    }
     player.isOpenCard = true;
     player.openMultiple = msg.multiple;
     // 如果明牌用户倍数更高，则设置对局倍数
