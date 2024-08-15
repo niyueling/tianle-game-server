@@ -76,6 +76,9 @@ export default class NormalTable extends Table {
     }
 
     console.warn("firstDa-%s", this.status.current.seatIndex);
+    if (this.status.current.seatIndex === -1) {
+      return ;
+    }
 
     // 判断是否有用户明牌，取明牌最高倍数
     let maxMultiple = 0;
