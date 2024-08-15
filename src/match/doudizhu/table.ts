@@ -91,7 +91,7 @@ abstract class Table implements Serializable {
     this.restJushu = restJushu
     this.rule = rule
     this.room = room
-    this.status = new Status()
+    this.room.gameState.status = new Status()
     this.listenRoom(room);
 
     this.initPlayers();
@@ -108,7 +108,7 @@ abstract class Table implements Serializable {
     for (const p of this.players) {
       this.audit.initData(p.model.shortId);
     }
-    console.warn("juIndex-%s, status-%s", this.room.game.juIndex, JSON.stringify(this.status));
+    console.warn("juIndex-%s, status-%s", this.room.game.juIndex, JSON.stringify(this.room.gameState.status));
   }
 
   toJSON() {
@@ -120,11 +120,11 @@ abstract class Table implements Serializable {
     Object.assign(this, pick(tableStateJson.gameState, keys))
     // 还原 audit
     this.audit.recoverFromJson(tableStateJson.gameState.audit);
-    if (this.status.lastCards) {
-      this.status.lastCards = this.status.lastCards.map(c => Card.from(c))
+    if (this.room.gameState.status.lastCards) {
+      this.room.gameState.status.lastCards = this.room.gameState.status.lastCards.map(c => Card.from(c))
     }
-    if (this.status.lastPattern) {
-      this.status.lastPattern.cards = this.status.lastPattern.cards.map(c => Card.from(c))
+    if (this.room.gameState.status.lastPattern) {
+      this.room.gameState.status.lastPattern.cards = this.room.gameState.status.lastPattern.cards.map(c => Card.from(c))
     }
 
     this.stateData = {}
@@ -231,12 +231,12 @@ abstract class Table implements Serializable {
     while (!findNext) {
       nextSeatIndex = (nextSeatIndex + 1) % this.rule.playerCount
       const playerState = this.players[nextSeatIndex]
-      console.warn("nextSeatIndex-%s, from-%s, playerCount-%s, status-%s", nextSeatIndex, this.status.from, this.rule.playerCount, JSON.stringify(this.status));
+      console.warn("nextSeatIndex-%s, from-%s, playerCount-%s, status-%s", nextSeatIndex, this.room.gameState.status.from, this.rule.playerCount, JSON.stringify(this.room.gameState.status));
 
       // 转了一圈，没有更大的了
-      if (nextSeatIndex === this.status.from) {
-        this.status.lastPattern = null
-        this.status.lastCards = []
+      if (nextSeatIndex === this.room.gameState.status.from) {
+        this.room.gameState.status.lastPattern = null
+        this.room.gameState.status.lastCards = []
         if (playerState.cards.length === 0 && playerState.foundFriend) {
           nextSeatIndex = playerState.teamMate
           this.cleanCards(playerState)
@@ -250,12 +250,12 @@ abstract class Table implements Serializable {
         this.cleanCards(playerState)
       }
     }
-    this.status.current.seatIndex = nextSeatIndex
-    this.status.current.step += 1
+    this.room.gameState.status.current.seatIndex = nextSeatIndex
+    this.room.gameState.status.current.step += 1
 
     // 设置下家托管
     if (deposit) {
-      this.players[this.status.current.seatIndex].emitter.emit('waitForDa');
+      this.players[this.room.gameState.status.current.seatIndex].emitter.emit('waitForDa');
     }
   }
 
@@ -268,7 +268,7 @@ abstract class Table implements Serializable {
   }
 
   get currentPlayerStep() {
-    return this.status.current.seatIndex
+    return this.room.gameState.status.current.seatIndex
   }
 
   isCurrentStep(player) {
@@ -294,15 +294,15 @@ abstract class Table implements Serializable {
     // 转换成 Card 类型
     const cards = plainCards.map(Card.from);
     const currentPattern = this.playManager.getPatternByCard(cards, player.cards);
-    this.status.lastIndex = this.currentPlayerStep
+    this.room.gameState.status.lastIndex = this.currentPlayerStep
     // 检查最后几张
     // if (player.cards.length === cards.length && !currentPattern) {
     //   currentPattern = triplePlusXMatcher.verify(cards) || straightTriplesPlusXMatcher.verify(cards)
     // }
-    if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
+    if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.room.gameState.status.lastPattern) > 0) {
       await this.daPai(player, cards, currentPattern)
     } else {
-      // console.warn("tryDaPai-%s, currentPattern-%s, this.status.lastPattern-%s, patternCompare-%s", player.tryDaPai(cards.slice()), JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
+      // console.warn("tryDaPai-%s, currentPattern-%s, this.room.gameState.status.lastPattern-%s, patternCompare-%s", player.tryDaPai(cards.slice()), JSON.stringify(currentPattern), JSON.stringify(this.room.gameState.status.lastPattern), patternCompare(currentPattern, this.room.gameState.status.lastPattern));
       this.cannotDaPai(player, cards, this.playManager.noPattern)
     }
   }
@@ -318,9 +318,9 @@ abstract class Table implements Serializable {
     // 出牌次数+1
     this.audit.addPlayTime(player.model.shortId, cards);
     const remains = player.remains
-    this.status.from = this.status.current.seatIndex
-    this.status.lastPattern = pattern
-    this.status.lastCards = cards
+    this.room.gameState.status.from = this.room.gameState.status.current.seatIndex
+    this.room.gameState.status.lastPattern = pattern
+    this.room.gameState.status.lastCards = cards
     if (pattern.name === PatterNames.bomb) {
       player.recordBomb(pattern);
       // 添加炸弹次数
@@ -335,7 +335,7 @@ abstract class Table implements Serializable {
     }
     let teamMateCards = []
     if (remains === 0) {
-      player.winOrder = this.status.winOrder++
+      player.winOrder = this.room.gameState.status.winOrder++
       teamMateCards = this.teamMateCards(player)
     }
     this.moveToNext(true)
@@ -348,7 +348,7 @@ abstract class Table implements Serializable {
         remains,
         index: player.seatIndex,
         next: nextPlayer,
-        pattern: this.status.lastPattern,
+        pattern: this.room.gameState.status.lastPattern,
         bomb: this.bombScorer(pattern),
         newBombScore: player.bombScore(this.bombScorer)
       }})
@@ -368,14 +368,14 @@ abstract class Table implements Serializable {
     if (isGameOver) {
       this.showGameOverPlayerCards()
       this.room.game.saveLastWinner(player.model.shortId);
-      this.status.current.seatIndex = -1
+      this.room.gameState.status.current.seatIndex = -1
       await this.gameOver()
     }
   }
 
   async checkNextPlayerDa(index) {
     const nextPlayerState = this.players[index];
-    const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
+    const prompts = this.playManager.getCardByPattern(this.room.gameState.status.lastPattern, nextPlayerState.cards);
     return prompts.length > 0;
   }
 
@@ -385,10 +385,10 @@ abstract class Table implements Serializable {
     const pushMsg = {
       index, status: [],
       category,
-      currentPlayer: this.status.current.seatIndex,
-      lastPattern: this.status.lastPattern,
-      lastIndex: this.status.lastIndex,
-      from: this.status.from,
+      currentPlayer: this.room.gameState.status.current.seatIndex,
+      lastPattern: this.room.gameState.status.lastPattern,
+      lastIndex: this.room.gameState.status.lastIndex,
+      from: this.room.gameState.status.from,
       juIndex: this.room.game.juIndex,
       juShu: this.restJushu,
     }
@@ -424,7 +424,7 @@ abstract class Table implements Serializable {
         return ;
       }
 
-      const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
+      const prompts = this.playManager.getCardByPattern(this.room.gameState.status.lastPattern, nextPlayerState.cards);
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
@@ -450,7 +450,7 @@ abstract class Table implements Serializable {
     this.players.map(p => p.onDeposit = false);
 
     const startDaFunc = async() => {
-      this.status.current.seatIndex = this.zhuang.index;
+      this.room.gameState.status.current.seatIndex = this.zhuang.index;
 
       // 设置状态为选择翻倍
       this.state = 2;
@@ -466,7 +466,6 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMode(player, msg) {
-    console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s, status1-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status), JSON.stringify(this.room.gameState.status));
     let mode = msg.mode;
     if (mode === enums.landlord) {
       // 如果用户已经选择叫地主，则重置其他用户为农民
@@ -539,7 +538,7 @@ abstract class Table implements Serializable {
       this.players.map(p => p.onDeposit = false);
 
       const startDaFunc = async() => {
-        this.status.current.seatIndex = this.players[firstLandlordIndex].index;
+        this.room.gameState.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
         // 下发开始翻倍消息
         this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
@@ -719,7 +718,7 @@ abstract class Table implements Serializable {
         this.players.map(p => p.onDeposit = false);
 
         const startDaFunc = async() => {
-          this.status.current.seatIndex = this.players[firstLandlordIndex].index;
+          this.room.gameState.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
           // 下发开始翻倍消息
           this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
@@ -835,7 +834,7 @@ abstract class Table implements Serializable {
   }
 
   canGuo(): boolean {
-    return this.status.lastPattern !== null
+    return this.room.gameState.status.lastPattern !== null
   }
 
   async onPlayerGuo(player) {
@@ -879,7 +878,7 @@ abstract class Table implements Serializable {
     this.room.broadcast("game/otherGuo", {ok: true, data: {
         index: player.seatIndex,
         next: this.currentPlayerStep,
-        pattern: this.status.lastPattern,
+        pattern: this.room.gameState.status.lastPattern,
       }})
   }
 
@@ -1007,7 +1006,7 @@ abstract class Table implements Serializable {
   promptWithPattern(player: PlayerState) {
     // 下家保单, 出最大的牌
     if (this.isNextPlayerHasOneCard(player) &&
-      this.status.lastPattern.name === PatterNames.single) {
+      this.room.gameState.status.lastPattern.name === PatterNames.single) {
       const card = player.cards.sort((c1, c2) => c2.point - c1.point)[0];
       const cards = [card];
       if (patternCompare(this.playManager.getPatternByCard(cards, player.cards),
@@ -1016,7 +1015,7 @@ abstract class Table implements Serializable {
         return cards;
       }
     } else {
-      const cardList = this.playManager.getCardByPattern(this.status.lastPattern, player.cards)
+      const cardList = this.playManager.getCardByPattern(this.room.gameState.status.lastPattern, player.cards)
       if (cardList.length > 0) {
         for (const cards of cardList) {
           if (patternCompare(this.playManager.getPatternByCard(cards, player.cards),
