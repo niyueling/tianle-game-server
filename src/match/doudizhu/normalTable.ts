@@ -75,6 +75,8 @@ export default class NormalTable extends Table {
       this.setFirstDa(0);
     }
 
+    console.warn("firstDa-%s", this.status.current.seatIndex);
+
     // 判断是否有用户明牌，取明牌最高倍数
     let maxMultiple = 0;
     for (let i = 0; i < this.openCardPlayers.length; i++) {
@@ -89,7 +91,6 @@ export default class NormalTable extends Table {
     // 设置用户为不托管
     this.players.map(p => p.onDeposit = false);
 
-    // 如果已经重新叫地主第三轮，则设置0号位为地主，直接开局
     this.broadcastChooseMode();
   }
 
@@ -97,7 +98,6 @@ export default class NormalTable extends Table {
     const startChooseModeFunc = async() => {
       this.tableState = '';
       this.room.broadcast('game/startChooseMode', {ok: true, data: {index: this.currentPlayerStep}})
-      console.warn("state-%s", this.state);
 
       setTimeout(chooseModeFunc, 1000);
     }
