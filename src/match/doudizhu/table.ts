@@ -108,7 +108,7 @@ abstract class Table implements Serializable {
     for (const p of this.players) {
       this.audit.initData(p.model.shortId);
     }
-    console.warn("juIndex-%s, status-%s", this.room.game.juIndex, JSON.stringify(this.status));
+    // console.warn("juIndex-%s, status-%s", this.room.game.juIndex, JSON.stringify(this.status));
   }
 
   toJSON() {
@@ -225,13 +225,13 @@ abstract class Table implements Serializable {
 
   moveToNext(deposit = false) {
     let nextSeatIndex = this.currentPlayerStep
-    console.warn("nextSeatIndex-%s", nextSeatIndex);
+    // console.warn("nextSeatIndex-%s", nextSeatIndex);
 
     let findNext = false
     while (!findNext) {
       nextSeatIndex = (nextSeatIndex + 1) % this.rule.playerCount
       const playerState = this.players[nextSeatIndex]
-      console.warn("nextSeatIndex-%s, from-%s, playerCount-%s, status-%s", nextSeatIndex, this.status.from, this.rule.playerCount, JSON.stringify(this.room.gameState.status));
+      // console.warn("nextSeatIndex-%s, from-%s, playerCount-%s, status-%s", nextSeatIndex, this.status.from, this.rule.playerCount, JSON.stringify(this.room.gameState.status));
 
       // 转了一圈，没有更大的了
       if (nextSeatIndex === this.status.from) {
@@ -470,7 +470,7 @@ abstract class Table implements Serializable {
     //   return ;
     // }
 
-    console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s, status1-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status), JSON.stringify(this.room.gameState.status));
+    console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s, state-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status), this.state);
     let mode = msg.mode;
     if (mode === enums.landlord) {
       // 如果用户已经选择叫地主，则重置其他用户为农民
