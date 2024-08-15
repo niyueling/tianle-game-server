@@ -108,6 +108,7 @@ abstract class Table implements Serializable {
     for (const p of this.players) {
       this.audit.initData(p.model.shortId);
     }
+    console.warn("juIndex-%s, status-%s", this.room.game.juIndex, JSON.stringify(this.status));
   }
 
   toJSON() {
