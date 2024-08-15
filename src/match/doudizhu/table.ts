@@ -241,6 +241,8 @@ abstract class Table implements Serializable {
         }
       }
 
+      console.warn("nextSeatIndex-%s, from-%s, playerCount-%s", nextSeatIndex, this.status.from, this.playerCount);
+
       if (playerState.cards.length > 0) {
         findNext = true
       } else {
