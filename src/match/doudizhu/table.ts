@@ -229,7 +229,7 @@ abstract class Table implements Serializable {
     while (!findNext) {
       nextSeatIndex = (nextSeatIndex + 1) % this.rule.playerCount
       const playerState = this.players[nextSeatIndex]
-      console.warn("nextSeatIndex-%s, from-%s, playerCount-%s", nextSeatIndex, this.status.from, this.rule.playerCount);
+      console.warn("nextSeatIndex-%s, from-%s, playerCount-%s, status-%s", nextSeatIndex, this.status.from, this.rule.playerCount, JSON.stringify(this.status));
 
       // 转了一圈，没有更大的了
       if (nextSeatIndex === this.status.from) {
@@ -241,8 +241,6 @@ abstract class Table implements Serializable {
           findNext = true
         }
       }
-
-
 
       if (playerState.cards.length > 0) {
         findNext = true
