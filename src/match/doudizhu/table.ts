@@ -229,6 +229,7 @@ abstract class Table implements Serializable {
     while (!findNext) {
       nextSeatIndex = (nextSeatIndex + 1) % this.rule.playerCount
       const playerState = this.players[nextSeatIndex]
+      console.warn("nextSeatIndex-%s, from-%s, playerCount-%s", nextSeatIndex, this.status.from, this.rule.playerCount);
 
       // 转了一圈，没有更大的了
       if (nextSeatIndex === this.status.from) {
@@ -241,7 +242,7 @@ abstract class Table implements Serializable {
         }
       }
 
-      console.warn("nextSeatIndex-%s, from-%s, playerCount-%s", nextSeatIndex, this.status.from, this.rule.playerCount);
+
 
       if (playerState.cards.length > 0) {
         findNext = true
@@ -286,8 +287,8 @@ abstract class Table implements Serializable {
 
   async onPlayerDa(player: PlayerState, {cards: plainCards}) {
     if (!this.isCurrentStep(player)) {
-      console.warn("index-%s, currentIndex-%s", player.index, this.currentPlayerStep);
-      this.daPaiFail(player, TianleErrorCode.notDaRound);
+      // console.warn("index-%s, currentIndex-%s", player.index, this.currentPlayerStep);
+      // this.daPaiFail(player, TianleErrorCode.notDaRound);
       return;
     }
     // 转换成 Card 类型
@@ -301,7 +302,7 @@ abstract class Table implements Serializable {
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
       await this.daPai(player, cards, currentPattern)
     } else {
-      console.warn("tryDaPai-%s, currentPattern-%s, this.status.lastPattern-%s, patternCompare-%s", player.tryDaPai(cards.slice()), JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
+      // console.warn("tryDaPai-%s, currentPattern-%s, this.status.lastPattern-%s, patternCompare-%s", player.tryDaPai(cards.slice()), JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
       this.cannotDaPai(player, cards, this.playManager.noPattern)
     }
   }
@@ -356,7 +357,7 @@ abstract class Table implements Serializable {
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer];
       const checkNextPlayerDa = await this.checkNextPlayerDa(nextPlayer);
-      console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
+      // console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
       if (!checkNextPlayerDa && !nextPlayerState.onDeposit) {
         nextPlayerState.depositTime = 5;
         nextPlayerState.isGuoDeposit = true;
@@ -683,7 +684,7 @@ abstract class Table implements Serializable {
       const firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
       let nextPlayer = this.currentPlayerStep;
 
-      console.warn("unknownCount-%s, landlordCount-%s, firstLandlordIndex-%s, nextPlayer-%s", cIndex, landlordCount, firstLandlordIndex, nextPlayer);
+      // console.warn("unknownCount-%s, landlordCount-%s, firstLandlordIndex-%s, nextPlayer-%s", cIndex, landlordCount, firstLandlordIndex, nextPlayer);
 
       // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
       if (cIndex === -1 && landlordCount === 1) {
@@ -851,7 +852,7 @@ abstract class Table implements Serializable {
     if (this.players[nextPlayer]) {
       const nextPlayerState = this.players[nextPlayer]
       const checkNextPlayerDa = await this.checkNextPlayerDa(nextPlayer);
-      console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
+      // console.warn("index-%s, status-%s", nextPlayer, checkNextPlayerDa);
       if (!checkNextPlayerDa && !nextPlayerState.onDeposit) {
         nextPlayerState.depositTime = 5;
         nextPlayerState.isGuoDeposit = true;
