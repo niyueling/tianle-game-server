@@ -337,39 +337,42 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   leave(player) {
-    // console.warn("IRoom")
-    if (!player) {
-      player.sendMessage("room/leaveReply", {ok: true, data: {}})
-      return false;
+    if (this.gameState || !player) {
+      console.warn("player is disconnect in room %s", this._id)
+      // 游戏已开始 or 玩家不存在
+      return false
+    }
+    const p = player
+    if (p.room !== this) {
+      console.warn("player is not in this room %s", this._id)
+      return false
     }
 
     if (this.indexOf(player) < 0) {
+      console.warn("player is already leave room %s", this._id)
       return true
     }
 
-    // if (this.game.juIndex > 0 && !this.game.isAllOver()) return false
+    if (this.game.juIndex > 0 && !this.game.isAllOver()) {
+      console.warn("room %s is not finish", this._id)
+      return false
+    }
 
+    p.removeListener('disconnect', this.disconnectCallback)
+    this.emit('leave', {_id: player._id})
     this.removePlayer(player)
 
-    player.room = null
-
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player._id.toString(), roomId: this._id}})
-    this.cancelReady(player._id.toString())
-
-    this.emit('leave', {_id: player._id.toString()})
-    if (this.isEmpty()) {
-      this.emit('empty', this.disconnected);
-      this.readyPlayers = [];
+    for (let i = 0; i < this.playersOrder.length; i++) {
+      const po = this.playersOrder[i]
+      if (po && po.model._id.toString() === player.model._id.toString()) {
+        this.playersOrder[i] = null
+      }
     }
 
-    this.removeReadyPlayer(player._id.toString());
-    this.clearScore(player._id.toString());
-
-    if (!this.gameState && this.isPublic) {
-      this.forceDissolve();
-    }
-
-    return true
+    p.room = null
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id, roomId: this._id}})
+    this.removeReadyPlayer(p._id.toString())
+    this.clearScore(player._id.toString())
   }
 
   clearScore(playerId) {

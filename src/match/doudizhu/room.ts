@@ -237,14 +237,15 @@ class Room extends RoomBase {
     return 1;
   }
 
-  updatePosition(player, position) {
-    if (position) {
-      player.model.position = position
-
-      const positions = this.players.map(p => p && p.model)
-
-      this.broadcast('room/playersPosition', {ok: true, data: {positions}});
+  async updatePosition() {
+    const positions = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const position = i;
+      positions.push({_id: p._id, shortId: p.model.shortId, position});
     }
+
+    this.broadcast("game/updatePosition", {ok: true, data: {positions}});
   }
 
   async shuffleDataApply(payload) {
@@ -641,17 +642,20 @@ class Room extends RoomBase {
     }
     this.clearReady();
 
-    // 最后一局才翻
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
-    this.gameState.destroy();
-    this.gameState = null
-    this.readyPlayers = [];
-    this.robotManager.model.step = RobotStep.waitRuby;
 
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)
     await this.robotManager.nextRound();
+
+    // 更新玩家位置
+    await this.updatePosition();
+
+    this.gameState.destroy();
+    this.gameState = null
+    this.readyPlayers = [];
+    this.robotManager.model.step = RobotStep.waitRuby;
 
     // 好友房总结算
     if (this.game.isAllOver() && !this.isPublic) {
