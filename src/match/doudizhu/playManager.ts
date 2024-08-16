@@ -264,6 +264,10 @@ export class PlayManager {
       return undefined; // 没有可用的牌型
     }
 
+    console.warn("----------111--------------");
+    console.warn(allPossibles);
+    console.warn("----------222--------------");
+
     // 首先找到simpleCount最小的值
     const minSimpleCount = Math.min(...allPossibles.map(p => p.simpleCount));
 
@@ -272,7 +276,9 @@ export class PlayManager {
 
     // 根据name进行排序
     bestPlays.sort(this.compareNames);
+    console.warn("----------111--------------");
     console.warn(bestPlays);
+    console.warn("----------222--------------");
 
     // 取第一个
     const firstBestPlay = bestPlays[0];
