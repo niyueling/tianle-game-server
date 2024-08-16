@@ -536,7 +536,7 @@ abstract class Table implements Serializable {
           const playerIndex = this.atIndex(p)
           this.room.broadcast('room/fourJokersReward', {ok: true, data: {
               playerId: p._id,
-              playerName: p.model.name,
+              playerName: p.model.nickname,
               index: playerIndex,
               amountInFen: fourJokerReward
             }})
@@ -785,7 +785,7 @@ abstract class Table implements Serializable {
       mode: this.mode,
       currentPlayer: this.status.current.seatIndex,
       soloPlayerIndex: this.soloPlayerIndex,
-      soloPlayerName: soloPlayer && soloPlayer.model.name,
+      soloPlayerName: soloPlayer && soloPlayer.model.nickname,
       lastPattern: this.status.lastPattern,
       lastIndex: this.status.lastIndex,
       friendCard: this.friendCard,

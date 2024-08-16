@@ -210,7 +210,7 @@ export default class NormalTable extends Table {
     this.room.broadcast('game/gameMode', {ok: true, data: {
         mode: 'solo',
         soloPlayer: startPlayerIndex,
-        soloPlayerName: this.players[startPlayerIndex].model.name
+        soloPlayerName: this.players[startPlayerIndex].model.nickname
       }})
     this.setFirstDa(startPlayerIndex)
     this.players.forEach(p => p.team = Team.AwayTeam)
@@ -374,7 +374,7 @@ export default class NormalTable extends Table {
       mode: this.mode,
       friendCard: this.friendCard,
       soloPlayerIndex: this.soloPlayerIndex,
-      soloPlayerName: soloPlayer && soloPlayer.model.name,
+      soloPlayerName: soloPlayer && soloPlayer.model.nickname,
       currentPlayer: this.status.current.seatIndex,
       lastPattern: this.status.lastPattern,
       lastIndex: this.status.lastIndex,
