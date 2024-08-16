@@ -197,7 +197,7 @@ export class PlayManager {
           this.excludeCard(res[0], remain);
           if (this.isAllowPlayCard(res[0], remain) && this.checkCardIsBomb(cards.slice(), res[0])) {
             const patternSimpleCount = this.getCardSimpleCount(cards.slice(), res[0]);
-            allPossibles.push({simpleCount: patternSimpleCount, pattern: p.name, data: res[0]});
+            allPossibles.push({simpleCount: patternSimpleCount, name: p.name, data: res[0]});
           }
         }
       }
@@ -272,6 +272,7 @@ export class PlayManager {
 
     // 根据name进行排序
     bestPlays.sort(this.compareNames);
+    // console.warn(bestPlays);
 
     // 取第一个
     const firstBestPlay = bestPlays[0];
