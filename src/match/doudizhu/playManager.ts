@@ -192,7 +192,8 @@ export class PlayManager {
           remain = cards.slice();
           this.excludeCard(res[0], remain);
           if (this.isAllowPlayCard(res[0], remain)) {
-            allPossibles.push(res[0]);
+            const patternSimpleCount = this.getCardSimpleCount(cards.slice(), res[0]);
+            allPossibles.push({simpleCount: patternSimpleCount, data: res[0]});
           }
         }
       }
@@ -200,18 +201,34 @@ export class PlayManager {
 
     if (allPossibles.length > 0) {
       console.warn("allPossibles-%s", JSON.stringify(allPossibles));
-      return allPossibles[0];
+      const bestPlay = this.findBestFirstPlay(allPossibles);
+      if (bestPlay) {
+        console.warn("Best first play-%s", JSON.stringify(bestPlay.data));
+        return bestPlay.data; // 返回单张数量最少的牌型
+      }
     }
 
     // 没有牌能出
     return [];
   }
 
+  findBestFirstPlay(allPossibles: { simpleCount: number, data: Card[] }[]): { simpleCount: number, data: Card[] } | undefined {
+    if (allPossibles.length === 0) {
+      return undefined; // 没有可用的牌型
+    }
+
+    return allPossibles.reduce((min, current) => {
+      if (min === null || current.simpleCount < min.simpleCount) {
+        return current;
+      }
+      return min;
+    }, null);
+  }
+
   getCardSimpleCount(cards: Card[], chooseCards: Card[]) {
     const residueCards = arraySubtract(cards, chooseCards);
     return groupBy(residueCards.filter(c => c.point <= CardTag.hk), card => card.point)
-      .filter(g => g.length === 1)
-      .sort(lengthFirstThenPointGroupComparator).length;
+      .filter(g => g.length === 1).length;
   }
 
   shuffleArray(array) {
