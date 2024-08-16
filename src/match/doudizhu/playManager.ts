@@ -272,7 +272,7 @@ export class PlayManager {
 
     // 根据name进行排序
     bestPlays.sort(this.compareNames);
-    // console.warn(bestPlays);
+    console.warn(bestPlays);
 
     // 取第一个
     const firstBestPlay = bestPlays[0];
