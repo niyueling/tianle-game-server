@@ -266,7 +266,7 @@ export class PlayManager {
 
     console.warn("----------111--------------");
     console.warn(allPossibles);
-    console.warn("----------222--------------");
+    console.warn("----------111--------------");
 
     // 首先找到simpleCount最小的值
     const minSimpleCount = Math.min(...allPossibles.map(p => p.simpleCount));
@@ -276,7 +276,7 @@ export class PlayManager {
 
     // 根据name进行排序
     bestPlays.sort(this.compareNames);
-    console.warn("----------111--------------");
+    console.warn("----------222--------------");
     console.warn(bestPlays);
     console.warn("----------222--------------");
 
