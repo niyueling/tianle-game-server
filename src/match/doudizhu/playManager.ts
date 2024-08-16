@@ -21,6 +21,17 @@ import StraightTriplePlusMatcher from "./patterns/StraightTriplePlusMatcher";
 import TripleMatcher from "./patterns/TripleMatcher";
 import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 
+const nameOrder = {
+  tripleX: 1,
+  straight_: 2,
+  'triples++_2': 3,
+  doubles_: 4,
+  'triple++': 5,
+  single: 6,
+  double: 7,
+  bomb: 8
+}
+
 // 第一次出牌顺序
 const firstCardPatternOrder = [
   {
@@ -193,36 +204,61 @@ export class PlayManager {
           this.excludeCard(res[0], remain);
           if (this.isAllowPlayCard(res[0], remain)) {
             const patternSimpleCount = this.getCardSimpleCount(cards.slice(), res[0]);
-            allPossibles.push({simpleCount: patternSimpleCount, data: res[0]});
+            allPossibles.push({simpleCount: patternSimpleCount, pattern: p.name, data: res[0]});
           }
         }
       }
     }
 
     if (allPossibles.length > 0) {
-      // console.warn("allPossibles-%s", JSON.stringify(allPossibles));
-      const bestPlay = this.findBestFirstPlay(allPossibles);
-      if (bestPlay) {
-        // console.warn("Best first play-%s", JSON.stringify(bestPlay.data));
-        return bestPlay.data; // 返回单张数量最少的牌型
-      }
+      return this.getPossibleResultCard(allPossibles);
     }
 
     // 没有牌能出
     return [];
   }
 
-  findBestFirstPlay(allPossibles: { simpleCount: number, data: Card[] }[]): { simpleCount: number, data: Card[] } | undefined {
+  // 从所有出牌选择单牌最少的选择
+  getPossibleResultCard(allPossibles) {
+    // console.warn("allPossibles-%s", JSON.stringify(allPossibles));
+    const bestPlay = this.findBestFirstPlay(allPossibles);
+    if (bestPlay) {
+      // console.warn("Best first play-%s", JSON.stringify(bestPlay.data));
+      return bestPlay.data; // 返回单张数量最少的牌型
+    }
+
+    return [];
+  }
+
+  // 自定义排序函数
+  compareNames(a: { name: string }, b: { name: string }): number {
+    // 从映射中获取排序值，如果某个name不在映射中，则给它一个很大的值以确保它排在最后
+    const orderA = nameOrder[a.name] || Number.MAX_SAFE_INTEGER;
+    const orderB = nameOrder[b.name] || Number.MAX_SAFE_INTEGER;
+
+    // 返回排序值的比较结果
+    return orderA - orderB;
+  }
+
+  findBestFirstPlay(allPossibles: { simpleCount: number, name: string, data: Card[] }[]): { simpleCount: number, name: string, data: Card[] } | undefined {
     if (allPossibles.length === 0) {
       return undefined; // 没有可用的牌型
     }
 
-    return allPossibles.reduce((min, current) => {
-      if (min === null || current.simpleCount < min.simpleCount) {
-        return current;
-      }
-      return min;
-    }, null);
+    // 首先找到simpleCount最小的值
+    const minSimpleCount = Math.min(...allPossibles.map(p => p.simpleCount));
+
+    // 然后筛选出所有simpleCount等于最小值的元素
+    const bestPlays = allPossibles.filter(p => p.simpleCount === minSimpleCount);
+
+    // 根据name进行排序
+    bestPlays.sort(this.compareNames);
+
+    // 取第一个
+    const firstBestPlay = bestPlays[0];
+
+    console.warn("Best first play-%s: %s", firstBestPlay.name, JSON.stringify(firstBestPlay.data));
+    return firstBestPlay; // 返回第一个简单数量最少且按name排序的牌型
   }
 
   getCardSimpleCount(cards: Card[], chooseCards: Card[]) {
