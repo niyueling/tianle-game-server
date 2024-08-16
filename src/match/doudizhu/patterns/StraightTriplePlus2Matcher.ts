@@ -34,7 +34,7 @@ export default class StraightTriplePlus2Matcher implements IMatcher {
               pattern = {
                 name: this.name + (allTriplesLen / 3),
                 score: stripes[0].point,
-                cards: [...stripes, ... arraySubtract(cards, stripes)]
+                cards: [...stripes, ...arraySubtract(cards, stripes)]
               }
               break;
             }

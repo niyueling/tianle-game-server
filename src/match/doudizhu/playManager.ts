@@ -1,5 +1,12 @@
-import Card from "./card";
-import {IMatcher, IPattern, PatterNames} from "./patterns/base";
+import Card, {CardTag} from "./card";
+import {
+  arraySubtract,
+  groupBy,
+  IMatcher,
+  IPattern,
+  lengthFirstThenPointGroupComparator,
+  PatterNames
+} from "./patterns/base";
 import BombMatcher from "./patterns/BombMatcher";
 import DoubleMatcher from "./patterns/DoubleMatcher";
 import QuadruplePlusTwo from "./patterns/QuadruplePlusTwo";
@@ -176,21 +183,35 @@ export class PlayManager {
   firstPlayCard(cards: Card[]) {
     let res;
     let remain;
+    let allPossibles = [];
     // const sortFirstCardPatternOrder = this.shuffleArray(firstCardPatternOrder);
     for (const p of firstCardPatternOrder) {
       for (const allowPattern of this.allowPattern) {
         res = allowPattern.promptWithPattern(p as IPattern, cards);
-        if (res.length > 0) {
+        for (let i = 0; i < res.length; i++) {
           remain = cards.slice();
-          this.excludeCard(res[0], remain)
+          this.excludeCard(res[0], remain);
           if (this.isAllowPlayCard(res[0], remain)) {
-            return res[0]
+            allPossibles.push(res[0]);
           }
         }
       }
     }
+
+    if (allPossibles.length > 0) {
+      console.warn("allPossibles-%s", JSON.stringify(allPossibles));
+      return allPossibles[0];
+    }
+
     // 没有牌能出
     return [];
+  }
+
+  getCardSimpleCount(cards: Card[], chooseCards: Card[]) {
+    const residueCards = arraySubtract(cards, chooseCards);
+    return groupBy(residueCards.filter(c => c.point <= CardTag.hk), card => card.point)
+      .filter(g => g.length === 1)
+      .sort(lengthFirstThenPointGroupComparator).length;
   }
 
   shuffleArray(array) {
