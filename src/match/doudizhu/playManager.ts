@@ -151,16 +151,16 @@ export class PlayManager {
   buildAllowPattern() {
     // 添加基本牌型
     this.allowPattern = [
+      new TriplePlusXMatcher(), // 三带一
+      new StraightMatcher(), // 顺子
+      new StraightTriplePlus2Matcher(), // 飞机+2单张
+      new StraightDoublesMatcher(), // 连对
+      new StraightTriplesPlusXMatcher(), // 飞机+2对子
+      new TriplePlus2Matcher(), // 三带二
+      new StraightTriplePlusMatcher(), // 飞机不带
+      new TripleMatcher(), // 三张不带
       new SingleMatcher(),// 单张
       new DoubleMatcher(), // 对子
-      new StraightMatcher(), // 顺子
-      new StraightDoublesMatcher(), // 连对
-      new StraightTriplePlusMatcher(), // 飞机不带
-      new StraightTriplePlus2Matcher(), // 飞机+2单张
-      new StraightTriplesPlusXMatcher(), // 飞机+2对子
-      new TripleMatcher(), // 三张不带
-      new TriplePlusXMatcher(), // 三带一
-      new TriplePlus2Matcher(), // 三带二
       new QuadruplePlusTwo(), // 4带二
       new BombMatcher(), // 炸弹
     ];
