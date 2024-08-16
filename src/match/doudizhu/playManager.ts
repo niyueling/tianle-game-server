@@ -289,7 +289,7 @@ export class PlayManager {
 
   getCardSimpleCount(cards: Card[], chooseCards: Card[]) {
     const residueCards = arraySubtract(cards, chooseCards);
-    return groupBy(residueCards.filter(c => c.point <= CardTag.hk), card => card.point)
+    return groupBy(residueCards.filter(c => c.point <= CardTag.c4), card => card.point)
       .filter(g => g.length === 1).length;
   }
 
