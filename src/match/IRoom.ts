@@ -391,9 +391,9 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   removeReadyPlayer(playerId: string) {
-    const index = this.readyPlayers.indexOf(playerId)
-    if (index >= 0) {
-      this.readyPlayers.splice(index, 1)
+    const index = this.readyPlayers.findIndex(_id => _id.toString() === playerId);
+    if (index !== -1) {
+      this.readyPlayers.splice(index, 1);
       return true
     }
     return false
@@ -471,7 +471,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       .map((p, index) => {
         return p || this.playersOrder[index]
       })
-      .filter(x => x !== null && x.model._id !== newJoinPlayer.model._id)) {
+      .filter(x => x !== null && x._id !== newJoinPlayer._id)) {
       newJoinPlayer.sendMessage('room/joinReply', {ok: true, data: await this.joinMessageFor(alreadyInRoomPlayer)});
     }
   }
