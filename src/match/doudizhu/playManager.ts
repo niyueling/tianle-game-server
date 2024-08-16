@@ -17,6 +17,18 @@ import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 // 第一次出牌顺序
 const firstCardPatternOrder = [
   {
+    // 3带1
+    name: PatterNames.triplePlusX,
+    score: 0,
+    cards: [],
+  },
+  {
+    // 顺子(5)
+    name: PatterNames.straight,
+    score: 0,
+    cards:  Array.from({ length: 5 }),
+  },
+  {
     // 飞机带翅膀
     name: PatterNames.straightTriplePlus2 + '2',
     score: 0,
@@ -29,38 +41,20 @@ const firstCardPatternOrder = [
     cards:  Array.from({ length: 6 }),
   },
   {
-    // 顺子(5)
-    name: PatterNames.straight,
-    score: 0,
-    cards:  Array.from({ length: 5 }),
-  },
-  {
     // 3带2
     name: PatterNames.triplePlus2,
     score: 0,
     cards:  Array.from({ length: 5 }),
   },
   {
-    // 3带1
-    name: PatterNames.triplePlusX,
+    // 单张
+    name: PatterNames.single,
     score: 0,
     cards: [],
   },
-  // {
-  //   // 4带2
-  //   name: PatterNames.quadPlus2,
-  //   score: 0,
-  //   cards: [],
-  // },
   {
     // 对子
     name: PatterNames.double,
-    score: 0,
-    cards: [],
-  },
-  {
-    // 单张
-    name: PatterNames.single,
     score: 0,
     cards: [],
   },
@@ -182,8 +176,8 @@ export class PlayManager {
   firstPlayCard(cards: Card[]) {
     let res;
     let remain;
-    const sortFirstCardPatternOrder = this.shuffleArray(firstCardPatternOrder);
-    for (const p of sortFirstCardPatternOrder) {
+    // const sortFirstCardPatternOrder = this.shuffleArray(firstCardPatternOrder);
+    for (const p of firstCardPatternOrder) {
       for (const allowPattern of this.allowPattern) {
         res = allowPattern.promptWithPattern(p as IPattern, cards);
         if (res.length > 0) {

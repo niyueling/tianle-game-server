@@ -1,4 +1,5 @@
 import {Channel} from 'amqplib'
+// @ts-ignore
 import {pick} from 'lodash'
 import * as mongoose from 'mongoose'
 import * as logger from 'winston'
@@ -40,7 +41,7 @@ export const rule2Fee = rule => {
   return fee || 1;
 }
 
-const gameType: GameTypes = "shisanshui"
+const gameType: string = "shisanshui"
 
 class Room extends RoomBase {
   @serialize
@@ -97,7 +98,6 @@ class Room extends RoomBase {
   }
 
   async autoDissolveFunc() {
-    await this.refundClubOwner();
     this.roomState = ''
     this.players.forEach(player => {
       if (player) {
@@ -462,7 +462,7 @@ class Room extends RoomBase {
     }
     player.sendMessage('room/creatorStartGameReply', {ok: true, reason: ''})
     this.snapshot = this.players.filter(p => p).slice()
-    this.startNewGame()
+    this.startNewGame({})
   }
 
   difen() {
@@ -481,7 +481,6 @@ class Room extends RoomBase {
     }
 
     await this.recordDrawGameScore()
-    await this.refundClubOwner();
     this.dissolveAndDestroyTable()
 
     roomCreator.sendMessage('room/dissolveReply', {errorCode: 0})
@@ -502,7 +501,6 @@ class Room extends RoomBase {
     await this.recordDrawGameScore();
     this.dissolveReqInfo = [];
     const allOverMessage = this.allOverMessage()
-    await this.refundClubOwner();
     clearTimeout(this.dissolveTimeout)
     this.dissolveTimeout = null
     this.players
@@ -557,37 +555,6 @@ class Room extends RoomBase {
 
   get allConfirm() {
     return this.inRoomPlayers.length === 0
-  }
-
-  async ready(player) {
-    if (this.isReadyPlayer(player._id)) {
-      return
-    }
-
-    if (this.gameState && !this.canReady) {
-      return
-    }
-
-    this.readyPlayers.push(player._id)
-    this.broadcast('room/playerReady', {
-      index: this.players.indexOf(player),
-      readyPlayers: this.readyPlayers
-    })
-
-    if (this.allReady) {
-      if (!this.game.isAllOver()) {
-        this.canReady = false
-      }
-      // 先播动画
-      const delayTime = this.playShuffle();
-      if (delayTime > 0) {
-        setTimeout(async () => {
-          await this.startGame();
-        }, delayTime);
-      } else {
-        await this.startGame();
-      }
-    }
   }
 
   unReady(player) {
