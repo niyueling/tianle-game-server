@@ -509,7 +509,7 @@ abstract class Table implements Serializable {
     let cIndex = this.players.findIndex(p => p.mode === enums.unknown);
     let landlordCount = this.players.filter(p => p.mode === enums.landlord).length;
     // 找到第一个选择地主重新选择
-    const firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
+    let firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
     let nextPlayer = (player.index + 1) % this.rule.playerCount;
     this.status.current.seatIndex = nextPlayer;
 
@@ -530,6 +530,12 @@ abstract class Table implements Serializable {
           p.multiple = (p.mode === enums.landlord ? this.multiple * 2 : this.multiple);
           p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}});
         })
+      }
+
+      // 如果地主有多位，选择最后一位作为地主
+      if (landlordCount > 1) {
+        const landlord = this.players.filter(p => p.mode === enums.landlord);
+        firstLandlordIndex = this.players[landlord.length - 1].index;
       }
 
       // 将地主牌发给用户
@@ -695,13 +701,13 @@ abstract class Table implements Serializable {
       let cIndex = this.players.findIndex(p => p.mode === enums.unknown);
       let landlordCount = this.players.filter(p => p.mode === enums.landlord).length;
       // 找到第一个选择地主重新选择
-      const firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
+      let firstLandlordIndex = this.players.findIndex(p => p.mode === enums.landlord);
       let nextPlayer = this.currentPlayerStep;
 
       // console.warn("unknownCount-%s, landlordCount-%s, firstLandlordIndex-%s, nextPlayer-%s", cIndex, landlordCount, firstLandlordIndex, nextPlayer);
 
       // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
-      if (cIndex === -1 && landlordCount === 1) {
+      if (cIndex === -1 && (landlordCount === 1 || (landlordCount > 1 && player.zhuang))) {
         // 如果倍数=1，表示无人抢地主，倍数翻倍
         if (this.callLandlord === 1) {
           this.multiple *= 2;
@@ -717,6 +723,12 @@ abstract class Table implements Serializable {
             p.multiple = (p.mode === enums.landlord ? this.multiple * 2 : this.multiple);
             p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}});
           })
+        }
+
+        // 如果地主有多位，选择最后一位作为地主
+        if (landlordCount > 1) {
+          const landlord = this.players.filter(p => p.mode === enums.landlord);
+          firstLandlordIndex = this.players[landlord.length - 1].index;
         }
 
         // 将地主牌发给用户
