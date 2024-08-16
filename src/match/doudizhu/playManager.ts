@@ -166,7 +166,7 @@ export class PlayManager {
     const possibles = [];
     for (let i = 0; i < prompts.length; i++) {
       const cards = prompts[i];
-      console.warn("prompts-%s", JSON.stringify(prompts[i]));
+      // console.warn("prompts-%s", JSON.stringify(prompts[i]));
 
       if (cards[0].point < CardTag.hk) {
         possibles.push(cards);
@@ -293,9 +293,9 @@ export class PlayManager {
       return undefined; // 没有可用的牌型
     }
 
-    // console.warn("----------111--------------");
-    // console.warn(allPossibles);
-    // console.warn("----------111--------------");
+    console.warn("----------111--------------");
+    console.warn(allPossibles);
+    console.warn("----------111--------------");
 
     // 首先找到simpleCount最小的值
     const minSimpleCount = Math.min(...allPossibles.map(p => p.simpleCount));
