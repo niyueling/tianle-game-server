@@ -53,20 +53,32 @@ const firstCardPatternOrder = [
     cards:  Array.from({ length: 6 }),
   },
   {
+    // 飞机带对子
+    name: PatterNames.straightTriplePlusX + '2',
+    score: 0,
+    cards:  Array.from({ length: 5 }),
+  },
+  {
     // 3带2
     name: PatterNames.triplePlus2,
     score: 0,
     cards:  Array.from({ length: 5 }),
   },
   {
-    // 单张
-    name: PatterNames.single,
+    // 飞机不带
+    name: PatterNames.straightTriples,
     score: 0,
     cards: [],
   },
   {
     // 3张不带
     name: PatterNames.triple,
+    score: 0,
+    cards: [],
+  },
+  {
+    // 单张
+    name: PatterNames.single,
     score: 0,
     cards: [],
   },
