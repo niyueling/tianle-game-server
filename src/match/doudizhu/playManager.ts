@@ -136,9 +136,11 @@ export class PlayManager {
     for (const matcher of this.allowPattern) {
       const result = matcher.promptWithPattern(pattern, remainCards);
       if (result.length > 0) {
-        console.warn(pattern)
+        if (pattern.name === PatterNames.bomb && mode === lastPlayerMode) {
+          continue;
+        }
+
         prompts.push(...result);
-        break;
       }
     }
     // 没有相同牌型，可以出炸
@@ -147,7 +149,6 @@ export class PlayManager {
         const result = matcher.promptWithPattern({ name: PatterNames.bomb, score: 0, cards: null }, remainCards);
         if (result.length > 0) {
           prompts.push(...result);
-          break;
         }
       }
     }
