@@ -3,7 +3,6 @@ import * as config from '../../config'
 import {RobotMangerModel} from '../../database/models/robotManager';
 import {service} from "../../service/importService";
 import { RobotRmqProxy } from "./robotRmqProxy";
-import Player from "../../database/models/player";
 import Enums from "../majiang/enums";
 
 // 机器人出牌
