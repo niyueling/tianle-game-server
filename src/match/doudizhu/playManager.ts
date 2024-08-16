@@ -200,10 +200,10 @@ export class PlayManager {
     }
 
     if (allPossibles.length > 0) {
-      console.warn("allPossibles-%s", JSON.stringify(allPossibles));
+      // console.warn("allPossibles-%s", JSON.stringify(allPossibles));
       const bestPlay = this.findBestFirstPlay(allPossibles);
       if (bestPlay) {
-        console.warn("Best first play-%s", JSON.stringify(bestPlay.data));
+        // console.warn("Best first play-%s", JSON.stringify(bestPlay.data));
         return bestPlay.data; // 返回单张数量最少的牌型
       }
     }
