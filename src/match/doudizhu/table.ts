@@ -472,7 +472,7 @@ abstract class Table implements Serializable {
       return ;
     }
 
-    console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s, state-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status), this.state);
+    // console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s, state-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status), this.state);
     let mode = msg.mode;
     if (mode === enums.landlord) {
       // 如果用户已经选择叫地主，则重置其他用户为农民
@@ -514,7 +514,7 @@ abstract class Table implements Serializable {
     this.status.current.seatIndex = nextPlayer;
 
     // 所有人都选择模式，并且只有一个人选择地主, 则从地主开始打牌
-    if (cIndex === -1 && landlordCount === 1) {
+    if (cIndex === -1 && (landlordCount === 1 || (landlordCount > 1 && player.zhuang))) {
       // 如果倍数=1，表示无人抢地主，倍数翻倍
       if (this.callLandlord === 1) {
         this.multiple *= 2;
