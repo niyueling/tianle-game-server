@@ -318,7 +318,6 @@ export default class NormalTable extends Table {
       // 判断是否春天
       let isSpring = true;
       let fanShu = 1;
-      const springIds = [];
       for (let i = 0; i < losers.length; i++) {
         if (losers[i].cards.length !== 17) {
           isSpring = false;
@@ -327,6 +326,11 @@ export default class NormalTable extends Table {
 
       if (isSpring) {
         fanShu = 2;
+        this.players.map(player => {
+          player.multiple *= 2;
+          player.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: 2}});
+        })
+
         this.room.broadcast("game/showSpring", {ok: true, data: {}});
       }
 
@@ -343,6 +347,10 @@ export default class NormalTable extends Table {
       // 判断是否反春天
       if (this.audit.currentRound[loser.model.shortId].playTimes === 1) {
         fanShu = 2;
+        this.players.map(player => {
+          player.multiple *= 2;
+          player.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: 2}});
+        })
         this.room.broadcast("game/showSpring", {ok: true, data: {}});
       }
 
