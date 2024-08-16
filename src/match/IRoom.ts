@@ -455,10 +455,12 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
   }
 
-  removePlayer(leaver) {
-    const index = this.players.indexOf(leaver)
-    if (index > -1) {
-      this.players[index] = null
+  removePlayer(player) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i]._id.toString() === player._id.toString()) {
+        this.players[i] = null
+        break
+      }
     }
   }
 
