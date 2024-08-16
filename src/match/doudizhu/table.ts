@@ -590,7 +590,7 @@ abstract class Table implements Serializable {
   }
 
   onPlayerChooseMultiple(player, msg) {
-    if (this.currentPlayerStep !== player.index) {
+    if (this.currentPlayerStep === -1) {
       return ;
     }
 
