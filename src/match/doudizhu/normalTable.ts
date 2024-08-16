@@ -206,7 +206,7 @@ export default class NormalTable extends Table {
       if (p) {
         p.balance *= times;
         if (p.balance > 0) {
-          winRuby += p.balance;
+          // winRuby += p.balance;
           winnerList.push(p);
         } else {
           const currency = await this.PlayerGoldCurrency(p._id);
@@ -225,6 +225,7 @@ export default class NormalTable extends Table {
         }
       }
     }
+    winRuby = -lostRuby;
     if (isNaN(winRuby)) {
       winRuby = 0;
     }
@@ -303,10 +304,7 @@ export default class NormalTable extends Table {
     const multiples = [];
     const winner = this.players.find(p => p.cards.length === 0);
 
-    // console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
     this.players.map((v) => {multiples.push({index: v.index, multiple: v.multiple, mode: v.mode})});
-    // const springPlayers = this.audit.isSpring();
-    // console.warn("multiples-%s, springPlayers-%s", JSON.stringify(multiples), JSON.stringify(springPlayers));
 
     // 如果赢家是地主
     if (winner.mode === enums.landlord) {
