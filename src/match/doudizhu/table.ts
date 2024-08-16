@@ -645,7 +645,7 @@ abstract class Table implements Serializable {
   }
 
   onPlayerOpenCard(player, msg) {
-    if (this.currentPlayerStep !== player.index) {
+    if (this.currentPlayerStep === -1) {
       return ;
     }
     player.isOpenCard = true;
