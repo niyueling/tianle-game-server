@@ -159,15 +159,19 @@ export class PlayManager {
     return prompts;
   }
 
-  // 如果是队友打的大牌，则放弃吃牌
+  // 如果是队友打的K以上大牌，则放弃吃牌
   checkCardIsTeamMate(prompts) {
+    const possibles = [];
     for (let i = 0; i < prompts.length; i++) {
       const cards = prompts[i];
+      console.warn("prompts-%s", JSON.stringify(prompts[i]));
 
-      console.warn("prompts-%s", JSON.stringify(cards));
+      if (cards[0].point < CardTag.hk) {
+        possibles.push(cards);
+      }
     }
 
-    return [];
+    return possibles;
   }
 
   // 允许出牌的牌型
@@ -304,10 +308,8 @@ export class PlayManager {
     // console.warn("----------222--------------");
 
     // 取第一个
-    const firstBestPlay = bestPlays[0];
-
     // console.warn("Best first play-%s: %s", firstBestPlay.name, JSON.stringify(firstBestPlay.data));
-    return firstBestPlay; // 返回第一个单牌数量最少且按name排序的牌型
+    return bestPlays[0]; // 返回第一个单牌数量最少且按name排序的牌型
   }
 
   getCardSimpleCount(cards: Card[], chooseCards: Card[]) {
