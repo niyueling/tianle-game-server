@@ -1,5 +1,5 @@
 import Card from './card'
-import {IMatcher, IPattern, NullCheck, orCompose, PatterNames} from './patterns/base'
+import {IMatcher, IPattern, NullCheck, PatterNames} from './patterns/base'
 
 import BombMatcher from './patterns/BombMatcher'
 import DoubleMatcher from './patterns/DoubleMatcher'
@@ -9,12 +9,9 @@ import StraightMatcher from './patterns/StraightMatcher'
 import StraightTriplePlus2Matcher from "./patterns/StraightTriplePlus2Matcher";
 import StraightTriplePlusXMatcher from "./patterns/StraightTriplePlusXMatcher";
 import StraightTriplesMatcher from './patterns/StraightTriplesMatcher'
-import TripleABomb from "./patterns/TripleABomb";
 import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 import Rule from "./Rule";
 import {StraightTriplePlusXMatcherExtra, TriplePlus2MatcherExtra} from "./SepecialPrompters"
-
-const composedBombMatcher = orCompose(new BombMatcher(), new TripleABomb())
 
 function patternNameToPatternMatcher(name: string, rule?: Rule): IMatcher {
   if (name === PatterNames.single) return new SingleMatcher()
@@ -85,12 +82,7 @@ export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount
 export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], rule?: Rule): Card[][] {
   if (!pattern) return [[cards[0]]]
   const matcher = patternNameToPatternMatcher(pattern.name, rule)
-  const prompts = matcher.promptWithPattern(pattern, cards)
-  let bombPrompts = []
-  if (pattern.name !== PatterNames.bomb) {
-    bombPrompts = composedBombMatcher.promptWithPattern(pattern, cards)
-  }
-  return [...prompts, ...bombPrompts]
+  return matcher.promptWithPattern(pattern, cards)
 }
 
 /* share with client side */

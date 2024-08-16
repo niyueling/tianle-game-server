@@ -11,9 +11,6 @@ import {GameType} from "@fm/common/constants";
 import enums from "./enums";
 import {service} from "../../service/importService";
 import Enums from "./enums";
-import GameCategory from "../../database/models/gameCategory";
-import CombatGain from "../../database/models/combatGain";
-import Player from "../../database/models/player";
 
 function once(target, propertyKey: string, descriptor: PropertyDescriptor) {
   const originCall = descriptor.value

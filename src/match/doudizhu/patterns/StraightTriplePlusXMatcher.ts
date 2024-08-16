@@ -1,6 +1,14 @@
 import Card from "../card";
 import Enums from "../enums"
-import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames, patternCompare} from "./base";
+import {
+  arraySubtract,
+  groupBy,
+  IMatcher,
+  IPattern,
+  lengthFirstThenPointGroupComparator,
+  PatterNames,
+  patternCompare
+} from "./base";
 
 export default class StraightTriplesPlusXMatcher implements IMatcher {
   name: string = PatterNames.straightTriplePlusX;
@@ -47,14 +55,47 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
     if (!target.name.startsWith(this.name)) {
       return [];
     }
-    const foundPattern = this.verify(cards)
-    if (this.verify(cards)) {
-      if (patternCompare(foundPattern, target) > 0) {
-        return [cards]
-      }
+
+    const triples = parseInt(target.name.replace('triplesX_', ''), 10) || 0
+    if (triples <= 1) {
+      return [];
     }
 
-    return []
+    const tripleLen = triples * 3
+
+    const tripleGroups = groupBy(cards.filter(c => c.point > target.score && c.point < Enums.c2.point), c => c.point)
+      .filter(grp => grp.length >= 3)
+      .sort((g1, g2) => g1[0].point - g2[0].point);
+
+    const prompts = [];
+
+    let start = 0;
+    while (start < tripleGroups.length) {
+      const prompt = [...tripleGroups[start].slice(0, 3)];
+      let prevGroup = tripleGroups[start];
+      for (let i = start + 1; i < tripleGroups.length; i++) {
+        const currentGroup = tripleGroups[i].slice(0, 3);
+
+        if (currentGroup[0].point - prevGroup[0].point === 1) {
+          prevGroup = currentGroup;
+          prompt.push(...currentGroup);
+
+          if (prompt.length === tripleLen) {
+            const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length === 2).sort(lengthFirstThenPointGroupComparator);
+            if (leftCards.length >= 2) {
+              prompts.push([...prompt, ...leftCards.slice(0, triples)]);
+              break;
+            }
+          }
+
+          start = i - 1;
+        }
+      }
+
+      start++;
+    }
+
+    return prompts;
   }
 
   private isGreater(p1: IPattern, p2: IPattern): boolean {

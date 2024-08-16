@@ -9,17 +9,13 @@ import StraightMatcher from './patterns/StraightMatcher'
 import StraightTriplePlus2Matcher from "./patterns/StraightTriplePlus2Matcher";
 import StraightTriplePlusXMatcher from "./patterns/StraightTriplePlusXMatcher";
 import StraightTriplesMatcher from './patterns/StraightTriplesMatcher'
-import Triple2Bomb from "./patterns/Triple2Bomb";
 import TriplePlus2Matcher from './patterns/TriplePlus2Matcher'
 import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 import Rule from "./Rule";
 import {StraightTriplePlusXMatcherExtra, TriplePlus2MatcherExtra} from "./SepecialPrompters"
 
-const composedBombMatcher = orCompose(new BombMatcher(), new Triple2Bomb())
-
 function patternNameToPatternMatcher(name: string): IMatcher {
   if (name === PatterNames.single) return new SingleMatcher()
-  if (name === PatterNames.bomb) return composedBombMatcher
   if (name === PatterNames.double) return new DoubleMatcher()
   if (name === PatterNames.triplePlus2) return new TriplePlus2MatcherExtra()
   if (name.startsWith(PatterNames.straight)) return new StraightMatcher()
@@ -36,9 +32,7 @@ const matchers: IMatcher[] = [
   new TriplePlus2Matcher(),
   new StraightMatcher(),
   new StraightDoublesMatcher(),
-
   new BombMatcher(),
-  new Triple2Bomb(),
   new StraightTriplePlus2Matcher(),
 ]
 
@@ -86,12 +80,7 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], ru
   const matcher = patternNameToPatternMatcher(pattern.name)
   const prompts = matcher.promptWithPattern(pattern, cards)
 
-  let bombPrompts = []
-  if (pattern.name !== PatterNames.bomb) {
-    bombPrompts = composedBombMatcher.promptWithPattern(pattern, cards)
-  }
-
-  return [...prompts, ...bombPrompts]
+  return prompts
 }
 
 /* share with client side */
