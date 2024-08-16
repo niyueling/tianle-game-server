@@ -195,7 +195,7 @@ export class PlayManager {
         for (let i = 0; i < res.length; i++) {
           remain = cards.slice();
           this.excludeCard(res[0], remain);
-          if (this.isAllowPlayCard(res[0], remain) && !this.checkCardIsBomb(cards.slice(), res[0])) {
+          if (this.isAllowPlayCard(res[0], remain) && this.checkCardIsBomb(cards.slice(), res[0])) {
             const patternSimpleCount = this.getCardSimpleCount(cards.slice(), res[0]);
             allPossibles.push({simpleCount: patternSimpleCount, pattern: p.name, data: res[0]});
           }
