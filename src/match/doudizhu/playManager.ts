@@ -19,11 +19,13 @@ const nameOrder = {
   straight_: 2,
   'triples++_2': 3,
   doubles_: 4,
-  'triple++': 5,
-  single: 6,
-  triple: 7,
-  double: 8,
-  bomb: 9
+  'triplesX_2': 5,
+  'triple++': 6,
+  triples: 7,
+  triple: 8,
+  single: 9,
+  double: 10,
+  bomb: 11
 }
 
 // 第一次出牌顺序
