@@ -136,12 +136,13 @@ export class PlayManager {
     for (const matcher of this.allowPattern) {
       const result = matcher.promptWithPattern(pattern, remainCards);
       if (result.length > 0) {
+        console.warn(pattern)
         prompts.push(...result);
         break;
       }
     }
     // 没有相同牌型，可以出炸
-    if (pattern.name !== PatterNames.bomb) {
+    if (pattern.name !== PatterNames.bomb && mode !== lastPlayerMode) {
       for (const matcher of this.boomPattern) {
         const result = matcher.promptWithPattern({ name: PatterNames.bomb, score: 0, cards: null }, remainCards);
         if (result.length > 0) {
