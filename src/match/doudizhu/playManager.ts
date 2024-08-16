@@ -1,12 +1,5 @@
-import Card, {CardTag} from "./card";
-import {
-  arraySubtract,
-  groupBy,
-  IMatcher,
-  IPattern,
-  lengthFirstThenPointGroupComparator,
-  PatterNames
-} from "./patterns/base";
+import Card, {CardTag, CardType} from "./card";
+import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames} from "./patterns/base";
 import BombMatcher from "./patterns/BombMatcher";
 import DoubleMatcher from "./patterns/DoubleMatcher";
 import QuadruplePlusTwo from "./patterns/QuadruplePlusTwo";
@@ -202,7 +195,7 @@ export class PlayManager {
         for (let i = 0; i < res.length; i++) {
           remain = cards.slice();
           this.excludeCard(res[0], remain);
-          if (this.isAllowPlayCard(res[0], remain)) {
+          if (this.isAllowPlayCard(res[0], remain) && !this.checkCardIsBomb(cards.slice(), res[0])) {
             const patternSimpleCount = this.getCardSimpleCount(cards.slice(), res[0]);
             allPossibles.push({simpleCount: patternSimpleCount, pattern: p.name, data: res[0]});
           }
@@ -216,6 +209,32 @@ export class PlayManager {
 
     // 没有牌能出
     return [];
+  }
+
+  checkCardIsBomb(cards: Card[], chooseCards: Card[]) {
+    let flag = true;
+
+    for (let i = 0; i < chooseCards.length; i++) {
+      const card = chooseCards[i];
+
+      if (card.type !== CardType.Joker) {
+        const valueCount = cards.filter(c => c.point === card.point).length;
+        if (valueCount === 4) {
+          flag = false;
+          break;
+        }
+      }
+
+      if (card.type === CardType.Joker) {
+        const valueCount = cards.filter(c => c.type === CardType.Joker).length;
+        if (valueCount === 2) {
+          flag = false;
+          break;
+        }
+      }
+    }
+
+    return flag;
   }
 
   // 从所有出牌选择单牌最少的选择
