@@ -258,7 +258,7 @@ export class PlayManager {
     const firstBestPlay = bestPlays[0];
 
     console.warn("Best first play-%s: %s", firstBestPlay.name, JSON.stringify(firstBestPlay.data));
-    return firstBestPlay; // 返回第一个简单数量最少且按name排序的牌型
+    return firstBestPlay; // 返回第一个单牌数量最少且按name排序的牌型
   }
 
   getCardSimpleCount(cards: Card[], chooseCards: Card[]) {
