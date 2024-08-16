@@ -25,6 +25,7 @@ class Status {
   lastCards: Card[] = []
   lastPattern: IPattern = null
   lastIndex: number = -1
+  lastPlayerMode: string = 'unknown'
   // 出牌玩家位置
   from: number
   winOrder = 0
@@ -295,6 +296,7 @@ abstract class Table implements Serializable {
     const cards = plainCards.map(Card.from);
     const currentPattern = this.playManager.getPatternByCard(cards, player.cards);
     this.status.lastIndex = this.currentPlayerStep
+    this.status.lastPlayerMode = player.mode;
     // 检查最后几张
     // if (player.cards.length === cards.length && !currentPattern) {
     //   currentPattern = triplePlusXMatcher.verify(cards) || straightTriplesPlusXMatcher.verify(cards)
@@ -375,7 +377,7 @@ abstract class Table implements Serializable {
 
   async checkNextPlayerDa(index) {
     const nextPlayerState = this.players[index];
-    const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
+    const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards, nextPlayerState.mode, this.status.lastPlayerMode);
     return prompts.length > 0;
   }
 
@@ -424,7 +426,7 @@ abstract class Table implements Serializable {
         return ;
       }
 
-      const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards);
+      const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards, nextPlayerState.mode, this.status.lastPlayerMode);
       if (prompts.length > 0) {
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
@@ -1024,7 +1026,7 @@ abstract class Table implements Serializable {
         return cards;
       }
     } else {
-      const cardList = this.playManager.getCardByPattern(this.status.lastPattern, player.cards)
+      const cardList = this.playManager.getCardByPattern(this.status.lastPattern, player.cards, player.mode, this.status.lastPlayerMode)
       if (cardList.length > 0) {
         for (const cards of cardList) {
           if (patternCompare(this.playManager.getPatternByCard(cards, player.cards),

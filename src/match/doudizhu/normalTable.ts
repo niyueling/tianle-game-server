@@ -75,7 +75,7 @@ export default class NormalTable extends Table {
       await this.setFirstDa(0);
     }
 
-    console.warn("firstDa-%s", this.status.current.seatIndex);
+    // console.warn("firstDa-%s", this.status.current.seatIndex);
     if (this.status.current.seatIndex === -1) {
       return ;
     }
@@ -308,8 +308,8 @@ export default class NormalTable extends Table {
 
     // console.warn("winner-%s, losers-%s", JSON.stringify(winner), JSON.stringify(losers));
     this.players.map((v) => {multiples.push({index: v.index, multiple: v.multiple, mode: v.mode})});
-    const springPlayers = this.audit.isSpring();
-    console.warn("multiples-%s, springPlayers-%s", JSON.stringify(multiples), JSON.stringify(springPlayers));
+    // const springPlayers = this.audit.isSpring();
+    // console.warn("multiples-%s, springPlayers-%s", JSON.stringify(multiples), JSON.stringify(springPlayers));
 
     // 如果赢家是地主
     if (winner.mode === enums.landlord) {
