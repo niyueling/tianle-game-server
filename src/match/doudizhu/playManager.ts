@@ -21,8 +21,9 @@ const nameOrder = {
   doubles_: 4,
   'triple++': 5,
   single: 6,
-  double: 7,
-  bomb: 8
+  triple: 7,
+  double: 8,
+  bomb: 9
 }
 
 // 第一次出牌顺序
@@ -60,6 +61,12 @@ const firstCardPatternOrder = [
   {
     // 单张
     name: PatterNames.single,
+    score: 0,
+    cards: [],
+  },
+  {
+    // 3张不带
+    name: PatterNames.triple,
     score: 0,
     cards: [],
   },
@@ -289,7 +296,7 @@ export class PlayManager {
 
   getCardSimpleCount(cards: Card[], chooseCards: Card[]) {
     const residueCards = arraySubtract(cards, chooseCards);
-    return groupBy(residueCards.filter(c => c.point <= CardTag.c4), card => card.point)
+    return groupBy(residueCards.filter(c => c.point <= CardTag.hk), card => card.point)
       .filter(g => g.length === 1).length;
   }
 
