@@ -81,7 +81,7 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
           prompt.push(...currentGroup);
 
           if (prompt.length === tripleLen) {
-            const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length === 2).sort(lengthFirstThenPointGroupComparator);
+            const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length >= 2).sort(lengthFirstThenPointGroupComparator);
             if (leftCards.length >= 2) {
               prompts.push([...prompt, ...leftCards[0], ...leftCards[1]]);
               break;
