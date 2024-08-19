@@ -370,19 +370,4 @@ export default class NormalTable extends Table {
       this.audit.setRemainCards(p.model.shortId, p.cards);
     }
   }
-
-  // 更新炸弹分
-  updateBoomScore() {
-    let score;
-    for (const p of this.players) {
-      for (const pp of this.players) {
-        if (p.model.shortId !== pp.model.shortId) {
-          score = this.audit.boomScore(p.model.shortId);
-          if (score > 0) {
-            p.winFrom(pp, score);
-          }
-        }
-      }
-    }
-  }
 };
