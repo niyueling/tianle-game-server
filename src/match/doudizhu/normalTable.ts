@@ -187,8 +187,6 @@ export default class NormalTable extends Table {
   }
 
   async getBigWinner() {
-    let winner = [];
-    let tempScore = 0;
     // 将分数 * 倍率
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
     let times = 1;
@@ -200,43 +198,65 @@ export default class NormalTable extends Table {
     }
     let winRuby = 0;
     let lostRuby = 0;
+    let maxBalance = 0;
+    let maxLostBalance = 0;
     const winnerList = [];
+    const lostList = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       if (p) {
         p.balance *= times;
         if (p.balance > 0) {
-          winRuby += p.balance;
+          const currency = await this.PlayerGoldCurrency(p._id);
+          if (p.balance > currency) {
+            p.balance = currency;
+          }
+
           winnerList.push(p);
+          winRuby += p.balance;
+          maxBalance += p.balance;
         } else {
           const currency = await this.PlayerGoldCurrency(p._id);
           if (currency < -p.balance) {
             p.balance = -currency;
           }
+
+          lostList.push(p);
+          maxLostBalance += p.balance;
           lostRuby += p.balance;
-        }
-        const score = p.balance || 0;
-        if (tempScore === score && score > 0) {
-          winner.push(p.model.shortId)
-        }
-        if (tempScore < score && score > 0) {
-          tempScore = score;
-          winner = [p.model.shortId]
         }
       }
     }
+
+
+    if (winRuby > -lostRuby) {
+      winRuby = -lostRuby;
+    }
+
+    if (-lostRuby > winRuby) {
+      lostRuby = -winRuby;
+    }
+
     if (isNaN(winRuby)) {
       winRuby = 0;
     }
     if (isNaN(lostRuby)) {
       lostRuby = 0;
     }
-    console.log('win ruby', winRuby, 'lost ruby', lostRuby);
-    // 平分奖励
+    console.log('win ruby', winRuby, 'lost ruby', lostRuby, 'maxBalance', maxBalance, 'maxLostBalance', maxLostBalance);
+
+
     if (winRuby > 0) {
       for (const p of winnerList) {
-        p.balance = Math.floor(p.balance / winRuby * lostRuby * -1);
-        console.log('after balance', p.balance, p.model.shortId)
+        p.balance = Math.floor(p.balance / maxBalance * winRuby);
+        console.log('winner after balance', p.balance, p.model.shortId)
+      }
+    }
+
+    if (lostRuby > 0) {
+      for (const p of lostList) {
+        p.balance = Math.floor(p.balance / maxLostBalance * lostRuby);
+        console.log('lost after balance', p.balance, p.model.shortId)
       }
     }
   }
