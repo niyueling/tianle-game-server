@@ -298,14 +298,15 @@ class Room extends RoomBase {
     )
   }
 
-  updatePosition(player, position) {
-    if (position) {
-      player.model.position = position
-
-      const positions = this.players.map(p => p && p.model)
-
-      this.broadcast('room/playersPosition', {ok: true, data: {positions}});
+  async updatePosition() {
+    const positions = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const position = i;
+      positions.push({_id: p._id, shortId: p.model.shortId, position});
     }
+
+    this.broadcast("game/updatePosition", {ok: true, data: {positions}});
   }
 
   async recordRoomScore(roomState = 'normal') {
@@ -747,29 +748,17 @@ class Room extends RoomBase {
   async gameOver(states, firstPlayerId) {
     this.shuffleData = []
     for (const state of states) {
-      if (state.detail.noLoss > 0 && this.preventTimes[state.model.shortId] > 0) {
-        // 输豆，扣掉一次免输次数
-        this.preventTimes[state.model.shortId]--;
-        state.score += state.detail.noLoss;
-      }
       state.model.played += 1
       await this.addScore(state.model._id, state.score)
-    }
-    const club = this.clubId && await Club.findOne({_id: this.clubId})
-
-    if (club && this.gameRule.useClubGold) {
-      for (let i = 0; i < states.length; i++) {
-        const p = states[i];
-        p.model.clubGold += p.score;
-        if (p) {
-          await this.adjustPlayerClubGold(club, p.score, p.model._id, "游戏输赢，房间号：" + this._id)
-        }
-      }
     }
     this.clearReady()
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
     await this.charge();
+
+    // 更新玩家位置
+    await this.updatePosition();
+
     this.gameState.destroy()
     this.gameState = null
     this.readyPlayers = [];
