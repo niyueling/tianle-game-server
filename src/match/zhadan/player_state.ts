@@ -328,9 +328,9 @@ class PlayerState implements Serializable {
   deposit(callback) {
     const minutes = 15 * 1000
 
-    if (!this.canDeposit) {
-      return
-    }
+    // if (!this.canDeposit) {
+    //   return
+    // }
 
     if (!this.msgDispatcher) {
       return
