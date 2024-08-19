@@ -86,37 +86,10 @@ export class PublicRoom extends Room {
   // 更新 ruby
   async addScore(playerId, v) {
     const findPlayer = this.players.find(player => {
-      return player && player.model._id === playerId
+      return player && player.model._id.toString() === playerId.toString()
     })
-    // 添加倍率
-    let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
-    if (!conf) {
-      console.error('game config lost', this.gameRule.categoryId);
-      conf = {
-        roomRate: 10000,
-        minAmount: 10000,
-      }
-    }
-    // 保存金豆输赢情况
-    let restoreRuby = v
-    if (!conf.isOpenDouble) {
-      // 不让翻
-      restoreRuby = 0
-    }
-    await service.playerService.updateRoomRuby(this._id.toString(), findPlayer.model._id, findPlayer.model.shortId,
-      restoreRuby)
-    const model = await this.updatePlayer(playerId, v);
-    if (findPlayer.isRobot()) {
-      // 机器人,自动加金豆
-      if (model.ruby < conf.minAmount) {
-        // 金豆不足，添加金豆
-        const rand = service.utils.randomIntBetweenNumber(2, 3) / 10;
-        const max = conf.minAmount + Math.floor(rand * (conf.maxAmount - conf.minAmount));
-        model.ruby = service.utils.randomIntBetweenNumber(conf.minAmount, max);
-        await model.save();
-      }
-      return;
-    }
+    console.warn("playerId-%s, score-%s", playerId, v);
+    await this.updatePlayer(playerId, v);
     findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
     findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
   }
