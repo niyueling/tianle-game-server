@@ -318,7 +318,6 @@ export default class NormalTable extends Table {
 
       // 判断是否春天
       let isSpring = true;
-      let fanShu = 1;
       for (let i = 0; i < losers.length; i++) {
         if (losers[i].cards.length !== 17) {
           isSpring = false;
@@ -326,7 +325,6 @@ export default class NormalTable extends Table {
       }
 
       if (isSpring) {
-        fanShu = 2;
         this.players.map(player => {
           player.multiple *= 2;
           player.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: 2}});
@@ -336,18 +334,16 @@ export default class NormalTable extends Table {
       }
 
       // 计算积分
-      losers.map(p => winner.winFrom(p, p.multiple * fanShu));
+      losers.map(p => winner.winFrom(p, p.multiple));
     }
 
     // 如果赢家是农民
     if (winner.mode === enums.farmer) {
       const loser = this.players.find(p => p.mode === enums.landlord);
       const famers = this.players.filter(p => p.mode === enums.farmer);
-      let fanShu = 1;
 
       // 判断是否反春天
       if (this.audit.currentRound[loser.model.shortId].playTimes === 1) {
-        fanShu = 2;
         this.players.map(player => {
           player.multiple *= 2;
           player.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: player.index, multiple: player.multiple, changeMultiple: 2}});
@@ -356,7 +352,7 @@ export default class NormalTable extends Table {
       }
 
       // 计算积分
-      famers.map(p => p.winFrom(loser, p.multiple * fanShu));
+      famers.map(p => p.winFrom(loser, p.multiple));
     }
   }
 
