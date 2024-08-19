@@ -533,6 +533,7 @@ export default class NormalTable extends Table {
       isPublic: this.room.isPublic,
       ruleType: this.rule.ruleType,
       juIndex: this.room.game.juIndex,
+      gameType: GameType.zd,
       mode: this.mode,
       homeTeam: this.homeTeamPlayers().map(p => p.index),
       awayTeam: this.awayTeamPlayers().map(p => p.index),

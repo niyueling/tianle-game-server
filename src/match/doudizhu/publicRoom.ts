@@ -91,7 +91,7 @@ export class PublicRoom extends Room {
     const findPlayer = this.players.find(player => {
       return player && player.model._id.toString() === playerId.toString()
     })
-    console.warn("playerId-%s, score-%s", playerId, v);
+
     await this.updatePlayer(playerId, v);
     findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
     findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
