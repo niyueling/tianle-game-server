@@ -207,6 +207,11 @@ export default class NormalTable extends Table {
       if (p) {
         p.balance *= times;
         if (p.balance > 0) {
+          const currency = await this.PlayerGoldCurrency(p._id);
+          if (p.balance > currency) {
+            p.balance = currency;
+          }
+
           winnerList.push(p);
           maxBalance += p.balance;
         } else {
@@ -227,8 +232,14 @@ export default class NormalTable extends Table {
       }
     }
 
-    // 输多少豆赢家就赢多少豆
-    winRuby = -lostRuby;
+
+    if (winRuby > -lostRuby) {
+      winRuby = -lostRuby;
+    }
+
+    if (-lostRuby > winRuby) {
+      lostRuby = -winRuby;
+    }
 
     if (isNaN(winRuby)) {
       winRuby = 0;
