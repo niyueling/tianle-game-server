@@ -682,17 +682,18 @@ abstract class Table implements Serializable {
   }
 
   autoCommitFunc(playerIsOndeposit = false) {
-    // 不托管
-    return;
-    // if (this.rule.autoCommit) {
-    //   clearTimeout(this.autoCommitTimer)
-    //   this.autoCommitStartTime = Date.now();
-    //   const primaryDelayTime = playerIsOndeposit ? 1000 : this.rule.autoCommit * 1000
-    //   const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime)
-    //   this.autoCommitTimer = setTimeout(() => {
-    //     this.autoCommitForPlayers()
-    //   }, delayTime)
-    // }
+    let time = 15;
+    if (this.rule.autoCommit) {
+      time = this.rule.autoCommit;
+    }
+
+    clearTimeout(this.autoCommitTimer)
+    this.autoCommitStartTime = Date.now();
+    const primaryDelayTime = playerIsOndeposit ? 1000 : time * 1000
+    const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime)
+    this.autoCommitTimer = setTimeout(() => {
+      this.autoCommitForPlayers()
+    }, delayTime)
   }
 
   onPlayerDa(player, {cards: plainCards}, onDeposit?) {
