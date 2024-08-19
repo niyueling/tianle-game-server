@@ -245,7 +245,6 @@ export default class NormalTable extends Table {
     }
     console.log('win ruby', winRuby, 'lost ruby', lostRuby, 'maxBalance', maxBalance, 'maxLostBalance', maxLostBalance);
 
-
     if (winRuby > 0) {
       for (const p of winnerList) {
         p.balance = Math.floor(p.balance / maxBalance * winRuby);

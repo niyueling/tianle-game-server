@@ -11,6 +11,9 @@ const enums = {
     lobby4Player: 7
   },
 
+  goldCurrency: "gold",
+  tlGoldCurrency: "tlGold",
+
   h1: new Card(CardType.Heart, 1),
   h2: new Card(CardType.Heart, 2),
   h3: new Card(CardType.Heart, 3),

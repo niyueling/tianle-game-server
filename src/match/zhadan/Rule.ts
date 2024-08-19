@@ -62,6 +62,15 @@ class Rule {
     return maPaiArr.map(maPai => new Card(CardType.Heart, maPai))
   }
 
+  // 币种
+  get currency(): string {
+    if (!this.ro.currency) {
+      return Enums.goldCurrency;
+    }
+
+    return this.ro.currency;
+  }
+
   get useJoker(): boolean {
     return this.ro.useJoker
   }
