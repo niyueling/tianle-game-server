@@ -538,7 +538,7 @@ export default class NormalTable extends Table {
       awayTeam: this.awayTeamPlayers().map(p => p.index),
       creator: this.room.creator.model._id,
     }
-    this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
+    this.room.broadcast('game/gameOverReply', {ok: true, data: gameOverMsg})
     this.stateData.gameOver = gameOverMsg
     const firstPlayer = this.players.slice()
       .sort((p1, p2) => p1.winOrder - p2.winOrder)[0]
