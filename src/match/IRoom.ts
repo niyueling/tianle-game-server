@@ -211,6 +211,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async ready(player) {
     if (!player) {
       console.warn("player is disconnect");
+      return ;
     }
 
     if (this.isReadyPlayer(player._id.toString())) {
