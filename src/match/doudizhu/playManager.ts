@@ -79,14 +79,14 @@ const firstCardPatternOrder = [
     cards: [],
   },
   {
-    // 单张
-    name: PatterNames.single,
+    // 对子
+    name: PatterNames.double,
     score: 0,
     cards: [],
   },
   {
-    // 对子
-    name: PatterNames.double,
+    // 单张
+    name: PatterNames.single,
     score: 0,
     cards: [],
   },
