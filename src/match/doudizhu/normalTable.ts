@@ -213,6 +213,7 @@ export default class NormalTable extends Table {
           }
 
           winnerList.push(p);
+          winRuby += p.balance;
           maxBalance += p.balance;
         } else {
           const currency = await this.PlayerGoldCurrency(p._id);
