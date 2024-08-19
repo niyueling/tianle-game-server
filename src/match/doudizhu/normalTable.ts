@@ -253,7 +253,7 @@ export default class NormalTable extends Table {
       }
     }
 
-    if (lostRuby > 0) {
+    if (lostRuby < 0) {
       for (const p of lostList) {
         p.balance = Math.floor(p.balance / maxLostBalance * lostRuby);
         console.log('lost after balance', p.balance, p.model.shortId)
