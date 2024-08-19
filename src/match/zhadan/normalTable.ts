@@ -569,7 +569,7 @@ export default class NormalTable extends Table {
       // 配置失败
       console.error('invalid room level');
     } else {
-      times = conf.minScore;
+      times = conf.base * conf.Ante;
     }
     let winRuby = 0;
     let lostRuby = 0;
