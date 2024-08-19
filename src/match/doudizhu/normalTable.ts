@@ -200,21 +200,14 @@ export default class NormalTable extends Table {
     }
     let winRuby = 0;
     let lostRuby = 0;
-    let maxBalance = 0;
     const winnerList = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
       if (p) {
         p.balance *= times;
         if (p.balance > 0) {
-          const currency = await this.PlayerGoldCurrency(p._id);
-          if (p.balance > currency) {
-            p.balance = currency;
-          }
-
-          winnerList.push(p);
           winRuby += p.balance;
-          maxBalance += p.balance;
+          winnerList.push(p);
         } else {
           const currency = await this.PlayerGoldCurrency(p._id);
           if (currency < -p.balance) {
@@ -232,16 +225,6 @@ export default class NormalTable extends Table {
         }
       }
     }
-
-
-    if (winRuby > -lostRuby) {
-      winRuby = -lostRuby;
-    }
-
-    if (-lostRuby > winRuby) {
-      lostRuby = -winRuby;
-    }
-
     if (isNaN(winRuby)) {
       winRuby = 0;
     }
@@ -249,12 +232,10 @@ export default class NormalTable extends Table {
       lostRuby = 0;
     }
     console.log('win ruby', winRuby, 'lost ruby', lostRuby);
-
-
     // 平分奖励
     if (winRuby > 0) {
       for (const p of winnerList) {
-        p.balance = Math.floor(p.balance / maxBalance * winRuby);
+        p.balance = Math.floor(p.balance / winRuby * lostRuby * -1);
         console.log('after balance', p.balance, p.model.shortId)
       }
     }
