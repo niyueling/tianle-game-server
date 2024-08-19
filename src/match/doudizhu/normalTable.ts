@@ -214,7 +214,6 @@ export default class NormalTable extends Table {
 
           winnerList.push(p);
           winRuby += p.balance;
-          maxBalance += p.balance;
         } else {
           const currency = await this.PlayerGoldCurrency(p._id);
           if (currency < -p.balance) {
@@ -254,7 +253,6 @@ export default class NormalTable extends Table {
     // 平分奖励
     if (winRuby > 0) {
       for (const p of winnerList) {
-        p.balance = Math.floor(p.balance / maxBalance * winRuby);
         console.log('after balance', p.balance, p.model.shortId)
       }
     }
