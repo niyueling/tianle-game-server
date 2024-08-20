@@ -399,7 +399,11 @@ abstract class Table implements Serializable {
     }
 
     const cards = this.promptWithPattern(player);
-    return this.onPlayerDa(player, {cards: cards})
+    if (cards.length > 0) {
+      return this.onPlayerDa(player, {cards: cards})
+    }
+
+    return this.guoPai(player);
   }
 
   moveToNext() {
