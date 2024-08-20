@@ -49,15 +49,15 @@ export const genFullyCards = (useJoker: boolean = true) => {
 
   types.forEach((type: CardType) => {
     for (let v = 1; v <= 13; v += 1) {
-      cards.push(new Card(type, v), new Card(type, v))
+      cards.push(new Card(type, v), new Card(type, v));
     }
   })
 
   if (useJoker) {
-    cards.push(new Card(CardType.Joker, 16), new Card(CardType.Joker, 16))
-    cards.push(new Card(CardType.Joker, 17), new Card(CardType.Joker, 17))
+    cards.push(new Card(CardType.Joker, 16), new Card(CardType.Joker, 16));
+    cards.push(new Card(CardType.Joker, 17), new Card(CardType.Joker, 17));
   }
-  return cards
+  return cards;
 }
 
 class Status {
@@ -243,7 +243,6 @@ abstract class Table implements Serializable {
   }
 
   public setFirstDa(startPlayerIndex: number) {
-    // console.log('set first da', startPlayerIndex);
     this.status.current.seatIndex = startPlayerIndex
   }
 
@@ -291,231 +290,6 @@ abstract class Table implements Serializable {
     return this.rule.useJoker ? 27 : 26;
   }
 
-  async executeShuffle(): Promise<void> {
-    await this.helpPlayers();
-  }
-
-  async helpPlayers(): Promise<void> {
-    const tasks = this.players.map((p: any) => {
-      return this.checkPlayerHelper(p);
-    });
-
-    await Promise.all(tasks);
-  }
-
-  async checkPlayerHelper(p): Promise<void> {
-    const player = await PlayerModel.findOne({_id: p._id}).lean();
-
-    const helpInfo = await PlayerHelpDetail.findOne({
-      player: p._id,
-      isHelp: 1,
-      $and: [
-        {
-          type: {$in: [1, 2]},
-        },
-        {
-          $or: [
-            {type: 2, game: "zhadan"},
-            {type: 1},
-          ],
-        },
-      ],
-    }).sort({estimateLevel: -1, type: -1}).lean();
-    if (!helpInfo) return;
-
-    if (!this.room.gameState.isHelp) {
-      const PlayerHelpRank = 1 / helpInfo.juCount;
-      const randWithSeed = algorithm.randomBySeed();
-
-      if (randWithSeed > PlayerHelpRank && helpInfo.juCount > helpInfo.count) {
-        await PlayerHelpDetail.findByIdAndUpdate(helpInfo._id, {juCount: helpInfo.juCount - 1});
-        return;
-      }
-
-      logger.info(`${new Date()}：${player.shortId}救助概率${PlayerHelpRank},随机种子概率：${randWithSeed}`);
-      logger.info(`${new Date()}：${player.shortId}补助${helpInfo.estimateLevel}星`)
-      this.room.gameState.isHelp = true;
-      await this.priorityFapai(helpInfo.estimateLevel, p, helpInfo, helpInfo.coolingcycle);
-    }
-  }
-
-  async priorityFapai(star, p, helpInfo, coolingcycle): Promise<void> {
-    let cards = [];
-    let useCards = [];
-    const cardNums = [];
-
-    let jokerCount = 0;
-    const num = this.getCardNum();
-    let maxJokerCount = 0;
-    const userOtherCard = this.calcPlayerCardNums(p.cards, num);
-    const userJokerCard = this.calcPlayerCardNums(p.cards, 16) + this.calcPlayerCardNums(p.cards, 17);
-    const userJokerCardLists = [...this.calcPlayerCardLists(p.cards, 16), ...this.calcPlayerCardLists(p.cards, 17)];
-    useCards = [...this.calcPlayerCardLists(p.cards, num), ...userJokerCardLists];
-    // 是否需要生成大小王
-    if (this.rule.useJoker) {
-      // 判断生成joker数量
-      jokerCount = this.getJokerNum(star);
-      maxJokerCount = Math.max(userJokerCard, jokerCount);
-      logger.info(`${new Date()}：${p.model.shortId}持有joker数量：${maxJokerCount}`);
-      jokerCount = userJokerCard >= jokerCount ? 0 : jokerCount - userJokerCard;
-      const jokerCard = this.createJokerCard(jokerCount);
-      // 生成指定张数的大小王
-      if (jokerCount > 0 && jokerCard.length > 0) cards = [...cards, ...jokerCard];
-      else jokerCount = 0;
-    }
-
-    // 剩余需要救助的张数
-    const redidueOtherNum = star - maxJokerCount;
-    const residueNum = (redidueOtherNum >= 7 ? 7 : (redidueOtherNum > 4 ? redidueOtherNum : 4));
-    logger.info(`${new Date()}：${p.model.shortId}预计生成特殊牌:${num}数量：${residueNum}，用户持有特殊牌:${num}数量：${userOtherCard}`);
-    const cardOtherNum = userOtherCard >= residueNum ? 0 : residueNum - userOtherCard;
-    logger.info(`${new Date()}：${p.model.shortId}最终生成特殊牌:${num}数量：${cardOtherNum}`);
-    cardNums.push(num);
-
-    // 生成剩余救助牌
-    const otherCard = this.createOtherCard(cardOtherNum, num, p);
-    cards = [...cards, ...otherCard];
-
-    if (!p.cards) p.cards = [];
-    // 从其他用户手中换牌
-    await this.changePlayerCards(cards, p, cardNums);
-
-    p.cards = [...p.cards, ...cards];
-
-    // 生成救助记录
-    await RateRecordModel.create({
-      player: p._id, recordId: helpInfo._id, cardLists: cards, jokerCount: this.rule.jokerCount,
-      useJoker: this.rule.useJoker, coolingcycle, createAt: new Date(), level: helpInfo.estimateLevel,
-      room: this.room._id, cards: p.cards, useCards, juIndex: this.room.game.juIndex, game: "zhadan"
-    });
-
-    const treasure = await TreasureBox.findOne({level: helpInfo.treasureLevel}).lean();
-    await PlayerHelpDetail.findByIdAndUpdate(helpInfo._id, {
-      count: helpInfo.count - 1,
-      juCount: helpInfo.count > 1 ? treasure.juCount : 0,
-      isHelp: helpInfo.count > 1
-    });
-  }
-
-  calcPlayerCardNums(cards, value) {
-    let nums = 0;
-    cards.map((card: any) => {
-      if (card.value === value) nums++;
-    })
-
-    return nums;
-  }
-
-  calcPlayerCardLists(cards, value) {
-    const lists = [];
-    cards.map((card: any) => {
-      if (card.value === value) lists.push(card);
-    })
-
-    return lists;
-  }
-
-  changePlayerCards(cards, p, cardNums) {
-    const promises = [];
-    for (let i = 0; i < cards.length; i++) {
-      const card0 = this.popUserCard(p, cardNums);
-      if (!card0) return;
-      promises.push(this.changeCards(cards[i], card0, p));
-    }
-    return Promise.all(promises);
-  }
-
-  popUserCard(p, cardNums) {
-    const index = p.cards.findIndex(card => ![...[16, 17], ...cardNums].includes(card.value));
-    return index !== -1 ? p.cards.splice(index, 1)[0] : {};
-  }
-
-  async changeCards(card, card0, p) {
-    for (let i = 0; i < this.players.length; i++) {
-      // 不从自己手上换牌
-      if (this.players[i]._id === p._id) continue;
-
-      const user = this.players[i];
-      const index = user.cards.findIndex(c => c.value === card.value && c.type === card.type);
-      if (index !== -1) {
-        user.cards.splice(index, 1);
-        user.cards.push(card0);
-        break;
-      }
-    }
-  }
-
-  createOtherCard(residueNum, num, p) {
-    const cardTypes = this.createCardTypes(num, p);
-    const usedCards = [];
-    const cards = [];
-    for (let i = 0; i < residueNum; i++) {
-      const card = cardTypes.find((card1: any) => card1.count < 2);
-      if (!card) this.createOtherCard(residueNum, num, p);
-      const index = this.cards.findIndex(c => c.value === num && c.type === card.type);
-      if (index !== -1) {
-        usedCards.push(...this.cards.splice(index, 1));
-        cards.push(new Card(card.type, num));
-        card.count += 1;
-      }
-    }
-    this.cards.push(...usedCards);
-
-    return cards;
-  }
-
-  createCardTypes(num, p) {
-    const cardTypes = [{type: CardType.Club, count: 0}, {type: CardType.Diamond, count: 0}, {
-      type: CardType.Heart,
-      count: 0
-    }, {type: CardType.Spades, count: 0}];
-    for (let i = 0; i < this.players.length; i++) {
-      if (this.players[i]._id !== p._id) continue;
-
-      this.players[i].cards.map(c => {
-        if (c.value === num) {
-          const index = cardTypes.findIndex(c1 => c1.type === c.type);
-          if (index !== -1) cardTypes[index].count++;
-        }
-      })
-    }
-
-    return cardTypes;
-  }
-
-  getCardNum() {
-    const num = Math.floor(Math.random() * 13) + 1;
-    if ([2, 3].includes(num)) return this.getCardNum();
-
-    return num;
-  }
-
-  createJokerCard(jokerCount) {
-    const cards = [];
-    const cardType = [{type: 16, count: 0}, {type: 17, count: 0}];
-    for (let i = 0; i < jokerCount; i++) {
-      const card = cardType.find((card1: any) => card1.count < (this.rule.jokerCount === 6 ? 3 : 2));
-      if (!card) this.createJokerCard(jokerCount);
-      const index = this.cards.findIndex(c => c.value === card.type && c.type === CardType.Joker);
-      if (index !== -1) {
-        const joker = this.cards.splice(index, 1)[0];
-        cards.push(new Card(joker.type, card.type));
-        card.count += 1;
-      }
-    }
-
-    return cards;
-  }
-
-  getJokerNum(star) {
-    const jokerNum = this.rule.useJoker ? this.rule.jokerCount : 0;
-    let minJokerNum = 0;
-    if (star > 7) minJokerNum = star - 7;
-    const num = Math.floor(Math.random() * jokerNum);
-    const min = Math.min(num, star - 4, 3);
-    return Math.max(min, minJokerNum);
-  }
-
   async fourJokersReward() {
 
     const fourJokerReward = this.rule.specialReward
@@ -552,9 +326,6 @@ abstract class Table implements Serializable {
     if (this.players.some(p => this.haveFourJokers(p)) && this.rollReshuffle()) {
       this._fapai()
     }
-
-    const isZhadanOpen = await service.utils.getGlobalConfigByName("zhadanHelp");
-    if (!this.room.rule.isPublic && Number(isZhadanOpen) === 1) await this.executeShuffle();
 
     this.players[0].team = this.players[2].team = Team.HomeTeam
     this.players[1].team = this.players[3].team = Team.AwayTeam
@@ -620,13 +391,15 @@ abstract class Table implements Serializable {
     }
 
     player.onDeposit = true
+    player.sendMessage('game/startDeposit', {ok: true, data: {}});
+
     if (!this.canGuo()) {
-      const card = player.cards.sort((x, y) => x.point - y.point)[0]
-      this.onPlayerDa(player, {cards: [card]})
-      return
+      const cards = this.promptWithFirstPlay(player);
+      return this.onPlayerDa(player, {cards: cards})
     }
 
-    this.guoPai(player)
+    const cards = this.promptWithPattern(player);
+    return this.onPlayerDa(player, {cards: cards})
   }
 
   moveToNext() {

@@ -245,7 +245,7 @@ class CardManager {
     const replace = [];
     cards.forEach((value, index) => {
       if (value.value === 3) {
-        replace.push(index)
+        replace.push(index);
       }
     });
     let addJoker = 0;
