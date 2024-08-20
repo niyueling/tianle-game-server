@@ -754,7 +754,7 @@ class Room extends RoomBase {
 
     console.warn("players-%s", JSON.stringify(this.players));
 
-    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId)
+    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)
     console.warn("players1-%s", JSON.stringify(this.players));
     await this.delPlayerBless();
