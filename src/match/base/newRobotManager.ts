@@ -313,7 +313,7 @@ export class NewRobotManager {
         const proxy = this.disconnectPlayers[key];
         proxy.seatIndex = index;
       }
-      // 更新京豆房中机器人的位置
+      // 更新金豆房中机器人的位置
       for (const robot of this.model.publicRoomRobot) {
         if (robot[0] === key) {
           robot[1] = index;
@@ -452,7 +452,7 @@ export class NewRobotManager {
       // 加入房间
       const isOk = await this.room.join(robotProxy);
       if (isOk) {
-        // console.warn("add robot index-%s shortId-%s", i, model.shortId);
+        console.warn("add robot index-%s shortId-%s", i, model.shortId);
         // 公共房托管的机器人
         this.model.publicRoomRobot.push([model._id, i]);
         await this.addPublicRobot(model._id, robotProxy, i);

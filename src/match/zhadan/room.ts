@@ -752,7 +752,7 @@ class Room extends RoomBase {
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
     await this.charge();
 
-    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id === firstPlayerId)
+    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId)
     this.sortPlayer(this.nextStarterIndex)
     await this.delPlayerBless();
     // 可能没人离线，需要手动初始化
@@ -884,15 +884,15 @@ class Room extends RoomBase {
       return
     }
 
-    const playersCopy = new Array(this.players.length);
-    const newOrders = new Array(this.players.length);
+    const playersCopy = new Array(this.players.length)
+    const newOrders = new Array(this.players.length)
 
     for (let i = 0; i < playersCopy.length; i++) {
-      const from = (nextStarterIndex + i) % playersCopy.length;
-      playersCopy[i] = this.players[from];
-      newOrders[i] = this.playersOrder[from];
+      const from = (nextStarterIndex + i) % playersCopy.length
+      playersCopy[i] = this.players[from]
+      newOrders[i] = this.playersOrder[from]
     }
-    this.players = playersCopy;
+    this.players = playersCopy
     this.playersOrder = newOrders
   }
 }
