@@ -492,7 +492,7 @@ class Room extends RoomBase {
 
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
     const item = this.dissolveReqInfo.find(x => {
-      return x.name === player.model.name
+      return x.name === player.model.nickname
     })
     if (item) {
       if (item.type === 'agree') {
@@ -673,7 +673,7 @@ class Room extends RoomBase {
       .filter(p => p)
       .forEach(player => {
         message.players[player.model._id] = {
-          userName: player.model.name,
+          userName: player.model.nickname,
           headImgUrl: player.model.headImgUrl
         }
       })

@@ -907,6 +907,7 @@ abstract class Table implements Serializable {
     clearTimeout(this.autoCommitTimer)
     this.removeRoomListener()
     this.removeAllPlayerListeners()
+    this.players = [];
   }
 
   teamMateCards(player: PlayerState): Card[] {

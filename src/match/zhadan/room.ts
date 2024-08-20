@@ -310,29 +310,25 @@ class Room extends RoomBase {
   }
 
   async recordRoomScore(roomState = 'normal') {
-    const players = this.snapshot.map(p => p._id)
+    const players = this.snapshot.map(p => p._id);
+    // console.warn("playersOrder-%s", JSON.stringify(this.playersOrder));
+    const scores = this.playersOrder.map(player => {
+      if (player) {
+        return {
+          score: this.scoreMap[player._id] || 0,
+          name: player.model.nickname,
+          headImgUrl: player.model.avatar,
+          shortId: player.model.shortId
+        }
+      }
 
-    // const scores = this.snapshot.map(player => ({
-    //   score: this.scoreMap[player.model._id] || 0,
-    //   name: player.model.name,
-    //   headImgUrl: player.model.headImgUrl,
-    //   shortId: player.model.shortId
-    // }))
-    const scores = [];
-    this.snapshot.forEach(player => {
-      scores.push({
-        score: this.scoreMap[player.model._id] || 0,
-        name: player.model.nickname,
-        avatar: player.model.avatar,
-        shortId: player.model.shortId
-      })
     })
 
-    // if (!this.charged) {
-    //   roomState = 'zero_ju'
-    // }
+    if (!this.charged) {
+      roomState = 'zero_ju'
+    }
     const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
-    if (this.isPayClubGold(roomState)) {
+    if (this.gameRule.useClubGold && (this.game.juIndex === this.gameRule.juShu || roomState === "dissolve")) {
       await this.updatePlayerClubGold();
     }
 
@@ -344,10 +340,10 @@ class Room extends RoomBase {
       creatorId: this.creator.model.shortId || 0,
       createAt: Date.now(),
       club: null,
-      category: 'zhadan',
+      category: GameType.zd,
       roomState: stateInfo,
       juIndex: this.game.juIndex,
-      rule: this.rule.getOriginData()
+      rule: this.rule.getOriginData(),
     }
 
     if (this.clubId) {
@@ -756,6 +752,12 @@ class Room extends RoomBase {
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
     await this.charge();
 
+    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id === firstPlayerId)
+    this.sortPlayer(this.nextStarterIndex)
+    await this.delPlayerBless();
+    // 可能没人离线，需要手动初始化
+    await this.robotManager.nextRound();
+
     // 更新玩家位置
     await this.updatePosition();
 
@@ -763,12 +765,6 @@ class Room extends RoomBase {
     this.gameState = null
     this.readyPlayers = [];
     this.robotManager.model.step = RobotStep.waitRuby;
-
-    this.nextStarterIndex = this.playersOrder.findIndex(p => p._id === firstPlayerId)
-    this.sortPlayer(this.nextStarterIndex)
-    await this.delPlayerBless();
-    // 可能没人离线，需要手动初始化
-    await this.robotManager.nextRound();
 
     if (this.isRoomAllOver()) {
       const message = this.allOverMessage()
