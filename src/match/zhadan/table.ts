@@ -475,13 +475,11 @@ abstract class Table implements Serializable {
 
   onPlayerDa(player, {cards: plainCards}, onDeposit?) {
     if (!this.isCurrentStep(player)) {
-      this.daPaiFail(player, TianleErrorCode.notDaRound)
+      this.daPaiFail(player, TianleErrorCode.notDaRound);
       return
     }
-    const cards = plainCards.map(Card.from)
-
-    this.status.lastIndex = this.currentPlayerStep
-
+    const cards = plainCards.map(Card.from);
+    this.status.lastIndex = this.currentPlayerStep;
     const currentPattern = isGreaterThanPatternForPlainCards(plainCards, this.status.lastPattern, player.cards.length);
 
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
@@ -497,7 +495,6 @@ abstract class Table implements Serializable {
     const remains = player.remains
 
     this.status.from = this.status.current.seatIndex
-
     this.status.lastPattern = pattern
     this.status.lastCards = cards
     this.status.fen += this.fenInCards(cards)
@@ -522,6 +519,11 @@ abstract class Table implements Serializable {
         onDeposit: player.onDeposit || !!onDeposit
       }
     })
+
+    if (player.cards.length === 0 && player.onDeposit) {
+      player.onDeposit = false;
+      player.sendMessage('game/cancelDepositReply', {ok: true, data: {cards: player.cards}})
+    }
 
     const isGameOver = this.isGameOver()
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
