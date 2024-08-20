@@ -215,7 +215,9 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
 
     if (this.players.indexOf(player) === -1) {
-      console.warn("players %s playerId", JSON.stringify(this.players), player._id);
+      console.warn("players %s playerId", JSON.stringify(this.players.map(v => {
+        return v._id
+      })), player._id);
       return ;
     }
 
