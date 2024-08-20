@@ -622,7 +622,7 @@ export class NewRobotManager {
       if (this.room.players[i]) {
         console.warn(this.room.players[i].model._id.toString(), playerId);
       }
-      if (this.room.players[i] && this.room.players[i].model._id.toString() === playerId) {
+      if (this.room.players[i] && this.room.players[i].model._id.toString() === playerId.toString()) {
         return i
       }
     }
