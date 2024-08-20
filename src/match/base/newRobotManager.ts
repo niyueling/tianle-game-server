@@ -619,7 +619,10 @@ export class NewRobotManager {
 
   async getPlayerIndexByPlayerId(playerId) {
     for (let i = 0; i < this.room.players.length; i++) {
-      if (this.room.players[i] && this.room.players[i].model._id === playerId) {
+      if (this.room.players[i]) {
+        console.warn(this.room.players[i].model._id.toString(), playerId);
+      }
+      if (this.room.players[i] && this.room.players[i].model._id.toString() === playerId) {
         return i
       }
     }
