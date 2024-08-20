@@ -307,7 +307,7 @@ export class NewRobotManager {
     for (const key of Object.keys(this.disconnectPlayers)) {
       const index = this.room.players.findIndex(value => value && value._id.toString() === key.toString());
       if (index === -1) {
-        console.log('no such player to order', key, 'room id', this.room._id)
+        console.log('no such player to order players', key, 'room id', this.room._id, JSON.stringify(this.room.players))
         delete this.disconnectPlayers[key];
       } else {
         const proxy = this.disconnectPlayers[key];
