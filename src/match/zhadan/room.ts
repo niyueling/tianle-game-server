@@ -887,6 +887,7 @@ class Room extends RoomBase {
     if (nextStarterIndex === 0) {
       return
     }
+    console.warn("nextStarterIndex-%s", nextStarterIndex);
 
     const playersCopy = new Array(this.players.length)
     const newOrders = new Array(this.players.length)
