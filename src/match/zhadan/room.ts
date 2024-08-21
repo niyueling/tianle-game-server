@@ -752,13 +752,9 @@ class Room extends RoomBase {
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
     await this.charge();
 
-    console.warn("players-%s", JSON.stringify(this.players));
-
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)
-    console.warn("players1-%s", JSON.stringify(this.players));
     await this.delPlayerBless();
-    console.warn("players2-%s", JSON.stringify(this.players));
     // 可能没人离线，需要手动初始化
     await this.robotManager.nextRound();
 

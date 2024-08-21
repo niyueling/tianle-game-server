@@ -542,8 +542,7 @@ export default class NormalTable extends Table {
     }
     this.room.broadcast('game/gameOverReply', {ok: true, data: gameOverMsg})
     this.stateData.gameOver = gameOverMsg
-    const firstPlayer = this.players.slice()
-      .sort((p1, p2) => p1.winOrder - p2.winOrder)[0]
+    const firstPlayer = this.players.slice().sort((p1, p2) => p1.winOrder - p2.winOrder)[0]
     await this.roomGameOver(states, firstPlayer._id)
   }
 
