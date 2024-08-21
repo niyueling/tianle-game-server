@@ -335,7 +335,7 @@ abstract class Table implements Serializable {
   async publicRoomFapai() {
     this.stateData = {};
     this.turn = 1;
-    this.cards = manager.withJokerCards(8);
+    this.cards = manager.withJokerCards(this.rule.jokerCount);
     const playerCards = manager.makeCards(this.cards);
     this.remainCards = this.cards.length;
     for (let i = 0; i < this.players.length; i++) {

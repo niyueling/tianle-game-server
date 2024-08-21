@@ -265,7 +265,6 @@ export class NewRobotManager {
       await this.save();
     }
     this.disconnectPlayers[playerId] = robotProxy;
-    // console.warn("add robot index-%s shortId-%s gameState-%s disconnectPlayers-%s", posIndex, robotProxy.model.shortId, this.room.gameState, JSON.stringify(this.disconnectPlayers));
   }
 
   // 是否需要托管
