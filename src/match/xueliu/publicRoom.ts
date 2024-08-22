@@ -81,7 +81,7 @@ export class PublicRoom extends Room {
     }
 
     p.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id.toString(), roomId: this._id, index: this.indexOf(player)}})
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id.toString(), roomId: this._id, index: this.indexOf(player), location: "xl.publicRoom"}})
     p.removeListener('disconnect', this.disconnectCallback)
     this.emit('leave', {_id: player._id.toString()})
     this.removePlayer(player)

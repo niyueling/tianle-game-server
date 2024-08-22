@@ -371,7 +371,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     }
 
     p.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id, roomId: this._id}})
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id, roomId: this._id, location: "IRoom"}})
     this.removeReadyPlayer(p._id.toString())
     this.clearScore(player._id.toString())
   }

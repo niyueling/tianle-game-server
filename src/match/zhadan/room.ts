@@ -723,7 +723,7 @@ class Room extends RoomBase {
       this.emit('empty', this.disconnected);
       this.readyPlayers = [];
     }
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player._id, roomId: this._id}})
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player._id, roomId: this._id, location: "zd.room"}})
     this.removeReadyPlayer(player._id);
     return true
   }
