@@ -418,18 +418,9 @@ class Room extends RoomBase {
     await this.updateBigWinner();
   }
 
-  async addScore(player, v) {
-    switch (typeof player) {
-      case 'string':
-        this.scoreMap[player] += v
-        break
-      case 'object':
-        player.addGold(v)
-        this.scoreMap[player._id] = ((player && player.gold) || 0) - v
-        break
-      default:
-        break
-    }
+  addScore(playerId, v) {
+    console.warn("_id-%s, score-%s", playerId, v);
+    this.scoreMap[playerId] += v;
   }
 
   removeDisconnected(item) {

@@ -8,6 +8,7 @@ import {getPlayerRmqProxy, PlayerRmqProxy} from "../PlayerRmqProxy";
 import {autoSerializePropertyKeys} from "../serializeDecorator";
 import NormalTable from "./normalTable";
 import Room from "./room";
+import Enums from "../doudizhu/enums";
 
 // 金豆房
 export class PublicRoom extends Room {
@@ -100,27 +101,40 @@ export class PublicRoom extends Room {
   }
 
   // 更新 player model
-  async updatePlayer(playerId, addRuby = 0, addGem = 0) {
-    const model = await service.playerService.getPlayerModel(playerId);
-    if (!model) {
-      console.error('player not exists');
-      return;
-    }
+  async updatePlayer(playerId, addRuby = 0) {
     // 添加金豆
-    if (model.ruby + addRuby <= 0) {
-      model.ruby = 0;
+    const currency = await this.PlayerGoldCurrency(playerId);
+    if (currency + addRuby <= 0) {
+      await this.setPlayerGoldCurrency(playerId, 0);
     } else {
-      model.ruby += addRuby;
+      await this.setPlayerGoldCurrency(playerId, currency + addRuby);
     }
-    // 添加房卡
-    if (model.gem + addGem <= 0) {
-      model.gem = 0;
-    } else {
-      model.gem += addGem;
-    }
-    await model.save();
-    return model;
+    return await service.playerService.getPlayerModel(playerId);
   }
+
+  async PlayerGoldCurrency(playerId) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.game.rule.currency === Enums.goldCurrency) {
+      return model.gold;
+    }
+
+    return model.tlGold;
+  }
+
+  // 根据币种类型设置币种余额
+  async setPlayerGoldCurrency(playerId, currency) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.game.rule.currency === Enums.goldCurrency) {
+      model.gold = currency;
+    } else {
+      model.tlGold = currency;
+    }
+
+    await model.save();
+  }
+
   async joinMessageFor(newJoinPlayer): Promise<any> {
     const message = await super.joinMessageFor(newJoinPlayer);
     // const lastRecord = await service.rubyReward.getLastRubyRecord(this.uid);
