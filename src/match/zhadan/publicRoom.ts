@@ -104,6 +104,7 @@ export class PublicRoom extends Room {
   async updatePlayer(playerId, addRuby = 0) {
     // 添加金豆
     const currency = await this.PlayerGoldCurrency(playerId);
+    console.warn("playerId-%s, currency-%s, addRuby-%s", playerId, this.game.rule.currency, addRuby);
     if (currency + addRuby <= 0) {
       await this.setPlayerGoldCurrency(playerId, 0);
     } else {
