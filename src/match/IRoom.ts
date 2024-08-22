@@ -258,10 +258,10 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       console.info(`some one offline ${JSON.stringify(this.disconnected)}`);
       return;
     }
-    this.readyPlayers = this.players.filter(p => p).map(x => x._id)
-    this.playersOrder = this.players.slice()
-    this.snapshot = this.players.slice()
-    this.isPlayAgain = false
+    this.readyPlayers = this.players.filter(p => p).map(x => x._id);
+    this.playersOrder = this.players.slice();
+    this.snapshot = this.players.slice();
+    this.isPlayAgain = false;
     this.destroyOldGame()
     await this.startNewGame(payload)
     this.isHasRedPocket = false;
