@@ -707,6 +707,7 @@ class Room extends RoomBase {
     await this.recordDrawGameScore()
     this.dissolveReqInfo = [];
     const allOverMessage = this.allOverMessage()
+    allOverMessage.location = "xueliu.room";
 
     // @ts-ignore
     await this.redisClient.hdelAsync("canJoinRooms", this._id);

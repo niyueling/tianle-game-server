@@ -501,6 +501,7 @@ class Room extends RoomBase {
     await this.recordDrawGameScore();
     this.dissolveReqInfo = [];
     const allOverMessage = this.allOverMessage()
+    allOverMessage["location"] = "sss.room";
     clearTimeout(this.dissolveTimeout)
     this.dissolveTimeout = null
     this.players

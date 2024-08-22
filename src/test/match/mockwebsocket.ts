@@ -81,19 +81,3 @@ export function scoreString() {
     return 'NOT-GAME-OVER-PACKET'
   }
 }
-
-export function dissolveScoreString() {
-  const gameOverPacket = packetsWithMessageName('room/dissolve')[0]
-
-  if (gameOverPacket.message.players) {
-    const players = gameOverPacket.message.players
-    const keys = Object.keys(gameOverPacket.message.players)
-
-    return keys.sort()
-      .map(k => players[k].score
-      ).join(',')
-
-  } else {
-    return 'NOT-GAME-OVER-PACKET'
-  }
-}

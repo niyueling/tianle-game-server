@@ -732,6 +732,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     clearTimeout(this.autoDissolveTimer)
     const lowScoreTimes = await this.recordDrawGameScore()
     const allOverMessage = this.dissolveOverMassage(lowScoreTimes)
+    allOverMessage.location = "IRoom";
 
     // @ts-ignore
     await this.redisClient.hdelAsync("canJoinRooms", this._id);

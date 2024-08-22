@@ -728,6 +728,7 @@ class Room extends RoomBase {
     await this.recordDrawGameScore()
     this.dissolveReqInfo = [];
     const allOverMessage = this.allOverMessage()
+    allOverMessage.location = "xmmj.room";
 
     // @ts-ignore
     await this.redisClient.hdelAsync("canJoinRooms", this._id);
