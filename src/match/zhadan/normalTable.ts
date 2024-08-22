@@ -263,8 +263,7 @@ export default class NormalTable extends Table {
       return singleCarsGroup[0][0]
     }
 
-    return singleCarsGroup.filter(grp => grp[0].type !== CardType.Joker)[0][0]
-
+    return singleCarsGroup.filter(grp => grp[0].type !== CardType.Joker)[0][0];
   }
 
   isGameOver(): boolean {
@@ -287,33 +286,33 @@ export default class NormalTable extends Table {
     if (this.room.gameRule.isPublic) {
       return this.rubyRoomBoomScorer(bomb);
     }
-    if (!bomb) return 0
+    if (!bomb) return 0;
 
-    if (bomb.name !== PatterNames.bomb) return 0
-    let bombLen = bomb.cards.length
+    if (bomb.name !== PatterNames.bomb) return 0;
+    let bombLen = bomb.cards.length;
 
     if (bomb.cards.every(c => c.type === CardType.Joker)) {
-      const jokerBombScore = Math.pow(2, bombLen)
+      const jokerBombScore = Math.pow(2, bombLen);
       if (this.rule.ro.maxJokerBomb > 16) {
-        return Math.min(this.rule.ro.maxJokerBomb, jokerBombScore)
+        return Math.min(this.rule.ro.maxJokerBomb, jokerBombScore);
       }
-      return 16
+      return 16;
     }
 
     if (bomb.cards.some(c => c.value === 2)) {
-      bombLen += 1
+      bombLen += 1;
     }
 
-    if (bombLen < 5) return 0
+    if (bombLen < 5) return 0;
 
     if (this && this.rule.ro.maxBombLevel && bombLen > this.rule.ro.maxBombLevel) {
-      bombLen = this.rule.ro.maxBombLevel
+      bombLen = this.rule.ro.maxBombLevel;
     }
     if (bombLen > 13) {
       bombLen = 13;
     }
 
-    return Math.pow(2, bombLen - 5)
+    return Math.pow(2, bombLen - 5);
   }
 
   // 金豆房炸弹计分
@@ -477,8 +476,7 @@ export default class NormalTable extends Table {
         }
       }
     } else {
-      const loser = this.homeTeamPlayers()[0]
-
+      const loser = this.homeTeamPlayers()[0];
       for (const winner of this.awayTeamPlayers()) {
         let allBombScore = winner.bombScore(this.bombScorer)
 
