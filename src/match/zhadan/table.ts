@@ -327,6 +327,11 @@ abstract class Table implements Serializable {
       this._fapai()
     }
 
+    // 金豆房扣除开局金豆
+    if (this.room.gameRule.isPublic) {
+      await this.room.payRubyForStart();
+    }
+
     this.players[0].team = this.players[2].team = Team.HomeTeam
     this.players[1].team = this.players[3].team = Team.AwayTeam
   }

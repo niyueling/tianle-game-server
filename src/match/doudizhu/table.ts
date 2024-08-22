@@ -163,13 +163,6 @@ abstract class Table implements Serializable {
     // 下一轮
     this.audit.startNewRound();
 
-    // if (!payload || !payload.cards) {
-    //   payload.cards = [
-    //     [53, 54, 1, 14, 27, 13, 26, 39, 12, 25, 38, 3, 16, 4, 17, 5, 18],
-    //   [8, 21, 34, 10, 23, 36],
-    //   [6, 19, 32]];
-    // }
-
     if (payload && payload.cards) {
       payload.cards = this.cardManager.getCardValueByType(payload.cards);
     }
@@ -187,6 +180,11 @@ abstract class Table implements Serializable {
         room: this.room._id, juIndex: this.room.game.juIndex, game: GameType.ddz
       });
       p.onShuffle(this.restJushu, initCards, i, this.room.game.juIndex, needShuffle, allPlayerCards)
+    }
+
+    // 金豆房扣除开局金豆
+    if (this.room.gameRule.isPublic) {
+      await this.room.payRubyForStart();
     }
   }
 
