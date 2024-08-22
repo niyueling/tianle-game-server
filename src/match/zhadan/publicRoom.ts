@@ -87,13 +87,14 @@ export class PublicRoom extends Room {
   // 更新 ruby
   async addScore(playerId, v) {
     try {
-      const findPlayer = this.players.find(player => {
-        return player && player.model._id.toString() === playerId.toString()
-      })
+      const index = this.players.findIndex(player => player && player.model._id.toString() === playerId.toString());
 
-      await this.updatePlayer(playerId, v);
-      findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
-      findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
+      if (index !== -1) {
+        const findPlayer = this.players[index];
+        await this.updatePlayer(playerId, v);
+        findPlayer.model = await service.playerService.getPlayerPlainModel(playerId);
+        findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
+      }
     } catch(e) {
       console.warn(e);
     }
