@@ -512,6 +512,10 @@ export default class NormalTable extends Table {
     await this.recordRubyReward();
     const states = [];
     for (const p of this.players) {
+      if (p.onDeposit) {
+        p.onDeposit = false;
+        p.sendMessage('game/cancelDepositReply', {ok: true, data: {cards: p.cards}})
+      }
       states.push({
         model: p.model,
         index: p.index,
