@@ -768,26 +768,31 @@ class Room extends RoomBase {
     return false
   }
 
-  leave(player) {
-    // console.warn("room")
-    if (!player) {
-      // 玩家不存在
-      console.warn("玩家不存在");
-      return false;
+  leave(player, dissolve = false) {
+    if (this.gameState || !player) {
+      console.warn("player is disconnect in room %s", this._id)
+      // 游戏已开始 or 玩家不存在
+      return false
     }
     const p = player
-    if (p.room._id !== this._id) {
-      console.warn("用户不在此房间");
+    if (p.room !== this) {
+      console.warn("player is not in this room %s", this._id)
       return false
     }
 
     if (this.indexOf(player) < 0) {
-      console.warn("用户已经离开房间");
+      console.warn("player is already leave room %s", this._id)
       return true
     }
 
+    if (this.game.juIndex > 0 && !this.game.isAllOver() && !dissolve) {
+      console.warn("room %s is not finish", this._id)
+      return false
+    }
+
     p.removeListener('disconnect', this.disconnectCallback)
-    this.emit('leave', {_id: player._id.toString()})
+    this.emit('leave', {_id: player._id})
+    this.removePlayer(player)
 
     for (let i = 0; i < this.playersOrder.length; i++) {
       const po = this.playersOrder[i]
@@ -797,10 +802,14 @@ class Room extends RoomBase {
     }
 
     p.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id.toString(), roomId: this._id, index: this.indexOf(player), location: "xl.room"}})
+    // if (this.players.every(x => (x == null || x.isRobot()))) {
+    //   for (let i = 0; i < this.players.length; i++) {
+    //     this.players[i] = null
+    //   }
+    // }
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id, roomId: this._id, location: "xmmj.room"}})
     this.removeReadyPlayer(p._id.toString())
     this.clearScore(player._id.toString())
-    this.removePlayer(player)
 
     return true
   }

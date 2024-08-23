@@ -7,6 +7,7 @@ import {getPlayerRmqProxy} from "../PlayerRmqProxy";
 import {autoSerializePropertyKeys} from "../serializeDecorator";
 import Room from "./room";
 import TableState from "./table_state";
+import {stateGameOver} from "../xmmajiang/table_state";
 
 // 金豆房
 export class PublicRoom extends Room {
@@ -57,36 +58,21 @@ export class PublicRoom extends Room {
   }
 
   leave(player) {
-    if (!player) {
-      // 玩家不存在
-      console.warn("玩家不存在");
-      return false;
-    }
-    const p = player
-    if (p.room._id !== this._id) {
-      console.warn("用户不在此房间");
+    if (this.gameState && this.gameState.state !== stateGameOver || !player) {
+      // 游戏已开始 or 玩家不存在
+      // console.debug('game start', this.gameState.state);
       return false
     }
-
     if (this.indexOf(player) < 0) {
-      console.warn("用户已经离开房间");
       return true
     }
-
-    for (let i = 0; i < this.playersOrder.length; i++) {
-      const po = this.playersOrder[i]
-      if (po && po.model._id.toString() === player.model._id.toString()) {
-        this.playersOrder[i] = null
-      }
-    }
-
-    p.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id.toString(), roomId: this._id, index: this.indexOf(player), location: "xl.publicRoom"}})
-    p.removeListener('disconnect', this.disconnectCallback)
-    this.emit('leave', {_id: player._id.toString()})
+    player.removeListener('disconnect', this.disconnectCallback)
     this.removePlayer(player)
-    this.removeReadyPlayer(p._id.toString())
-    this.clearScore(player._id.toString())
+    this.removeOrder(player);
+    this.removeReadyPlayer(player.model._id)
+    player.room = null
+    this.broadcast('room/leaveReply', {ok: true, data: {_id: player.model._id, location: "xmmj.publicRoom"}})
+    this.clearScore(player.model._id)
 
     return true
   }
