@@ -833,27 +833,6 @@ class Room extends RoomBase {
     return false
   }
 
-  getRandomArray() {
-    const arrayLength = Math.floor(Math.random() * 4) + 1
-    const tempArray = lodash.shuffle([0, 1, 2, 3])
-    const resultArray = []
-    for (let i = 0; i < arrayLength; i++) {
-      resultArray.push(tempArray.pop())
-    }
-    return resultArray
-  }
-
-  unReady(player) {
-    if (this.gameState) {
-      return false
-    }
-    if (!this.isReadyPlayer(player._id)) {
-      return false
-    }
-    this.removeReadyPlayer(player._id)
-    return true
-  }
-
   getPlayers() {
     return this.players
   }
