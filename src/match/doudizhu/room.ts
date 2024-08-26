@@ -667,38 +667,39 @@ class Room extends RoomBase {
     }
   }
 
-  allOverMessage(lowScoreTimes) {
-    const message = {players: {}, roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode}
+  allOverMessage() {
+    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.xmmj}
     this.snapshot
       .filter(p => p)
       .forEach(player => {
-        message.players[player.model._id] = {
+        message.players.push({
+          _id: player._id.toString(),
           userName: player.model.nickname,
-          headImgUrl: player.model.headImgUrl
+          avatar: player.model.avatar,
+          shortId: player.model.shortId
+        });
+      })
+    Object.keys(this.counterMap).forEach(x => {
+      this.counterMap[x].forEach(p => {
+        const index = message.players.findIndex(p1 => p1._id === p);
+        if (index !== -1) {
+          message.players[index][x] = (message.players[index][x] || 0) + 1;
         }
       })
-    Object.keys(this.counterMap).forEach(eventKey => {
-      this.counterMap[eventKey].forEach(p => {
-        message.players[p][eventKey] = (message.players[p][eventKey] || 0) + 1
-      })
     })
-
-    this.snapshot.forEach(p => {
-      const playerId = p._id
-      if (message.players[playerId]) {
-        message.players[playerId].score = this.scoreMap[playerId]
-        message.players[playerId].lowScoreTimes = lowScoreTimes;
+    Object.keys(this.scoreMap).forEach(playerId => {
+      const index = message.players.findIndex(p1 => p1._id === playerId);
+      if (index !== -1) {
+        message.players[index].score = this.scoreMap[playerId];
       }
     })
 
-    if (this.creator) {
-      const creator = message.players[this.creator.model._id]
-      if (creator) {
-        creator['isCreator'] = true
-      }
+    const index = message.players.findIndex(p1 => p1._id === this.creator.model._id.toString());
+    if (index !== -1) {
+      message.players[index].isCreator = true;
     }
 
-    return message
+    return message;
   }
 
   privateRoomFee() {
