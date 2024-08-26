@@ -1283,6 +1283,7 @@ class PlayerState implements Serializable {
       this.onDeposit = false
       const cards = genCardArray(this.cards)
       this.cancelTimeout()
+      this.emitter.emit('waitForDa')
       this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
 
       const daPlayer = this.room.gameState.stateData[Enums.da];
