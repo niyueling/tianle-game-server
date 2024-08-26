@@ -67,7 +67,11 @@ export class GameApi extends BaseApi {
   // 战绩
   @addApi()
   async getRecordList(message) {
-    const records = await RoomGoldRecord.where({roomId: message.roomId}).find();
+    let params = {roomId: message.roomId};
+    if (message.juIndex) {
+      params["juIndex"] = message.juIndex;
+    }
+    const records = await RoomGoldRecord.where(params).find();
     const scoreRecords = [];
     let totalGold = 0;
 
