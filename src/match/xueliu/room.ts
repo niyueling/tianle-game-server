@@ -769,11 +769,6 @@ class Room extends RoomBase {
   }
 
   leave(player, dissolve = false) {
-    if (this.gameState || !player) {
-      console.warn("player is disconnect in room %s", this._id)
-      // 游戏已开始 or 玩家不存在
-      return false
-    }
     const p = player
     if (p.room !== this) {
       console.warn("player is not in this room %s", this._id)

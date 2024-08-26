@@ -58,11 +58,6 @@ export class PublicRoom extends Room {
   }
 
   leave(player) {
-    if (this.gameState && this.gameState.state !== stateGameOver || !player) {
-      // 游戏已开始 or 玩家不存在
-      console.debug('game start', this.gameState.state);
-      return false
-    }
     if (this.indexOf(player) < 0) {
       return true
     }
