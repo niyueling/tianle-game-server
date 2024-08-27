@@ -1667,7 +1667,7 @@ class TableState implements Serializable {
 
       // 计算输家最终积分
       loser.balance = -huPlayer.panShu + loser.panShu;
-      loser.panShu = Math.abs(loser.balance);
+      loser.gameOverShuiShu = Math.abs(loser.balance);
 
       // 如果输家是庄家，则需要额外扣除庄家得分
       if (loser.zhuang) {
