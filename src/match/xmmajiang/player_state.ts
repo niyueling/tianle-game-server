@@ -220,6 +220,9 @@ class PlayerState implements Serializable {
   // 番数
   fanShu: number = 0;
 
+  // 结算水数
+  gameOverShuiShu: number = 0;
+
   // 上一局番数
   lastFanShu: number = 0;
 
@@ -285,6 +288,7 @@ class PlayerState implements Serializable {
     this.chiCombol = [];
     this.shuiShu = 0;
     this.panShu = 0;
+    this.gameOverShuiShu = 0;
     this.panInfo = {};
     this.score = room.getScore(userSocket)
     this.fanShu = room.getFanShu(userSocket)

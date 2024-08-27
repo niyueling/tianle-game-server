@@ -1589,7 +1589,8 @@ class TableState implements Serializable {
         huaScore: huaScore,
         anKeScore: anKeScore + ziAnKeScore,
         pengScore,
-        shuiShu: playerToResolve.shuiShu
+        shuiShu: playerToResolve.shuiShu,
+        shuiFen: playerToResolve.gameOverShuiShu
       }
     })
   }
@@ -1645,6 +1646,7 @@ class TableState implements Serializable {
     const fan = this.huTypeScore(huPlayer);
     huPlayer.panShu = (huPlayer.fanShu + huPlayer.shuiShu) * fan;
     huPlayer.shuiShu = huPlayer.panShu;
+    huPlayer.gameOverShuiShu = huPlayer.panShu;
     huPlayer.panInfo["shuiShu"] = huPlayer.shuiShu;
 
     // 计算输家盘数
@@ -1666,6 +1668,7 @@ class TableState implements Serializable {
 
       // 计算输家最终积分
       loser.balance = -huPlayer.panShu + loser.panShu;
+      loser.gameOverShuiShu = loser.balance;
 
       // 如果输家是庄家，则需要额外扣除庄家得分
       if (loser.zhuang) {
