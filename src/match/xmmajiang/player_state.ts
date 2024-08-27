@@ -1369,7 +1369,8 @@ class PlayerState implements Serializable {
       fanShu: this.lastFanShu,
       model: this.model,
       isBroke: false,
-      panInfo: this.panInfo
+      panInfo: this.panInfo,
+      shuiFen: this.gameOverShuiShu
     }
   }
 

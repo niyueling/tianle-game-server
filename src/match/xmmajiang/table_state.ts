@@ -1589,8 +1589,7 @@ class TableState implements Serializable {
         huaScore: huaScore,
         anKeScore: anKeScore + ziAnKeScore,
         pengScore,
-        shuiShu: playerToResolve.shuiShu,
-        shuiFen: playerToResolve.gameOverShuiShu
+        shuiShu: playerToResolve.shuiShu
       }
     })
   }
