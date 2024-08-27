@@ -525,10 +525,10 @@ abstract class Table implements Serializable {
       }
     })
 
-    if (player.cards.length === 0 && player.onDeposit) {
-      player.onDeposit = false;
-      player.sendMessage('game/cancelDepositReply', {ok: true, data: {cards: player.cards}})
-    }
+    // if (player.cards.length === 0 && player.onDeposit) {
+    //   player.onDeposit = false;
+    //   player.sendMessage('game/cancelDepositReply', {ok: true, data: {cards: player.cards}})
+    // }
 
     const isGameOver = this.isGameOver()
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
