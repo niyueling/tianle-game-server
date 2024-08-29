@@ -66,7 +66,7 @@ export class PublicRoom extends Room {
     this.removeOrder(player);
     this.removeReadyPlayer(player.model._id)
     player.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {_id: player.model._id, location: "xmmj.publicRoom"}})
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player.model._id, location: "xmmj.publicRoom"}})
     this.clearScore(player.model._id)
 
     return true

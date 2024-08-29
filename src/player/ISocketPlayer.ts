@@ -13,7 +13,7 @@ export interface ISocketPlayer {
 
   sendMessage(name: 'room/joinReply', message: { ok: boolean, info: string });
 
-  sendMessage(name: 'room/leaveReply', message: { _id: string });
+  sendMessage(name: 'room/leaveReply', message: { playerId: string });
 
   sendMessage(name: 'resource/update', message: { ok: boolean, data: {gold: number, diamond: number, tlGold: number} });
 
