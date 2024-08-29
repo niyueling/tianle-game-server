@@ -296,7 +296,7 @@ class PlayerState implements Serializable {
     const base = this.baseStatus(table)
     return {
       ...base,
-      cards: this.cards,
+      pukerCards: this.cards,
     }
   }
 
