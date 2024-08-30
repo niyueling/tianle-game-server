@@ -1477,7 +1477,7 @@ class TableState implements Serializable {
       playerFanShus.push({index: p.seatIndex, fanShu: this.room.fanShuMap[p._id]});
     }
 
-    console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
+    // console.warn("huCount-%s, nextZhuangIndex-%s, nextFan-%s", huPlayers.length, nextZhuangIndex, JSON.stringify(playerFanShus));
     return players[nextZhuangIndex];
   }
 
@@ -2353,6 +2353,7 @@ class TableState implements Serializable {
     const winnerList = [];
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
+      console.log('index', p.seatIndex, 'balance', p.balance, 'multiple', times);
       if (p) {
         p.balance *= times;
         if (p.balance > 0) {
