@@ -1678,7 +1678,7 @@ class TableState implements Serializable {
       loser.panInfo["shuiShu"] = Math.abs(loser.balance);
 
       // 如果是好友房，计算积分是否足够扣
-      if (this.room.isPublic && loser.score < Math.abs(loser.balance)) {
+      if (!this.room.isPublic && loser.score < Math.abs(loser.balance)) {
         loser.balance = -loser.score;
       }
 
