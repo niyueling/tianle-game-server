@@ -178,7 +178,7 @@ export class NewRobotManager {
 
         // 记录金豆日志
         await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
-          randomPlayer.gold, `机器人开局设置金豆:${this.room._id}`);
+          randomPlayer.gold, `机器人开局设置游戏豆:${this.room._id}`);
 
         await randomPlayer.save();
       }
