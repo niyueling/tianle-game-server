@@ -125,7 +125,7 @@ export class NewRobotManager {
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
       await this.updateNoRuby();
       await this.save();
-      // this.model.step = RobotStep.start;
+      this.model.step = RobotStep.start;
     }
 
     isOk = await this.isNoPlayerAbsent();
@@ -151,7 +151,7 @@ export class NewRobotManager {
   async updateNoRuby() {
     for (let i = 0; i < this.room.players.length; i++) {
       const p = this.room.players[i];
-      if (!p || !p.isRobot()|| this.room.gameState) {
+      if (!p || !p.isRobot() || this.room.gameState) {
         continue;
       }
 
