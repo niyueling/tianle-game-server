@@ -446,8 +446,10 @@ class TableState implements Serializable {
     console.warn("isLucky-%s, random-%s, residueCount-%s", isLucky, random, residueCount);
     if (residueCount >= 3 && isLucky && random && this.room.isPublic) {
       const result = await this.getCardCounter(3);
-      cards = [...cards, ...result];
-      residueCount -= result.length;
+      if (result.length > 0) {
+        cards = [...cards, ...result];
+        residueCount -= result.length;
+      }
 
       console.warn("card-%s, cards-%s", result[0], JSON.stringify(cards));
     }
