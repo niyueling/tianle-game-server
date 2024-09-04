@@ -449,7 +449,7 @@ class TableState implements Serializable {
       cards = [...cards, ...result];
       residueCount -= result.length;
 
-      console.warn("card-%s", result[0]);
+      console.warn("card-%s, cards-%s", result[0], JSON.stringify(cards));
     }
 
     for (let i = 0; i < residueCount; i++) {
