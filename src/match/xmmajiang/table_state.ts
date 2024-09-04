@@ -443,6 +443,7 @@ class TableState implements Serializable {
 
     // 金豆房如果需要补牌超过3张，则有一定概率补杠
     const random = Math.random() < 0.8;
+    console.warn("luckyPlayerIds-%s, random-%s, index-%s, residueCount-%s", JSON.stringify(luckyPlayerIds), random, player.seatIndex, residueCount);
     if (residueCount >= 3 && luckyPlayerIds.includes(player.seatIndex) && random && this.room.isPublic) {
       const result = await this.getCardCounter(3);
       cards = [...cards, ...result];
