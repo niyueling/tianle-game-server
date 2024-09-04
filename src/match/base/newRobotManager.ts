@@ -128,15 +128,13 @@ export class NewRobotManager {
       this.model.step = RobotStep.start;
     }
 
-    isOk = await this.isNoPlayerAbsent();
-    if (!isOk) {
-      // 人没到齐
-      // console.log('some one absent %s', this.room._id);
-      // if (!this.room.gameState) {
-      //   await this.room.forceDissolve();
-      // }
-      return;
+    if (this.model.step === RobotStep.start && !this.room.gameState) {
+      isOk = await this.isNoPlayerAbsent();
+      if (!isOk) {
+        return;
+      }
     }
+
 
     // 检查是不是全是机器人
     isOk = await this.dissolvePublicRoom();
