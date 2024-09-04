@@ -441,7 +441,7 @@ class TableState implements Serializable {
       }
     }
 
-    // 金豆房如果需要补牌超过3张，则有一定概率补杠
+    // 金豆房如果需要补牌超过3张，则有一定概率补刻
     const random = Math.random() < 0.8;
     console.warn("isLucky-%s, random-%s, residueCount-%s", isLucky, random, residueCount);
     if (residueCount >= 3 && isLucky && random && this.room.isPublic) {
@@ -478,6 +478,7 @@ class TableState implements Serializable {
       }
     }
 
+    // 配一个刻子
     const result = Object.keys(counter).filter(num => counter[num] >= number);
     const randomNumber = Math.floor(Math.random() * result.length);
 
@@ -490,6 +491,44 @@ class TableState implements Serializable {
         this.cards.splice(index, 1);
         this.lastTakeCard = card;
         this.remainCards--;
+        counter[card]--;
+      }
+    }
+
+    // 0.3的概率补两个对
+    const doubleRank = Math.random();
+    if (doubleRank < 0.3) {
+      for (let j = 0; j < 2; j++) {
+        const doubleResult = Object.keys(counter).filter(num => counter[num] >= 2);
+        const doubleRandomNumber = Math.floor(Math.random() * doubleResult.length);
+
+        for (let i = 0; i < 2; i++) {
+          const index = this.cards.findIndex(card => card === Number(doubleResult[doubleRandomNumber]));
+
+          if (index !== -1) {
+            const card = this.cards[index];
+            cards.push(card);
+            this.cards.splice(index, 1);
+            this.lastTakeCard = card;
+            this.remainCards--;
+            counter[card]--;
+          }
+        }
+      }
+    }
+
+    // 一半的概率获得金牌
+    const goldRank = Math.random();
+    if (goldRank < 0.5) {
+      const goldIndex = this.cards.findIndex(card => card === this.caishen);
+
+      if (goldIndex !== -1) {
+        const card = this.cards[goldIndex];
+        cards.push(card);
+        this.cards.splice(goldIndex, 1);
+        this.lastTakeCard = card;
+        this.remainCards--;
+        counter[card]--;
       }
     }
 
