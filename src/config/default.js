@@ -99,7 +99,7 @@ module.exports = {
     // 等待用户加入金豆房的时间
     waitRubyPlayer: 3,
     // 结算不准备踢出时间
-    waitKickOutTime: 10,
+    waitKickOutTime: 30,
     // 房卡兑换金豆
     gem2RubyExchangeRate: 10000,
     // 是否扣房卡
