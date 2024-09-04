@@ -63,7 +63,7 @@ export class RobotManager extends NewRobotManager {
         } else if (AnGangIndex) {
           await proxy.gang(Enums.anGang, AnGangIndex);
           continue;
-        } else if (buGangIndex) {
+        } else if (buGangIndex && !this.room.gameState.stateData.type) {
           await proxy.gang(Enums.buGang, buGangIndex);
           continue;
         } else if (choice) {
