@@ -278,7 +278,6 @@ class TableState implements Serializable {
     this.restJushu = restJushu;
     this.rule = rule;
     const players = room.players.map(playerSocket => new PlayerState(playerSocket, room, rule));
-    let random_number = Math.floor(Math.random() * 4) + 1;
     this.zhuangIndex = 0;
     players[this.zhuangIndex].zhuang = true;
     players[this.zhuangIndex].zhuangCount++;
@@ -429,9 +428,10 @@ class TableState implements Serializable {
     return cardValue >= Enums.spring && cardValue <= Enums.ju
   }
 
-  async take16Cards(player: PlayerState, clist) {
-    const cards = this.rule.test ? clist.slice() : [];
+  async take16Cards(player: PlayerState, clist, luckyPlayerIds) {
+    let cards = this.rule.test ? clist.slice() : [];
     const cardCount = cards.length;
+    let residueCount = 16 - cardCount;
     const flowerList = [];
     let card;
 
@@ -441,7 +441,15 @@ class TableState implements Serializable {
       }
     }
 
-    for (let i = 0; i < 16 - cardCount; i++) {
+    // 金豆房如果需要补牌超过3张，则有一定概率补杠
+    const random = Math.random() < 0.5;
+    if (residueCount >= 3 && luckyPlayerIds.includes(player.seatIndex) && random && this.room.isPublic) {
+      const result = await this.getCardCounter(3);
+      cards = [...cards, ...result];
+      residueCount -= result.length;
+    }
+
+    for (let i = 0; i < residueCount; i++) {
       card = await this.consumeCard(player, false, false, false);
       if (this.isFlower(card)) {
         flowerList.push(card);
@@ -450,6 +458,36 @@ class TableState implements Serializable {
       cards.push(card);
     }
     return {cards, flowerList}
+  }
+
+  async getCardCounter(number) {
+    const counter = {};
+    const cards = [];
+
+    for (let i = 0; i < this.cards.length; i++) {
+      const card = this.cards[i];
+      if (counter[card]) {
+        counter[card]++;
+      } else {
+        counter[card] = 1;
+      }
+    }
+
+    const result = Object.keys(counter).filter(num => counter[num] >= number);
+    const randomNumber = Math.floor(Math.random() * result.length);
+
+    for (let i = 0; i < number; i++) {
+      const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
+
+      if (index !== -1) {
+        const card = this.cards[index];
+        cards.push(card);
+        this.cards.splice(index, 1);
+        this.lastTakeCard = card;
+      }
+    }
+
+    return cards;
   }
 
   async takeFlowerResetCards(player: PlayerState) {
@@ -473,6 +511,11 @@ class TableState implements Serializable {
 
     const needShuffle = this.room.shuffleData.length > 0;
     let cardList = [];
+    const luckyPlayerIds = [Math.floor(Math.random() * 4)];
+    const random = Math.floor(Math.random() * 4);
+    if (!luckyPlayerIds.includes(random)) {
+      luckyPlayerIds.push(random);
+    }
 
     // 测试工具自定义摸9张牌
     if (this.rule.test && payload.moCards && payload.moCards.length > 0) {
@@ -497,7 +540,7 @@ class TableState implements Serializable {
       }
 
       // 补发牌到16张
-      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : []);
+      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : [], luckyPlayerIds);
       p.flowerList = result.flowerList;
       cardList.push(result);
     }
