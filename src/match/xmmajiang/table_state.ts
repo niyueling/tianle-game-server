@@ -489,6 +489,7 @@ class TableState implements Serializable {
         cards.push(card);
         this.cards.splice(index, 1);
         this.lastTakeCard = card;
+        this.remainCards--;
       }
     }
 
