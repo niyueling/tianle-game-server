@@ -428,7 +428,7 @@ class TableState implements Serializable {
     return cardValue >= Enums.spring && cardValue <= Enums.ju
   }
 
-  async take16Cards(player: PlayerState, clist, luckyPlayerIds) {
+  async take16Cards(player: PlayerState, clist, isLucky) {
     let cards = this.rule.test ? clist.slice() : [];
     const cardCount = cards.length;
     let residueCount = 16 - cardCount;
@@ -443,13 +443,13 @@ class TableState implements Serializable {
 
     // 金豆房如果需要补牌超过3张，则有一定概率补杠
     const random = Math.random() < 0.8;
-    console.warn("luckyPlayerIds-%s, random-%s, index-%s, residueCount-%s", JSON.stringify(luckyPlayerIds), random, player.seatIndex, residueCount);
-    if (residueCount >= 3 && luckyPlayerIds.includes(player.seatIndex) && random && this.room.isPublic) {
+    console.warn("isLucky-%s, random-%s, residueCount-%s", isLucky, random, residueCount);
+    if (residueCount >= 3 && isLucky && random && this.room.isPublic) {
       const result = await this.getCardCounter(3);
       cards = [...cards, ...result];
       residueCount -= result.length;
 
-      console.warn("index-%s, card-%s", player.seatIndex, result[0]);
+      console.warn("card-%s", result[0]);
     }
 
     for (let i = 0; i < residueCount; i++) {
@@ -543,7 +543,7 @@ class TableState implements Serializable {
       }
 
       // 补发牌到16张
-      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : [], luckyPlayerIds);
+      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : [], luckyPlayerIds.includes(i));
       p.flowerList = result.flowerList;
       cardList.push(result);
     }
