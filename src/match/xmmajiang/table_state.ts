@@ -519,7 +519,7 @@ class TableState implements Serializable {
       }
     }
 
-    // 一半的概率获得金牌
+    // 0.3的概率获得金牌
     const goldRank = Math.random();
     if (goldRank < 0.3) {
       const goldIndex = this.cards.findIndex(card => card === this.caishen);
