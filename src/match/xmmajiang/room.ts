@@ -1058,7 +1058,7 @@ class Room extends RoomBase {
     this.gameState.dissolve();
     this.gameState = null;
     this.readyPlayers = [];
-    // this.robotManager.model.step = RobotStep.waitRuby;
+    this.robotManager.model.step = RobotStep.waitRuby;
 
     if (this.isRoomAllOver(states) && !this.isPublic) {
       const message = this.allOverMessage();

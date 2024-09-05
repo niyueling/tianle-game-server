@@ -2492,11 +2492,11 @@ class TableState implements Serializable {
 
   promptWithOther(todo, player, card) {
     switch (todo) {
-      case Enums.peng:
-        player.emitter.emit(Enums.peng, this.turn, this.stateData.card)
-        break;
       case Enums.gang:
         player.emitter.emit(Enums.gangByOtherDa, this.turn, this.stateData.card)
+        break;
+      case Enums.peng:
+        player.emitter.emit(Enums.peng, this.turn, this.stateData.card)
         break;
       case Enums.chi:
         player.emitter.emit(Enums.chi, this.turn, this.stateData.card, player.chiCombol[0])
