@@ -442,9 +442,8 @@ class TableState implements Serializable {
     }
 
     // 金豆房如果需要补牌超过3张，则有一定概率补刻
-    const random = Math.random() < 0.8;
-    console.warn("isLucky-%s, random-%s, residueCount-%s", isLucky, random, residueCount);
-    if (residueCount >= 3 && isLucky && random && this.room.isPublic) {
+    console.warn("isLucky-%s, residueCount-%s", isLucky, residueCount);
+    if (residueCount >= 3 && isLucky && this.room.isPublic) {
       const result = await this.getCardCounter(3);
       if (result.length > 0) {
         cards = [...cards, ...result];
@@ -479,19 +478,22 @@ class TableState implements Serializable {
     }
 
     // 配一个刻子
-    const result = Object.keys(counter).filter(num => counter[num] >= number);
-    const randomNumber = Math.floor(Math.random() * result.length);
+    const random = Math.random() < 0.8;
+    if (random) {
+      const result = Object.keys(counter).filter(num => counter[num] >= number);
+      const randomNumber = Math.floor(Math.random() * result.length);
 
-    for (let i = 0; i < number; i++) {
-      const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
+      for (let i = 0; i < number; i++) {
+        const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
 
-      if (index !== -1) {
-        const card = this.cards[index];
-        cards.push(card);
-        this.cards.splice(index, 1);
-        this.lastTakeCard = card;
-        this.remainCards--;
-        counter[card]--;
+        if (index !== -1) {
+          const card = this.cards[index];
+          cards.push(card);
+          this.cards.splice(index, 1);
+          this.lastTakeCard = card;
+          this.remainCards--;
+          counter[card]--;
+        }
       }
     }
 
@@ -519,7 +521,7 @@ class TableState implements Serializable {
 
     // 一半的概率获得金牌
     const goldRank = Math.random();
-    if (goldRank < 0.5) {
+    if (goldRank < 0.3) {
       const goldIndex = this.cards.findIndex(card => card === this.caishen);
 
       if (goldIndex !== -1) {
