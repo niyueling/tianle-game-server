@@ -1057,7 +1057,105 @@ class TableState implements Serializable {
   }
 
   async getCardTypes(player, type, dianPaoPlayer = null) {
-    return await this.getCardTypesByHu(player, type, dianPaoPlayer);
+    const cardType =  await this.getCardTypesByHu(player, type, dianPaoPlayer);
+
+    // 计算附加倍数
+    const multiple = await this.getCardAdditionalMultiple(player);
+    cardType.multiple *= multiple;
+
+    return cardType;
+  }
+
+  async getCardAdditionalMultiple(player) {
+    const anGang = player.events["anGang"] || [];
+    const jieGang = player.events["mingGang"] || [];
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang];
+    let multiple = 1;
+    const caiShenTypeCount = await this.getCardXingCount(player);
+    const caiShenCount = player.cards[Enums.zeus] + player.cards[Enums.poseidon] + player.cards[Enums.athena];
+    let tianPengCount = 0;
+
+    // 星座牌的明杠，暗杠，翻2倍
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] >= Enums.constellation1 && gangList[i] <= Enums.constellation12) {
+        multiple *= 2;
+      }
+
+      if (gangList[i] === Enums.constellation7) {
+        tianPengCount += 4;
+      }
+    }
+
+    for (let i = 0; i < peng.length; i++) {
+      if (peng[i] === Enums.constellation7) {
+        tianPengCount += 3;
+      }
+    }
+
+    // 胡牌时手牌中含有两种不同的天星牌(3倍)
+    if (caiShenTypeCount === 2) {
+      multiple *= 3;
+    }
+
+    // 胡牌时收牌子含有三种不同的天星牌(8倍)
+    if (caiShenTypeCount === 3) {
+      multiple *= 8;
+    }
+
+    // 胡牌时手牌中含有4张天星牌(8倍)
+    if (caiShenCount === 4) {
+      multiple *= 8;
+    }
+
+    // 胡牌时手牌中含有5张天星牌(10倍)
+    if (caiShenCount >= 5) {
+      multiple *= 10;
+    }
+
+    // 胡牌时手牌中含有3张宙斯牌(6倍)
+    if (player.cards[Enums.zeus] >= 3) {
+      multiple *= 6;
+    }
+
+    // 胡牌时手牌中含有3张雅典娜牌(6倍)
+    if (player.cards[Enums.athena] >= 3) {
+      multiple *= 6;
+    }
+
+    // 胡牌时手牌中含有3张波塞冬牌(6倍)
+    if (player.cards[Enums.poseidon] >= 3) {
+      multiple *= 6;
+    }
+
+    // 胡牌时手牌每有1张天秤座的牌，则倍数*2（碰、杠都计入）
+    if (player.cards[Enums.constellation7] >= 0) {
+      tianPengCount += player.cards[Enums.constellation7];
+    }
+
+    if (tianPengCount > 0) {
+      multiple * (2 * tianPengCount);
+    }
+
+    return multiple;
+  }
+
+  async getCardXingCount(player) {
+    let count = 0;
+
+    if (player.cards[Enums.zeus] > 0) {
+      count++;
+    }
+
+    if (player.cards[Enums.poseidon] > 0) {
+      count++;
+    }
+
+    if (player.cards[Enums.athena] > 0) {
+      count++;
+    }
+
+    return count;
   }
 
   async getCardTypesByHu(player, type = 1, dianPaoPlayer) {
