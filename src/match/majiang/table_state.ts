@@ -1061,6 +1061,7 @@ class TableState implements Serializable {
 
     // 计算附加倍数
     const multiple = await this.getCardAdditionalMultiple(player);
+    console.warn("index-%s, multiple-%s", player.seatIndex, multiple);
     cardType.multiple *= multiple;
 
     return cardType;
