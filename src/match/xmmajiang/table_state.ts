@@ -446,6 +446,7 @@ class TableState implements Serializable {
     if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot) {
       const result = await this.getNoviceProtectionCards(residueCount);
       if (result.length > 0) {
+        console.warn("result-%s", JSON.stringify(result));
         cards = [...cards, ...result];
         residueCount -= result.length;
       }
