@@ -525,10 +525,7 @@ class TableState implements Serializable {
         }
       } else {
         // 发放顺子
-        result = Object.keys(counter).filter(num => {
-          console.warn("num-%s, num + 1-%s, num + 2-%s", num, num + 1, num + 2);
-          return counter[num] >= 1 && counter[num + 1] >= 1 && counter[num + 2] >= 1
-        });
+        result = Object.keys(counter).filter(num => counter[num] >= 1 && counter[Number(num) + 1] >= 1 && counter[Number(num) + 2] >= 1);
         console.warn("result-%s", JSON.stringify(result));
         const randomNumber = Math.floor(Math.random() * result.length);
         for (let i = 0; i < 3; i++) {
