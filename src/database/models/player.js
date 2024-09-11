@@ -41,6 +41,7 @@ const schema = new Schema({
   consecutiveLoginDays: {type: Number, default: 1}, // 连续登陆天数
   signLoginDays: {type: Number, default: 0}, // 签到天数
   totalSignLoginDays: {type: Number, default: 0}, // 累计签到天数
+  gameJuShu: {type: Array, default: []}, // 游戏对局数
   sessionKey: {type: String},
   guideSteps: {type: Number, default: 1001},
   vip: {type: Number, default: 0},
