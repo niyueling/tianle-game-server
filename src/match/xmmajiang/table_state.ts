@@ -1883,11 +1883,10 @@ class TableState implements Serializable {
 
     model.isGame = false;
     model.juCount++;
-    if (model.gameJuShu[GameType.xmmj]) {
-      model.gameJuShu[GameType.xmmj]++;
-    } else {
-      model.gameJuShu[GameType.xmmj] = 1;
+    if (!model.gameJuShu[GameType.xmmj]) {
+      model.gameJuShu[GameType.xmmj] = 0;
     }
+    model.gameJuShu[GameType.xmmj] ++;
     if (score > 0) {
       model.juWinCount++;
     }
