@@ -1,6 +1,8 @@
 import createClient from "../utils/redis";
 import {service} from "../service/importService";
 import Enums from "./majiang/enums";
+import {GameType} from "@fm/common/constants";
+import * as config from "../config";
 
 /**
  *
@@ -31,37 +33,40 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       this.playerRoomTable = new Map();
     }
 
-    async getAvailablePublicRoom(playerId, roomId, rule) {
+    async getAvailablePublicRoom(playerId, roomId, rule, playerModel) {
       let found = null;
-      let canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
-      if (canJoinRooms) {
-        for (let i = 0; i < Object.keys(canJoinRooms).length; i++) {
-          const roomId = Object.keys(canJoinRooms)[i];
-          for (const kv of this.publicRooms) {
-            if (Number(kv[0]) === Number(roomId)) {
-              const room = kv[1];
-              if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
-                found = room;
-                break;
+      if (!playerModel.gameJuShu[GameType.xmmj]) {
+        playerModel.gameJuShu[GameType.xmmj] = 0;
+      }
+      if (playerModel.gameJuShu[GameType.xmmj] >= config.game.noviceProtection || playerModel.robot) {
+        let canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
+        if (canJoinRooms) {
+          for (let i = 0; i < Object.keys(canJoinRooms).length; i++) {
+            const roomId = Object.keys(canJoinRooms)[i];
+            for (const kv of this.publicRooms) {
+              if (Number(kv[0]) === Number(roomId)) {
+                const room = kv[1];
+                if (!room.isFull() && room.isPublic && room.gameRule.categoryId === rule.categoryId && !room.gameState) {
+                  found = room;
+                  break;
+                }
               }
             }
+            if (found) {
+              return found;
+            }
           }
-          if (found) {
-            return found;
-          }
+        }
+
+        if (found) {
+          return found;
         }
       }
 
-      if (found) {
-        return found;
-      }
       const ret = await this.createRoom(true, roomId, rule);
       ret.ownerId = playerId;
       this.publicRooms.set(roomId, ret);
-      // await redisClient.sadd('canJoinRoomIds', roomId);
       await redisClient.hsetAsync("canJoinRooms", roomId, JSON.stringify(ret));
-      // canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
-      // console.warn("create room %s canJoinRooms %s", this._id, JSON.stringify(canJoinRooms));
       return ret;
     }
 

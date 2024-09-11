@@ -162,7 +162,7 @@ export class BackendProcess {
     const rule = await this.lobby.normalizeRule(messageBody.payload.rule)
     // 局数设为 99
     rule.juShu = -1;
-    const room = await this.lobby.getAvailablePublicRoom(messageBody.from, Number(roomId), rule);
+    const room = await this.lobby.getAvailablePublicRoom(messageBody.from, Number(roomId), rule, playerModel);
 
     // 检查金豆
     const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule);
@@ -206,8 +206,6 @@ export class BackendProcess {
       if (room.rule.ro.gameType === GameType.xmmj) {
         room.fanShuMap[playerRmqProxy._id] = 16;
       }
-
-      console.warn(playerModel);
 
       if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
         await roomProxy.joinAsCreator(playerRmqProxy);
