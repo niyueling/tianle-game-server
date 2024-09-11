@@ -528,7 +528,7 @@ class TableState implements Serializable {
         result = Object.keys(counter).filter(num => counter[num] >= 1 && counter[num + 1] >= 1 && counter[num + 2] >= 1);
         const randomNumber = Math.floor(Math.random() * result.length);
         for (let i = 0; i < 3; i++) {
-          const index = this.cards.findIndex(card => card === Number(result[randomNumber] + i));
+          const index = this.cards.findIndex(card => card === Number(result[randomNumber]) + i);
           console.warn("index-%s, randomNumber-%s, result-%s, i-%s", index, randomNumber, JSON.stringify(result), i);
 
           if (index !== -1) {
