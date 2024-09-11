@@ -1886,7 +1886,7 @@ class TableState implements Serializable {
     if (!model.gameJuShu[GameType.xmmj]) {
       model.gameJuShu[GameType.xmmj] = 0;
     }
-    model.gameJuShu[GameType.xmmj] ++;
+    model.gameJuShu[GameType.xmmj]++;
     if (score > 0) {
       model.juWinCount++;
     }
@@ -1913,8 +1913,9 @@ class TableState implements Serializable {
       }
     }
 
-    console.warn("model-%s", JSON.stringify(model));
-
+    model.gameJuShu[GameType.xmmj] = (model.gameJuShu[GameType.xmmj] || 0) + 1;
+    console.warn(typeof model.gameJuShu); // 应该输出 "object"
+    console.warn(model.gameJuShu); // 查看初始对象结构
     await model.save();
   }
 
