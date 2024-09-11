@@ -551,7 +551,7 @@ class TableState implements Serializable {
         result = Object.keys(counter).filter(num => counter[num] >= 2);
         const randomNumber = Math.floor(Math.random() * result.length);
         // 摸牌时摸到对子的牌
-        this.testMoCards.push(Number(result[randomNumber]));
+        // this.testMoCards.push(Number(result[randomNumber]));
         for (let i = 0; i < 2; i++) {
           const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
 
@@ -569,7 +569,7 @@ class TableState implements Serializable {
         result = Object.keys(counter).filter(num => Number(num) <= Enums.tongzi7 && counter[num] >= 1 && counter[Number(num) + 1] >= 1);
         const randomNumber = Math.floor(Math.random() * result.length);
         // 摸牌时摸到顺子的牌
-        this.testMoCards.push(Number(result[randomNumber]) + 2);
+        // this.testMoCards.push(Number(result[randomNumber]) + 2);
         for (let i = 0; i < 2; i++) {
           const index = this.cards.findIndex(card => card === Number(result[randomNumber]) + i);
           if (index !== -1) {
