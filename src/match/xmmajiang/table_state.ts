@@ -430,6 +430,7 @@ class TableState implements Serializable {
 
   async take16Cards(player: PlayerState, clist, isLucky) {
     let cards = this.rule.test ? clist.slice() : [];
+    const playerModel = await service.playerService.getPlayerModel(player._id);
     const cardCount = cards.length;
     let residueCount = 16 - cardCount;
     const flowerList = [];
@@ -441,8 +442,17 @@ class TableState implements Serializable {
       }
     }
 
-    // 金豆房如果需要补牌超过3张，则有一定概率补刻
-    if (residueCount >= 3 && isLucky && this.room.isPublic) {
+    // 用户处于新手保护，并且非机器人
+    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot) {
+      const result = await this.getNoviceProtectionCards(residueCount);
+      if (result.length > 0) {
+        cards = [...cards, ...result];
+        residueCount -= result.length;
+      }
+    }
+
+    // 非新手保护，金豆房如果需要发牌超过3张，则有一定概率补刻+单金+两对
+    if (residueCount >= 3 && isLucky && this.room.isPublic && playerModel.gameJuShu[GameType.xmmj] >= config.game.noviceProtection) {
       const result = await this.getCardCounter(3);
       if (result.length > 0) {
         cards = [...cards, ...result];
@@ -459,6 +469,79 @@ class TableState implements Serializable {
       cards.push(card);
     }
     return {cards, flowerList}
+  }
+
+  async getNoviceProtectionCards(numbers) {
+    const counter = {};
+    const cards = [];
+
+    for (let i = 0; i < this.cards.length; i++) {
+      const card = this.cards[i];
+      if (counter[card]) {
+        counter[card]++;
+      } else {
+        counter[card] = 1;
+      }
+    }
+
+    // 配金牌
+    const goldRank = Math.random();
+    const goldCount = goldRank < 0.03 ? 3 : goldRank < 0.7 ? 2 : 1;
+    for (let i = 0; i < goldCount; i++) {
+      const goldIndex = this.cards.findIndex(card => card === this.caishen);
+
+      if (goldIndex !== -1) {
+        const card = this.cards[goldIndex];
+        cards.push(card);
+        this.cards.splice(goldIndex, 1);
+        this.lastTakeCard = card;
+        this.remainCards--;
+        counter[card]--;
+      }
+    }
+
+    // 配4个刻子或者顺子
+    const cardCount = numbers - cards.length >= 15 ? 5 : 4;
+    for (let i = 0; i < cardCount; i++) {
+      const random = Math.random() < 0.5;
+      let result = [];
+
+      // 发刻子
+      if (random) {
+        result = Object.keys(counter).filter(num => counter[num] >= 3);
+        const randomNumber = Math.floor(Math.random() * result.length);
+        for (let i = 0; i < 3; i++) {
+          const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
+
+          if (index !== -1) {
+            const card = this.cards[index];
+            cards.push(card);
+            this.cards.splice(index, 1);
+            this.lastTakeCard = card;
+            this.remainCards--;
+            counter[card]--;
+          }
+        }
+      } else {
+        // 发放顺子
+        result = Object.keys(counter).filter(num => counter[num] >= 1 && counter[num + 1] >= 1 && counter[num + 2] >= 1);
+        const randomNumber = Math.floor(Math.random() * result.length);
+        for (let i = 0; i < 3; i++) {
+          const index = this.cards.findIndex(card => card === Number(result[randomNumber] + i));
+
+          if (index !== -1) {
+            const card = this.cards[index];
+            cards.push(card);
+            this.cards.splice(index, 1);
+            this.lastTakeCard = card;
+            this.remainCards--;
+            counter[card]--;
+          }
+        }
+      }
+    }
+
+    return cards;
   }
 
   async getCardCounter(number) {
