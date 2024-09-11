@@ -1886,13 +1886,11 @@ class TableState implements Serializable {
 
     model.isGame = false;
     model.juCount++;
-    console.warn("start gameJuShu %s", JSON.stringify(model.gameJuShu));
     if (model.gameJuShu[GameType.xmmj]) {
       model.gameJuShu[GameType.xmmj]++;
     } else {
       model.gameJuShu[GameType.xmmj] = 1;
     }
-    console.warn("end gameJuShu %s", JSON.stringify(model.gameJuShu));
     if (score > 0) {
       model.juWinCount++;
     }
@@ -1918,6 +1916,8 @@ class TableState implements Serializable {
         model.looseMoneyBoyAmount = Math.abs(score);
       }
     }
+
+    console.warn("model-%s", JSON.stringify(model));
 
     await model.save();
   }
