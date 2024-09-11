@@ -1880,13 +1880,10 @@ class TableState implements Serializable {
 
   async setPlayerGameConfig(player, score) {
     const model = await Player.findOne({_id: player._id});
+    console.warn("model-%s", JSON.stringify(model));
 
     model.isGame = false;
     model.juCount++;
-    if (!model.gameJuShu[GameType.xmmj]) {
-      model.gameJuShu[GameType.xmmj] = 0;
-    }
-    model.gameJuShu[GameType.xmmj]++;
     if (score > 0) {
       model.juWinCount++;
     }
