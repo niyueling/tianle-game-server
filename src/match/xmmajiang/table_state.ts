@@ -425,7 +425,7 @@ class TableState implements Serializable {
 
   // 是否是花牌
   isFlower(cardValue) {
-    return cardValue >= Enums.spring && cardValue <= Enums.ju
+    return cardValue >= Enums.spring && cardValue <= Enums.ju;
   }
 
   async take16Cards(player: PlayerState, clist, isLucky) {
@@ -446,7 +446,6 @@ class TableState implements Serializable {
     if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot) {
       const result = await this.getNoviceProtectionCards(residueCount);
       if (result.length > 0) {
-        console.warn("result-%s", JSON.stringify(result));
         cards = [...cards, ...result];
         residueCount -= result.length;
       }
@@ -487,7 +486,7 @@ class TableState implements Serializable {
 
     // 配金牌
     const goldRank = Math.random();
-    const goldCount = goldRank < 0.03 ? 3 : goldRank < 0.7 ? 2 : 1;
+    const goldCount = goldRank < 0.03 ? 3 : goldRank < 0.7 ? 1 : 2;
     for (let i = 0; i < goldCount; i++) {
       const goldIndex = this.cards.findIndex(card => card === this.caishen);
 
@@ -526,7 +525,6 @@ class TableState implements Serializable {
       } else {
         // 发放顺子
         result = Object.keys(counter).filter(num => Number(num) <= Enums.tongzi7 && counter[num] >= 1 && counter[Number(num) + 1] >= 1 && counter[Number(num) + 2] >= 1);
-        console.warn("result-%s", JSON.stringify(result));
         const randomNumber = Math.floor(Math.random() * result.length);
         for (let i = 0; i < 3; i++) {
           const index = this.cards.findIndex(card => card === Number(result[randomNumber]) + i);
