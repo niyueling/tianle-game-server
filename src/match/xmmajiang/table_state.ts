@@ -525,7 +525,7 @@ class TableState implements Serializable {
         }
       } else {
         // 发放顺子
-        result = Object.keys(counter).filter(num => counter[num] >= 1 && counter[Number(num) + 1] >= 1 && counter[Number(num) + 2] >= 1);
+        result = Object.keys(counter).filter(num => Number(num) <= Enums.tongzi7 && counter[num] >= 1 && counter[Number(num) + 1] >= 1 && counter[Number(num) + 2] >= 1);
         console.warn("result-%s", JSON.stringify(result));
         const randomNumber = Math.floor(Math.random() * result.length);
         for (let i = 0; i < 3; i++) {
