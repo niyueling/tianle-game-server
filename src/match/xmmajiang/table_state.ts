@@ -1880,10 +1880,15 @@ class TableState implements Serializable {
 
   async setPlayerGameConfig(player, score) {
     const model = await Player.findOne({_id: player._id});
-    console.warn("model-%s", JSON.stringify(model));
 
     model.isGame = false;
     model.juCount++;
+    if (!model.gameJuShu[GameType.xmmj]) {
+      model.gameJuShu[GameType.xmmj] = 0;
+    }
+    model.gameJuShu[GameType.xmmj]++;
+    await Player.update({_id: model._id}, {$set: {gameJuShu: model.gameJuShu}});
+
     if (score > 0) {
       model.juWinCount++;
     }
@@ -1910,9 +1915,6 @@ class TableState implements Serializable {
       }
     }
 
-    model.gameJuShu[GameType.xmmj] = (model.gameJuShu[GameType.xmmj] || 0) + 1;
-    console.warn(typeof model.gameJuShu); // 应该输出 "object"
-    console.warn(model.gameJuShu); // 查看初始对象结构
     await model.save();
   }
 
