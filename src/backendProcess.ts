@@ -207,6 +207,8 @@ export class BackendProcess {
         room.fanShuMap[playerRmqProxy._id] = 16;
       }
 
+      console.warn(playerModel);
+
       if (room.ownerId.toString() === playerRmqProxy._id.toString()) {
         await roomProxy.joinAsCreator(playerRmqProxy);
       } else {
