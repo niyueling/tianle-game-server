@@ -444,7 +444,8 @@ class TableState implements Serializable {
 
     // 用户处于新手保护，并且非机器人
     if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot) {
-      const result = await this.getNoviceProtectionCards(residueCount);
+      const result = await this.getNoviceProtectionCards(residueCount, player);
+      console.warn("result-%s, disperseCards-%s", JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
         cards = [...cards, ...result];
         residueCount -= result.length;
@@ -471,7 +472,7 @@ class TableState implements Serializable {
     return {cards, flowerList}
   }
 
-  async getNoviceProtectionCards(numbers) {
+  async getNoviceProtectionCards(numbers, player) {
     const counter = {};
     const cards = [];
 
@@ -540,59 +541,15 @@ class TableState implements Serializable {
     }
 
     let residueCount = numbers - cards.length;
-    // if (residueCount >= 2) {
-    //   // 还需要补牌超过2张，则补一个对子，或者补顺子之二
-    //   const doubleRandom = Math.random() < 0.5;
-    //   let result = [];
-    //   residueCount -= 2;
-    //
-    //   // 发对子
-    //   if (doubleRandom) {
-    //     result = Object.keys(counter).filter(num => counter[num] >= 2);
-    //     const randomNumber = Math.floor(Math.random() * result.length);
-    //     // 摸牌时摸到对子的牌
-    //     // this.testMoCards.push(Number(result[randomNumber]));
-    //     for (let i = 0; i < 2; i++) {
-    //       const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
-    //
-    //       if (index !== -1) {
-    //         const card = this.cards[index];
-    //         cards.push(card);
-    //         this.cards.splice(index, 1);
-    //         this.lastTakeCard = card;
-    //         this.remainCards--;
-    //         counter[card]--;
-    //       }
-    //     }
-    //   } else {
-    //     // 发放顺子之二
-    //     result = Object.keys(counter).filter(num => Number(num) <= Enums.tongzi7 && counter[num] >= 1 && counter[Number(num) + 1] >= 1);
-    //     const randomNumber = Math.floor(Math.random() * result.length);
-    //     // 摸牌时摸到顺子的牌
-    //     // this.testMoCards.push(Number(result[randomNumber]) + 2);
-    //     for (let i = 0; i < 2; i++) {
-    //       const index = this.cards.findIndex(card => card === Number(result[randomNumber]) + i);
-    //       if (index !== -1) {
-    //         const card = this.cards[index];
-    //         cards.push(card);
-    //         this.cards.splice(index, 1);
-    //         this.lastTakeCard = card;
-    //         this.remainCards--;
-    //         counter[card]--;
-    //       }
-    //     }
-    //   }
-    // }
-    //
-    // // 检测是否发牌完成
-    // if (residueCount > 0) {
-    //   let cardIndex = --this.remainCards;
-    //   const card = this.cards[cardIndex];
-    //   cards.push(card);
-    //   this.cards.splice(cardIndex, 1);
-    //   this.lastTakeCard = card;
-    //   counter[card]--;
-    // }
+    for (let i = 0; i < residueCount; i++) {
+      let cardIndex = --this.remainCards;
+      const card = this.cards[cardIndex];
+      cards.push(card);
+      player.disperseCards.push(card);
+      this.cards.splice(cardIndex, 1);
+      this.lastTakeCard = card;
+      counter[card]--;
+    }
 
     return cards;
   }

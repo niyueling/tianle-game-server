@@ -249,6 +249,9 @@ class PlayerState implements Serializable {
   // 是否机器人
   isRobot: boolean = false;
 
+  // 新手摸到的散牌
+  disperseCards: any[] = [];
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
