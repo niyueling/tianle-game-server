@@ -394,7 +394,7 @@ class TableState implements Serializable {
         player.disperseCards.push(this.cards[cardIndex]);
       }
 
-      console.warn("disperseCards-%s", player.disperseCards);
+      console.warn("disperseCards-%s", JSON.stringify(player.disperseCards));
     }
 
     // 牌堆移除这张牌
@@ -2310,12 +2310,12 @@ class TableState implements Serializable {
     const ok = await player.daPai(card)
     if (ok) {
       this.lastDa = player;
-      player.cancelTimeout()
+      player.cancelTimeout();
       this.stateData = {};
       // 新手保护删除牌
       if (player.disperseCards.includes(card)) {
         const disperseIndex = player.disperseCards.findIndex(c => c === card);
-        this.testMoCards.splice(disperseIndex, 1);
+        player.disperseCards.splice(disperseIndex, 1);
         console.warn("disperseCards-%s", player.disperseCards);
       }
       await player.sendMessage('game/daReply', {ok: true, data: card});
