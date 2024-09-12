@@ -547,6 +547,9 @@ class TableState implements Serializable {
           if (index !== -1) {
             const card = this.cards[index];
             cards.push(card);
+            if (i === 2) {
+              player.disperseCards.push(card);
+            }
             this.cards.splice(index, 1);
             this.lastTakeCard = card;
             this.remainCards--;
