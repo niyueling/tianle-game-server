@@ -487,7 +487,7 @@ class TableState implements Serializable {
 
     // 配金牌
     const goldRank = Math.random();
-    const goldCount = goldRank < 0.03 ? 3 : goldRank < 0.7 ? 1 : 2;
+    const goldCount = goldRank < 0.01 ? 3 : goldRank < 0.1 ? 2 : 1;
     for (let i = 0; i < goldCount; i++) {
       const goldIndex = this.cards.findIndex(card => card === this.caishen);
 
