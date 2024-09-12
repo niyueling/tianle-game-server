@@ -921,7 +921,6 @@ class PlayerState implements Serializable {
         let recordCount = 0;
 
         // 如果是游金，记录游金
-
         if (qiangJin) {
           if (checkResult.hu && checkResult.huType === Enums.qiShouSanCai) {
             this.recordGameEvent(Enums.sanJinDao, card);

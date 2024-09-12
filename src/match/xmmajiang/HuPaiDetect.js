@@ -752,7 +752,7 @@ const HuPaiDetect = {
     const {caiShen} = sourceCountMap
     let color = 0
     const each = (card) => {
-      if (card == caiShen) return
+      if (card === caiShen) return
       if (card < Enums.dong) {
         color = 1
       }

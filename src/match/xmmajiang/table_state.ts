@@ -388,11 +388,14 @@ class TableState implements Serializable {
 
     // 新手保护辅助出牌
     if (player.disperseCards.length > 0) {
-      const moIndex = this.cards.findIndex(card => card === this.hasTripleStraight(player.disperseCards));
+      const disperseCard = this.hasTripleStraight(player.disperseCards);
+      const moIndex = this.cards.findIndex(card => card === disperseCard);
       if (moIndex !== -1) {
         cardIndex = moIndex;
         player.disperseCards.push(this.cards[cardIndex]);
       }
+
+      this.removeTripleStraight(player, disperseCard, moIndex === -1);
 
       // 首先对杂牌数组进行排序
       player.disperseCards.sort((a, b) => a - b);
@@ -404,8 +407,6 @@ class TableState implements Serializable {
     const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
     this.lastTakeCard = card;
-
-    // console.warn("consume card-%s, cardIndex-%s, remainCards-%s", card, cardIndex, this.remainCards);
 
     // 如果对局摸到花牌，延迟0.5秒重新摸牌
     if (notifyFlower && this.isFlower(card)) {
@@ -490,19 +491,43 @@ class TableState implements Serializable {
     for (let i = 0; i < nums.length; i++) {
       // 检测到对子，则补成刻子
       if (nums[i + 1] - nums[i] === 0 && nums[i + 2] !== nums[i + 1]) {
-        return nums[i];
+        if (this.cards.findIndex(c => c === nums[i]) !== -1) {
+          return nums[i];
+        }
       }
       // 检测到2连顺，补成顺子
       if (nums[i + 1] - nums[i] === 1 && nums[i + 2] - nums[i + 1] !== 1) {
-        return nums[i] + 2;
+        if (this.cards.findIndex(c => c === nums[i] + 2) !== -1) {
+          return nums[i] + 2;
+        }
+        if (this.cards.findIndex(c => c === nums[i] - 1) !== -1) {
+          return nums[i] - 1;
+        }
       }
       // 检测到顺子两边，补成顺子
       if (nums[i + 1] - nums[i] === 2) {
-        return nums[i] + 1;
+        if (this.cards.findIndex(c => c === nums[i] + 1) !== -1) {
+          return nums[i] + 1;
+        }
       }
     }
 
     return nums[0];
+  }
+
+  removeTripleStraight(player, disperseCard, state) {
+    const disperseCards = player.disperseCards;
+    for (let i = 0; i < disperseCards.length; i++) {
+      if (disperseCards[i + 1] === disperseCards[i] && disperseCards[i + 2] === disperseCards[i + 1]) {
+        player.disperseCards.splice(i, 3);
+      }
+      if (disperseCards[i + 1] === disperseCards[i] && disperseCards[i + 2] !== disperseCards[i + 1] && state && disperseCards[i] === disperseCard) {
+        player.disperseCards.splice(i, 2);
+      }
+      if (disperseCards[i + 1] - disperseCards[i] === 1 && disperseCards[i + 2] - disperseCards[i + 1] === 1) {
+        player.disperseCards.splice(i, 3);
+      }
+    }
   }
 
   async getNoviceProtectionCards(numbers, player) {
