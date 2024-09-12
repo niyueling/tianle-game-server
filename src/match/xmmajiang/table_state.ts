@@ -2313,11 +2313,11 @@ class TableState implements Serializable {
       player.cancelTimeout();
       this.stateData = {};
       // 新手保护删除牌
-      if (player.disperseCards.includes(card)) {
-        const disperseIndex = player.disperseCards.findIndex(c => c === card);
-        player.disperseCards.splice(disperseIndex, 1);
-        console.warn("disperseCards-%s", player.disperseCards);
-      }
+      // if (player.disperseCards.includes(card)) {
+      //   const disperseIndex = player.disperseCards.findIndex(c => c === card);
+      //   player.disperseCards.splice(disperseIndex, 1);
+      //   console.warn("disperseCards-%s", player.disperseCards);
+      // }
       await player.sendMessage('game/daReply', {ok: true, data: card});
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
       // 扣掉打的牌
