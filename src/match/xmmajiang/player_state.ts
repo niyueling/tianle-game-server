@@ -253,29 +253,28 @@ class PlayerState implements Serializable {
   disperseCards: any[] = [];
 
   constructor(userSocket, room, rule) {
-    this.room = room
-    this.zhuang = false
-    this.rule = rule
-    this.ip = userSocket && userSocket.getIpAddress()
-    this.model = userSocket.model
-    this.emitter = new EventEmitter()
-    this.cards = new SourceCardMap(Enums.finalCard).fill(0)
+    this.room = room;
+    this.zhuang = false;
+    this.rule = rule;
+    this.ip = userSocket && userSocket.getIpAddress();
+    this.model = userSocket.model;
+    this.emitter = new EventEmitter();
+    this.cards = new SourceCardMap(Enums.finalCard).fill(0);
     this.disconnectCallBack = player => {
       if (player === this.msgDispatcher) {
-        this.onDisconnect()
+        this.onDisconnect();
       }
     }
-    this._id = this.model._id.toString()
-    this.listenDispatcher(userSocket)
-    this.msgDispatcher = userSocket
-    this.events = {}
-    this.dropped = []
-    this.lastDa = false
+    this._id = this.model._id.toString();
+    this.listenDispatcher(userSocket);
+    this.msgDispatcher = userSocket;
+    this.events = {};
+    this.dropped = [];
+    this.lastDa = false;
     // 不激活旧的机器人托管
-    this.onDeposit = false
-    this.ai = userSocket.isRobot() ? basicAi : playerAi
+    this.onDeposit = false;
+    this.ai = userSocket.isRobot() ? basicAi : playerAi;
     this.isRobot = !!userSocket.isRobot();
-
     this.timeoutTask = null
     this.msgHook = {}
     this.takeCardStash = {}
@@ -672,7 +671,7 @@ class PlayerState implements Serializable {
     this.recorder.recordUserEvent(this, 'buHua', cards.sort((a, b) => a - b), this.getCardsArray());
   }
 
-  // 添加花牌
+  // 洗牌
   onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList, zhuangIndex) {
     cards.forEach(x => {
       if (!this.room.gameState.isFlower(x)) {
@@ -844,10 +843,10 @@ class PlayerState implements Serializable {
   }
 
   isTing() {
-    const caiShen = this.caiShen
+    const caiShen = this.caiShen;
 
     this.cards.caiShen = caiShen;
-    this.cards[caiShen]++
+    this.cards[caiShen]++;
     this.cards.turn = this.room.gameState.turn;
     const checkResult = HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
     this.cards[caiShen]--;

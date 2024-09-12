@@ -1,6 +1,5 @@
 import Enums from './enums';
 import {manager} from "./cardManager";
-import {LotterySource} from "@fm/common/constants";
 
 const cloneHuResult = function (obj) {
   const option = Object.assign({}, obj)

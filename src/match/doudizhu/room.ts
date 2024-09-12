@@ -525,7 +525,7 @@ class Room extends RoomBase {
       this.updateDisconnectPlayerDissolveInfoAndBroadcast(player)
     }
 
-    this.forceDissolve();
+    // this.forceDissolve();
 
     this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
     this.removePlayer(player)
@@ -658,7 +658,7 @@ class Room extends RoomBase {
 
     // 好友房总结算
     if (this.game.isAllOver() && !this.isPublic) {
-      const message = this.allOverMessage(1)
+      const message = this.allOverMessage()
       this.broadcast('room/gameAllOverReply', {ok: true, data: message})
       this.players.forEach(x => x && this.leave(x))
       this.emit('empty', this.disconnected)
