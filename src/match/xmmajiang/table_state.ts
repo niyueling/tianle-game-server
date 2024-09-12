@@ -394,6 +394,9 @@ class TableState implements Serializable {
         player.disperseCards.push(this.cards[cardIndex]);
       }
 
+      // 首先对杂牌数组进行排序
+      player.disperseCards.sort((a, b) => a - b);
+
       console.warn("disperseCards-%s", JSON.stringify(player.disperseCards));
     }
 
