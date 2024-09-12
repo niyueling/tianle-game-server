@@ -386,6 +386,17 @@ class TableState implements Serializable {
       }
     }
 
+    // 新手保护辅助出牌
+    if (player.disperseCards.length > 0) {
+      const moIndex = this.cards.findIndex(card => card === this.hasTripleStraight(player.disperseCards));
+      if (moIndex !== -1) {
+        cardIndex = moIndex;
+        player.disperseCards.push(this.cards[cardIndex]);
+      }
+
+      console.warn("disperseCards-%s", player.disperseCards);
+    }
+
     // 牌堆移除这张牌
     const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
@@ -470,6 +481,25 @@ class TableState implements Serializable {
       cards.push(card);
     }
     return {cards, flowerList}
+  }
+
+  hasTripleStraight(nums) {
+    for (let i = 0; i < nums.length; i++) {
+      // 检测到对子，则补成刻子
+      if (nums[i + 1] - nums[i] === 0 && nums[i + 2] !== nums[i + 1]) {
+        return nums[i];
+      }
+      // 检测到2连顺，补成顺子
+      if (nums[i + 1] - nums[i] === 1 && nums[i + 2] - nums[i + 1] !== 1) {
+        return nums[i] + 2;
+      }
+      // 检测到顺子两边，补成顺子
+      if (nums[i + 1] - nums[i] === 2) {
+        return nums[i] + 1;
+      }
+    }
+
+    return nums[0];
   }
 
   async getNoviceProtectionCards(numbers, player) {
@@ -570,6 +600,9 @@ class TableState implements Serializable {
       this.lastTakeCard = card;
       counter[card]--;
     }
+
+    // 首先对杂牌数组进行排序
+    player.disperseCards.sort((a, b) => a - b);
 
     return cards;
   }
@@ -2279,6 +2312,12 @@ class TableState implements Serializable {
       this.lastDa = player;
       player.cancelTimeout()
       this.stateData = {};
+      // 新手保护删除牌
+      if (player.disperseCards.includes(card)) {
+        const disperseIndex = player.disperseCards.findIndex(c => c === card);
+        this.testMoCards.splice(disperseIndex, 1);
+        console.warn("disperseCards-%s", player.disperseCards);
+      }
       await player.sendMessage('game/daReply', {ok: true, data: card});
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
       // 扣掉打的牌
