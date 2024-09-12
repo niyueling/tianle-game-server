@@ -503,11 +503,11 @@ class TableState implements Serializable {
 
     // 配4个刻子或者顺子
     for (let i = 0; i < 4; i++) {
-      const random = Math.random() < 0.5;
+      const random = Math.random();
       let result = [];
 
       // 发刻子
-      if (random) {
+      if (random < 0.3) {
         result = Object.keys(counter).filter(num => counter[num] >= 3);
         const randomNumber = Math.floor(Math.random() * result.length);
         for (let i = 0; i < 3; i++) {
@@ -522,7 +522,7 @@ class TableState implements Serializable {
             counter[card]--;
           }
         }
-      } else {
+      } else if (random < 0.6) {
         // 发放顺子
         result = Object.keys(counter).filter(num => Number(num) <= Enums.tongzi7 && counter[num] >= 1 && counter[Number(num) + 1] >= 1 && counter[Number(num) + 2] >= 1);
         const randomNumber = Math.floor(Math.random() * result.length);
@@ -537,12 +537,29 @@ class TableState implements Serializable {
             counter[card]--;
           }
         }
+      } else {
+        // 发放对子+相邻单张
+        result = Object.keys(counter).filter(num => counter[num] >= 2 && counter[Number(num) + 1] >= 1);
+        const randomNumber = Math.floor(Math.random() * result.length);
+        for (let i = 0; i < 3; i++) {
+          const cardNumber = i < 2 ? Number(result[randomNumber]) : Number(result[randomNumber]) + 1;
+          const index = this.cards.findIndex(card => card === cardNumber);
+          if (index !== -1) {
+            const card = this.cards[index];
+            cards.push(card);
+            this.cards.splice(index, 1);
+            this.lastTakeCard = card;
+            this.remainCards--;
+            counter[card]--;
+          }
+        }
       }
     }
 
     let residueCount = numbers - cards.length;
     for (let i = 0; i < residueCount; i++) {
-      let cardIndex = --this.remainCards;
+      this.remainCards--;
+      const cardIndex = this.cards.findIndex(c => c < Enums.spring);
       const card = this.cards[cardIndex];
       cards.push(card);
       player.disperseCards.push(card);
