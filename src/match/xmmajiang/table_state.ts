@@ -1158,6 +1158,7 @@ class TableState implements Serializable {
 
             console.warn("peng room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
           }
+
           const daCard = await this.promptWithPattern(player, null);
           this.stateData = {da: player, card: daCard, type: Enums.peng};
           const gangSelection = player.getAvailableGangs();
