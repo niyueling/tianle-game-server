@@ -388,7 +388,7 @@ class TableState implements Serializable {
     }
 
     // 新手保护辅助出牌
-    if (playerModel.gameJuShu < config.game.noviceProtection) {
+    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection) {
       // 需要辅助出牌，优先辅助出牌
       if (player.disperseCards.length > 0) {
         const disperseCard = this.hasTripleStraight(player.disperseCards);
