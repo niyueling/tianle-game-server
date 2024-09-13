@@ -410,6 +410,7 @@ class TableState implements Serializable {
         // 如果听牌，摸取胡牌的牌
         if (isTing) {
           let c1 = await this.getHuCard(player);
+          console.warn("c1-%s", c1);
 
           if (c1) {
             const moIndex = this.cards.findIndex(c => c === c1);
