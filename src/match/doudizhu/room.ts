@@ -430,15 +430,17 @@ class Room extends RoomBase {
         await this.announcePlayerJoin(reconnectPlayer);
       }
     }
-    // Fixme the index may be wrong
-    console.log('room:', this._id, 'snapshot', JSON.stringify(this.snapshot))
-    const i = this.snapshot.findIndex(p => p._id === reconnectPlayer._id)
-    this.emit('reconnect', reconnectPlayer, i)
-    this.broadcastRejoin(reconnectPlayer)
+    const i = this.snapshot.findIndex(p => p._id.toString() === reconnectPlayer._id.toString())
+    await this.broadcastRejoin(reconnectPlayer);
 
-    if (this.dissolveTimeout) {
-      this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
+    const reconnectFunc = async () => {
+      this.emit('reconnect', reconnectPlayer, i);
+      if (this.dissolveTimeout) {
+        this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
+      }
     }
+
+    setTimeout(reconnectFunc, 500);
     return true
   }
 

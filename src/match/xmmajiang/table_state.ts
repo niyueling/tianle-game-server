@@ -403,7 +403,7 @@ class TableState implements Serializable {
         // 首先对杂牌数组进行排序
         player.disperseCards.sort((a, b) => a - b);
 
-        console.warn("consumeCard disperseCards-%s", JSON.stringify(player.disperseCards));
+        console.warn("room %s consumeCard disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
       } else {
         // 判断是否听牌
         const isTing = player.isTing();
@@ -494,7 +494,7 @@ class TableState implements Serializable {
     // 用户处于新手保护，并且非机器人
     if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
-      console.warn("result-%s, disperseCards-%s", JSON.stringify(result), JSON.stringify(player.disperseCards));
+      console.warn("room %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
         cards = [...cards, ...result];
         residueCount -= result.length;
@@ -1147,6 +1147,17 @@ class TableState implements Serializable {
         if (ok) {
           this.turn++;
           this.state = stateWaitDa;
+          // 新手保护删除牌
+          if (player.disperseCards.includes(card)) {
+            const chiCards = [card, otherCard1, otherCard2];
+            for (let i = 0; i < player.disperseCards.length; i++) {
+              if (player.disperseCards[i] === card) {
+                player.disperseCards.splice(i, 1);
+              }
+            }
+
+            console.warn("peng room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
+          }
           const daCard = await this.promptWithPattern(player, null);
           this.stateData = {da: player, card: daCard, type: Enums.peng};
           const gangSelection = player.getAvailableGangs()
@@ -1201,7 +1212,7 @@ class TableState implements Serializable {
               }
             }
 
-            console.warn("peng disperseCards-%s", JSON.stringify(player.disperseCards));
+            console.warn("peng room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
           }
           this.state = stateWaitDa
           this.stateData = {};
@@ -1280,7 +1291,7 @@ class TableState implements Serializable {
                 }
               }
 
-              console.warn("gangByOtherDa disperseCards-%s", JSON.stringify(player.disperseCards));
+              console.warn("gangByOtherDa room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
             }
             const from = this.atIndex(this.lastDa)
             const me = this.atIndex(player)
@@ -1353,7 +1364,7 @@ class TableState implements Serializable {
             }
           }
 
-          console.warn("gangBySelf disperseCards-%s", JSON.stringify(player.disperseCards));
+          console.warn("gangBySelf room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
         }
         player.sendMessage('game/gangReply', {
           ok: true,
