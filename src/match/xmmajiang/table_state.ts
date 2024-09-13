@@ -405,35 +405,34 @@ class TableState implements Serializable {
 
         // 首先对杂牌数组进行排序
         player.disperseCards.sort((a, b) => a - b);
-
         console.warn("room %s consumeCard disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
       } else {
         // 如果听牌，摸取胡牌的牌
-        if (isTing) {
-          let c1 = null;
-
-          for (let i = Enums.wanzi1; i < Enums.bai; i++) {
-            if (i === this.caishen) {
-              continue;
-            }
-
-            // 如果不是财神牌就判断是否能胡牌
-            player.cards[i]++;
-            const huState = player.checkZiMo();
-            if (huState.hu) {
-              c1 = i;
-              break;
-            }
-          }
-
-          if (c1) {
-            const moIndex = this.cards.findIndex(c => c === c1);
-            if (moIndex !== -1) {
-              console.warn("get card %s index %s can hu", c1, moIndex);
-              cardIndex = moIndex;
-            }
-          }
-        }
+        // if (isTing) {
+        //   let c1 = null;
+        //
+        //   for (let i = Enums.wanzi1; i < Enums.bai; i++) {
+        //     if (i === this.caishen) {
+        //       continue;
+        //     }
+        //
+        //     // 如果不是财神牌就判断是否能胡牌
+        //     player.cards[i]++;
+        //     const huState = player.checkZiMo();
+        //     if (huState.hu) {
+        //       c1 = i;
+        //       break;
+        //     }
+        //   }
+        //
+        //   if (c1) {
+        //     const moIndex = this.cards.findIndex(c => c === c1);
+        //     if (moIndex !== -1) {
+        //       console.warn("get card %s index %s can hu", c1, moIndex);
+        //       cardIndex = moIndex;
+        //     }
+        //   }
+        // }
       }
     }
 
