@@ -410,8 +410,8 @@ class TableState implements Serializable {
         const isTing = player.isTing();
         console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
 
-        // 如果未听牌，获取可以听牌的牌池
-        if (!isTing) {
+        // 如果听牌，摸取胡牌的牌
+        if (isTing) {
           let c1 = null;
 
           for (let i = Enums.wanzi1; i < Enums.bai; i++) {
