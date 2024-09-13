@@ -88,6 +88,9 @@ abstract class Table implements Serializable {
   // 全部操作完并且有多人选择抢地主
   callLandlordStatus: boolean = false;
 
+  // 地主牌
+  landlordCards: any[] = [];
+
   protected constructor(room, rule, restJushu) {
     this.restJushu = restJushu
     this.rule = rule
@@ -443,6 +446,7 @@ abstract class Table implements Serializable {
 
     // 将地主牌发给用户
     const cards = this.cardManager.getLandlordCard();
+    this.landlordCards = cards;
     this.zhuang.cards = [...this.zhuang.cards, ...cards];
     this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.zhuang.index, landlordCards: cards, cards: this.zhuang.cards}});
 
@@ -538,6 +542,7 @@ abstract class Table implements Serializable {
 
       // 将地主牌发给用户
       const cards = this.cardManager.getLandlordCard();
+      this.landlordCards = cards;
       this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
       this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, landlordCards: cards, multiple: this.players[firstLandlordIndex].multiple}});
 
@@ -731,6 +736,7 @@ abstract class Table implements Serializable {
 
         // 将地主牌发给用户
         const cards = this.cardManager.getLandlordCard();
+        this.landlordCards = cards;
         this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
         this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, multiple: this.players[firstLandlordIndex].multiple, landlordCards: cards}});
 
@@ -981,6 +987,7 @@ abstract class Table implements Serializable {
 
     return {
       index,
+      landlordCards: this.landlordCards,
       state,
       juIndex,
       stateData,
