@@ -359,6 +359,7 @@ class TableState implements Serializable {
   async consumeCard(playerState: PlayerState, notifyFlower = true, reset = false, isHelp = true) {
     const player = playerState
     let cardIndex = --this.remainCards
+    const playerModel = await service.playerService.getPlayerModel(player._id);
 
     if (cardIndex === 0 && player) {
       player.takeLastCard = true;
@@ -387,20 +388,32 @@ class TableState implements Serializable {
     }
 
     // 新手保护辅助出牌
-    if (player.disperseCards.length > 0) {
-      const disperseCard = this.hasTripleStraight(player.disperseCards);
-      const moIndex = this.cards.findIndex(card => card === disperseCard);
-      if (moIndex !== -1) {
-        cardIndex = moIndex;
-        player.disperseCards.push(this.cards[cardIndex]);
+    if (playerModel.gameJuShu < config.game.noviceProtection) {
+      // 需要辅助出牌，优先辅助出牌
+      if (player.disperseCards.length > 0) {
+        const disperseCard = this.hasTripleStraight(player.disperseCards);
+        const moIndex = this.cards.findIndex(card => card === disperseCard);
+        if (moIndex !== -1) {
+          cardIndex = moIndex;
+          player.disperseCards.push(this.cards[cardIndex]);
+        }
+
+        this.removeTripleStraight(player, disperseCard, moIndex === -1);
+
+        // 首先对杂牌数组进行排序
+        player.disperseCards.sort((a, b) => a - b);
+
+        console.warn("disperseCards-%s", JSON.stringify(player.disperseCards));
+      } else {
+        // 判断是否听牌
+        const isTing = player.isTing();
+
+        // 如果未听牌，获取可以听牌的牌池
+        if (!isTing) {
+
+        }
       }
 
-      this.removeTripleStraight(player, disperseCard, moIndex === -1);
-
-      // 首先对杂牌数组进行排序
-      player.disperseCards.sort((a, b) => a - b);
-
-      console.warn("disperseCards-%s", JSON.stringify(player.disperseCards));
     }
 
     // 牌堆移除这张牌

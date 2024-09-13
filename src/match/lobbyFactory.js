@@ -35,7 +35,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
 
     async getAvailablePublicRoom(playerId, roomId, rule, playerModel) {
       let found = null;
-      if (!playerModel.gameJuShu[GameType.xmmj]) {
+      if (!playerModel.gameJuShu || !playerModel.gameJuShu[GameType.xmmj]) {
         playerModel.gameJuShu[GameType.xmmj] = 0;
       }
       if (playerModel.gameJuShu[GameType.xmmj] >= config.game.noviceProtection || playerModel.robot) {
