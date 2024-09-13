@@ -419,6 +419,17 @@ class TableState implements Serializable {
               cardIndex = moIndex;
             }
           }
+        } else {
+          let c2 = await this.getDoubleCard();
+          console.warn("c2-%s", c2);
+
+          if (c2) {
+            const moIndex = this.cards.findIndex(c => c === c2);
+            if (moIndex !== -1) {
+              console.warn("get card %s index %s can ting", c2, moIndex);
+              cardIndex = moIndex;
+            }
+          }
         }
       }
     }
@@ -456,6 +467,38 @@ class TableState implements Serializable {
     }
 
     return card;
+  }
+
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      // 生成一个0到i之间的随机索引
+      const j = Math.floor(Math.random() * (i + 1));
+      // 交换元素
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  async getDoubleCard() {
+    const counter = {};
+    for (let i = 0; i < this.cards.length; i++) {
+      const card = this.cards[i];
+      if (counter[card]) {
+        counter[card]++;
+      } else {
+        counter[card] = 1;
+      }
+    }
+    const result = Object.keys(counter).filter(num => counter[num] >= 3);
+    const sortResult = this.shuffleArray(result);
+    for (let i = 0; i < sortResult.length; i++) {
+      const index = this.cards.findIndex(card => card === Number(sortResult[i]));
+      if (index !== -1) {
+        return Number(sortResult[i]);
+      }
+    }
+
+    return null;
   }
 
   async getHuCard(player) {
@@ -583,7 +626,7 @@ class TableState implements Serializable {
     }
 
     // 配金牌
-    const goldRank = Math.random();
+    // const goldRank = Math.random();
     // const goldCount = goldRank < 0.01 ? 3 : goldRank < 0.1 ? 2 : 1;
     const goldCount = 1;
     for (let i = 0; i < goldCount; i++) {
