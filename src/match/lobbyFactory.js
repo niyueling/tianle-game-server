@@ -38,7 +38,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       if (!playerModel.gameJuShu || !playerModel.gameJuShu[rule.gameType]) {
         playerModel.gameJuShu[rule.gameType] = 0;
       }
-      if (playerModel.gameJuShu[rule.gameType] >= config.game.noviceProtection || playerModel.robot) {
+      if (!playerModel.gameJuShu || (playerModel.gameJuShu && playerModel.gameJuShu[rule.gameType] >= config.game.noviceProtection) || playerModel.robot) {
         let canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
         if (canJoinRooms) {
           for (let i = 0; i < Object.keys(canJoinRooms).length; i++) {
