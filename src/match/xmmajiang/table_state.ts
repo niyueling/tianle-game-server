@@ -2420,7 +2420,7 @@ class TableState implements Serializable {
       if (player.disperseCards.includes(card)) {
         const disperseIndex = player.disperseCards.findIndex(c => c === card);
         player.disperseCards.splice(disperseIndex, 1);
-        console.warn("daPai disperseCards-%s", JSON.stringify(player.disperseCards));
+        console.warn("daPai room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
       }
       await player.sendMessage('game/daReply', {ok: true, data: card});
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
