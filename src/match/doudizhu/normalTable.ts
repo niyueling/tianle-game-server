@@ -6,7 +6,7 @@ import {
 import {IPattern, PatterNames} from "./patterns/base"
 import PlayerState from "./player_state"
 import Rule from './Rule'
-import Table from './table'
+import Table, {stateGameOver} from './table'
 import {GameType} from "@fm/common/constants";
 import enums from "./enums";
 import {service} from "../../service/importService";
@@ -161,6 +161,8 @@ export default class NormalTable extends Table {
       lastIndex: this.status.lastIndex,
       from: this.status.from,
       foundFriend: this.foundFriend,
+      landlordCards: this.landlordCards,
+      isGameRunning: this.state !== stateGameOver,
       index,
       juIndex,
       stateData,
