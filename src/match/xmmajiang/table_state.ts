@@ -389,9 +389,11 @@ class TableState implements Serializable {
 
     // 新手保护辅助出牌
     if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && isHelp) {
-      console.warn("gameJuShu %s noviceProtection %s disperseCards %s", JSON.stringify(playerModel.gameJuShu), config.game.noviceProtection, JSON.stringify(player.disperseCards));
+      // 判断是否听牌
+      const isTing = player.isTing();
+      console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
       // 需要辅助出牌，优先辅助出牌
-      if (player.disperseCards.length > 0) {
+      if (player.disperseCards.length > 0 && !isTing) {
         const disperseCard = this.hasTripleStraight(player.disperseCards);
         const moIndex = this.cards.findIndex(card => card === disperseCard);
         if (moIndex !== -1) {
@@ -406,10 +408,6 @@ class TableState implements Serializable {
 
         console.warn("room %s consumeCard disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
       } else {
-        // 判断是否听牌
-        const isTing = player.isTing();
-        console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
-
         // 如果听牌，摸取胡牌的牌
         if (isTing) {
           let c1 = null;
