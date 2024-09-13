@@ -407,6 +407,7 @@ class TableState implements Serializable {
       } else {
         // 判断是否听牌
         const isTing = player.isTing();
+        console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
 
         // 如果未听牌，获取可以听牌的牌池
         if (!isTing) {
