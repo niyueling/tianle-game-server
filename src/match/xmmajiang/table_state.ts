@@ -535,7 +535,7 @@ class TableState implements Serializable {
         }
       }
       // 检测到2连顺，补成顺子
-      if (nums[i + 1] - nums[i] === 1 && nums[i + 2] - nums[i + 1] !== 1) {
+      if (nums[i + 1] - nums[i] === 1 && nums[i + 2] - nums[i + 1] !== 1 && nums[i] < Enums.spring) {
         if (this.cards.findIndex(c => c === nums[i] + 2) !== -1) {
           return nums[i] + 2;
         }
@@ -544,7 +544,7 @@ class TableState implements Serializable {
         }
       }
       // 检测到顺子两边，补成顺子
-      if (nums[i + 1] - nums[i] === 2) {
+      if (nums[i + 1] - nums[i] === 2 && nums[i] < Enums.spring) {
         if (this.cards.findIndex(c => c === nums[i] + 1) !== -1) {
           return nums[i] + 1;
         }
