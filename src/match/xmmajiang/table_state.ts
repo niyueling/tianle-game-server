@@ -1160,8 +1160,8 @@ class TableState implements Serializable {
           }
           const daCard = await this.promptWithPattern(player, null);
           this.stateData = {da: player, card: daCard, type: Enums.peng};
-          const gangSelection = player.getAvailableGangs()
-          const from = this.atIndex(this.lastDa)
+          const gangSelection = player.getAvailableGangs();
+          const from = this.atIndex(this.lastDa);
 
           player.sendMessage('game/chiReply', {ok: true, data: {
               turn: this.turn,
