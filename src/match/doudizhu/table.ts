@@ -956,7 +956,7 @@ abstract class Table implements Serializable {
       const player = this.players[index]
       this.replaceSocketAndListen(player, playerMsgDispatcher)
       const content = this.reconnectContent(index, player)
-      player.sendMessage('game/reconnectReply', {ok: true, data: content})
+      player.sendMessage('game/reconnect', {ok: true, data: content})
     })
 
     room.once('empty',
