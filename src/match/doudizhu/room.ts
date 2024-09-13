@@ -23,6 +23,7 @@ import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
 import Player from "../../database/models/player";
 import {AuditManager} from "../xmmajiang/auditManager";
+import {stateGameOver} from "../xmmajiang/table_state";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -456,6 +457,7 @@ class Room extends RoomBase {
       startIndex: index,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
+      isGameRunning: !!this.gameState && this.gameState.state !== stateGameOver,
       owner: this.ownerId,
       score: this.getScore(newJoinPlayer),
       base: this.currentBase,
