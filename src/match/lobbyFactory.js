@@ -35,9 +35,6 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
 
     async getAvailablePublicRoom(playerId, roomId, rule, playerModel) {
       let found = null;
-      if (!playerModel.gameJuShu || !playerModel.gameJuShu[rule.gameType]) {
-        playerModel.gameJuShu[rule.gameType] = 0;
-      }
       if (!playerModel.gameJuShu || (playerModel.gameJuShu && playerModel.gameJuShu[rule.gameType] >= config.game.noviceProtection) || playerModel.robot) {
         let canJoinRooms = await redisClient.hgetallAsync("canJoinRooms");
         if (canJoinRooms) {
