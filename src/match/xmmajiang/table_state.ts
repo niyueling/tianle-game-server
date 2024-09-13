@@ -468,7 +468,8 @@ class TableState implements Serializable {
       player.cards[i]++;
       const huState = player.checkZiMo();
       player.cards[i]--;
-      if (huState.hu) {
+      const moIndex = this.cards.findIndex(c => c === i);
+      if (huState.hu && moIndex !== -1) {
         return i;
       }
     }
@@ -583,7 +584,8 @@ class TableState implements Serializable {
 
     // 配金牌
     const goldRank = Math.random();
-    const goldCount = goldRank < 0.01 ? 3 : goldRank < 0.1 ? 2 : 1;
+    // const goldCount = goldRank < 0.01 ? 3 : goldRank < 0.1 ? 2 : 1;
+    const goldCount = 1;
     for (let i = 0; i < goldCount; i++) {
       const goldIndex = this.cards.findIndex(card => card === this.caishen);
 
