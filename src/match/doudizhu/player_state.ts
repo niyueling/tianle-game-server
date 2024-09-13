@@ -283,6 +283,7 @@ class PlayerState implements Serializable {
     return {
       model: this.model,
       mode: this.mode,
+      multiple: this.multiple,
       index: this.index,
       score: this.room.getScoreBy(this._id),
       remains: this.cards.length,

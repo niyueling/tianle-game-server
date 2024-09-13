@@ -428,14 +428,15 @@ class TableState implements Serializable {
             }
           }
 
-          const moIndex = this.cards.findIndex(c => c === c1);
-          if (moIndex !== -1) {
-            console.warn("get card %s index %s can hu", c1, moIndex);
-            cardIndex = moIndex;
+          if (c1) {
+            const moIndex = this.cards.findIndex(c => c === c1);
+            if (moIndex !== -1) {
+              console.warn("get card %s index %s can hu", c1, moIndex);
+              cardIndex = moIndex;
+            }
           }
         }
       }
-
     }
 
     // 牌堆移除这张牌
