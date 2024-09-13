@@ -408,16 +408,14 @@ class TableState implements Serializable {
         console.warn("room %s consumeCard disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
       } else {
         // 如果听牌，摸取胡牌的牌
-        if (isTing) {
-          let c1 = await this.getHuCard(player);
+        let c1 = await this.getHuCard(player);
+        if (isTing && c1) {
           console.warn("c1-%s", c1);
 
-          if (c1) {
-            const moIndex = this.cards.findIndex(c => c === c1);
-            if (moIndex !== -1) {
-              console.warn("get card %s index %s can hu", c1, moIndex);
-              cardIndex = moIndex;
-            }
+          const moIndex = this.cards.findIndex(c => c === c1);
+          if (moIndex !== -1) {
+            console.warn("get card %s index %s can hu", c1, moIndex);
+            cardIndex = moIndex;
           }
         } else {
           let c2 = await this.getDoubleCard();
