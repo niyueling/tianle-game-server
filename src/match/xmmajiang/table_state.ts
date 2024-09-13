@@ -1151,7 +1151,7 @@ class TableState implements Serializable {
           if (player.disperseCards.includes(card)) {
             const chiCards = [card, otherCard1, otherCard2];
             for (let i = 0; i < player.disperseCards.length; i++) {
-              if (player.disperseCards[i] === card) {
+              if (chiCards.includes(player.disperseCards[i])) {
                 player.disperseCards.splice(i, 1);
               }
             }
