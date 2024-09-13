@@ -467,10 +467,10 @@ class TableState implements Serializable {
       // 如果不是财神牌就判断是否能胡牌
       player.cards[i]++;
       const huState = player.checkZiMo();
+      player.cards[i]--;
       if (huState.hu) {
         return i;
       }
-      player.cards[i]--;
     }
 
     return null;
