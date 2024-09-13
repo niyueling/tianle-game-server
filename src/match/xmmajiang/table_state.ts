@@ -410,7 +410,27 @@ class TableState implements Serializable {
 
         // 如果未听牌，获取可以听牌的牌池
         if (!isTing) {
+          let c1 = null;
 
+          for (let i = Enums.wanzi1; i < Enums.bai; i++) {
+            if (i === this.caishen) {
+              continue;
+            }
+
+            // 如果不是财神牌就判断是否能胡牌
+            player.cards[i]++;
+            const huState = player.checkZiMo();
+            if (huState.hu) {
+              c1 = i;
+              break;
+            }
+          }
+
+          const moIndex = this.cards.findIndex(c => c === c1);
+          if (moIndex !== -1) {
+            console.warn("get card %s index %s can hu", c1, moIndex);
+            cardIndex = moIndex;
+          }
         }
       }
 
