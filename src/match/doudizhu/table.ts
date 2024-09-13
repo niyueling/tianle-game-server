@@ -18,7 +18,7 @@ import GameCategory from "../../database/models/gameCategory";
 
 const stateWaitMultiple = 2 // 翻倍
 const stateWaitDa = 3 // 对局中
-const stateGameOver = 4 // 不在对局中
+export const stateGameOver = 4 // 不在对局中
 
 class Status {
   current = {seatIndex: 0, step: 1}

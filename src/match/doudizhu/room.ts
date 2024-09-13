@@ -22,8 +22,7 @@ import {service} from "../../service/importService";
 import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
 import Player from "../../database/models/player";
-import {AuditManager} from "../xmmajiang/auditManager";
-import {stateGameOver} from "../xmmajiang/table_state";
+import {stateGameOver} from "./table";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -66,7 +65,6 @@ class Room extends RoomBase {
   clubOwner: any
 
   robotManager: RobotManager
-  auditManager: AuditManager
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
 
