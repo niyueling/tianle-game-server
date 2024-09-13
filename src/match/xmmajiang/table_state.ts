@@ -500,6 +500,7 @@ class TableState implements Serializable {
   }
 
   async getHuCard(player) {
+    const cards = [];
     for (let i = Enums.wanzi1; i < Enums.bai; i++) {
       if (i === this.caishen) {
         continue;
@@ -511,11 +512,15 @@ class TableState implements Serializable {
       player.cards[i]--;
       const moIndex = this.cards.findIndex(c => c === i);
       if (huState.hu && moIndex !== -1) {
-        return i;
+        if (huState.isYouJin) {
+          return i;
+        }
+
+        cards.push(i);
       }
     }
 
-    return null;
+    return cards.length > 0 ? cards[0] : null;
   }
 
   // 是否是花牌
