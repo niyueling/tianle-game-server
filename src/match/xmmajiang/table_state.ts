@@ -470,7 +470,10 @@ class TableState implements Serializable {
       if (huState.hu) {
         return i;
       }
+      player.cards[i]--;
     }
+
+    return null;
   }
 
   // 是否是花牌
