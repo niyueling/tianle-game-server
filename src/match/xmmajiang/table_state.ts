@@ -359,7 +359,7 @@ class TableState implements Serializable {
     this.remainCards = this.cards.length
   }
 
-  async consumeCard(playerState: PlayerState, notifyFlower = true, reset = false, isHelp = true) {
+  async consumeCard(playerState: PlayerState, notifyFlower = true, reset = false, isHelp = true, bigCardStatus = false) {
     const player = playerState
     let cardIndex = --this.remainCards
     const playerModel = await service.playerService.getPlayerModel(player._id);
@@ -431,6 +431,17 @@ class TableState implements Serializable {
               cardIndex = moIndex;
             }
           }
+        }
+      }
+    }
+
+    // 摸取自己牌堆没有的大牌
+    if (bigCardStatus) {
+      for (let i = Enums.dong; i < Enums.bai; i++) {
+        const moIndex = this.cards.findIndex(card => card === i);
+        if (moIndex !== -1 && player.cards[i] === 0) {
+          cardIndex = moIndex;
+          break;
         }
       }
     }
@@ -982,8 +993,8 @@ class TableState implements Serializable {
     setTimeout(nextDo, this.sleepTime)
   }
 
-  async takeFirstCard() {
-    const nextCard = await this.consumeCard(this.zhuang, false, true, true);
+  async takeFirstCard(bigCardStatus = false) {
+    const nextCard = await this.consumeCard(this.zhuang, false, true, true, bigCardStatus);
     const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
     this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
     this.zhuangResetCount++;
@@ -1014,7 +1025,7 @@ class TableState implements Serializable {
       this.zhuang.cards[nextCard]--;
       await this.shuffleArray(this.cards);
 
-      return await this.takeFirstCard();
+      return await this.takeFirstCard(true);
     }
 
     this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
