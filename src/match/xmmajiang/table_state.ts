@@ -514,7 +514,7 @@ class TableState implements Serializable {
       const moIndex = this.cards.findIndex(c => c === i);
       if (huState.hu && moIndex !== -1) {
         if (huState.isYouJin) {
-          console.warn("get card %s index %s can youJin youJinTimes %s hu", i, moIndex, huState.youJinTimes);
+          // console.warn("get card %s index %s can youJin youJinTimes %s hu", i, moIndex, huState.youJinTimes);
           youJinCards.push({card: i, isYouJin: huState.isYouJin, youJinTime: huState.youJinTimes});
         }
 
