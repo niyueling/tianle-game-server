@@ -534,9 +534,12 @@ class TableState implements Serializable {
           cardsTemp[this.caishen]--;
           // 检查是否是游金
           const isOk = manager.isCanYouJin(cardsTemp, this.caishen);
-          cardsTemp[this.caishen]++;
+          // cardsTemp[this.caishen]++;
+          // cardsTemp[youJinCards[i].card]--;
 
-          if (youJinCards[i].youJinTimes > youJinCard.youJinTimes &&isOk) {
+          console.warn("get card %s cards %s can shuangYou state", youJinCards[i].card, JSON.stringify(cardsTemp), isOk);
+
+          if (youJinCards[i].youJinTimes > youJinCard.youJinTimes && isOk) {
             youJinCard = youJinCards[i];
           }
         } else {
