@@ -655,6 +655,15 @@ class PlayerState implements Serializable {
     return result;
   }
 
+  checknoviceProtectionHuState() {
+    this.cards.lastTakeCard = this.lastCardToken
+    this.turn = this.cards.turn = this.room.gameState.turn
+    this.cards.takeSelfCard = true
+    this.cards.qiaoXiang = this.hadQiaoXiang
+    this.cards.first = this.turn === 2
+    return HuPaiDetect.check(this.cards, this.events, this.rule, this.seatIndex);
+  }
+
   getCardCount() {
     let count = 0;
 

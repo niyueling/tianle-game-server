@@ -501,6 +501,7 @@ class TableState implements Serializable {
 
   async getHuCard(player) {
     const cards = [];
+    const youJinCards = [];
     for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
       if (i === this.caishen) {
         continue;
@@ -508,17 +509,30 @@ class TableState implements Serializable {
 
       // 如果不是财神牌就判断是否能胡牌
       player.cards[i]++;
-      const huState = player.checkZiMo();
+      const huState = player.checknoviceProtectionHuState();
       player.cards[i]--;
       const moIndex = this.cards.findIndex(c => c === i);
       if (huState.hu && moIndex !== -1) {
         if (huState.isYouJin) {
           console.warn("get card %s index %s can youJin hu", i, moIndex);
-          return i;
+          youJinCards.push({card: i, isYouJin: huState.isYouJin, youJinTime: huState.youJinTimes});
         }
 
         cards.push(i);
       }
+    }
+
+    // 判断是否可以游金，取最高游的牌
+    if (youJinCards.length > 0) {
+      let youJinCard = youJinCards[0];
+
+      for (let i = 0; i < youJinCards.length; i++) {
+        if (youJinCards[i].youJinTimes > youJinCard.youJinTimes) {
+          youJinCard = youJinCards[i];
+        }
+      }
+
+      return youJinCard.card;
     }
 
     // 将牌放入牌堆，判断去除一张牌是否能游金
