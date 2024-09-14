@@ -527,8 +527,22 @@ class TableState implements Serializable {
       let youJinCard = youJinCards[0];
 
       for (let i = 0; i < youJinCards.length; i++) {
-        if (youJinCards[i].youJinTimes > youJinCard.youJinTimes) {
-          youJinCard = youJinCards[i];
+        // 如果用户双金以上，去掉一张金牌，判断是否能游金
+        const cardsTemp = player.cards.slice();
+        if (cardsTemp[this.caishen] >= 2) {
+          cardsTemp[youJinCards[i].card]++;
+          cardsTemp[this.caishen]--;
+          // 检查是否是游金
+          const isOk = manager.isCanYouJin(cardsTemp, this.caishen);
+          cardsTemp[this.caishen]++;
+
+          if (youJinCards[i].youJinTimes > youJinCard.youJinTimes &&isOk) {
+            youJinCard = youJinCards[i];
+          }
+        } else {
+          if (youJinCards[i].youJinTimes > youJinCard.youJinTimes) {
+            youJinCard = youJinCards[i];
+          }
         }
       }
 
