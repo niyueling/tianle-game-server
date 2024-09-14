@@ -594,7 +594,9 @@ class TableState implements Serializable {
       cardsTemp[cards[i]]--;
     }
 
-    return cards.length > 0 ? cards[0] : null;
+    const randomNumber = Math.floor(Math.random() * cards.length);
+
+    return cards.length > 0 ? cards[randomNumber] : null;
   }
 
   // 是否是花牌
