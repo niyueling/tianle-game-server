@@ -537,7 +537,7 @@ class TableState implements Serializable {
           // cardsTemp[this.caishen]++;
           // cardsTemp[youJinCards[i].card]--;
 
-          console.warn("get card %s cards %s can shuangYou state", youJinCards[i].card, JSON.stringify(cardsTemp), isOk);
+          console.warn("get card %s cards %s can shuangYou state", youJinCards[i].card, JSON.stringify(this.getCardArray(cardsTemp)), isOk);
 
           if (youJinCards[i].youJinTimes > youJinCard.youJinTimes && isOk) {
             youJinCard = youJinCards[i];
