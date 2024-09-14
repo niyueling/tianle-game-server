@@ -680,6 +680,29 @@ class PlayerState implements Serializable {
     this.recorder.recordUserEvent(this, 'buHua', cards.sort((a, b) => a - b), this.getCardsArray());
   }
 
+  // 抢金或者天胡重发
+  async checkQiangJinOrHu(cards, caishen, seatIndex) {
+    cards.forEach(x => {
+      if (!this.room.gameState.isFlower(x)) {
+        this.cards[x]++;
+      }
+    });
+    this.caiShen = caishen
+    this.cards['caiShen'] = caishen
+    this.seatIndex = seatIndex
+
+    // 判断用户是否听牌
+    const tingPai = this.isTing();
+
+    cards.forEach(x => {
+      if (!this.room.gameState.isFlower(x)) {
+        this.cards[x]--;
+      }
+    });
+
+    return tingPai;
+  }
+
   // 洗牌
   onShuffle(remainCards, caiShen, juShu, cards, seatIndex, juIndex, needShuffle, flowerList, allFlowerList, zhuangIndex) {
     cards.forEach(x => {

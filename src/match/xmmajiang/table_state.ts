@@ -688,10 +688,10 @@ class TableState implements Serializable {
     }
 
     // 配金牌
-    // const goldRank = Math.random();
-    // const goldCount = goldRank < 0.01 ? 3 : goldRank < 0.1 ? 2 : 1;
+    const goldRank = Math.random();
+    const goldCount = goldRank < 0.01 ? 3 : goldRank < 0.1 ? 2 : 1;
     let doubleSimpleCount = 0;
-    const goldCount = 2;
+    // const goldCount = 2;
     for (let i = 0; i < goldCount; i++) {
       const goldIndex = this.cards.findIndex(card => card === this.caishen);
 
@@ -909,6 +909,20 @@ class TableState implements Serializable {
       const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : [], luckyPlayerIds.includes(i));
       p.flowerList = result.flowerList;
       cardList.push(result);
+    }
+
+    // 如果用户处于新手保护，判断用户是否可以抢金，天胡
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const playerModel = await service.playerService.getPlayerModel(p._id);
+
+      if (playerModel.gameJuShu[GameType.xmmj] <= config.game.noviceProtection) {
+        const isGameOver = await p.checkQiangJinOrHu(cardList[i].cards, this.caishen, i);
+        if (isGameOver) {
+          console.warn("start hu or qiangjin reset index %s", i);
+          return await this.start(payload);
+        }
+      }
     }
 
     const allFlowerList = [];
