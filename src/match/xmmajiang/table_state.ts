@@ -391,7 +391,8 @@ class TableState implements Serializable {
     }
 
     // 新手保护辅助出牌
-    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && isHelp) {
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
+    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && isHelp && category.title === Enums.noviceProtection) {
       // 判断是否听牌
       const isTing = player.isTing();
       console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
@@ -413,7 +414,7 @@ class TableState implements Serializable {
         // 如果听牌，摸取胡牌的牌
         let c1 = await this.getHuCard(player);
         if (isTing && c1) {
-          console.warn("c1-%s", c1);
+          // console.warn("c1-%s", c1);
 
           const moIndex = this.cards.findIndex(c => c === c1);
           if (moIndex !== -1) {
@@ -422,7 +423,7 @@ class TableState implements Serializable {
           }
         } else {
           let c2 = await this.getDoubleCard();
-          console.warn("c2-%s", c2);
+          // console.warn("c2-%s", c2);
 
           if (c2) {
             const moIndex = this.cards.findIndex(c => c === c2);
@@ -616,7 +617,8 @@ class TableState implements Serializable {
     }
 
     // 用户处于新手保护，并且非机器人
-    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot) {
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
+    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && category.title === Enums.noviceProtection) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
       console.warn("room %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
@@ -626,7 +628,7 @@ class TableState implements Serializable {
     }
 
     // 非新手保护，金豆房如果需要发牌超过3张，则有一定概率补刻+单金+两对
-    if (residueCount >= 3 && isLucky && this.room.isPublic && playerModel.gameJuShu[GameType.xmmj] >= config.game.noviceProtection) {
+    if (residueCount >= 3 && isLucky && this.room.isPublic && category.title !== Enums.noviceProtection) {
       const result = await this.getCardCounter(3);
       if (result.length > 0) {
         cards = [...cards, ...result];

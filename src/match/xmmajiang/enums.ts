@@ -13,6 +13,7 @@ const enums = {
   goldCurrency: "gold",
   tlGoldCurrency: "tlGold",
   slotNoCard: 0,
+  noviceProtection: "新手场",
 
   wanzi1: 1,
   wanzi2: 2,
