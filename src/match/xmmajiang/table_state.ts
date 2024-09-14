@@ -539,7 +539,7 @@ class TableState implements Serializable {
 
           console.warn("get caishen %s card %s cards %s can shuangYou state", this.caishen, youJinCards[i].card, JSON.stringify(this.getCardArray(cardsTemp)), isOk);
 
-          if (youJinCards[i].youJinTimes > youJinCard.youJinTimes && isOk) {
+          if (isOk) {
             youJinCard = youJinCards[i];
           }
         } else {
