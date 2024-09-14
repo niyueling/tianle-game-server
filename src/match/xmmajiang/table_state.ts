@@ -911,26 +911,26 @@ class TableState implements Serializable {
       cardList.push(result);
     }
 
-    let isGameOver = false;
-
-    // 如果用户处于新手保护，判断用户是否可以抢金，天胡
-    for (let i = 0; i < this.players.length; i++) {
-      const p = this.players[i];
-      const playerModel = await service.playerService.getPlayerModel(p._id);
-
-      if (playerModel.gameJuShu[GameType.xmmj] <= config.game.noviceProtection) {
-        const flag = await p.checkQiangJinOrHu(cardList[i].cards, this.caishen, i);
-        if (isGameOver) {
-          isGameOver = flag;
-          break;
-        }
-      }
-    }
-
-    if (isGameOver) {
-      console.warn("start hu or qiangjin reset");
-      return await this.start(payload);
-    }
+    // let isGameOver = false;
+    //
+    // // 如果用户处于新手保护，判断用户是否可以抢金，天胡
+    // for (let i = 0; i < this.players.length; i++) {
+    //   const p = this.players[i];
+    //   const playerModel = await service.playerService.getPlayerModel(p._id);
+    //
+    //   if (playerModel.gameJuShu[GameType.xmmj] <= config.game.noviceProtection) {
+    //     const flag = await p.checkQiangJinOrHu(cardList[i].cards, this.caishen, i);
+    //     if (isGameOver) {
+    //       isGameOver = flag;
+    //       break;
+    //     }
+    //   }
+    // }
+    //
+    // if (isGameOver) {
+    //   console.warn("start hu or qiangjin reset");
+    //   return await this.start(payload);
+    // }
 
     const allFlowerList = [];
     cardList.map(value => allFlowerList.push(value.flowerList));
@@ -973,52 +973,66 @@ class TableState implements Serializable {
     }
 
     const nextDo = async () => {
-      const nextCard = await this.consumeCard(this.zhuang, false, true, true);
-      const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
-      this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
-
-      // 庄家摸到牌，判断是否可以抢金
-      this.qiangJinData = await this.checkPlayerQiangJin();
-
-      // 判断是否可以天胡
-      const ind = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex);
-      if (msg.hu) {
-        if (ind !== -1) {
-          this.qiangJinData[ind].tianHu = true;
-        } else {
-          this.qiangJinData.push({index: this.zhuang.seatIndex, zhuang: this.zhuang.zhuang, card: this.lastTakeCard, tianHu: true, calc: false});
-        }
-      }
-
-      const isQiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex && p.qiangJin) !== -1;
-      msg.qiangJin = isQiangJin;
-      if (!msg.hu) {
-        msg.hu = isQiangJin;
-      }
-      this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
-
-      const index = this.zhuangIndex;
-      this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
-
-      // 判断抢金和非庄家三金倒为抢金状态
-      if (this.qiangJinData.length) {
-        this.state = stateQiangJin;
-
-        for (let i = 1; i < this.players.length; i++) {
-          const p = this.players[i];
-          const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === p.seatIndex);
-          if (qiangDataIndex !== -1) {
-            p.sendMessage("game/canDoQiangJin", {ok: true, data: this.qiangJinData[qiangDataIndex]});
-          }
-        }
-      }
-
-      if (!this.isFlower(nextCard) && !this.qiangJinData.length) {
-        this.state = stateWaitDa;
-      }
+      await this.takeFirstCard();
     }
 
     setTimeout(nextDo, this.sleepTime)
+  }
+
+  async takeFirstCard() {
+    const nextCard = await this.consumeCard(this.zhuang, false, true, true);
+    const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
+    this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
+
+    // 庄家摸到牌，判断是否可以抢金
+    this.qiangJinData = await this.checkPlayerQiangJin();
+
+    // 判断是否可以天胡
+    const ind = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex);
+    if (msg.hu) {
+      if (ind !== -1) {
+        this.qiangJinData[ind].tianHu = true;
+      } else {
+        this.qiangJinData.push({index: this.zhuang.seatIndex, zhuang: this.zhuang.zhuang, card: this.lastTakeCard, tianHu: true, calc: false});
+      }
+    }
+
+    const isQiangJin = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex && p.qiangJin) !== -1;
+    msg.qiangJin = isQiangJin;
+    if (!msg.hu) {
+      msg.hu = isQiangJin;
+    }
+
+    // 判断抢金和天胡重新发牌
+    if (msg.hu) {
+      this.cards.push(nextCard);
+      this.zhuang.cards[nextCard]--;
+      await this.shuffleArray(this.cards);
+
+      return await this.takeFirstCard();
+    }
+
+    this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
+
+    const index = this.zhuangIndex;
+    this.room.broadcast('game/oppoTakeCard', {ok: true, data: {index, card: nextCard, msg}}, this.zhuang.msgDispatcher);
+
+    // 判断抢金和非庄家三金倒为抢金状态
+    if (this.qiangJinData.length) {
+      this.state = stateQiangJin;
+
+      for (let i = 1; i < this.players.length; i++) {
+        const p = this.players[i];
+        const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === p.seatIndex);
+        if (qiangDataIndex !== -1) {
+          p.sendMessage("game/canDoQiangJin", {ok: true, data: this.qiangJinData[qiangDataIndex]});
+        }
+      }
+    }
+
+    if (!this.isFlower(nextCard) && !this.qiangJinData.length) {
+      this.state = stateWaitDa;
+    }
   }
 
   async checkPlayerQiangJin() {
