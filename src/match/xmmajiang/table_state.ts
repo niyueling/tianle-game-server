@@ -998,6 +998,8 @@ class TableState implements Serializable {
   async takeFirstCard(bigCardStatus = false) {
     const nextCard = await this.consumeCard(this.zhuang, false, true, true, bigCardStatus);
     const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
+    const playerModel = await service.playerService.getPlayerModel(this.zhuang._id);
     this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
     this.zhuangResetCount++;
     console.warn("nextCard-%s", nextCard);
@@ -1007,6 +1009,7 @@ class TableState implements Serializable {
 
     // 判断是否可以天胡
     const ind = this.qiangJinData.findIndex(p => p.index === this.zhuang.seatIndex);
+
     if (msg.hu) {
       if (ind !== -1) {
         this.qiangJinData[ind].tianHu = true;
@@ -1022,7 +1025,7 @@ class TableState implements Serializable {
     }
 
     // 判断抢金和天胡重新发牌
-    if (msg.hu && this.zhuangResetCount < 2) {
+    if (msg.hu && this.zhuangResetCount < 2 && category.title === Enums.noviceProtection && playerModel.gameJuShu[GameType.xmmj] <= config.game.noviceProtection) {
       this.cards.push(nextCard);
       this.zhuang.cards[nextCard]--;
       await this.shuffleArray(this.cards);
