@@ -1020,12 +1020,12 @@ class TableState implements Serializable {
     }
 
     // 判断抢金和天胡重新发牌
-    if (msg.hu && this.zhuangResetCount < 2) {
+    if (msg.hu && this.zhuangResetCount < 1) {
       this.cards.push(nextCard);
       this.zhuang.cards[nextCard]--;
       await this.shuffleArray(this.cards);
 
-      const random = Math.random() < 0.25;
+      const random = Math.random() < 0.9;
 
       return await this.takeFirstCard(random);
     }
