@@ -447,6 +447,28 @@ class TableState implements Serializable {
       }
     }
 
+    if (category.title !== Enums.noviceProtection && !playerModel.robot && isHelp) {
+      const isTing = player.isTing();
+      let c1 = await this.getHuCard(player);
+      if (isTing && c1) {
+        const moIndex = this.cards.findIndex(c => c === c1);
+        if (moIndex !== -1) {
+          console.warn("normal get card %s index %s can hu", c1, moIndex);
+          cardIndex = moIndex;
+        }
+      } else {
+        let c2 = await this.getDoubleCard();
+
+        if (c2) {
+          const moIndex = this.cards.findIndex(c => c === c2);
+          if (moIndex !== -1) {
+            console.warn("normal get card %s index %s can ting", c2, moIndex);
+            cardIndex = moIndex;
+          }
+        }
+      }
+    }
+
     // 牌堆移除这张牌
     const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
