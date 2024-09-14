@@ -658,6 +658,7 @@ class TableState implements Serializable {
     // 配金牌
     // const goldRank = Math.random();
     // const goldCount = goldRank < 0.01 ? 3 : goldRank < 0.1 ? 2 : 1;
+    let doubleSimpleCount = 0;
     const goldCount = 1;
     for (let i = 0; i < goldCount; i++) {
       const goldIndex = this.cards.findIndex(card => card === this.caishen);
@@ -693,22 +694,7 @@ class TableState implements Serializable {
             counter[card]--;
           }
         }
-      } else if (random < 0.6) {
-        // 发放顺子
-        result = Object.keys(counter).filter(num => Number(num) <= Enums.tongzi7 && counter[num] >= 1 && counter[Number(num) + 1] >= 1 && counter[Number(num) + 2] >= 1);
-        const randomNumber = Math.floor(Math.random() * result.length);
-        for (let i = 0; i < 3; i++) {
-          const index = this.cards.findIndex(card => card === Number(result[randomNumber]) + i);
-          if (index !== -1) {
-            const card = this.cards[index];
-            cards.push(card);
-            this.cards.splice(index, 1);
-            this.lastTakeCard = card;
-            this.remainCards--;
-            counter[card]--;
-          }
-        }
-      } else {
+      } else if (random < 0.6 && !doubleSimpleCount) {
         // 发放对子+相邻单张
         result = Object.keys(counter).filter(num => counter[num] >= 2 && counter[Number(num) + 1] >= 1);
         const randomNumber = Math.floor(Math.random() * result.length);
@@ -721,6 +707,22 @@ class TableState implements Serializable {
             if (i === 2) {
               player.disperseCards.push(card);
             }
+            this.cards.splice(index, 1);
+            this.lastTakeCard = card;
+            this.remainCards--;
+            counter[card]--;
+            doubleSimpleCount++;
+          }
+        }
+      } else {
+        // 发放顺子
+        result = Object.keys(counter).filter(num => Number(num) <= Enums.tongzi7 && counter[num] >= 1 && counter[Number(num) + 1] >= 1 && counter[Number(num) + 2] >= 1);
+        const randomNumber = Math.floor(Math.random() * result.length);
+        for (let i = 0; i < 3; i++) {
+          const index = this.cards.findIndex(card => card === Number(result[randomNumber]) + i);
+          if (index !== -1) {
+            const card = this.cards[index];
+            cards.push(card);
             this.cards.splice(index, 1);
             this.lastTakeCard = card;
             this.remainCards--;
