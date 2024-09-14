@@ -503,9 +503,9 @@ class TableState implements Serializable {
     const cards = [];
     const youJinCards = [];
     for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
-      if (i === this.caishen) {
-        continue;
-      }
+      // if (i === this.caishen) {
+      //   continue;
+      // }
 
       // 如果不是财神牌就判断是否能胡牌
       player.cards[i]++;
