@@ -911,18 +911,25 @@ class TableState implements Serializable {
       cardList.push(result);
     }
 
+    let isGameOver = false;
+
     // 如果用户处于新手保护，判断用户是否可以抢金，天胡
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       const playerModel = await service.playerService.getPlayerModel(p._id);
 
       if (playerModel.gameJuShu[GameType.xmmj] <= config.game.noviceProtection) {
-        const isGameOver = await p.checkQiangJinOrHu(cardList[i].cards, this.caishen, i);
+        const flag = await p.checkQiangJinOrHu(cardList[i].cards, this.caishen, i);
         if (isGameOver) {
-          console.warn("start hu or qiangjin reset index %s", i);
-          return await this.start(payload);
+          isGameOver = flag;
+          break;
         }
       }
+    }
+
+    if (isGameOver) {
+      console.warn("start hu or qiangjin reset");
+      return await this.start(payload);
     }
 
     const allFlowerList = [];
