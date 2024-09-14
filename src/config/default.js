@@ -86,7 +86,7 @@ module.exports = {
     prizeNeedRoomNum: 5,
     fourJokerReward: 880,
     prizeCount: 11,
-    noviceProtection: 100,
+    noviceProtection: 1,
     // 动画播放时间 ms
     playShuffleTime: 6000,
     // 一个炸弹计分
