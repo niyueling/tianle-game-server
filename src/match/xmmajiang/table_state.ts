@@ -1025,7 +1025,9 @@ class TableState implements Serializable {
       this.zhuang.cards[nextCard]--;
       await this.shuffleArray(this.cards);
 
-      return await this.takeFirstCard(true);
+      const random = Math.random() < 0.25;
+
+      return await this.takeFirstCard(random);
     }
 
     this.zhuang.sendMessage('game/TakeCard', {ok: true, data: msg});
