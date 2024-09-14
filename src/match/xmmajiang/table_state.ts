@@ -501,7 +501,7 @@ class TableState implements Serializable {
 
   async getHuCard(player) {
     const cards = [];
-    for (let i = Enums.wanzi1; i < Enums.bai; i++) {
+    for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
       if (i === this.caishen) {
         continue;
       }
@@ -513,11 +513,38 @@ class TableState implements Serializable {
       const moIndex = this.cards.findIndex(c => c === i);
       if (huState.hu && moIndex !== -1) {
         if (huState.isYouJin) {
+          console.warn("get card %s index %s can youJin hu", i, moIndex);
           return i;
         }
 
         cards.push(i);
       }
+    }
+
+    // 将牌放入牌堆，判断去除一张牌是否能游金
+    for (let i = 0; i < cards.length; i++) {
+      const cardsTemp = player.cards.slice();
+      cardsTemp[cards[i]]++;
+
+      for (let j = Enums.wanzi1; j <= Enums.bai; j++) {
+        if (j === this.caishen) {
+          continue;
+        }
+
+        // 删除任意一张牌
+        cardsTemp[j]--;
+
+        // 检查是否是游金
+        const isOk = manager.isCanYouJin(player.cards, this.caishen);
+        cardsTemp[j]++;
+        if (isOk) {
+          console.warn("get card %s can youJin", cards[i]);
+          cardsTemp[cards[i]]--;
+          return cards[i];
+        }
+      }
+
+      cardsTemp[cards[i]]--;
     }
 
     return cards.length > 0 ? cards[0] : null;

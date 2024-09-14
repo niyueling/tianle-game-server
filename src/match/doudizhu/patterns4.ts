@@ -1,5 +1,5 @@
 import Card from './card'
-import {IMatcher, IPattern, NullCheck, orCompose, PatterNames} from './patterns/base'
+import {IMatcher, IPattern, NullCheck, PatterNames} from './patterns/base'
 
 import BombMatcher from './patterns/BombMatcher'
 import DoubleMatcher from './patterns/DoubleMatcher'
@@ -78,9 +78,7 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], ru
   if (!pattern) return [[cards[0]]]
 
   const matcher = patternNameToPatternMatcher(pattern.name)
-  const prompts = matcher.promptWithPattern(pattern, cards)
-
-  return prompts
+  return matcher.promptWithPattern(pattern, cards)
 }
 
 /* share with client side */
