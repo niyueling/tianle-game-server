@@ -274,6 +274,9 @@ class TableState implements Serializable {
   // 庄家位置
   zhuangIndex: number = -1;
 
+  // 庄家重新摸牌次数
+  zhuangResetCount: number = 0;
+
   constructor(room: Room, rule: Rule, restJushu: number) {
     this.restJushu = restJushu;
     this.rule = rule;
@@ -983,6 +986,7 @@ class TableState implements Serializable {
     const nextCard = await this.consumeCard(this.zhuang, false, true, true);
     const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
     this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
+    this.zhuangResetCount++;
     console.warn("nextCard-%s", nextCard);
 
     // 庄家摸到牌，判断是否可以抢金
@@ -1005,7 +1009,7 @@ class TableState implements Serializable {
     }
 
     // 判断抢金和天胡重新发牌
-    if (msg.hu) {
+    if (msg.hu && this.zhuangResetCount < 2) {
       this.cards.push(nextCard);
       this.zhuang.cards[nextCard]--;
       await this.shuffleArray(this.cards);
