@@ -983,6 +983,7 @@ class TableState implements Serializable {
     const nextCard = await this.consumeCard(this.zhuang, false, true, true);
     const msg = await this.zhuang.takeCard(this.turn, nextCard, false, false);
     this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
+    console.warn("nextCard-%s", nextCard);
 
     // 庄家摸到牌，判断是否可以抢金
     this.qiangJinData = await this.checkPlayerQiangJin();
