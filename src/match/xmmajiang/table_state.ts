@@ -680,9 +680,10 @@ class TableState implements Serializable {
 
       // 发刻子
       if (random < 0.3) {
-        result = Object.keys(counter).filter(num => counter[num] >= 3);
+        const keCount = Math.random() < 0.1 ? 4 : 3;
+        result = Object.keys(counter).filter(num => counter[num] >= keCount);
         const randomNumber = Math.floor(Math.random() * result.length);
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < keCount; i++) {
           const index = this.cards.findIndex(card => card === Number(result[randomNumber]));
 
           if (index !== -1) {
