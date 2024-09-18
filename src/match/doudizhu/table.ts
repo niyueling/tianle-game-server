@@ -660,6 +660,9 @@ abstract class Table implements Serializable {
     if (this.currentPlayerStep === -1) {
       return ;
     }
+    if (!this.rule.allowopenCard) {
+      player.sendMessage("game/openDealReply", {ok: false, info: TianleErrorCode.systemError});
+    }
     player.isOpenCard = true;
     player.openMultiple = msg.multiple;
     // 如果明牌用户倍数更高，则设置对局倍数
