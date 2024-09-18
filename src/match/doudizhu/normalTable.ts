@@ -288,7 +288,7 @@ export default class NormalTable extends Table {
       return {
         model: p.model,
         index: p.index,
-        score: this.room.isPublic ? p.balance : await this.getGameMultiple(p),
+        score: this.room.isPublic ? p.balance : this.getGameMultiple(p),
         multiple: p.multiple,
         detail: p.detailBalance,
         mode: p.mode,
@@ -320,18 +320,17 @@ export default class NormalTable extends Table {
     await this.roomGameOver(states, firstPlayer._id);
   }
 
-  async getGameMultiple(player) {
+  getGameMultiple(player) {
+    const score = Math.abs(player.balance);
     if (this.rule.capping === -1) {
       return player.balance;
     }
 
     if (player.mode === enums.landlord) {
-      return player.balance > this.rule.capping ? this.rule.capping : player.balance;
+      return score > this.rule.capping ? this.rule.capping : score;
     }
 
-    console.warn("balance-%s, capping-%s, result-%s", player.balance, this.rule.capping, player.balance > this.rule.capping / 2 ? this.rule.capping / 2 : player.balance);
-
-    return player.balance > this.rule.capping / 2 ? this.rule.capping / 2 : player.balance;
+    return score > this.rule.capping / 2 ? this.rule.capping / 2 : score;
   }
 
   private shangYouSettler() {
