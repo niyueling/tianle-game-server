@@ -626,7 +626,7 @@ class TableState implements Serializable {
     return cardValue >= Enums.spring && cardValue <= Enums.ju;
   }
 
-  async take16Cards(player: PlayerState, clist, isLucky) {
+  async take16Cards(player: PlayerState, clist, isLucky, isUpgrade = false) {
     let cards = this.rule.test ? clist.slice() : [];
     const playerModel = await service.playerService.getPlayerModel(player._id);
     const cardCount = cards.length;
@@ -651,9 +651,19 @@ class TableState implements Serializable {
       }
     }
 
-    // 非新手保护，金豆房如果需要发牌超过3张，则有一定概率补刻+单金+两对
-    if (residueCount >= 3 && isLucky && this.room.isPublic && category.title !== Enums.noviceProtection) {
+    // 非新手保护，没有新手进阶，金豆房有一定概率补刻+单金+两对
+    if (residueCount >= 3 && isLucky && this.room.isPublic && category.title !== Enums.noviceProtection && !isUpgrade) {
       const result = await this.getCardCounter(3);
+      if (result.length > 0) {
+        cards = [...cards, ...result];
+        residueCount -= result.length;
+      }
+    }
+
+    // 本局有新手进阶,并且不是进阶用户
+    if (isUpgrade && !player.isUpgrade) {
+      const result = await this.getNoviceProtectionCards(residueCount, player);
+      console.warn("room upgrade %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
         cards = [...cards, ...result];
         residueCount -= result.length;
@@ -909,14 +919,16 @@ class TableState implements Serializable {
   }
 
   async fapai(payload) {
+    let isGameUpgrade = false;
     this.shuffle();
     this.sleepTime = 3000;
     // 金牌
     this.caishen = this.randGoldCard(this.rule.test, payload.goldCard);
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
+    const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
 
     const needShuffle = this.room.shuffleData.length > 0;
-    let cardList = [];
+    const cardList = [];
     const luckyPlayerIds = [Math.floor(Math.random() * 4)];
     const random = Math.floor(Math.random() * 4);
     if (!luckyPlayerIds.includes(random)) {
@@ -926,6 +938,23 @@ class TableState implements Serializable {
     // 测试工具自定义摸9张牌
     if (this.rule.test && payload.moCards && payload.moCards.length > 0) {
       this.testMoCards = payload.moCards;
+    }
+
+    // 计算本局是否由用户需要被杀
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const model = await service.playerService.getPlayerModel(p._id);
+
+      // 判断是否升级场次
+      if (category.title === Enums.AdvancedTitle) {
+        if (!model.gameUpgrade[GameType.xmmj]) {
+          model.gameUpgrade[GameType.xmmj] = 0;
+          p.isUpgrade = true;
+          isGameUpgrade = true;
+        }
+        model.gameUpgrade[GameType.xmmj]++;
+        await Player.update({_id: model._id}, {$set: {gameUpgrade: model.gameUpgrade}});
+      }
     }
 
     for (let i = 0; i < this.players.length; i++) {
@@ -946,37 +975,17 @@ class TableState implements Serializable {
       }
 
       // 补发牌到16张
-      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ? payload.cards[i] : [], luckyPlayerIds.includes(i));
+      const result = await this.take16Cards(p, this.rule.test && payload.cards && payload.cards[i].length > 0 ?
+        payload.cards[i] : [], luckyPlayerIds.includes(i), isGameUpgrade);
       p.flowerList = result.flowerList;
       cardList.push(result);
     }
 
-    // let isGameOver = false;
-    //
-    // // 如果用户处于新手保护，判断用户是否可以抢金，天胡
-    // for (let i = 0; i < this.players.length; i++) {
-    //   const p = this.players[i];
-    //   const playerModel = await service.playerService.getPlayerModel(p._id);
-    //
-    //   if (playerModel.gameJuShu[GameType.xmmj] <= config.game.noviceProtection) {
-    //     const flag = await p.checkQiangJinOrHu(cardList[i].cards, this.caishen, i);
-    //     if (isGameOver) {
-    //       isGameOver = flag;
-    //       break;
-    //     }
-    //   }
-    // }
-    //
-    // if (isGameOver) {
-    //   console.warn("start hu or qiangjin reset");
-    //   return await this.start(payload);
-    // }
-
     const allFlowerList = [];
     cardList.map(value => allFlowerList.push(value.flowerList));
     for (let i = 0; i < this.players.length; i++) {
-      this.players[i].onShuffle(this.remainCards, this.caishen, this.restJushu, cardList[i].cards, i, this.room.game.juIndex,
-        needShuffle, cardList[i].flowerList, allFlowerList, this.zhuangIndex);
+      this.players[i].onShuffle(this.remainCards, this.caishen, this.restJushu, cardList[i].cards, i,
+        this.room.game.juIndex, needShuffle, cardList[i].flowerList, allFlowerList, this.zhuangIndex);
       // 记录发牌
       await this.room.auditManager.playerTakeCardList(this.players[i].model._id, cardList[i].cards);
     }
@@ -1000,7 +1009,8 @@ class TableState implements Serializable {
           // 记录补花信息
           p.onBuHua(result);
 
-          this.room.broadcast('game/flowerResetCard', {ok: true, data: {restCards: this.remainCards, flowerList: p.flowerList, index: i, cards: result}})
+          this.room.broadcast('game/flowerResetCard', {ok: true, data: {restCards: this.remainCards,
+              flowerList: p.flowerList, index: i, cards: result}})
         }
       }
     }

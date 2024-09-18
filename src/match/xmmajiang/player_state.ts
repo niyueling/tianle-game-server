@@ -252,6 +252,9 @@ class PlayerState implements Serializable {
   // 新手摸到的散牌
   disperseCards: any[] = [];
 
+  // 是否第一次升级场次
+  isUpgrade: boolean = false;
+
   constructor(userSocket, room, rule) {
     this.room = room;
     this.zhuang = false;
@@ -295,6 +298,7 @@ class PlayerState implements Serializable {
     this.score = room.getScore(userSocket)
     this.fanShu = room.getFanShu(userSocket)
     this.isYouJin = false;
+    this.isUpgrade = false;
   }
 
   get youJinTimes() {

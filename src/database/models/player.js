@@ -42,6 +42,7 @@ const schema = new Schema({
   signLoginDays: {type: Number, default: 0}, // 签到天数
   totalSignLoginDays: {type: Number, default: 0}, // 累计签到天数
   gameJuShu: {type: Object, default: {}}, // 游戏对局数
+  gameUpgrade: {type: Object, default: {}}, // 游戏是否升级过场次
   sessionKey: {type: String},
   guideSteps: {type: Number, default: 1001},
   vip: {type: Number, default: 0},
