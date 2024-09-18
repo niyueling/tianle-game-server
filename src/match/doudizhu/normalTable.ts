@@ -288,7 +288,7 @@ export default class NormalTable extends Table {
       return {
         model: p.model,
         index: p.index,
-        score: p.balance,
+        score: this.room.isPublic ? p.balance : this.getGameMultiple(p),
         multiple: p.multiple,
         detail: p.detailBalance,
         mode: p.mode,
@@ -318,6 +318,20 @@ export default class NormalTable extends Table {
     let firstPlayer = this.players.find(p => p.cards.length === 0)
 
     await this.roomGameOver(states, firstPlayer._id);
+  }
+
+  getGameMultiple(player) {
+    if (this.rule.capping === -1) {
+      return player.balance;
+    }
+
+    if (player.mode === enums.landlord) {
+      return player.balance > this.rule.capping ? this.rule.capping : player.balance;
+    }
+
+    if (player.mode === enums.farmer) {
+      return player.balance > this.rule.capping / 2 ? this.rule.capping / 2 : player.balance;
+    }
   }
 
   private shangYouSettler() {

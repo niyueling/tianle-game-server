@@ -34,16 +34,35 @@ class Rule {
     return this.ro.luckyReward || 0
   }
 
-  // 是否允许4带2
-  get boomPlus2() {
-    return !!this.ro.boomPlus2;
+  // 封顶倍数
+  get capping() {
+    return this.ro.capping || -1;
   }
 
-  // 3张可以带0, 1张，2张
-  get triplePlusX() {
-    return !!this.ro.triplePlusX;
+  // 是否允许加倍
+  get allowDouble() {
+    return this.ro.allowDouble || true;
   }
 
+  // 是否允许明牌
+  get allowopenCard() {
+    return this.ro.allowopenCard || true;
+  }
+
+  // 是否使用记牌器
+  get useRecorder() {
+    return this.ro.useRecorder || true;
+  }
+
+  // 是否剩余三张才显示牌数
+  get remainCard3() {
+    return this.ro.remainCard3 || true;
+  }
+
+  // 双王/4个二必叫
+  get mustCallLandlord() {
+    return this.ro.mustCallLandlord || true;
+  }
 
   // 炸弹是否计分
   get countBoomScore() {
@@ -57,11 +76,6 @@ class Rule {
     }
 
     return this.ro.currency;
-  }
-
-  // 是否赢家先出
-  get winnerFirst() {
-    return !!this.ro.winnerFirst
   }
 }
 
