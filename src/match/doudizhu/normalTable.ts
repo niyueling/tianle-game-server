@@ -329,6 +329,8 @@ export default class NormalTable extends Table {
       return player.balance > this.rule.capping ? this.rule.capping : player.balance;
     }
 
+    console.warn("balance-%s, capping-%s, result-%s", player.balance, this.rule.capping, player.balance > this.rule.capping / 2 ? this.rule.capping / 2 : player.balance);
+
     return player.balance > this.rule.capping / 2 ? this.rule.capping / 2 : player.balance;
   }
 
