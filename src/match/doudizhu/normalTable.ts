@@ -283,12 +283,12 @@ export default class NormalTable extends Table {
 
     await this.recordRubyReward();
 
-    const states = this.players.map(p => {
+    const states = this.players.map(async p => {
       const auditInfo = this.audit.currentRound[p.model.shortId];
       return {
         model: p.model,
         index: p.index,
-        score: this.room.isPublic ? p.balance : this.getGameMultiple(p),
+        score: this.room.isPublic ? p.balance : await this.getGameMultiple(p),
         multiple: p.multiple,
         detail: p.detailBalance,
         mode: p.mode,
@@ -320,7 +320,7 @@ export default class NormalTable extends Table {
     await this.roomGameOver(states, firstPlayer._id);
   }
 
-  getGameMultiple(player) {
+  async getGameMultiple(player) {
     if (this.rule.capping === -1) {
       return player.balance;
     }
