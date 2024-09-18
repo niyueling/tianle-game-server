@@ -644,7 +644,7 @@ class TableState implements Serializable {
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
     if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && category.title === Enums.noviceProtection) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
-      console.warn("room %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
+      console.warn("noviceProtection room %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
         cards = [...cards, ...result];
         residueCount -= result.length;
@@ -949,9 +949,15 @@ class TableState implements Serializable {
       if (category.title === Enums.AdvancedTitle) {
         if (!model.gameUpgrade[GameType.xmmj]) {
           model.gameUpgrade[GameType.xmmj] = 0;
+          // p.isUpgrade = true;
+          // isGameUpgrade = true;
+        }
+
+        if (!model.robot) {
           p.isUpgrade = true;
           isGameUpgrade = true;
         }
+
         model.gameUpgrade[GameType.xmmj]++;
         await Player.update({_id: model._id}, {$set: {gameUpgrade: model.gameUpgrade}});
       }
@@ -959,6 +965,8 @@ class TableState implements Serializable {
 
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
+
+      console.warn("index-%s, isUpgrade-%s, isGameUpgrade-%s", i, p.isUpgrade, isGameUpgrade);
 
       // 如果客户端指定发牌
       if (this.rule.test && payload.cards && payload.cards[i].length > 0) {
