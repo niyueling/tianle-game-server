@@ -329,9 +329,7 @@ export default class NormalTable extends Table {
       return player.balance > this.rule.capping ? this.rule.capping : player.balance;
     }
 
-    if (player.mode === enums.farmer) {
-      return player.balance > this.rule.capping / 2 ? this.rule.capping / 2 : player.balance;
-    }
+    return player.balance > this.rule.capping / 2 ? this.rule.capping / 2 : player.balance;
   }
 
   private shangYouSettler() {
