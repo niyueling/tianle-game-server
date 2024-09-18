@@ -283,7 +283,7 @@ export default class NormalTable extends Table {
 
     await this.recordRubyReward();
 
-    const states = this.players.map(async p => {
+    const states = this.players.map(p => {
       const auditInfo = this.audit.currentRound[p.model.shortId];
       return {
         model: p.model,
