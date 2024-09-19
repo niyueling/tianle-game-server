@@ -21,6 +21,7 @@ export class NewRobotManager {
   waitPublicRobot: number
   waitPublicRobotSecond: number
   waitKickOutTime: number
+  waitUpdateRubyTime: number
   isPlayed: boolean
   selectModeTimes: number
   constructor(room, depositCount) {
@@ -34,6 +35,7 @@ export class NewRobotManager {
     this.waitPublicRobot = 0;
     this.waitPublicRobotSecond = 0;
     this.waitKickOutTime = 0;
+    this.waitUpdateRubyTime = 0;
     this.isPlayed = true;
     this.selectModeTimes = 0;
     this.startMonit();
@@ -153,10 +155,16 @@ export class NewRobotManager {
         continue;
       }
 
+      this.waitUpdateRubyTime++;
+      const random = Math.floor(Math.random() * 15 + 4);
+
+      if (this.waitUpdateRubyTime < random) {
+        return;
+      }
+
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
-        // this.room.broadcast("game/kickOutPlayer", {ok: true, data: {index: i}});
-        // await this.room.leave(p);
+
         // 如果场次最高无限制，则最高携带金豆为门槛*10
         if (resp.conf.maxAmount === -1) {
           resp.conf.maxAmount = resp.conf.minAmount * 10;
@@ -183,6 +191,8 @@ export class NewRobotManager {
         await randomPlayer.save();
       }
     }
+
+    this.waitUpdateRubyTime = 0;
 
     return true;
   }
