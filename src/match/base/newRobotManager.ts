@@ -429,13 +429,13 @@ export class NewRobotManager {
     if (!this.waitPublicRobotSecond) {
       this.waitPublicRobotSecond = Math.floor(Math.random() * config.game.waitRubyPlayer + 1);
     }
-    if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState || !this.room.readyPlayers) {
+    if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState || this.room.readyPlayers.length === 0) {
       // 时间未到，或者已经有机器人
       return;
     }
 
     for (let i = 0; i < this.room.players.length; i++) {
-      const playerId = await this.getOfflinePlayerByIndex(i)
+      const playerId = await this.getOfflinePlayerByIndex(i);
       if (playerId !== "" || this.room.players[i]) {
         continue;
       }
@@ -451,7 +451,7 @@ export class NewRobotManager {
       // 加入房间
       const isOk = await this.room.join(robotProxy);
       if (isOk) {
-        // console.warn("add robot index-%s shortId-%s", i, model.shortId);
+        console.warn("add robot index-%s shortId-%s", i, model.shortId);
         // 公共房托管的机器人
         this.model.publicRoomRobot.push([model._id, i]);
         await this.addPublicRobot(model._id, robotProxy, i);
