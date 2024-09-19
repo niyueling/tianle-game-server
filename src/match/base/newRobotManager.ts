@@ -184,7 +184,7 @@ export class NewRobotManager {
         randomPlayer.isGame = true;
         randomPlayer.gameTime = new Date();
 
-        p.sendMessage('resource/update', {ok: true, data: pick(randomPlayer.model, ['gold', 'diamond', 'tlGold'])})
+        this.room.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(randomPlayer.model, ['gold', 'diamond', 'tlGold'])}})
 
         // 记录金豆日志
         await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
