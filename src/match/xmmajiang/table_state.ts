@@ -949,13 +949,10 @@ class TableState implements Serializable {
       if (category.title === Enums.AdvancedTitle) {
         if (!model.gameUpgrade[GameType.xmmj]) {
           model.gameUpgrade[GameType.xmmj] = 0;
-          // p.isUpgrade = true;
-          // isGameUpgrade = true;
-        }
-
-        if (!model.robot) {
-          p.isUpgrade = true;
-          isGameUpgrade = true;
+          if (!model.robot) {
+            p.isUpgrade = true;
+            isGameUpgrade = true;
+          }
         }
 
         model.gameUpgrade[GameType.xmmj]++;

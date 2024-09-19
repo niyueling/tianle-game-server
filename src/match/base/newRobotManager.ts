@@ -156,6 +156,7 @@ export class NewRobotManager {
     if (this.waitUpdateRubyTime < random || this.room.gameState) {
       return;
     }
+
     for (let i = 0; i < this.room.players.length; i++) {
       const p = this.room.players[i];
       if (!p || !p.isRobot() || this.room.gameState) {
