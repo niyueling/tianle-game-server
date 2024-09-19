@@ -155,9 +155,9 @@ export class NewRobotManager {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
-        // 如果场次最高无限制，则最高携带金豆为门槛*10
         this.room.broadcast("game/kickOutPlayer", {ok: true, data: {index: i}});
         await this.room.leave(p);
+        // 如果场次最高无限制，则最高携带金豆为门槛*10
         // if (resp.conf.maxAmount === -1) {
         //   resp.conf.maxAmount = resp.conf.minAmount * 10;
         // }
@@ -429,7 +429,7 @@ export class NewRobotManager {
     if (!this.waitPublicRobotSecond) {
       this.waitPublicRobotSecond = Math.floor(Math.random() * config.game.waitRubyPlayer + 1);
     }
-    if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState) {
+    if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState || !this.room.readyPlayers) {
       // 时间未到，或者已经有机器人
       return;
     }
