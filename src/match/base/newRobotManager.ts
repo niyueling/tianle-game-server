@@ -4,6 +4,8 @@ import {RobotMangerModel} from '../../database/models/robotManager';
 import {service} from "../../service/importService";
 import { RobotRmqProxy } from "./robotRmqProxy";
 import Enums from "../majiang/enums";
+// @ts-ignore
+import {pick} from "lodash";
 
 // 机器人出牌
 export class NewRobotManager {
@@ -127,7 +129,6 @@ export class NewRobotManager {
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
       await this.updateNoRuby();
       await this.save();
-      this.model.step = RobotStep.start;
     }
 
     if (this.model.step === RobotStep.start && !this.room.gameState) {
@@ -184,6 +185,8 @@ export class NewRobotManager {
         randomPlayer.isGame = true;
         randomPlayer.gameTime = new Date();
 
+        randomPlayer.sendMessage('resource/update', {ok: true, data: pick(randomPlayer.model, ['gold', 'diamond', 'tlGold'])})
+
         // 记录金豆日志
         await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
           randomPlayer.gold, `机器人开局设置游戏豆:${this.room._id}`);
@@ -193,6 +196,7 @@ export class NewRobotManager {
     }
 
     this.waitUpdateRubyTime = 0;
+    this.model.step = RobotStep.start;
 
     return true;
   }
