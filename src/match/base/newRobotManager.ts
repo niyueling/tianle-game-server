@@ -429,7 +429,7 @@ export class NewRobotManager {
     if (!this.waitPublicRobotSecond) {
       this.waitPublicRobotSecond = Math.floor(Math.random() * config.game.waitRubyPlayer + 1);
     }
-    if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState || this.room.readyPlayers.length === 0) {
+    if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState) {
       // 时间未到，或者已经有机器人
       return;
     }
