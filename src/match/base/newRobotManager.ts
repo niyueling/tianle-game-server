@@ -150,17 +150,16 @@ export class NewRobotManager {
 
   // 检查金豆情况
   async updateNoRuby() {
+    this.waitUpdateRubyTime++;
+    const random = Math.floor(Math.random() * 15 + 4);
+
+    if (this.waitUpdateRubyTime < random || this.room.gameState) {
+      return;
+    }
     for (let i = 0; i < this.room.players.length; i++) {
       const p = this.room.players[i];
       if (!p || !p.isRobot() || this.room.gameState) {
         continue;
-      }
-
-      this.waitUpdateRubyTime++;
-      const random = Math.floor(Math.random() * 15 + 4);
-
-      if (this.waitUpdateRubyTime < random) {
-        return;
       }
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
@@ -185,7 +184,7 @@ export class NewRobotManager {
         randomPlayer.isGame = true;
         randomPlayer.gameTime = new Date();
 
-        randomPlayer.sendMessage('resource/update', {ok: true, data: pick(randomPlayer.model, ['gold', 'diamond', 'tlGold'])})
+        p.sendMessage('resource/update', {ok: true, data: pick(randomPlayer.model, ['gold', 'diamond', 'tlGold'])})
 
         // 记录金豆日志
         await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
