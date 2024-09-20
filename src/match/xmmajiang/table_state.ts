@@ -2299,6 +2299,9 @@ class TableState implements Serializable {
 
           // 记录胜率
           await this.setPlayerGameConfig(state1.model, state1.score);
+
+          const playerModel = await service.playerService.getPlayerModel(player._id);
+          this.room.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(playerModel, ['gold', 'diamond', 'tlGold'])}})
         }
 
         if (state1.score !== 0) {
