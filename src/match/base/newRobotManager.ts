@@ -142,6 +142,10 @@ export class NewRobotManager {
     }
     console.warn("222 room %s step %s", this.room._id, this.model.step);
 
+    if (this.model.step === RobotStep.waitRuby && this.room.gameState) {
+      this.model.step = RobotStep.start;
+    }
+
     if (this.model.step === RobotStep.start && !this.room.gameState) {
       isOk = await this.isNoPlayerAbsent();
       if (!isOk) {
