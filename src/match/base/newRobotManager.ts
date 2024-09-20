@@ -124,17 +124,19 @@ export class NewRobotManager {
     // await this.addOfflineRobot();
     // 添加公共房机器人
     await this.addRobotForPublicRoom();
+    console.warn("111 room %s step %s", this.room._id, this.model.step);
 
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
       await this.updateNoRuby();
       await this.save();
     }
+    console.warn("222 room %s step %s", this.room._id, this.model.step);
 
     if (this.model.step === RobotStep.start && !this.room.gameState) {
       isOk = await this.isNoPlayerAbsent();
       if (!isOk) {
-        console.warn("player is not absent");
+        console.warn("player is not absent %s", this.room._id);
         return;
       }
     }
@@ -145,6 +147,8 @@ export class NewRobotManager {
     if (isOk) {
       return;
     }
+
+    console.warn("333 step %s", this.model.step);
 
     await this.readyAndPlay();
   }
@@ -573,7 +577,7 @@ export class NewRobotManager {
       const flag = await this.robotPlayerReady();
       isOk = await this.isHumanPlayerReady();
       if (!isOk) {
-        // console.log(`human player not ready`, this.room._id);
+        console.log(`human player not ready `, this.room._id);
         return;
       }
 
