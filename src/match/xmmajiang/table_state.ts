@@ -392,44 +392,46 @@ class TableState implements Serializable {
 
     // 新手保护辅助出牌
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
-    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && isHelp && category.title === Enums.noviceProtection) {
-      // 判断是否听牌
-      const isTing = player.isTing();
-      console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
-      // 需要辅助出牌，优先辅助出牌
-      if (player.disperseCards.length > 0 && !isTing) {
-        const disperseCard = this.hasTripleStraight(player.disperseCards);
-        const moIndex = this.cards.findIndex(card => card === disperseCard);
-        if (moIndex !== -1) {
-          cardIndex = moIndex;
-          player.disperseCards.push(this.cards[cardIndex]);
-        }
-
-        this.removeTripleStraight(player, disperseCard, moIndex === -1);
-
-        // 首先对杂牌数组进行排序
-        player.disperseCards.sort((a, b) => a - b);
-        console.warn("room %s consumeCard disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
-      } else {
-        // 如果听牌，摸取胡牌的牌
-        let c1 = await this.getHuCard(player);
-        if (isTing && c1) {
-          // console.warn("c1-%s", c1);
-
-          const moIndex = this.cards.findIndex(c => c === c1);
+    if (this.room.isPublic) {
+      if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && isHelp && category.title === Enums.noviceProtection) {
+        // 判断是否听牌
+        const isTing = player.isTing();
+        console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
+        // 需要辅助出牌，优先辅助出牌
+        if (player.disperseCards.length > 0 && !isTing) {
+          const disperseCard = this.hasTripleStraight(player.disperseCards);
+          const moIndex = this.cards.findIndex(card => card === disperseCard);
           if (moIndex !== -1) {
-            console.warn("get card %s index %s can hu", c1, moIndex);
             cardIndex = moIndex;
+            player.disperseCards.push(this.cards[cardIndex]);
           }
-        } else {
-          let c2 = await this.getDoubleCard();
-          // console.warn("c2-%s", c2);
 
-          if (c2) {
-            const moIndex = this.cards.findIndex(c => c === c2);
+          this.removeTripleStraight(player, disperseCard, moIndex === -1);
+
+          // 首先对杂牌数组进行排序
+          player.disperseCards.sort((a, b) => a - b);
+          console.warn("room %s consumeCard disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
+        } else {
+          // 如果听牌，摸取胡牌的牌
+          let c1 = await this.getHuCard(player);
+          if (isTing && c1) {
+            // console.warn("c1-%s", c1);
+
+            const moIndex = this.cards.findIndex(c => c === c1);
             if (moIndex !== -1) {
-              console.warn("get card %s index %s can ting", c2, moIndex);
+              console.warn("get card %s index %s can hu", c1, moIndex);
               cardIndex = moIndex;
+            }
+          } else {
+            let c2 = await this.getDoubleCard();
+            // console.warn("c2-%s", c2);
+
+            if (c2) {
+              const moIndex = this.cards.findIndex(c => c === c2);
+              if (moIndex !== -1) {
+                console.warn("get card %s index %s can ting", c2, moIndex);
+                cardIndex = moIndex;
+              }
             }
           }
         }
@@ -437,7 +439,7 @@ class TableState implements Serializable {
     }
 
     // 摸取自己牌堆没有的大牌
-    if (bigCardStatus) {
+    if (bigCardStatus && this.room.isPublic) {
       for (let i = Enums.dong; i < Enums.bai; i++) {
         const moIndex = this.cards.findIndex(card => card === i);
         if (moIndex !== -1 && player.cards[i] === 0) {
@@ -447,23 +449,25 @@ class TableState implements Serializable {
       }
     }
 
-    if (category.title !== Enums.noviceProtection && isHelp && Math.random() < 0.4) {
-      const isTing = player.isTing();
-      let c1 = await this.getHuCard(player);
-      if (isTing && c1) {
-        const moIndex = this.cards.findIndex(c => c === c1);
-        if (moIndex !== -1) {
-          console.warn("normal get card %s index %s can hu", c1, moIndex);
-          cardIndex = moIndex;
-        }
-      } else {
-        let c2 = await this.getDoubleCard();
-
-        if (c2) {
-          const moIndex = this.cards.findIndex(c => c === c2);
+    if (this.room.isPublic) {
+      if (category.title !== Enums.noviceProtection && isHelp && Math.random() < 0.4) {
+        const isTing = player.isTing();
+        let c1 = await this.getHuCard(player);
+        if (isTing && c1) {
+          const moIndex = this.cards.findIndex(c => c === c1);
           if (moIndex !== -1) {
-            console.warn("normal get card %s index %s can ting", c2, moIndex);
+            console.warn("normal get card %s index %s can hu", c1, moIndex);
             cardIndex = moIndex;
+          }
+        } else {
+          let c2 = await this.getDoubleCard();
+
+          if (c2) {
+            const moIndex = this.cards.findIndex(c => c === c2);
+            if (moIndex !== -1) {
+              console.warn("normal get card %s index %s can ting", c2, moIndex);
+              cardIndex = moIndex;
+            }
           }
         }
       }
