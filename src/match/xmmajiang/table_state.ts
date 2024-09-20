@@ -449,7 +449,7 @@ class TableState implements Serializable {
       }
     }
 
-    if (this.room.isPublic) {
+    if (this.room.isPublic && category.maxAmount !== -1) {
       if (category.title !== Enums.noviceProtection && isHelp && Math.random() < 0.4) {
         const isTing = player.isTing();
         let c1 = await this.getHuCard(player);
@@ -655,8 +655,8 @@ class TableState implements Serializable {
       }
     }
 
-    // 非新手保护，没有新手进阶，金豆房有一定概率补刻+单金+两对
-    if (residueCount >= 3 && isLucky && this.room.isPublic && category.title !== Enums.noviceProtection && !isUpgrade) {
+    // 非新手保护，没有新手进阶，并且不是大师场，金豆房有一定概率补刻+单金+两对
+    if (residueCount >= 3 && isLucky && this.room.isPublic && category.title !== Enums.noviceProtection && !isUpgrade && category.maxAmount !== -1) {
       const result = await this.getCardCounter(3);
       if (result.length > 0) {
         cards = [...cards, ...result];
@@ -665,7 +665,7 @@ class TableState implements Serializable {
     }
 
     // 本局有新手进阶,并且不是进阶用户
-    if (isUpgrade && !player.isUpgrade && this.room.isPublic) {
+    if (this.room.isPublic && ((isUpgrade && !player.isUpgrade) || (category.maxAmount === -1 && playerModel.robot))) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
       console.warn("room upgrade %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
