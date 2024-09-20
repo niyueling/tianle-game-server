@@ -170,7 +170,6 @@ export class NewRobotManager {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
-
         // 如果场次最高无限制，则最高携带金豆为门槛*10
         if (resp.conf.maxAmount === -1) {
           resp.conf.maxAmount = resp.conf.minAmount * 10;
@@ -200,10 +199,12 @@ export class NewRobotManager {
       }
     }
 
-    console.warn("room %s waitUpdateRubyTime %s step %s", this.room._id, this.waitUpdateRubyTime, this.model.step);
+    console.warn("111 room %s waitUpdateRubyTime %s step %s", this.room._id, this.waitUpdateRubyTime, this.model.step);
 
     this.waitUpdateRubyTime = 0;
     this.model.step = RobotStep.start;
+
+    console.warn("222 room %s waitUpdateRubyTime %s step %s", this.room._id, this.waitUpdateRubyTime, this.model.step);
 
     return true;
   }
