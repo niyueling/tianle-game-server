@@ -150,7 +150,6 @@ export class NewRobotManager {
       }
     }
 
-
     // 检查是不是全是机器人
     isOk = await this.dissolvePublicRoom();
     if (isOk) {

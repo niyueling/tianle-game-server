@@ -1057,20 +1057,25 @@ class Room extends RoomBase {
     // 更新玩家位置
     await this.updatePosition();
 
-    // 判断机器人是否需要补充金豆
-    await this.updateNoRuby();
+    const updateNoRubyFunc = async() => {
+      // 判断机器人是否需要补充金豆
+      await this.updateNoRuby();
 
-    this.gameState.dissolve();
-    this.gameState = null;
-    this.readyPlayers = [];
-    this.robotManager.model.step = RobotStep.waitRuby;
+      this.gameState.dissolve();
+      this.gameState = null;
+      this.readyPlayers = [];
+      this.robotManager.model.step = RobotStep.waitRuby;
 
-    if (this.isRoomAllOver(states) && !this.isPublic) {
-      const message = this.allOverMessage();
-      this.broadcast('room/allOver', {ok: true, data: message});
-      this.players.forEach(x => x && this.leave(x, true));
-      this.emit('empty', this.disconnected);
+      if (this.isRoomAllOver(states) && !this.isPublic) {
+        const message = this.allOverMessage();
+        this.broadcast('room/allOver', {ok: true, data: message});
+        this.players.forEach(x => x && this.leave(x, true));
+        this.emit('empty', this.disconnected);
+      }
+
     }
+
+    setTimeout(updateNoRubyFunc, 500);
   }
 
   async updateNoRuby() {

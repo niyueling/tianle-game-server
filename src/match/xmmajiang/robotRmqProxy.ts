@@ -40,7 +40,6 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
       }
 
       setTimeout(choiceFunc, 900);
-
     }
   }
 
