@@ -1121,6 +1121,17 @@ class TableState implements Serializable {
             }
           }
         }
+
+        // 判断是否三金倒
+        if (p.cards[this.caishen] === 3) {
+          const index = playerIndexs.findIndex(p1 => p1.index === p.seatIndex);
+
+          if (index !== -1) {
+            playerIndexs[index].sanJinDao = true;
+          } else {
+            playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, sanJinDao: true, calc: false});
+          }
+        }
       } else {
         // 非庄家直接判断是否听牌(抢金)
         const tingPai = p.isTing();
