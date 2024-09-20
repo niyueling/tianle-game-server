@@ -52,7 +52,7 @@ export class RobotManager extends NewRobotManager {
       const buGangIndex = this.isPlayerBuGang(proxy.playerState);
       const choice = this.isPlayerChoice(playerId);
       const isHu = proxy.playerState.checkZiMo();
-      console.warn("state %s ")
+      console.warn("state %s", this.room.gameState.state)
 
       if (this.room.gameState.testMoCards.length === 0) {
         if (this.room.gameState.state === 10) {
