@@ -148,7 +148,7 @@ export class NewRobotManager {
       return;
     }
 
-    console.warn("333 step %s", this.model.step);
+    console.warn("333 room %s step %s", this.room._id, this.model.step);
 
     await this.readyAndPlay();
   }
@@ -581,11 +581,15 @@ export class NewRobotManager {
         return;
       }
 
+      console.warn("flag %s step %s", flag, this.model.step);
+
       if ((flag && this.room.isPublic) || !this.room.isPublic) {
         this.model.step = RobotStep.running;
       }
       await this.save();
     }
+
+    console.warn("444 room %s step %s", this.room._id, this.model.step);
 
     if (this.model.step === RobotStep.waitOherDa) {
       return;
