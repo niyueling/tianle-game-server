@@ -447,7 +447,7 @@ class TableState implements Serializable {
       }
     }
 
-    if (category.title !== Enums.noviceProtection && isHelp) {
+    if (category.title !== Enums.noviceProtection && isHelp && Math.random() < 0.4) {
       const isTing = player.isTing();
       let c1 = await this.getHuCard(player);
       if (isTing && c1) {
