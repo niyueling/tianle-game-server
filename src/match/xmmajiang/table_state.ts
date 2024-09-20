@@ -646,7 +646,7 @@ class TableState implements Serializable {
 
     // 用户处于新手保护，并且非机器人
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
-    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && category.title === Enums.noviceProtection && this.room.isPublic) {
+    if (this.room.isPublic && playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && category.title === Enums.noviceProtection) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
       console.warn("noviceProtection room %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
@@ -1068,7 +1068,7 @@ class TableState implements Serializable {
     }
 
     // 判断抢金和天胡重新发牌
-    if (msg.hu && this.zhuangResetCount < 2 && category.title === Enums.noviceProtection && playerModel.gameJuShu[GameType.xmmj] <= config.game.noviceProtection) {
+    if (this.room.isPublic && msg.hu && this.zhuangResetCount < 2 && category.title === Enums.noviceProtection && playerModel.gameJuShu[GameType.xmmj] <= config.game.noviceProtection) {
       this.cards.push(nextCard);
       this.zhuang.cards[nextCard]--;
       await this.shuffleArray(this.cards);
