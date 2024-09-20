@@ -128,8 +128,17 @@ export class NewRobotManager {
 
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
+      this.waitUpdateRubyTime++;
+      const random = Math.floor(Math.random() * 15 + 4);
+
+      if (this.waitUpdateRubyTime < random || this.room.gameState) {
+        return;
+      }
+
       await this.updateNoRuby();
       await this.save();
+      this.model.step = RobotStep.start;
+      this.waitUpdateRubyTime = 0;
     }
     console.warn("222 room %s step %s", this.room._id, this.model.step);
 
@@ -155,13 +164,6 @@ export class NewRobotManager {
 
   // 检查金豆情况
   async updateNoRuby() {
-    this.waitUpdateRubyTime++;
-    const random = Math.floor(Math.random() * 15 + 4);
-
-    if (this.waitUpdateRubyTime < random || this.room.gameState) {
-      return;
-    }
-
     for (let i = 0; i < this.room.players.length; i++) {
       const p = this.room.players[i];
       if (!p || !p.isRobot() || this.room.gameState) {
@@ -199,12 +201,7 @@ export class NewRobotManager {
       }
     }
 
-    console.warn("111 room %s waitUpdateRubyTime %s step %s", this.room._id, this.waitUpdateRubyTime, this.model.step);
-
-    this.waitUpdateRubyTime = 0;
-    this.model.step = RobotStep.start;
-
-    console.warn("222 room %s waitUpdateRubyTime %s step %s", this.room._id, this.waitUpdateRubyTime, this.model.step);
+    console.warn("room %s waitUpdateRubyTime %s step %s", this.room._id, this.waitUpdateRubyTime, this.model.step);
 
     return true;
   }
