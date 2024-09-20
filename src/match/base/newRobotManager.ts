@@ -389,6 +389,10 @@ export class NewRobotManager {
   async isHumanPlayerReady() {
     let index;
     let isOffline;
+
+    // 有在线用户没点下一局
+    this.waitKickOutTime++;
+
     for (const proxy of this.room.players) {
       if (!proxy) {
         continue;
@@ -398,9 +402,6 @@ export class NewRobotManager {
         // 在线用户且非机器人
         index = this.room.readyPlayers.findIndex((p: any) => p.toString() === proxy.model._id.toString());
         if (index === -1) {
-          // 有在线用户没点下一局
-          this.waitKickOutTime++;
-
           // 在线用户超过10秒没有点击继续就踢出局
           if (this.waitKickOutTime >= config.game.waitKickOutTime && ![GameType.ddz, GameType.zd].includes(this.room.gameRule.gameType)) {
             const playerIndex = this.room.players.findIndex(p => p._id.toString() === proxy.model._id.toString());
