@@ -33,7 +33,6 @@ export class MJRobotRmqProxy extends RobotRmqProxy {
 
   async choice(action) {
     if (this.playerState) {
-      console.warn("room %s action %s", this.room._id, action);
       const choiceFunc = async() => {
         await this.room.gameState.promptWithOther(
           action, this.playerState

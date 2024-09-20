@@ -3003,13 +3003,14 @@ class TableState implements Serializable {
           }
           // 抢金，如果庄家未操作，则机器人禁止操作
           if (qiangDatas.length > 0 && !flag) {
-            // console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
+            console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
             return;
           }
 
           // 如果机器人没有操作，则push到数组
           const xianQiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
           // 闲家可以三金倒
+          console.warn("includes-%s xianQiangDataIndex-%s sanJinDao-%s qiangJin-%s", this.qiangJinPlayer.includes(player._id.toString()), xianQiangDataIndex, this.qiangJinData[xianQiangDataIndex].sanJinDao, this.qiangJinData[xianQiangDataIndex].qiangJin);
           if (!this.qiangJinPlayer.includes(player._id.toString()) && xianQiangDataIndex !== -1 && this.qiangJinData[xianQiangDataIndex].sanJinDao) {
             this.qiangJinPlayer.push(player._id.toString());
             this.setQiangJinAction(player, Enums.sanJinDao);
