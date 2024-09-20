@@ -576,7 +576,7 @@ export class NewRobotManager {
         // console.log(`human player not ready`, this.room._id);
         return;
       }
-      console.warn("flag %s step %s", flag, this.model.step);
+      console.warn("room %s flag %s step %s", this.room._id, flag, this.model.step);
       if ((flag && this.room.isPublic) || !this.room.isPublic) {
         this.model.step = RobotStep.running;
       }
