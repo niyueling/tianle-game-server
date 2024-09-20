@@ -200,6 +200,8 @@ export class NewRobotManager {
       }
     }
 
+    console.warn("room %s waitUpdateRubyTime %s step %s", this.room._id, this.waitUpdateRubyTime, this.model.step);
+
     this.waitUpdateRubyTime = 0;
     this.model.step = RobotStep.start;
 
