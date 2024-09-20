@@ -642,7 +642,7 @@ class TableState implements Serializable {
 
     // 用户处于新手保护，并且非机器人
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
-    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && category.title === Enums.noviceProtection) {
+    if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && category.title === Enums.noviceProtection && this.room.isPublic) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
       console.warn("noviceProtection room %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
@@ -661,7 +661,7 @@ class TableState implements Serializable {
     }
 
     // 本局有新手进阶,并且不是进阶用户
-    if (isUpgrade && !player.isUpgrade) {
+    if (isUpgrade && !player.isUpgrade && this.room.isPublic) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
       console.warn("room upgrade %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
@@ -946,7 +946,7 @@ class TableState implements Serializable {
       const model = await service.playerService.getPlayerModel(p._id);
 
       // 判断是否升级场次
-      if (category.title === Enums.AdvancedTitle) {
+      if (this.room.isPublic && category.title === Enums.AdvancedTitle) {
         if (!model.gameUpgrade[GameType.xmmj]) {
           model.gameUpgrade[GameType.xmmj] = 0;
           if (!model.robot) {
