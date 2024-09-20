@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
+import {ConsumeLogType, GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
@@ -23,6 +23,8 @@ import {AuditManager} from "./auditManager";
 import Game from './game'
 import {RobotManager} from "./robotManager";
 import TableState, {stateGameOver} from "./table_state"
+import {service} from "../../service/importService";
+import Enums from "../majiang/enums";
 
 const ObjectId = mongoose.Types.ObjectId
 const gameType = GameType.xmmj;
@@ -1055,6 +1057,9 @@ class Room extends RoomBase {
     // 更新玩家位置
     await this.updatePosition();
 
+    // 判断机器人是否需要补充金豆
+    await this.updateNoRuby();
+
     this.gameState.dissolve();
     this.gameState = null;
     this.readyPlayers = [];
@@ -1066,6 +1071,22 @@ class Room extends RoomBase {
       this.players.forEach(x => x && this.leave(x, true));
       this.emit('empty', this.disconnected);
     }
+  }
+
+  async updateNoRuby() {
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      if (!p || !p.isRobot()) {
+        continue;
+      }
+
+      const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
+      if (resp.isNeedRuby || resp.isUpgrade) {
+        this.broadcast('resource/updateGold', {ok: true, data: {index: i, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
+      }
+    }
+
+    return true;
   }
 
   allOverMessage(): any {
