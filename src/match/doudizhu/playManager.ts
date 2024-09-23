@@ -151,6 +151,7 @@ export class PlayManager {
     for (const matcher of this.allowPattern) {
       const result = matcher.promptWithPattern(pattern, remainCards);
       if (result.length > 0) {
+        // 如果上一个出牌的是队友，并且队友出炸弹，则不吃
         if (pattern.name === PatterNames.bomb && mode === lastPlayerMode) {
           continue;
         }
@@ -158,7 +159,7 @@ export class PlayManager {
         prompts.push(...result);
       }
     }
-    // 没有相同牌型，可以出炸
+    // 上一个不是队友，并且没有相同牌型可吃，可以出炸
     if (pattern.name !== PatterNames.bomb && mode !== lastPlayerMode) {
       for (const matcher of this.boomPattern) {
         const result = matcher.promptWithPattern({ name: PatterNames.bomb, score: 0, cards: null }, remainCards);
@@ -170,20 +171,23 @@ export class PlayManager {
 
     // 如果上家不是队友打出大牌，则必吃牌。
     if (mode === lastPlayerMode) {
-      return this.checkCardIsTeamMate(prompts);
+      return this.checkCardIsTeamMate(prompts, remainCards);
     }
 
     return prompts;
   }
 
   // 如果是队友打的K以上大牌，则放弃吃牌
-  checkCardIsTeamMate(prompts) {
+  checkCardIsTeamMate(prompts, remainCards) {
     const possibles = [];
     for (let i = 0; i < prompts.length; i++) {
       const cards = prompts[i];
-      // console.warn("prompts-%s", JSON.stringify(prompts[i]));
 
-      if (cards[0].point < CardTag.hk) {
+      // 判断吃这个牌后游戏是否能结束
+      const remainingCardsCopy = remainCards.slice();
+      const remainingCardsSlice = arraySubtract(remainingCardsCopy, cards);
+
+      if (cards[0].point < CardTag.hk || remainingCardsSlice.length === 0) {
         possibles.push(cards);
       }
     }
@@ -284,10 +288,8 @@ export class PlayManager {
 
   // 从所有出牌选择单牌最少的选择
   getPossibleResultCard(allPossibles) {
-    // console.warn("allPossibles-%s", JSON.stringify(allPossibles));
     const bestPlay = this.findBestFirstPlay(allPossibles);
     if (bestPlay) {
-      // console.warn("Best first play-%s", JSON.stringify(bestPlay.data));
       return bestPlay.data; // 返回单张数量最少的牌型
     }
 
@@ -309,10 +311,6 @@ export class PlayManager {
       return undefined; // 没有可用的牌型
     }
 
-    // console.warn("----------111--------------");
-    // console.warn(allPossibles);
-    // console.warn("----------111--------------");
-
     // 首先找到simpleCount最小的值
     const minSimpleCount = Math.min(...allPossibles.map(p => p.simpleCount));
 
@@ -321,12 +319,8 @@ export class PlayManager {
 
     // 根据name进行排序
     bestPlays.sort(this.compareNames);
-    // console.warn("----------222--------------");
-    // console.warn(bestPlays);
-    // console.warn("----------222--------------");
 
     // 取第一个
-    // console.warn("Best first play-%s: %s", firstBestPlay.name, JSON.stringify(firstBestPlay.data));
     return bestPlays[0]; // 返回第一个单牌数量最少且按name排序的牌型
   }
 
