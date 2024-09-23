@@ -40,14 +40,14 @@ export default class QuadruplePlusXMatcher implements IMatcher {
     }
     const sortedQuad = groupBy(cards.filter(c => c.point > target.score), c => c.point)
       .filter(grp => grp.length === 4).sort((grp1, grp2) => grp1[0].point - grp2[0].point);
-    const quad = sortedQuad[0];
-    const reset = arraySubtract(cards, quad);
-    const grps = groupBy(reset, c => c.point).filter(grp => grp.length === 2).sort(lengthFirstThenPointGroupComparator);
-    console.warn("grps %s", JSON.stringify(grps));
-    if (grps.length >= 2) {
-      // 选择任意两对
-      const selectedPairs = grps.slice(0, 2);
-      return [[...quad, ...flatten(selectedPairs)]];
+    if (sortedQuad.length) {
+      const reset = arraySubtract(cards, sortedQuad[0]);
+      const grps = groupBy(reset, c => c.point).filter(grp => grp.length === 2).sort(lengthFirstThenPointGroupComparator);
+      if (grps.length >= 2) {
+        // 选择任意两对
+        const selectedPairs = grps.slice(0, 2);
+        return [[...sortedQuad[0], ...flatten(selectedPairs)]];
+      }
     }
 
     return [];
