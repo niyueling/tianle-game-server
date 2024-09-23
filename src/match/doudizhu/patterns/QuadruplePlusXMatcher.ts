@@ -5,10 +5,10 @@ import {
 
 // 4带2
 export default class QuadruplePlusTwo implements IMatcher {
-  name: string = PatterNames.quadPlus2;
+  name: string = PatterNames.quadPlusX;
   verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     // 四带二对子或者四带2单张
-    if (cards.length !== 6) {
+    if (cards.length !== 8) {
       return null;
     }
 
@@ -18,17 +18,18 @@ export default class QuadruplePlusTwo implements IMatcher {
       const quad = quads[0];
       const remainingCards = arraySubtract(cards, quad);
 
-      // 检查剩余牌是否可以组成两对或四张单牌
-      if (remainingCards.length === 2) {
-        // 如果剩余2张，检查是否为一对
-        return {
-          name: this.name,
-          score: quad[0].point,
-          cards: [...quad, ...remainingCards]
-        };
+      // 检查剩余牌是否可以组成两对
+      if (remainingCards.length === 4) {
+        const pairs = groupBy(remainingCards, c => c.point).filter(g => g.length === 2);
+        if (pairs.length === 2) {
+          return {
+            name: this.name,
+            score: quad[0].point,
+            cards: [...quad, ...remainingCards]
+          };
+        }
       }
     }
-
     return null;
   }
 
@@ -43,10 +44,14 @@ export default class QuadruplePlusTwo implements IMatcher {
     return sortedQuad
       .map(quad => {
         const reset = arraySubtract(cards, quad)
-        const grps = groupBy(reset, c => c.point)
-          .sort(lengthFirstThenPointGroupComparator)
-        const two = flatten(grps.slice(0, 2)).slice(0, 2)
-        return [...quad, ...two]
+        const grps = groupBy(reset, c => c.point).filter(grp => grp.length === 2)
+          .sort(lengthFirstThenPointGroupComparator);
+        console.warn("grps %s", JSON.stringify(grps));
+        if (grps.length >= 2) {
+          // 选择任意两对
+          const selectedPairs = grps.slice(0, 2);
+          return [...quad, ...flatten(selectedPairs)]
+        }
       })
       .filter(grp => {
         return this.verify(grp).score > target.score

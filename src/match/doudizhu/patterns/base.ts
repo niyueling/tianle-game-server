@@ -46,6 +46,8 @@ export const PatterNames = {
   quadPlus3: 'quadruple+++',
   // 4带2
   quadPlus2: 'quadruple++',
+  // 4带2对
+  quadPlusX: 'quadrupleX',
 }
 
 export interface IMatcher {

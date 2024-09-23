@@ -3,6 +3,7 @@ import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames} from "./pattern
 import BombMatcher from "./patterns/BombMatcher";
 import DoubleMatcher from "./patterns/DoubleMatcher";
 import QuadruplePlusTwo from "./patterns/QuadruplePlusTwo";
+import QuadruplePlusXMatcher from "./patterns/QuadruplePlusXMatcher";
 import SingleMatcher from "./patterns/SingleMatcher";
 import StraightDoublesMatcher from "./patterns/StraightDoublesMatcher";
 import StraightMatcher from "./patterns/StraightMatcher";
@@ -205,6 +206,7 @@ export class PlayManager {
       new SingleMatcher(),// 单张
       new DoubleMatcher(), // 对子
       new QuadruplePlusTwo(), // 4带二
+      new QuadruplePlusXMatcher(), // 4带二对
       new BombMatcher(), // 炸弹
     ];
     this.boomPattern = [ new BombMatcher() ];
@@ -307,9 +309,9 @@ export class PlayManager {
       return undefined; // 没有可用的牌型
     }
 
-    console.warn("----------111--------------");
-    console.warn(allPossibles);
-    console.warn("----------111--------------");
+    // console.warn("----------111--------------");
+    // console.warn(allPossibles);
+    // console.warn("----------111--------------");
 
     // 首先找到simpleCount最小的值
     const minSimpleCount = Math.min(...allPossibles.map(p => p.simpleCount));
