@@ -2,6 +2,7 @@ import Card from "../card";
 import {
   arraySubtract, flatten, groupBy, IMatcher, IPattern, lengthFirstThenPointGroupComparator, PatterNames,
 } from "./base";
+import Enums from "../enums";
 
 // 4带2
 export default class QuadruplePlusXMatcher implements IMatcher {
@@ -37,26 +38,18 @@ export default class QuadruplePlusXMatcher implements IMatcher {
     if (target.name !== this.name || cards.length < 6) {
       return []
     }
-    const sortedQuad = groupBy(cards, c => c.point)
-      .filter(grp => grp.length === 4)
-      .sort((grp1, grp2) => grp1[0].point - grp2[0].point)
+    const sortedQuad = groupBy(cards.filter(c => c.point > target.score), c => c.point)
+      .filter(grp => grp.length === 4).sort((grp1, grp2) => grp1[0].point - grp2[0].point);
+    const quad = sortedQuad[0];
+    const reset = arraySubtract(cards, quad);
+    const grps = groupBy(reset, c => c.point).filter(grp => grp.length === 2).sort(lengthFirstThenPointGroupComparator);
+    console.warn("grps %s", JSON.stringify(grps));
+    if (grps.length >= 2) {
+      // 选择任意两对
+      const selectedPairs = grps.slice(0, 2);
+      return [[...quad, ...flatten(selectedPairs)]];
+    }
 
-    return sortedQuad
-      .map(quad => {
-        const reset = arraySubtract(cards, quad)
-        const grps = groupBy(reset, c => c.point).filter(grp => grp.length === 2)
-          .sort(lengthFirstThenPointGroupComparator);
-        console.warn("grps %s", JSON.stringify(grps));
-        if (grps.length >= 2) {
-          // 选择任意两对
-          const selectedPairs = grps.slice(0, 2);
-          return [...quad, ...flatten(selectedPairs)]
-        }
-
-        return [];
-      })
-      .filter(grp => {
-        return this.verify(grp).score > target.score
-      })
+    return [];
   }
 }
