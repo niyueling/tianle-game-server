@@ -52,6 +52,8 @@ export default class QuadruplePlusXMatcher implements IMatcher {
           const selectedPairs = grps.slice(0, 2);
           return [...quad, ...flatten(selectedPairs)]
         }
+
+        return [];
       })
       .filter(grp => {
         return this.verify(grp).score > target.score
