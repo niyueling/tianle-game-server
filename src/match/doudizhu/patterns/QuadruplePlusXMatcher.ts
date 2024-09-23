@@ -4,7 +4,7 @@ import {
 } from "./base";
 
 // 4带2
-export default class QuadruplePlusTwo implements IMatcher {
+export default class QuadruplePlusXMatcher implements IMatcher {
   name: string = PatterNames.quadPlusX;
   verify(cards: Card[], allCards: Card[] = []): IPattern | null {
     // 四带二对子
