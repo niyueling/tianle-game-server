@@ -7,7 +7,7 @@ import {
 export default class QuadruplePlusTwo implements IMatcher {
   name: string = PatterNames.quadPlus2;
   verify(cards: Card[], allCards: Card[] = []): IPattern | null {
-    // 四带二对子或者四带2单张
+    // 四带2单张
     if (cards.length !== 6) {
       return null;
     }
