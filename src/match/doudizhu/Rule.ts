@@ -41,8 +41,7 @@ class Rule {
 
   // 是否允许加倍
   get allowDouble() {
-    // return this.ro.allowDouble || true;
-    return false;
+    return this.ro.allowDouble || true;
   }
 
   // 是否允许明牌(完成)
