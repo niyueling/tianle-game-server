@@ -12,9 +12,11 @@ import {PlayManager} from "./playManager";
 import Room from './room'
 import Rule from './Rule'
 import GameCardRecord from "../../database/models/gameCardRecord";
-import {GameType, TianleErrorCode} from "@fm/common/constants";
+import {GameType, shopPropType, TianleErrorCode} from "@fm/common/constants";
 import enums from "./enums";
 import GameCategory from "../../database/models/gameCategory";
+import GoodsProp from "../../database/models/GoodsProp";
+import PlayerProp from "../../database/models/PlayerProp";
 
 const stateWaitMultiple = 2 // 翻倍
 const stateWaitDa = 3 // 对局中
@@ -182,13 +184,41 @@ abstract class Table implements Serializable {
         player: p._id, shortId: p.model.shortId, username: p.model.name, cardLists: initCards, createAt: new Date(),
         room: this.room._id, juIndex: this.room.game.juIndex, game: GameType.ddz
       });
-      p.onShuffle(this.restJushu, initCards, i, this.room.game.juIndex, needShuffle, allPlayerCards)
+      // 判断是否使用记牌器
+      const cardRecorderStatus = await this.getCardRecorder(p);
+      p.onShuffle(this.restJushu, initCards, i, this.room.game.juIndex, needShuffle, allPlayerCards, cardRecorderStatus)
     }
 
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
       await this.room.payRubyForStart();
     }
+  }
+
+  async getCardRecorder(player) {
+    const cardRecorder = await GoodsProp.find({propType: shopPropType.jiPaiQi}).lean();
+    if (!cardRecorder || !this.rule.useRecorder) {
+      return false;
+    }
+
+    cardRecorder.isHave = false;
+    cardRecorder.times = 0;
+    cardRecorder.number = 0;
+
+    const playerProp = await PlayerProp.findOne({playerId: player._id, propId: cardRecorder.propId});
+
+    if (playerProp) {
+      // 用户是否拥有该道具
+      cardRecorder.isHave = playerProp.times === -1 || playerProp.times >= new Date().getTime();
+      // 道具有效期
+      cardRecorder.times = playerProp.times === -1 || playerProp.times >= new Date().getTime() ? playerProp.times : null;
+    }
+
+    cardRecorder.payType === 1 ? delete cardRecorder.number : delete cardRecorder.times;
+
+    return !!(cardRecorder.isHave && playerProp.times);
+
+
   }
 
   removeRoomListener() {

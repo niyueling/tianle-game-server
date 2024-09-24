@@ -34,7 +34,7 @@ class Rule {
     return this.ro.luckyReward || 0
   }
 
-  // 封顶倍数
+  // 封顶倍数(完成)
   get capping() {
     return this.ro.capping || -1;
   }
@@ -44,22 +44,22 @@ class Rule {
     return this.ro.allowDouble || true;
   }
 
-  // 是否允许明牌
+  // 是否允许明牌(完成)
   get allowopenCard() {
     return this.ro.allowopenCard || true;
   }
 
-  // 是否使用记牌器
+  // 是否使用记牌器()
   get useRecorder() {
     return this.ro.useRecorder || true;
   }
 
-  // 是否剩余三张才显示牌数
+  // 是否剩余三张才显示牌数(客户端内容)
   get remainCard3() {
     return this.ro.remainCard3 || true;
   }
 
-  // 双王/4个二必叫
+  // 双王/4个二必叫(完成)
   get mustCallLandlord() {
     return this.ro.mustCallLandlord || true;
   }
