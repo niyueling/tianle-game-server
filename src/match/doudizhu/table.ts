@@ -206,7 +206,7 @@ abstract class Table implements Serializable {
     let times = 0;
 
     const playerProp = await PlayerProp.findOne({playerId: player._id.toString(), propId: cardRecorder.propId});
-    console.warn("playerProp %s", JSON.stringify(playerProp));
+    console.warn("_id %s propId %s playerProp %s", player._id.toString(), cardRecorder.propId, JSON.stringify(playerProp));
 
     if (playerProp) {
       // 用户是否拥有该道具
