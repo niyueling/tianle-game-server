@@ -49,7 +49,7 @@ class Rule {
     return this.ro.allowopenCard || true;
   }
 
-  // 是否使用记牌器()
+  // 是否使用记牌器(完成)
   get useRecorder() {
     return this.ro.useRecorder || true;
   }

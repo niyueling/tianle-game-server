@@ -504,7 +504,6 @@ abstract class Table implements Serializable {
       return ;
     }
 
-    // console.warn("nextSeatIndex-%s, roomId-%s, juIndex-%s, status-%s, state-%s", this.currentPlayerStep, this.room._id, this.room.game.juIndex, JSON.stringify(this.status), this.state);
     let mode = msg.mode;
     if (mode === enums.landlord) {
       // 如果用户已经选择叫地主，则重置其他用户为农民
@@ -576,22 +575,39 @@ abstract class Table implements Serializable {
       this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
       this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, landlordCards: cards, multiple: this.players[firstLandlordIndex].multiple}});
 
-      //设置状态为选择翻倍
-      this.state = stateWaitMultiple;
-      // 设置用户为不托管
-      this.players.map(p => p.onDeposit = false);
+      if (this.rule.allowDouble) {
+        //设置状态为选择翻倍
+        this.state = stateWaitMultiple;
+        // 设置用户为不托管
+        this.players.map(p => p.onDeposit = false);
 
-      const startDaFunc = async() => {
-        this.status.current.seatIndex = this.players[firstLandlordIndex].index;
+        const startDaFunc = async() => {
+          this.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
-        // 下发开始翻倍消息
-        this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
+          // 下发开始翻倍消息
+          this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
 
-        // 托管状态自动选择不翻倍
-        this.players.map(p => p.emitter.emit(enums.waitForPlayerChooseMultiple));
+          // 托管状态自动选择不翻倍
+          this.players.map(p => p.emitter.emit(enums.waitForPlayerChooseMultiple));
+        }
+
+        setTimeout(startDaFunc, 500);
+      } else {
+        //设置状态为对局中
+        this.state = stateWaitDa;
+        // 设置用户为不托管
+        this.players.map(p => p.onDeposit = false);
+
+        const startDaFunc = async() => {
+          this.status.current.seatIndex = this.players[firstLandlordIndex].index;
+
+          this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
+          this.players[this.currentPlayerStep].emitter.emit('waitForDa');
+        }
+
+        setTimeout(startDaFunc, 500);
       }
 
-      setTimeout(startDaFunc, 500);
       return ;
     }
 
@@ -775,22 +791,39 @@ abstract class Table implements Serializable {
         this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
         this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, multiple: this.players[firstLandlordIndex].multiple, landlordCards: cards}});
 
-        //设置状态为选择翻倍
-        this.state = stateWaitMultiple;
-        // 设置用户为不托管
-        this.players.map(p => p.onDeposit = false);
+        if (this.rule.allowDouble) {
+          //设置状态为选择翻倍
+          this.state = stateWaitMultiple;
+          // 设置用户为不托管
+          this.players.map(p => p.onDeposit = false);
 
-        const startDaFunc = async() => {
-          this.status.current.seatIndex = this.players[firstLandlordIndex].index;
+          const startDaFunc = async() => {
+            this.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
-          // 下发开始翻倍消息
-          this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
+            // 下发开始翻倍消息
+            this.room.broadcast('game/startChooseMultiple', {ok: true, data: {}});
 
-          // 托管状态自动选择不翻倍
-          this.players.map(p => p.emitter.emit(enums.waitForPlayerChooseMultiple));
+            // 托管状态自动选择不翻倍
+            this.players.map(p => p.emitter.emit(enums.waitForPlayerChooseMultiple));
+          }
+
+          setTimeout(startDaFunc, 500);
+        } else {
+          //设置状态为对局中
+          this.state = stateWaitDa;
+          // 设置用户为不托管
+          this.players.map(p => p.onDeposit = false);
+
+          const startDaFunc = async() => {
+            this.status.current.seatIndex = this.players[firstLandlordIndex].index;
+
+            this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
+            this.players[this.currentPlayerStep].emitter.emit('waitForDa');
+          }
+
+          setTimeout(startDaFunc, 500);
         }
 
-        setTimeout(startDaFunc, 500);
         return ;
       }
 
