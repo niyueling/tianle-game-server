@@ -205,7 +205,7 @@ abstract class Table implements Serializable {
     let isHave = false;
     let times = 0;
 
-    const playerProp = await PlayerProp.findOne({playerId: player._id, propId: cardRecorder.propId});
+    const playerProp = await PlayerProp.findOne({playerId: player._id.toString(), propId: cardRecorder.propId});
     console.warn("playerProp %s", JSON.stringify(playerProp));
 
     if (playerProp) {
