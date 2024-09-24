@@ -1096,6 +1096,40 @@ abstract class Table implements Serializable {
     }
     return []
   }
+
+  // 根据出牌模式出牌
+  promptWithPattern(player: PlayerState) {
+    // 下家保单, 出最大的牌
+    if (this.isNextPlayerHasOneCard(player) &&
+      this.status.lastPattern.name === PatterNames.single) {
+      const card = player.cards.sort((c1, c2) => c2.point - c1.point)[0];
+      const cards = [card];
+      if (patternCompare(this.playManager.getPatternByCard(cards, player.cards),
+        this.room.gameState.status.lastPattern) > 0) {
+        // 比它大,可以出
+        return cards;
+      }
+    } else {
+      const cardList = this.playManager.getCardByPattern(this.status.lastPattern, player.cards, player.mode, this.status.lastPlayerMode)
+      if (cardList.length > 0) {
+        for (const cards of cardList) {
+          if (patternCompare(this.playManager.getPatternByCard(cards, player.cards),
+            this.room.gameState.status.lastPattern) > 0) {
+            // 比它大,可以出
+            return cards;
+          }
+        }
+      }
+    }
+    return [];
+  }
+
+  // 下家保单
+  isNextPlayerHasOneCard(player: PlayerState) {
+    const nextIndex = (player.index + 1) % this.players.length
+    const nextPlayer = this.players[nextIndex];
+    return nextPlayer && nextPlayer.cards.length === 1
+  }
 }
 
 export default Table

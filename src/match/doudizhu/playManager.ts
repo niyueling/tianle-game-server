@@ -259,11 +259,27 @@ export class PlayManager {
     }
 
     // 没有牌能出
-    return [cards[0]];
+    return [];
   }
 
   checkCardIsBomb(cards: Card[], chooseCards: Card[]) {
     let flag = true;
+    let isBoom = false;
+    const card = chooseCards[0];
+
+    if (card.type !== CardType.Joker) {
+      const valueCount = chooseCards.filter(c => c.point === card.point).length;
+      if (chooseCards.length === 4 && valueCount === 4) {
+        return true;
+      }
+    }
+
+    if (card.type === CardType.Joker) {
+      const valueCount = chooseCards.filter(c => c.type === CardType.Joker).length;
+      if (chooseCards.length === 2 && valueCount === 2) {
+        return true;
+      }
+    }
 
     for (let i = 0; i < chooseCards.length; i++) {
       const card = chooseCards[i];
