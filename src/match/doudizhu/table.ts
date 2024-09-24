@@ -328,10 +328,6 @@ abstract class Table implements Serializable {
       player.recordBomb(pattern);
       // 添加炸弹次数
       this.audit.addBoomTime(player.model.shortId);
-      // 倍数翻倍
-      if (this.rule.capping !== -1) {
-
-      }
       this.players.map(p => {
         p.multiple *= 2;
         p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}});

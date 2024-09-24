@@ -114,6 +114,11 @@ class PlayerState implements Serializable {
   @autoSerialize
   foundFriend: boolean = false
 
+  // 已经出掉的牌
+  @autoSerialize
+  dropped: any[]
+
+
   constructor(userSocket, room, rule, isHelp = false) {
     this.room = room
     this.zhuang = false
@@ -125,6 +130,7 @@ class PlayerState implements Serializable {
     this.helpInfo = {}
     this.rateLevel = {}
     this.cards = []
+    this.dropped = [];
     this.score = room.getScoreBy(userSocket)
     this.disconnectCallBack = player => {
       if (player === this.msgDispatcher) {
@@ -195,6 +201,7 @@ class PlayerState implements Serializable {
     this.cards = removeCard(this.cards, daCards)
     this.lastPattern = pattern
     this.lastAction = 'da'
+    this.dropped.push(daCards)
     this.clearDepositTask()
     this.record('da', daCards)
   }
@@ -282,6 +289,7 @@ class PlayerState implements Serializable {
       index: this.index,
       zhuaFen: this.zhuaFen,
       ip: this.ip,
+      dropped: this.dropped,
       score: this.room.getScoreBy(this._id),
       remains: this.cards.length,
       lastPattern: this.lastPattern,
