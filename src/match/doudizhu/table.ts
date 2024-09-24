@@ -196,7 +196,7 @@ abstract class Table implements Serializable {
   }
 
   async getCardRecorder(player) {
-    const cardRecorder = await GoodsProp.find({propType: shopPropType.jiPaiQi}).lean();
+    const cardRecorder = await GoodsProp.findOne({propType: shopPropType.jiPaiQi}).lean();
     console.warn("useRecorder %s cardRecorder %s", this.rule.useRecorder, JSON.stringify(cardRecorder));
     if (!cardRecorder || !this.rule.useRecorder) {
       return false;
