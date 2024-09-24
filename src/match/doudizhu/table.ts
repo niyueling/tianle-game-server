@@ -202,24 +202,21 @@ abstract class Table implements Serializable {
       return false;
     }
 
-    cardRecorder.isHave = false;
-    cardRecorder.times = 0;
-    cardRecorder.number = 0;
+    let isHave = false;
+    let times = 0;
 
     const playerProp = await PlayerProp.findOne({playerId: player._id, propId: cardRecorder.propId});
 
     if (playerProp) {
       // 用户是否拥有该道具
-      cardRecorder.isHave = playerProp.times === -1 || playerProp.times >= new Date().getTime();
+      isHave = playerProp.times === -1 || playerProp.times >= new Date().getTime();
       // 道具有效期
-      cardRecorder.times = playerProp.times === -1 || playerProp.times >= new Date().getTime() ? playerProp.times : null;
+      times = playerProp.times === -1 || playerProp.times >= new Date().getTime() ? playerProp.times : null;
     }
 
-    cardRecorder.payType === 1 ? delete cardRecorder.number : delete cardRecorder.times;
+    console.warn("isHave %s times %s", isHave, times);
 
-    console.warn("cardRecorder %s", JSON.stringify(cardRecorder));
-
-    return !!(cardRecorder.isHave && playerProp.times);
+    return !!(isHave && times);
 
 
   }
