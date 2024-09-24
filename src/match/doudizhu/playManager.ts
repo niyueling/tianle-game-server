@@ -259,7 +259,7 @@ export class PlayManager {
     }
 
     // 没有牌能出
-    return [];
+    return [cards[0]];
   }
 
   checkCardIsBomb(cards: Card[], chooseCards: Card[]) {
@@ -310,6 +310,7 @@ export class PlayManager {
 
   findBestFirstPlay(allPossibles: { simpleCount: number, name: string, data: Card[] }[]): { simpleCount: number, name: string, data: Card[] } | undefined {
     if (allPossibles.length === 0) {
+      console.warn("allPossibles is empty");
       return undefined; // 没有可用的牌型
     }
 
