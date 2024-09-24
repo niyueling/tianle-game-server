@@ -842,6 +842,7 @@ abstract class Table implements Serializable {
       if (cIndex === -1 && landlordCount > 1) {
         if (firstLandlordIndex !== -1) {
           nextPlayer = firstLandlordIndex;
+          this.status.current.seatIndex = nextPlayer;
           this.callLandlordStatus = true;
         }
       }
