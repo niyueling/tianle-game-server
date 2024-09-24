@@ -851,7 +851,7 @@ abstract class Table implements Serializable {
         this.room.broadcast('game/startChooseMode', {ok: true, data: {index: nextPlayer}})
         nextPlayerState.emitter.emit(enums.waitForPlayerChooseMode);
 
-        console.warn("deposit nextPlayer-%s", nextPlayer);
+        console.warn("deposit nextPlayer-%s currentPlayerStep-%s", nextPlayer, this.currentPlayerStep);
       }
     })
   }

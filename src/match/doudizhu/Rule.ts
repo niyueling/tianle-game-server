@@ -19,7 +19,7 @@ class Rule {
   }
 
   get test() {
-    return this.ro.test || true
+    return this.ro.test || false
   }
 
   get playerCount() {
@@ -41,22 +41,22 @@ class Rule {
 
   // 是否允许加倍
   get allowDouble() {
-    return this.ro.allowDouble || true;
+    return this.ro.allowDouble;
   }
 
   // 是否允许明牌(完成)
   get allowopenCard() {
-    return this.ro.allowopenCard || true;
+    return this.ro.allowopenCard;
   }
 
   // 是否使用记牌器(完成)
   get useRecorder() {
-    return this.ro.useRecorder || true;
+    return this.ro.useRecorder;
   }
 
   // 是否剩余三张才显示牌数(客户端内容)
   get remainCard3() {
-    return this.ro.remainCard3 || true;
+    return this.ro.remainCard3;
   }
 
   // 双王/4个二必叫(完成)
