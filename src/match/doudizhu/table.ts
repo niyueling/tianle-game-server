@@ -197,7 +197,6 @@ abstract class Table implements Serializable {
 
   async getCardRecorder(player) {
     const cardRecorder = await GoodsProp.findOne({propType: shopPropType.jiPaiQi}).lean();
-    console.warn("useRecorder %s cardRecorder %s", this.rule.useRecorder, JSON.stringify(cardRecorder));
     if (!cardRecorder || !this.rule.useRecorder) {
       return false;
     }
@@ -206,7 +205,6 @@ abstract class Table implements Serializable {
     let times = 0;
 
     const playerProp = await PlayerProp.findOne({playerId: player._id.toString(), propId: cardRecorder.propId});
-    console.warn("_id %s propId %s playerProp %s", player._id.toString(), cardRecorder.propId, JSON.stringify(playerProp));
 
     if (playerProp) {
       // 用户是否拥有该道具
@@ -214,8 +212,6 @@ abstract class Table implements Serializable {
       // 道具有效期
       times = playerProp.times === -1 || playerProp.times >= new Date().getTime() ? playerProp.times : null;
     }
-
-    console.warn("isHave %s times %s", isHave, times);
 
     return !!(isHave && times);
 
