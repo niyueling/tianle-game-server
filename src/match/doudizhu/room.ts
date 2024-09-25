@@ -762,26 +762,6 @@ class Room extends RoomBase {
     this.listenOn.forEach(name => player.socket.removeAllListeners(name))
   }
 
-  canDissolve() {
-    if (this.dissolveReqInfo.length === 0) {
-      return false
-    }
-
-    const onLinePlayer = this.dissolveReqInfo
-      .filter(reqInfo => {
-        const id = reqInfo._id
-        return !this.disconnected.some(item => item[0] === id)
-      })
-    const agreeReqs = onLinePlayer.filter(reqInfo => reqInfo.type === 'agree'
-      || reqInfo.type === 'originator' || reqInfo.type === 'agree_offline')
-
-    if (onLinePlayer.length <= 2) {
-      return agreeReqs.length === 2;
-    }
-
-    return agreeReqs.length > 0 && agreeReqs.length + 1 >= onLinePlayer.length
-  }
-
   // 检查是否要低分翻倍
   checkLowScore() {
     // 检查是否要低分翻倍
