@@ -88,7 +88,7 @@ export class CardManager {
         }
       }
 
-      console.warn("bombs-%s", JSON.stringify(bombs));
+      // console.warn("bombs-%s", JSON.stringify(bombs));
 
       for (let i = 0; i < playerCards.length; i++) {
         // 每个用户先发1-3个炸弹
@@ -113,9 +113,9 @@ export class CardManager {
 
           // 发放其他炸弹
           const randomIndex = Math.floor(Math.random() * bombs.length);
-          console.warn("randomIndex-%s, boomCard-%s", randomIndex, bombs[randomIndex]);
           for (let k = 0; k < 4; k++) {
             const cardIndex = newCardTags.findIndex(c => c === bombs[randomIndex] + k * 13);
+            console.warn("randomIndex-%s, boomCard-%s, card-%s, cardIndex-%s", randomIndex, bombs[randomIndex], bombs[randomIndex] + k * 13, cardIndex);
             if (cardIndex !== -1) {
               const card = newCardTags[cardIndex];
               newCardTags.splice(cardIndex, 1);
