@@ -12,7 +12,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       const groups = groupBy(cards, (card: Card) => card.point).sort((grp1, grp2) => {
         return grp2.length - grp1.length
       })
-      console.warn("triple++ groups-%s", JSON.stringify(groups));
+      // console.warn("triple++ groups-%s", JSON.stringify(groups));
       if (groups[0].length === 3) {
         if (groups.length > 2) {
           return null;
@@ -44,7 +44,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       const triple = group.slice(0, 3);
       const remainingCards = arraySubtract(cards, triple);
       const leftGroupedByPoint = groupBy(remainingCards, c => c.point).filter(grp1 => grp1.length >= 2).sort(lengthFirstThenPointGroupComparator);
-      console.warn("triple-%s, leftCards-%s", JSON.stringify(triple), JSON.stringify(leftGroupedByPoint));
+      console.warn("targetName-%s, name-%s, triple-%s, leftCards-%s", target.name, this.name, JSON.stringify(triple), JSON.stringify(leftGroupedByPoint));
 
       if (leftGroupedByPoint.length === 0) {
         // 如果没有足够的对子来匹配三个一组，则跳过当前的三张组合
