@@ -650,7 +650,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.dissolveTime = Date.now();
     this.dissolveReqInfo.push({
       type: 'originator',
-      name: simplePlayer.model.name,
+      name: simplePlayer.model.nickname,
       _id: simplePlayer.model._id
     })
     for (let i = 0; i < this.players.length; i++) {
@@ -658,13 +658,13 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       if (pp && pp.isRobot()) {
         this.dissolveReqInfo.push({
           type: 'offline',
-          name: pp.model.name,
+          name: pp.model.nickname,
           _id: pp.model._id
         })
       } else if (pp && pp !== simplePlayer) {
         this.dissolveReqInfo.push({
           type: 'waitConfirm',
-          name: pp.model.name,
+          name: pp.model.nickname,
           _id: pp.model._id
         })
       }
@@ -679,7 +679,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
           if (player && player.model._id === pp[0]) {
             this.dissolveReqInfo.push({
               type: 'offline',
-              name: player.model.name,
+              name: player.model.nickname,
               _id: player.model._id
             })
           }
