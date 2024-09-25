@@ -1344,6 +1344,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.chi, async (turn, card, shunZiList) => {
+      console.warn("index %s chi card %s", player.seatIndex, card);
       const cardList = shunZiList.filter(value => value !== card);
       const otherCard1 = cardList[0]
       const otherCard2 = cardList[1]
@@ -1484,6 +1485,7 @@ class TableState implements Serializable {
       await this.actionResolver.tryResolve()
     })
     player.on(Enums.gangByOtherDa, async (turn, card) => {
+      console.warn("index %s chi card %s", player.seatIndex, card);
       if (this.state !== stateWaitAction) {
         player.emitter.emit(Enums.guo, turn, card);
         return;
