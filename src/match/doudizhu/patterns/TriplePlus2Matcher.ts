@@ -51,7 +51,7 @@ export default class TriplePlus2Matcher implements IMatcher {
         continue; // 使用continue来跳过当前循环的剩余部分
       }
 
-      results.push([...triple, ...leftGroupedByPoint[0]]);
+      results.push([...triple, ...leftGroupedByPoint[0].slice(0, 2)]);
     }
 
     return results;
