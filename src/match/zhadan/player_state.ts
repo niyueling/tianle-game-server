@@ -334,7 +334,7 @@ class PlayerState implements Serializable {
   }
 
   deposit(callback) {
-    const minutes = 15 * 1000
+    let minutes = 15 * 1000
 
     // if (!this.canDeposit) {
     //   return
@@ -342,6 +342,13 @@ class PlayerState implements Serializable {
 
     if (!this.msgDispatcher) {
       return
+    }
+
+    if (!this.room.isPublic && !this.rule.ro.autoCommit) {
+      return ;
+    }
+    if (!this.room.isPublic && this.rule.ro.autoCommit) {
+      minutes = (this.rule.ro.autoCommit + 1) * 1000
     }
 
     if (!this.onDeposit) {

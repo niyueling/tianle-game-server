@@ -338,6 +338,14 @@ class PlayerState implements Serializable {
     let minutes = 5 * 1000;
     if (this.room.gameState && this.room.gameState.state === 3) {
       minutes = this.depositTime * 1000;
+
+      if (!this.room.isPublic && !this.rule.ro.autoCommit) {
+        return ;
+      }
+
+      if (!this.room.isPublic && this.rule.ro.autoCommit) {
+        minutes = (this.rule.ro.autoCommit + 1) * 1000
+      }
     }
 
     // 不在对局中不进入托管
