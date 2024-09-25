@@ -54,11 +54,12 @@ export class CardManager {
     // 为每个玩家创建空列表
     const playerCards = Array.from(new Array(this.playerCount), () => []);
     if (!isSorted) {
-      // 随机发牌
+      // 洗牌
       algorithm.shuffle(newCardTags);
-      let count = this.playerCardCount;
+
+      // 如果需要测试发牌，先发测试牌
       for (let i = 0; i < playerCards.length; i++) {
-        for (let j = 0; j < count; j++) {
+        for (let j = 0; j < this.playerCardCount; j++) {
           if (test && customCards[i] && customCards[i].length > j) {
             // 将指定发牌从牌堆中移除
             const cardIndex = newCardTags.findIndex(c => c === customCards[i][j]);
@@ -66,24 +67,18 @@ export class CardManager {
               const card = newCardTags[cardIndex];
               newCardTags.splice(cardIndex, 1);
               playerCards[i].push(card);
-            } else {
-              const card = newCardTags.pop();
-              playerCards[i].push(card);
             }
-          } else {
-            const card = newCardTags.pop();
-            playerCards[i].push(card);
           }
         }
       }
-      // while (count > 0) {
-      //   // 每个玩家取一张牌
-      //   for (const pc of playerCards) {
-      //     const card = newCardTags.pop();
-      //     pc.push(card);
-      //   }
-      //   count--;
-      // }
+
+      // 补发剩余牌
+      for (let i = 0; i < playerCards.length; i++) {
+        for (let j = playerCards[i].length; j < this.playerCardCount; j++) {
+          const card = newCardTags.pop();
+          playerCards[i].push(card);
+        }
+      }
     } else {
       // 将牌排序以后再发
       const randomList = this.orderCardTagBySameValue(newCardTags);
