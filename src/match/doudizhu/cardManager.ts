@@ -52,10 +52,10 @@ export class CardManager {
     let newCardTags = this.cardTags.slice();
     // 为每个玩家创建空列表
     const playerCards = Array.from(new Array(this.playerCount), () => []);
-    if (!isSorted) {
-      // 洗牌
-      algorithm.shuffle(newCardTags);
+    // 洗牌
+    algorithm.shuffle(newCardTags);
 
+    if (!isSorted) {
       // 如果需要测试发牌，先发测试牌
       for (let i = 0; i < playerCards.length; i++) {
         for (let j = 0; j < this.playerCardCount; j++) {
