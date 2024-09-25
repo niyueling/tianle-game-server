@@ -1485,7 +1485,7 @@ class TableState implements Serializable {
       await this.actionResolver.tryResolve()
     })
     player.on(Enums.gangByOtherDa, async (turn, card) => {
-      console.warn("index %s chi card %s", player.seatIndex, card);
+      console.warn("index %s gangByOtherDa card %s", player.seatIndex, card);
       if (this.state !== stateWaitAction) {
         player.emitter.emit(Enums.guo, turn, card);
         return;
