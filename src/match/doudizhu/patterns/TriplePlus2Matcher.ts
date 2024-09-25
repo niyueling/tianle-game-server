@@ -13,7 +13,7 @@ export default class TriplePlus2Matcher implements IMatcher {
         return grp2.length - grp1.length
       })
       console.warn("groups-%s", JSON.stringify(groups));
-      if (groups[0].length >= 3) {
+      if (groups[0].length === 3) {
         if (groups.length > 2) {
           return null;
         }
