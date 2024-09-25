@@ -119,10 +119,10 @@ export class CardManager {
             if (cardIndex !== -1) {
               const card = newCardTags[cardIndex];
               newCardTags.splice(cardIndex, 1);
-              bombs.splice(randomIndex, 1);
               playerCards[i].push(card);
             }
           }
+          bombs.splice(randomIndex, 1);
         }
 
         console.warn("index-%s, playerCards-%s", i, JSON.stringify(playerCards[i]));
