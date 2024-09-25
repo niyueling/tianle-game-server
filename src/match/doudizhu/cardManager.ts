@@ -1,4 +1,3 @@
-import {service} from "../../service/importService";
 import algorithm from "../../utils/algorithm";
 import Card, {CardTag, CardType, clubs, diamonds, hearts, spades} from "./card";
 
@@ -80,13 +79,60 @@ export class CardManager {
         }
       }
     } else {
-      // 将牌排序以后再发
-      const randomList = this.orderCardTagBySameValue(newCardTags);
+      // 计算炸弹
+      let bombs = [];
+      for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+        const cardCount = newCardTags.filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+        if (cardCount === 4) {
+          bombs.push(k);
+        }
+      }
+
+      // const randomList = this.orderCardTagBySameValue(newCardTags);
       for (let i = 0; i < this.playerCount; i++) {
-        playerCards[i] = randomList.slice(i * this.playerCardCount, (i + 1) * this.playerCardCount);
+        // 每个用户先发1-3个炸弹
+        const bombCount = Math.floor(Math.random() * 3);
+
+        for (let j = 0; j < bombCount; j++) {
+          const isJokerBoomb = Math.random() < 0.05;
+          const jokerBombCount = newCardTags.filter(c => c > CardTag.dk).length;
+
+          // 发放王炸
+          if (isJokerBoomb && jokerBombCount === 2) {
+            for (let k = CardTag.bigJoker; k <= CardTag.littleJoker; k++) {
+              const cardIndex = newCardTags.findIndex(c => c === k);
+              if (cardIndex !== -1) {
+                const card = newCardTags[cardIndex];
+                newCardTags.splice(cardIndex, 1);
+                playerCards[i].push(card);
+              }
+            }
+          }
+
+          // 发放其他炸弹
+          const randomIndex = Math.floor(Math.random() * bombs.length);
+          for (let k = 0; k < 4; k++) {
+            const cardIndex = newCardTags.findIndex(c => c === bombs[randomIndex] + k * 13);
+            if (cardIndex !== -1) {
+              const card = newCardTags[cardIndex];
+              newCardTags.splice(cardIndex, 1);
+              bombs.splice(randomIndex, 1);
+              playerCards[i].push(card);
+            }
+          }
+        }
+
+        // 补发剩余牌
+        for (let i = 0; i < playerCards.length; i++) {
+          for (let j = playerCards[i].length; j < this.playerCardCount; j++) {
+            const card = newCardTags.pop();
+            playerCards[i].push(card);
+          }
+        }
+        // playerCards[i] = randomList.slice(i * this.playerCardCount, (i + 1) * this.playerCardCount);
       }
       // 剩下的扑克
-      newCardTags = randomList.slice(this.playerCount * this.playerCardCount);
+      // newCardTags = randomList.slice(this.playerCount * this.playerCardCount);
     }
 
     this.remainCardTags = newCardTags;
