@@ -308,6 +308,7 @@ export class PlayManager {
   getPossibleResultCard(allPossibles) {
     const bestPlay = this.findBestFirstPlay(allPossibles);
     if (bestPlay) {
+      console.warn("bestPlay %s", JSON.stringify(bestPlay));
       return bestPlay.data; // 返回单张数量最少的牌型
     }
 
