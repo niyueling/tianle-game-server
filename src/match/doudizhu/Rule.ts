@@ -45,8 +45,8 @@ class Rule {
   }
 
   // 是否允许明牌(完成)
-  get allowopenCard() {
-    return this.ro.allowopenCard;
+  get allowOpenCard() {
+    return this.ro.allowOpenCard;
   }
 
   // 是否使用记牌器(完成)
@@ -61,7 +61,7 @@ class Rule {
 
   // 双王/4个二必叫(完成)
   get mustCallLandlord() {
-    return this.ro.mustCallLandlord || true;
+    return this.ro.mustCallLandlord;
   }
 
   // 炸弹是否计分

@@ -699,7 +699,7 @@ abstract class Table implements Serializable {
     if (this.currentPlayerStep === -1) {
       return ;
     }
-    if (!this.rule.allowopenCard) {
+    if (!this.rule.allowOpenCard) {
       player.sendMessage("game/openDealReply", {ok: false, info: TianleErrorCode.systemError});
     }
     player.isOpenCard = true;
