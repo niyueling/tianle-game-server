@@ -88,7 +88,6 @@ export class CardManager {
         }
       }
 
-      // const randomList = this.orderCardTagBySameValue(newCardTags);
       for (let i = 0; i < this.playerCount; i++) {
         // 每个用户先发1-3个炸弹
         const bombCount = Math.floor(Math.random() * 3);
@@ -121,18 +120,15 @@ export class CardManager {
             }
           }
         }
-
-        // 补发剩余牌
-        for (let i = 0; i < playerCards.length; i++) {
-          for (let j = playerCards[i].length; j < this.playerCardCount; j++) {
-            const card = newCardTags.pop();
-            playerCards[i].push(card);
-          }
-        }
-        // playerCards[i] = randomList.slice(i * this.playerCardCount, (i + 1) * this.playerCardCount);
       }
-      // 剩下的扑克
-      // newCardTags = randomList.slice(this.playerCount * this.playerCardCount);
+
+      // 补发剩余牌
+      for (let i = 0; i < playerCards.length; i++) {
+        for (let j = playerCards[i].length; j < this.playerCardCount; j++) {
+          const card = newCardTags.pop();
+          playerCards[i].push(card);
+        }
+      }
     }
 
     this.remainCardTags = newCardTags;
