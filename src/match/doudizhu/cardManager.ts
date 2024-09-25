@@ -97,7 +97,7 @@ export class CardManager {
         for (let j = 0; j < bombCount; j++) {
           const isJokerBomb = Math.random() < 0.05;
           const jokerBombCount = newCardTags.filter(c => c > CardTag.dk).length;
-          console.warn("isJokerBomb-%s, jokerBombCount-%s, status-%s", isJokerBomb, jokerBombCount, isJokerBomb && jokerBombCount === 2);
+          // console.warn("isJokerBomb-%s, jokerBombCount-%s, status-%s", isJokerBomb, jokerBombCount, isJokerBomb && jokerBombCount === 2);
 
           // 发放王炸
           if (isJokerBomb && jokerBombCount === 2) {
@@ -115,7 +115,7 @@ export class CardManager {
           const randomIndex = Math.floor(Math.random() * bombs.length);
           for (let k = 0; k < 4; k++) {
             const cardIndex = newCardTags.findIndex(c => c === bombs[randomIndex] + k * 13);
-            console.warn("randomIndex-%s, boomCard-%s, card-%s, cardIndex-%s", randomIndex, bombs[randomIndex], bombs[randomIndex] + k * 13, cardIndex);
+            // console.warn("randomIndex-%s, boomCard-%s, card-%s, cardIndex-%s", randomIndex, bombs[randomIndex], bombs[randomIndex] + k * 13, cardIndex);
             if (cardIndex !== -1) {
               const card = newCardTags[cardIndex];
               newCardTags.splice(cardIndex, 1);

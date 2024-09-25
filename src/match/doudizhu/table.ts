@@ -730,7 +730,7 @@ abstract class Table implements Serializable {
       const jokerCount =   player.cards.filter(c => c.type === CardType.Joker).length;
       const twoCount =   player.cards.filter(c => c.point === 15).length;
       const index = this.players.findIndex(p => p.mode === enums.landlord);
-      console.warn("mustCallLandlord %s jokerCount %s twoCount %s landlordIndex %s", this.rule.mustCallLandlord, jokerCount, twoCount, index);
+      // console.warn("mustCallLandlord %s jokerCount %s twoCount %s landlordIndex %s", this.rule.mustCallLandlord, jokerCount, twoCount, index);
       if (player.mode !== enums.farmer && (index === -1 || (this.rule.mustCallLandlord && (jokerCount === 2 || twoCount === 4)))) {
         mode = enums.landlord;
         this.callLandlord++;
