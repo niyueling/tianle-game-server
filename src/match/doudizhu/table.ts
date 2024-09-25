@@ -404,7 +404,7 @@ abstract class Table implements Serializable {
 
   async checkNextPlayerDa(index) {
     const nextPlayerState = this.players[index];
-    const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards, nextPlayerState.mode, this.status.lastPlayerMode);
+    const prompts = this.playManager.getPlayerCardByPattern(this.status.lastPattern, nextPlayerState.cards);
     return prompts.length > 0;
   }
 

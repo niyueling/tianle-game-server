@@ -177,6 +177,34 @@ export class PlayManager {
     return prompts;
   }
 
+  // 判断用户是否能吃牌
+  getPlayerCardByPattern(pattern: IPattern, remainCards: Card[]): Card[][] {
+    // 如果本轮轮到自己出牌
+    if (!pattern) {
+      const cards = this.firstPlayCard(remainCards);
+      return [cards];
+    }
+
+    const prompts = [];
+    for (const matcher of this.allowPattern) {
+      const result = matcher.promptWithPattern(pattern, remainCards);
+      if (result.length > 0) {
+        prompts.push(...result);
+      }
+    }
+    // 上一个不是队友，并且没有相同牌型可吃，可以出炸
+    if (pattern.name !== PatterNames.bomb) {
+      for (const matcher of this.boomPattern) {
+        const result = matcher.promptWithPattern({ name: PatterNames.bomb, score: 0, cards: null }, remainCards);
+        if (result.length > 0) {
+          prompts.push(...result);
+        }
+      }
+    }
+
+    return prompts;
+  }
+
   // 如果是队友打的K以上大牌，则放弃吃牌
   checkCardIsTeamMate(prompts, remainCards) {
     const possibles = [];
