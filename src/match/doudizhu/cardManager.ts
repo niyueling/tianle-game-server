@@ -92,7 +92,7 @@ export class CardManager {
 
       for (let i = 0; i < playerCards.length; i++) {
         // 每个用户先发1-3个炸弹
-        const bombCount = Math.floor(Math.random() * 3);
+        const bombCount = Math.floor(Math.random() * 3) + 1;
 
         for (let j = 0; j < bombCount; j++) {
           const isJokerBomb = Math.random() < 0.05;
