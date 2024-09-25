@@ -88,16 +88,19 @@ export class CardManager {
         }
       }
 
-      for (let i = 0; i < this.playerCount; i++) {
+      console.warn("bombs-%s", JSON.stringify(bombs));
+
+      for (let i = 0; i < playerCards.length; i++) {
         // 每个用户先发1-3个炸弹
         const bombCount = Math.floor(Math.random() * 3);
 
         for (let j = 0; j < bombCount; j++) {
-          const isJokerBoomb = Math.random() < 0.05;
+          const isJokerBomb = Math.random() < 0.05;
           const jokerBombCount = newCardTags.filter(c => c > CardTag.dk).length;
+          console.warn("isJokerBomb-%s, jokerBombCount-%s, status-%s", isJokerBomb, jokerBombCount, isJokerBomb && jokerBombCount === 2);
 
           // 发放王炸
-          if (isJokerBoomb && jokerBombCount === 2) {
+          if (isJokerBomb && jokerBombCount === 2) {
             for (let k = CardTag.bigJoker; k <= CardTag.littleJoker; k++) {
               const cardIndex = newCardTags.findIndex(c => c === k);
               if (cardIndex !== -1) {
@@ -110,6 +113,7 @@ export class CardManager {
 
           // 发放其他炸弹
           const randomIndex = Math.floor(Math.random() * bombs.length);
+          console.warn("randomIndex-%s, boomCard-%s", randomIndex, bombs[randomIndex]);
           for (let k = 0; k < 4; k++) {
             const cardIndex = newCardTags.findIndex(c => c === bombs[randomIndex] + k * 13);
             if (cardIndex !== -1) {
@@ -120,6 +124,8 @@ export class CardManager {
             }
           }
         }
+
+        console.warn("index-%s, playerCards-%s", i, JSON.stringify(playerCards[i]));
       }
 
       // 补发剩余牌
