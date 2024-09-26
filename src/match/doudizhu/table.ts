@@ -4,7 +4,7 @@ import GameRecorder, {IGameRecorder} from '../../match/GameRecorder'
 import alg from '../../utils/algorithm'
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, serializeHelp} from "../serializeDecorator"
 import {AuditPdk} from "./auditPdk";
-import Card, {CardType} from "./card"
+import Card, {CardTag, CardType} from "./card"
 import {CardManager} from "./cardManager";
 import {IPattern, PatterNames, patternCompare} from "./patterns/base"
 import PlayerState from './player_state'
@@ -740,9 +740,18 @@ abstract class Table implements Serializable {
 
       // 计算用户拥有的炸弹
       const bombs = [];
+      for (let i = CardTag.ha; i <= CardTag.hk; i++) {
+        const cardCount = player.cards.filter(c => c.value === i).length;
+        if (cardCount === 4) {
+          bombs.push(i);
+        }
+      }
 
+      if (jokerCount === 2) {
+        bombs.push(14);
+      }
 
-      if (player.mode !== enums.farmer && (index === -1 || (this.rule.mustCallLandlord && (jokerCount === 2 || twoCount === 4)))) {
+      if (player.mode !== enums.farmer && (bombs.length >= 2 || (this.rule.mustCallLandlord && (jokerCount === 2 || twoCount === 4)))) {
         mode = enums.landlord;
         this.callLandlord++;
 
