@@ -340,7 +340,7 @@ class PlayerState implements Serializable {
       return;
     }
 
-    let minutes = 15 * 1000;
+    let minutes = 5 * 1000;
 
     // 好友房设置不托管
     if (!this.room.isPublic && !this.rule.ro.autoCommit) {
@@ -352,8 +352,12 @@ class PlayerState implements Serializable {
       return;
     }
 
-    if (!this.room.isPublic && this.rule.ro.autoCommit) {
+    if (!this.room.isPublic && this.rule.ro.autoCommit && this.room.gameState && this.room.gameState.state === 3) {
       minutes = (this.rule.ro.autoCommit + 1) * 1000;
+    }
+
+    if (this.room.isPublic && this.room.gameState && this.room.gameState.state === 3) {
+      minutes = 15 * 1000;
     }
 
     this.cancelTimeout()
