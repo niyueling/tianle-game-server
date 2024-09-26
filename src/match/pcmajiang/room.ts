@@ -359,15 +359,6 @@ class Room extends RoomBase {
     }
   }
 
-  removePlayer(player) {
-    for (let i = 0; i < this.players.length; i++) {
-      if (this.players[i] === player) {
-        this.players[i] = null
-        break
-      }
-    }
-  }
-
   isEmpty() {
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
