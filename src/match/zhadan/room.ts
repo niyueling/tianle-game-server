@@ -21,6 +21,7 @@ import {eqlModelId} from "./modelId"
 import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
 import Table from "./table"
+import {stateGameOver} from "../doudizhu/table";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -471,6 +472,7 @@ class Room extends RoomBase {
       location: newJoinPlayer.location,
       owner: this.ownerId,
       startIndex: index,
+      isGameRunning: !!this.gameState,
       _id: this._id,
       score: this.getScore(newJoinPlayer),
       base: this.currentBase,

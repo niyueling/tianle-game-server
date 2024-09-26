@@ -457,7 +457,7 @@ class Room extends RoomBase {
       startIndex: index,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
-      isGameRunning: !!this.gameState,
+      isGameRunning: !!this.gameState && this.gameState.state !== stateGameOver,
       owner: this.ownerId,
       score: this.getScore(newJoinPlayer),
       base: this.currentBase,
