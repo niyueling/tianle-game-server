@@ -390,6 +390,7 @@ class PlayerState implements Serializable {
     this.clearDepositTask();
     this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}});
 
+    console.warn("current-%s, seatIndex-%s", this.room.gameState.status.current.seatIndex, this.index);
     if (this.room.gameState.status.current.seatIndex === this.index) {
       this.emitter.emit('waitForDa');
     }
