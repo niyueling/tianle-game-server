@@ -577,7 +577,6 @@ export default class NormalTable extends Table {
       const p = this.players[i];
       if (p) {
         // 基础倍率
-        // 先扣，再加
         p.balance -= p.detailBalance['base'];
         p.balance *= times;
         p.detailBalance['base'] *= times;
@@ -588,6 +587,7 @@ export default class NormalTable extends Table {
         if (p.balance > 0) {
           const currency = await this.PlayerGoldCurrency(p._id);
           if (p.balance > currency) {
+            console.warn("winner balance-%s currency-%s", p.balance, currency);
             p.balance = currency;
           }
 
@@ -597,6 +597,7 @@ export default class NormalTable extends Table {
         } else {
           const currency = await this.PlayerGoldCurrency(p._id);
           if (currency < -p.balance) {
+            console.warn("loser balance-%s currency-%s", p.balance, currency);
             p.balance = -currency;
           }
 
@@ -626,15 +627,17 @@ export default class NormalTable extends Table {
 
     if (winRuby > 0) {
       for (const p of winnerList) {
+        const oldBalance = p.balance;
         p.balance = Math.floor(p.balance / maxBalance * winRuby);
-        console.log('winner after balance', p.balance, p.model.shortId)
+        console.log('winner after balance %s oldBalance %s shortId %s', p.balance, oldBalance, p.model.shortId)
       }
     }
 
     if (lostRuby < 0) {
       for (const p of lostList) {
+        const oldBalance = p.balance;
         p.balance = Math.floor(p.balance / maxLostBalance * lostRuby);
-        console.log('lost after balance', p.balance, p.model.shortId)
+        console.log('lost after balance %s oldBalance %s shortId %s', p.balance, oldBalance, p.model.shortId)
       }
     }
   }
