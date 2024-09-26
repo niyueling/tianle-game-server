@@ -336,6 +336,7 @@ class PlayerState implements Serializable {
   // 托管
   deposit(callback) {
     if (this.room.gameState.currentPlayerStep === -1) {
+      console.warn(this.room.gameState.currentPlayerStep);
       return;
     }
 
