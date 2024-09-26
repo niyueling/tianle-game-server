@@ -66,6 +66,9 @@ class Room extends RoomBase {
 
   robotManager: RobotManager
 
+  // 房间是否已经解散
+  dissolveState: string
+
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
 
     const room = new Room(json.gameRule, json._id)
@@ -122,6 +125,7 @@ class Room extends RoomBase {
     this.juIndex = 0
     this.autoDissolve();
     this.robotManager = new RobotManager(this, rule.depositCount);
+    this.dissolveState = null;
   }
 
   autoDissolve() {
@@ -661,6 +665,7 @@ class Room extends RoomBase {
       this.gameState = null
       this.readyPlayers = [];
       this.robotManager.model.step = RobotStep.waitRuby;
+      this.dissolveState = "dissolve";
 
       // 好友房总结算
       if (this.game.isAllOver() && !this.isPublic) {

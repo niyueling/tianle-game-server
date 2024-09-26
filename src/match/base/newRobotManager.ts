@@ -144,7 +144,7 @@ export class NewRobotManager {
       this.model.step = RobotStep.start;
     }
 
-    if (this.model.step === RobotStep.start && !this.room.gameState) {
+    if (this.model.step === RobotStep.start && !this.room.gameState && this.room.dissolveState !== "dissolve") {
       isOk = await this.isNoPlayerAbsent();
       if (!isOk) {
         console.warn("player is not absent %s", this.room._id);
