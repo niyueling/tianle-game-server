@@ -884,9 +884,23 @@ abstract class Table implements Serializable {
         return ;
       }
 
+      // 计算用户拥有的炸弹
+      const jokerCount =   player.cards.filter(c => c.type === CardType.Joker).length;
+      const bombs = [];
+      for (let i = CardTag.ha; i <= CardTag.hk; i++) {
+        const cardCount = player.cards.filter(c => c.value === i).length;
+        if (cardCount === 4) {
+          bombs.push(i);
+        }
+      }
+
+      if (jokerCount === 2) {
+        bombs.push(14);
+      }
+
       player.isMultiple = true;
       player.onDeposit = false;
-      const double = player.index === 1 ? 2 : 1;
+      const double = bombs.length >= 2 ? 2 : 1;
       player.double = double;
       let addMultiple = 0;
       this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, isMultiple: player.isMultiple, double: player.double}});
