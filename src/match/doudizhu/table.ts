@@ -84,6 +84,9 @@ abstract class Table implements Serializable {
   // 本局明牌用户
   openCardPlayers: any[] = [];
 
+  // 明牌倍数
+  openCardMultiple: number = 1;
+
   // 叫地主或抢地主
   callLandlord: number = 0;
 
@@ -110,6 +113,7 @@ abstract class Table implements Serializable {
     this.multiple = 1;
     this.callLandlordStatus = false;
     this.openCardPlayers = [];
+    this.openCardMultiple = 1;
     // 结算玩家
     for (const p of this.players) {
       this.audit.initData(p.model.shortId);
@@ -700,13 +704,16 @@ abstract class Table implements Serializable {
     if (!this.rule.allowOpenCard) {
       player.sendMessage("game/openDealReply", {ok: false, info: TianleErrorCode.systemError});
     }
+
     player.isOpenCard = true;
     player.openMultiple = msg.multiple;
 
-    if (!this.openCardPlayers.length) {
-      this.multiple = msg.multiple;
+    // 如果明牌用户倍数更高，则设置对局倍数
+    if (msg.multiple > this.openCardMultiple) {
+      this.multiple *= msg.multiple;
+      this.openCardMultiple = msg.multiple;
       this.players.map((p) => {
-        p.multiple = this.multiple;
+        p.multiple *= msg.multiple;
         p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: msg.multiple}});
       })
     }
