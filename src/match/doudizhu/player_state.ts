@@ -335,22 +335,24 @@ class PlayerState implements Serializable {
 
   // 托管
   deposit(callback) {
-    let minutes = 5 * 1000;
-    if (this.room.gameState && this.room.gameState.state === 3) {
-      minutes = this.depositTime * 1000;
-
-      if (!this.room.isPublic && !this.rule.ro.autoCommit) {
-        return ;
-      }
-
-      if (!this.room.isPublic && this.rule.ro.autoCommit) {
-        minutes = (this.rule.ro.autoCommit + 1) * 1000
-      }
+    if (this.room.gameState.currentPlayerStep === -1) {
+      return;
     }
 
-    // 不在对局中不进入托管
+    let minutes = 15 * 1000;
+
+    // 好友房设置不托管
+    if (!this.room.isPublic && !this.rule.ro.autoCommit) {
+      return ;
+    }
+
+    // 游戏结束不进入托管
     if (this.room.gameState && this.room.gameState.state === 4) {
       return;
+    }
+
+    if (!this.room.isPublic && this.rule.ro.autoCommit) {
+      minutes = (this.rule.ro.autoCommit + 1) * 1000;
     }
 
     this.cancelTimeout()
@@ -359,7 +361,7 @@ class PlayerState implements Serializable {
       this.timeoutTask = setTimeout(() => {
         if (this.room.gameState && this.room.gameState.currentPlayerStep === this.index) {
           this.onDeposit = true
-          if (this.room.gameState && this.room.gameState.state === 3 && !this.isGuoDeposit) {
+          if (this.room.gameState && this.room.gameState.state === 3) {
             this.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
         }
@@ -385,6 +387,10 @@ class PlayerState implements Serializable {
   }
 
   cancelDeposit() {
+    if (this.room.gameState.currentPlayerStep === -1) {
+      return;
+    }
+
     this.onDeposit = false;
     const cards = this.cards
     this.clearDepositTask();
