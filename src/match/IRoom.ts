@@ -16,6 +16,7 @@ import {once} from "./onceDecorator"
 import {autoSerialize, Serializable, serialize, serializeHelp} from "./serializeDecorator"
 import {eqlModelId} from "./pcmajiang/modelId";
 import createClient from "../utils/redis";
+import {stateGameOver} from "./xmmajiang/table_state";
 
 export const playerInClub = async (clubShortId: string, playerId: string) => {
   if (!clubShortId) {
@@ -339,41 +340,22 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   leave(player) {
     if (this.gameState || !player) {
-      console.warn("player is disconnect in room %s", this._id)
       // 游戏已开始 or 玩家不存在
+      console.debug('player is disconnect in room %s', this._id);
       return false
     }
-    const p = player
-    if (p.room !== this) {
-      console.warn("player is not in this room %s", this._id)
-      return false
-    }
-
     if (this.indexOf(player) < 0) {
-      console.warn("player is already leave room %s", this._id)
       return true
     }
-
-    if (this.game.juIndex > 0 && !this.game.isAllOver()) {
-      console.warn("room %s is not finish", this._id)
-      return false
-    }
-
-    p.removeListener('disconnect', this.disconnectCallback)
-    this.emit('leave', {_id: player._id})
+    player.removeListener('disconnect', this.disconnectCallback)
     this.removePlayer(player)
+    this.removeOrder(player);
+    player.room = null
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player.model._id, location: "IRoom"}})
+    this.removeReadyPlayer(player.model._id)
+    this.clearScore(player.model._id)
 
-    for (let i = 0; i < this.playersOrder.length; i++) {
-      const po = this.playersOrder[i]
-      if (po && po.model._id.toString() === player.model._id.toString()) {
-        this.playersOrder[i] = null
-      }
-    }
-
-    p.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: p._id, roomId: this._id, location: "IRoom"}})
-    this.removeReadyPlayer(p._id.toString())
-    this.clearScore(player._id.toString())
+    return true
   }
 
   clearScore(playerId) {
