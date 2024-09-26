@@ -198,7 +198,7 @@ abstract class Table implements Serializable {
   async getCardRecorder(player) {
     const cardRecorder = await GoodsProp.findOne({propType: shopPropType.jiPaiQi}).lean();
     if (!cardRecorder || !this.rule.useRecorder) {
-      return false;
+      return {status: false, day: 0};
     }
 
     let isHave = false;
@@ -213,10 +213,8 @@ abstract class Table implements Serializable {
       times = playerProp.times === -1 || playerProp.times >= new Date().getTime() ? playerProp.times : null;
     }
 
-    return !!(isHave && times);
-
-
-  }
+    return {status: !!(isHave && times), day: times}
+  };
 
   removeRoomListener() {
     this.room.removeListener('reconnect', this.onReconnect);
