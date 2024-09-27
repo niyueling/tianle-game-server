@@ -88,11 +88,24 @@ export class CardManager {
         }
       }
 
+      // 计算飞机
+      let straightTriples = [];
+      for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+        const cardCount = newCardTags.filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+        const nextCardCount = newCardTags.filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
+        if (cardCount >= 3 && nextCardCount >= 3) {
+          straightTriples.push(k);
+        }
+      }
+
       for (let i = 0; i < playerCards.length; i++) {
         // 真实用户不介入发牌
         if (!players[i].isRobot) {
           continue;
         }
+
+        let straightTriplesCount = 0;
+        let nextStraightTriplesCount = 0;
 
         // 机器人先发0-2个炸弹
         const bombCount = Math.floor(Math.random() * 2);
@@ -131,47 +144,27 @@ export class CardManager {
         const randomNum = Math.random();
         const randomType = randomNum < 1 ? 1 : (randomNum < 0.8 ? 2 : 3);
 
-        // 计算飞机
-        let straightTriples = [];
-        for (let k = CardTag.ha; k <= CardTag.hk; k++) {
-          const cardCount = newCardTags.filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
-          const nextCardCount = newCardTags.filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
-          if (cardCount >= 3 && nextCardCount >= 3) {
-            straightTriples.push(k);
-          }
-        }
-
-        for (let i = 0; i < playerCards.length; i++) {
-          // 真实用户不介入发牌
-          if (players[i].isRobot) {
-            continue;
-          }
-
-          let straightTriplesCount = 0;
-          let nextStraightTriplesCount = 0;
-
-          // 发放飞机
-          if (randomType === 1) {
-            const randomIndex = Math.floor(Math.random() * straightTriples.length);
-            for (let k = 0; k < 4; k++) {
-              const cardIndex = newCardTags.findIndex(c => c === straightTriples[randomIndex] + k * 13);
-              if (cardIndex !== -1 && straightTriplesCount < 3) {
-                straightTriplesCount++;
-                const card = newCardTags[cardIndex];
-                newCardTags.splice(cardIndex, 1);
-                playerCards[i].push(card);
-              }
-
-              const nextCardIndex = newCardTags.findIndex(c => c === straightTriples[randomIndex] + 1 + k * 13);
-              if (nextCardIndex !== -1 && nextStraightTriplesCount < 3) {
-                nextStraightTriplesCount++;
-                const card = newCardTags[nextCardIndex];
-                newCardTags.splice(nextCardIndex, 1);
-                playerCards[i].push(card);
-              }
+        // 发放飞机
+        if (randomType === 1) {
+          const randomIndex = Math.floor(Math.random() * straightTriples.length);
+          for (let k = 0; k < 4; k++) {
+            const cardIndex = newCardTags.findIndex(c => c === straightTriples[randomIndex] + k * 13);
+            if (cardIndex !== -1 && straightTriplesCount < 3) {
+              straightTriplesCount++;
+              const card = newCardTags[cardIndex];
+              newCardTags.splice(cardIndex, 1);
+              playerCards[i].push(card);
             }
-            straightTriples.splice(randomIndex, 1);
+
+            const nextCardIndex = newCardTags.findIndex(c => c === straightTriples[randomIndex] + 1 + k * 13);
+            if (nextCardIndex !== -1 && nextStraightTriplesCount < 3) {
+              nextStraightTriplesCount++;
+              const card = newCardTags[nextCardIndex];
+              newCardTags.splice(nextCardIndex, 1);
+              playerCards[i].push(card);
+            }
           }
+          straightTriples.splice(randomIndex, 1);
         }
 
         console.warn("index-%s, playerCards-%s", i, JSON.stringify(playerCards[i]));
