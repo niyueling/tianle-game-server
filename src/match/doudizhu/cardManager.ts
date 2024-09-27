@@ -47,7 +47,7 @@ export class CardManager {
   }
 
   // 为每个玩家发牌
-  genCardForEachPlayer(isSorted?, customCards?, test?) {
+  genCardForEachPlayer(isSorted?, customCards?, test?, players?) {
     // 洗牌
     let newCardTags = this.cardTags.slice();
     // 为每个玩家创建空列表
@@ -88,9 +88,11 @@ export class CardManager {
         }
       }
 
-      // console.warn("bombs-%s", JSON.stringify(bombs));
-
       for (let i = 0; i < playerCards.length; i++) {
+        console.warn("index %s isRobot %s", i, players[i].isRobot);
+        if (!players[i].isRobot) {
+          continue;
+        }
         // 每个用户先发1-3个炸弹
         const bombCount = Math.floor(Math.random() * 2);
 
