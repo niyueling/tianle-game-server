@@ -24,6 +24,7 @@ export class NewRobotManager {
   waitPublicRobotSecond: number
   waitKickOutTime: number
   waitUpdateRubyTime: number
+  waitUpdateRandomTime: number
   isPlayed: boolean
   selectModeTimes: number
   constructor(room, depositCount) {
@@ -38,6 +39,7 @@ export class NewRobotManager {
     this.waitPublicRobotSecond = 0;
     this.waitKickOutTime = 0;
     this.waitUpdateRubyTime = 0;
+    this.waitUpdateRandomTime = 0;
     this.isPlayed = true;
     this.selectModeTimes = 0;
     this.startMonit();
@@ -128,13 +130,16 @@ export class NewRobotManager {
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
       this.waitUpdateRubyTime++;
-      const random = Math.floor(Math.random() * 12 + 4);
-
-      if (!this.room.gameState) {
-        console.warn("room %s waitUpdateRubyTime %s random %s", this.room._id, this.waitUpdateRubyTime, random);
+      if (!this.waitUpdateRandomTime) {
+        this.waitUpdateRandomTime = Math.floor(Math.random() * 12 + 4);
       }
 
-      if (this.waitUpdateRubyTime < random || this.room.gameState) {
+
+      if (!this.room.gameState) {
+        console.warn("room %s waitUpdateRubyTime %s random %s", this.room._id, this.waitUpdateRubyTime, this.waitUpdateRandomTime);
+      }
+
+      if (this.waitUpdateRubyTime < this.waitUpdateRandomTime || this.room.gameState) {
         return;
       }
 
@@ -142,6 +147,9 @@ export class NewRobotManager {
       await this.save();
       this.model.step = RobotStep.start;
       this.waitUpdateRubyTime = 0;
+      this.waitUpdateRandomTime = 0;
+
+      console.warn("room %s updateNoRuby success!", this.room._id);
     }
 
     if (this.model.step === RobotStep.waitRuby && this.room.gameState) {
