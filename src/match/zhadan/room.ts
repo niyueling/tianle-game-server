@@ -542,11 +542,6 @@ class Room extends RoomBase {
 
     await this.announcePlayerJoin(thePlayer);
 
-    const joinFunc = async() => {
-      this.robotManager.model.step = RobotStep.start;
-    }
-
-    setTimeout(joinFunc, 1000);
     return true;
   }
 
