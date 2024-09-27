@@ -103,17 +103,17 @@ export class CardManager {
       }
 
       // 计算顺子
-      let straights = [];
-      for (let k = CardTag.ha; k <= CardTag.h9; k++) {
-        const cardCount1 = newCardTags.filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
-        const cardCount2 = newCardTags.filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
-        const cardCount3 = newCardTags.filter(c => [k + 2, k + 15, k + 28, k + 41].includes(c)).length;
-        const cardCount4 = newCardTags.filter(c => [k + 3, k + 16, k + 29, k + 42].includes(c)).length;
-        const cardCount5 = newCardTags.filter(c => [k + 4, k + 17, k + 30, k + 43].includes(c)).length;
-        if (cardCount1 && cardCount2 && cardCount3 && cardCount4 && cardCount5) {
-          straights.push(k);
-        }
-      }
+      // let straights = [];
+      // for (let k = CardTag.ha; k <= CardTag.h9; k++) {
+      //   const cardCount1 = newCardTags.filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+      //   const cardCount2 = newCardTags.filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
+      //   const cardCount3 = newCardTags.filter(c => [k + 2, k + 15, k + 28, k + 41].includes(c)).length;
+      //   const cardCount4 = newCardTags.filter(c => [k + 3, k + 16, k + 29, k + 42].includes(c)).length;
+      //   const cardCount5 = newCardTags.filter(c => [k + 4, k + 17, k + 30, k + 43].includes(c)).length;
+      //   if (cardCount1 && cardCount2 && cardCount3 && cardCount4 && cardCount5) {
+      //     straights.push(k);
+      //   }
+      // }
 
       for (let i = 0; i < playerCards.length; i++) {
         // 真实用户不介入发牌
@@ -161,7 +161,7 @@ export class CardManager {
 
         // 根据随机数，给机器人派发1飞机/2两个三张/3顺子(5顺子)
         const randomNum = Math.random();
-        const randomType = randomNum < 0.2 ? 1 : (randomNum < 0.8 ? 2 : 3);
+        const randomType = randomNum < 0.3 ? 1 : 2;
 
         // 发放飞机
         if (randomType === 1) {
@@ -204,19 +204,19 @@ export class CardManager {
         }
 
         // 发放顺子
-        if (randomType === 3) {
-          const randomIndex = Math.floor(Math.random() * straights.length);
-          for (let k = 0; k < 4; k++) {
-            const cardIndex = newCardTags.findIndex(c => c === straights[randomIndex] + k * 13);
-            if (cardIndex !== -1 && straightsCount < 1) {
-              straightsCount++;
-              const card = newCardTags[cardIndex];
-              newCardTags.splice(cardIndex, 1);
-              playerCards[i].push(card);
-            }
-          }
-          straights.splice(randomIndex, 1);
-        }
+        // if (randomType === 3) {
+        //   const randomIndex = Math.floor(Math.random() * straights.length);
+        //   for (let k = 0; k < 4; k++) {
+        //     const cardIndex = newCardTags.findIndex(c => c === straights[randomIndex] + k * 13);
+        //     if (cardIndex !== -1 && straightsCount < 1) {
+        //       straightsCount++;
+        //       const card = newCardTags[cardIndex];
+        //       newCardTags.splice(cardIndex, 1);
+        //       playerCards[i].push(card);
+        //     }
+        //   }
+        //   straights.splice(randomIndex, 1);
+        // }
 
         console.warn("index-%s, playerCards-%s", i, JSON.stringify(playerCards[i]));
       }
@@ -237,17 +237,42 @@ export class CardManager {
         }
 
         // 判断是否有炸弹
-        let playerBombs = [];
+        let playerChangeCards = [];
+        let changeAllCards = [];
         for (let k = CardTag.ha; k <= CardTag.hk; k++) {
           const cardCount = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
           if (cardCount === 4) {
-            playerBombs.push(k);
+            playerChangeCards.push(k);
+            changeAllCards.push(k);
+          }
+        }
+
+        // 计算飞机
+        for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+          const cardCount = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+          const nextCardCount = playerCards[i].filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
+          if (cardCount >= 3 && nextCardCount >= 3) {
+            playerChangeCards.push(k);
+            changeAllCards.push(k);
+          }
+        }
+
+        // 计算顺子
+        for (let k = CardTag.ha; k <= CardTag.h9; k++) {
+          const cardCount1 = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+          const cardCount2 = playerCards[i].filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
+          const cardCount3 = playerCards[i].filter(c => [k + 2, k + 15, k + 28, k + 41].includes(c)).length;
+          const cardCount4 = playerCards[i].filter(c => [k + 3, k + 16, k + 29, k + 42].includes(c)).length;
+          const cardCount5 = playerCards[i].filter(c => [k + 4, k + 17, k + 30, k + 43].includes(c)).length;
+          if (cardCount1 && cardCount2 && cardCount3 && cardCount4 && cardCount5) {
+            playerChangeCards.push(k);
+            changeAllCards.push(k);
           }
         }
 
         // 从机器人手中去换牌
-        for (let j = 0; j < playerBombs.length; j++) {
-          const bombCard = playerBombs[j];
+        for (let j = 0; j < playerChangeCards.length; j++) {
+          const bombCard = playerChangeCards[j];
           const bombCardIndex = playerCards[i].findIndex(c => c === bombCard);
           for (let x = 0; x < playerCards.length; x++) {
             if (!players[x].isRobot) {
@@ -257,6 +282,10 @@ export class CardManager {
             // 计算用户单张对子数量
             const playerDoubles = [];
             for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+              if (changeAllCards.includes(k)) {
+                continue;
+              }
+
               const cardCount = playerCards[x].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
               if (cardCount <= 2) {
                 playerDoubles.push(k);
