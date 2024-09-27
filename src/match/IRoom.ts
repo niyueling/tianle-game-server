@@ -780,27 +780,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     return true
   }
 
-  async clubOwnerdissolve() {
-    if (!this.clubOwner || this.game.juIndex >= 1) {
-      return {ok: false, roomNum: this._id}
-    }
-    if (this.autoDissolveTimer) {
-      clearTimeout(this.autoDissolveTimer)
-    }
-    this.dissolveAndDestroyTable()
-
-    this.players.forEach(player => {
-      if (player) {
-        player.sendMessage('room/dissolve', {})
-        player.sendMessage('sc/showInfo', {info: `房间【${this._id}】已被战队管理员解散`})
-        player.room = null
-      }
-    })
-    this.emit('empty', this.disconnected.map(x => x[0]))
-    this.players.fill(null)
-    return {ok: true, roomNum: this._id}
-  }
-
   async specialDissolve() {
     try {
       if (this.autoDissolveTimer) {
@@ -810,7 +789,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       this.dissolveAndDestroyTable()
       this.players.forEach(player => {
         if (player) {
-          player.sendMessage('room/dissolve', {})
+          player.sendMessage('room/dissolve', {ok: true, data: {}})
           player.room = null
         }
       })
@@ -835,7 +814,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     roomCreator.room = null
     this.players.forEach(player => {
       if (player && player._id.toString() !== roomCreator._id.toString()) {
-        player.sendMessage('room/dissolve', {})
+        player.sendMessage('room/dissolve', {ok: true, data: {}})
         player.room = null
       }
     })
