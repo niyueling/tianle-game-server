@@ -289,7 +289,7 @@ class PlayerState implements Serializable {
       index: this.index,
       zhuaFen: this.zhuaFen,
       ip: this.ip,
-      dropped: this.dropped,
+      droppedCards: this.dropped,
       score: this.room.getScoreBy(this._id),
       remains: this.cards.length,
       lastPattern: this.lastPattern,

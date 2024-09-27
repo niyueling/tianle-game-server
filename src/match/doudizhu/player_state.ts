@@ -290,7 +290,7 @@ class PlayerState implements Serializable {
       model: this.model,
       mode: this.mode,
       multiple: this.multiple,
-      dropped: this.dropped,
+      droppedCards: this.dropped,
       index: this.index,
       score: this.room.getScoreBy(this._id),
       remains: this.cards.length,
