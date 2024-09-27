@@ -88,11 +88,15 @@ export class CardManager {
         }
       }
 
-      // 计算飞机
+      // 计算飞机和三张
       let straightTriples = [];
+      let triples = [];
       for (let k = CardTag.ha; k <= CardTag.hk; k++) {
         const cardCount = newCardTags.filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
         const nextCardCount = newCardTags.filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
+        if (cardCount >= 3) {
+          triples.push(k);
+        }
         if (cardCount >= 3 && nextCardCount >= 3) {
           straightTriples.push(k);
         }
@@ -105,6 +109,7 @@ export class CardManager {
         }
 
         let straightTriplesCount = 0;
+        let triplesCount = 0;
         let nextStraightTriplesCount = 0;
 
         // 机器人先发0-2个炸弹
@@ -165,6 +170,23 @@ export class CardManager {
             }
           }
           straightTriples.splice(randomIndex, 1);
+        }
+
+        // 发放2个三张
+        if (randomType === 2) {
+          for (let z = 0; z < 2; z++) {
+            const randomIndex = Math.floor(Math.random() * triples.length);
+            for (let k = 0; k < 4; k++) {
+              const cardIndex = newCardTags.findIndex(c => c === triples[randomIndex] + k * 13);
+              if (cardIndex !== -1 && triplesCount < 3) {
+                triplesCount++;
+                const card = newCardTags[cardIndex];
+                newCardTags.splice(cardIndex, 1);
+                playerCards[i].push(card);
+              }
+            }
+            triples.splice(randomIndex, 1);
+          }
         }
 
         console.warn("index-%s, playerCards-%s", i, JSON.stringify(playerCards[i]));
