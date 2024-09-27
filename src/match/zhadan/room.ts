@@ -831,10 +831,11 @@ class Room extends RoomBase {
 
     model.isGame = false;
     model.juCount++;
-    if (!model.gameJuShu[GameType.xmmj]) {
-      model.gameJuShu[GameType.xmmj] = 0;
+
+    if (!model.gameJuShu[GameType.zd]) {
+      model.gameJuShu[GameType.zd] = 0;
     }
-    model.gameJuShu[GameType.xmmj]++;
+    model.gameJuShu[GameType.zd]++;
     await Player.update({_id: model._id}, {$set: {gameJuShu: model.gameJuShu}});
 
     if (score > 0) {
