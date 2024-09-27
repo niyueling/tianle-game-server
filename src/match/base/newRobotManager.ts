@@ -131,7 +131,7 @@ export class NewRobotManager {
       const random = Math.floor(Math.random() * 12 + 4);
 
       if (!this.room.gameState) {
-        console.warn("waitUpdateRubyTime %s random %s", this.waitUpdateRubyTime, random);
+        console.warn("room %s waitUpdateRubyTime %s random %s", this.room._id, this.waitUpdateRubyTime, random);
       }
 
       if (this.waitUpdateRubyTime < random || this.room.gameState) {
