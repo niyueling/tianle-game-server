@@ -310,23 +310,6 @@ class Room extends RoomBase {
     }
   }
 
-  // async adjustPlayerClubGold(club, goldPay, playerId, info) {
-  //   const memberShip = await ClubMember.findOne({ club: club._id, member: playerId})
-  //   if (memberShip) {
-  //     memberShip.clubGold -= goldPay;
-  //     await ClubGoldRecord.create({
-  //       club: club._id,
-  //       member: playerId,
-  //       gameType,
-  //       goldChange: goldPay,
-  //       allClubGold: memberShip.clubGold,
-  //       info,
-  //     })
-  //
-  //     await memberShip.save()
-  //   }
-  // }
-
   async recordRoomScore(roomState = 'normal') {
     const players = this.snapshot.map(p => p._id);
     // console.warn("playersOrder-%s", JSON.stringify(this.playersOrder));
@@ -379,7 +362,7 @@ class Room extends RoomBase {
     return roomRecord
   }
 
-  addScore(playerId, v) {
+  async addScore(playerId, v) {
     console.warn("_id-%s, score-%s", playerId, v);
     this.scoreMap[playerId] += v;
   }
@@ -643,7 +626,7 @@ class Room extends RoomBase {
       }
 
       state.model.played += 1
-      this.addScore(state.model._id, state.score);
+      await this.addScore(state.model._id, state.score);
       stateScore[state.model._id] = state.score;
 
       const playerModel = await service.playerService.getPlayerModel(player._id);
