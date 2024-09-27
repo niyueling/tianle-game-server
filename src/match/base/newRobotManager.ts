@@ -128,7 +128,11 @@ export class NewRobotManager {
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
       this.waitUpdateRubyTime++;
-      const random = Math.floor(Math.random() * 15 + 4);
+      const random = Math.floor(Math.random() * 12 + 4);
+
+      if (!this.room.gameState) {
+        console.warn("waitUpdateRubyTime %s random %s", this.waitUpdateRubyTime, random);
+      }
 
       if (this.waitUpdateRubyTime < random || this.room.gameState) {
         return;
