@@ -228,6 +228,59 @@ export class CardManager {
           playerCards[i].push(card);
         }
       }
+
+      // 判断用户是否有炸弹，飞机，连对，顺子，各取一张牌，和其他用户的单张互换
+      for (let i = 0; i < playerCards.length; i++) {
+        // 机器人不换牌
+        if (players[i].isRobot) {
+          continue;
+        }
+
+        // 判断是否有炸弹
+        let playerBombs = [];
+        for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+          const cardCount = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+          if (cardCount === 4) {
+            playerBombs.push(k);
+          }
+        }
+
+        // 从机器人手中去换牌
+        for (let j = 0; j < playerBombs.length; j++) {
+          const bombCard = playerBombs[j];
+          const bombCardIndex = playerCards[i].findIndex(c => c === bombCard);
+          for (let x = 0; x < playerCards.length; x++) {
+            if (!players[x].isRobot) {
+              continue;
+            }
+
+            // 计算用户单张对子数量
+            const playerDoubles = [];
+            for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+              const cardCount = playerCards[x].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+              if (cardCount <= 2) {
+                playerDoubles.push(k);
+              }
+            }
+
+            const randomIndex = Math.floor(Math.random() * playerDoubles.length);
+            for (let k = 0; k < 4; k++) {
+              const cardIndex = playerCards[x].findIndex(c => c === playerDoubles[randomIndex] + k * 13);
+              if (cardIndex !== -1) {
+                const card = playerCards[x][cardIndex];
+                playerCards[x].splice(cardIndex, 1);
+                playerCards[i].splice(bombCardIndex, 1);
+                playerCards[i].push(card);
+                playerCards[x].push(bombCard);
+                console.warn("index %s card %s changeIndex %s changeCard %s change success", i, bombCard, x, card);
+                break;
+              }
+            }
+            playerDoubles.splice(randomIndex, 1);
+            break;
+          }
+        }
+      }
     }
 
     this.remainCardTags = newCardTags;
