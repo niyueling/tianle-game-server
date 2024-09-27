@@ -266,7 +266,7 @@ export class CardManager {
           const cardCount5 = playerCards[i].filter(c => [k + 4, k + 17, k + 30, k + 43].includes(c)).length;
           if (cardCount1 && cardCount2 && cardCount3 && cardCount4 && cardCount5) {
             playerChangeCards.push(k);
-            changeAllCards.push(k);
+            changeAllCards.push(k + 2);
           }
         }
 
