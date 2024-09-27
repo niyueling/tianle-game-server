@@ -76,8 +76,6 @@ export default class PlayerService extends BaseService {
     if (currency === Enums.tlGoldCurrency) {
       randomPlayer.tlGold = gold;
     }
-    randomPlayer.isGame = true;
-    randomPlayer.gameTime = new Date();
 
     // console.warn("shortId-%s, currency-%s", randomPlayer.shortId, currency);
 

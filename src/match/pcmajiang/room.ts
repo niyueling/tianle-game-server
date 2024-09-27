@@ -25,6 +25,7 @@ import Game from './game'
 import {eqlModelId} from "./modelId"
 import {RobotManager} from "./robotManager";
 import TableState from "./table_state"
+import {service} from "../../service/importService";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -606,9 +607,16 @@ class Room extends RoomBase {
   }
 
   async announcePlayerJoin(newJoinPlayer) {
+    if (this.isPublic) {
+      // 记录用户正在对局中
+      const playerModel = await service.playerService.getPlayerModel(newJoinPlayer._id);
+      playerModel.isGame = true;
+      playerModel.gameTime = new Date();
+      await playerModel.save();
+    }
+
     this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)});
     this.joinRoomPlayers.push(newJoinPlayer._id.toString());
-    console.warn("joinRoomPlayers-%s", JSON.stringify(this.joinRoomPlayers));
 
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {

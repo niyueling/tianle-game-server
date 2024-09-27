@@ -187,8 +187,6 @@ export class NewRobotManager {
         if (this.room.gameRule.currency === Enums.tlGoldCurrency) {
           randomPlayer.tlGold = gold;
         }
-        randomPlayer.isGame = true;
-        randomPlayer.gameTime = new Date();
 
         this.room.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(randomPlayer, ['gold', 'diamond', 'tlGold'])}})
 

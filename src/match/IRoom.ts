@@ -449,6 +449,14 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   // 通知其它人，有玩家加入
   async announcePlayerJoin(newJoinPlayer) {
+    if (this.isPublic) {
+      // 记录用户正在对局中
+      const playerModel = await service.playerService.getPlayerModel(newJoinPlayer._id);
+      playerModel.isGame = true;
+      playerModel.gameTime = new Date();
+      await playerModel.save();
+    }
+
     this.broadcast('room/joinReply', {ok: true, data: await this.joinMessageFor(newJoinPlayer)})
     for (const alreadyInRoomPlayer of this.players
       .map((p, index) => {

@@ -22,6 +22,9 @@ import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
 import Table from "./table"
 import {stateGameOver} from "../doudizhu/table";
+import Player from "../../database/models/player";
+import GameCategory from "../../database/models/gameCategory";
+import CombatGain from "../../database/models/combatGain";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -741,10 +744,22 @@ class Room extends RoomBase {
 
   async gameOver(states, firstPlayerId) {
     this.shuffleData = []
-    for (const state of states) {
+
+    for (let i = 0; i < states.length; i++) {
+      const player = this.players[i];
+      const state = states[i];
+      if (this.isPublic) {
+        await this.savePublicCombatGain(player, state.score);
+        await this.setPlayerGameConfig(player, state.score);
+      }
+
       state.model.played += 1
-      await this.addScore(state.model._id, state.score)
+      this.addScore(state.model._id, state.score);
+
+      const playerModel = await service.playerService.getPlayerModel(player._id);
+      this.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(playerModel, ['gold', 'diamond', 'tlGold'])}})
     }
+
     this.clearReady()
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
@@ -772,6 +787,62 @@ class Room extends RoomBase {
       // 更新大赢家
       await this.updateBigWinner();
     }
+  }
+
+  async savePublicCombatGain(player, score) {
+    const category = await GameCategory.findOne({_id: this.gameRule.categoryId}).lean();
+
+    await CombatGain.create({
+      uid: this._id,
+      room: this.uid,
+      juIndex: this.game.juIndex,
+      playerId: player._id,
+      gameName: "浦城炸弹",
+      caregoryName: category.title,
+      currency: this.rule.currency,
+      time: new Date(),
+      score
+    });
+  }
+
+  async setPlayerGameConfig(player, score) {
+    const model = await Player.findOne({_id: player._id});
+
+    model.isGame = false;
+    model.juCount++;
+    if (!model.gameJuShu[GameType.xmmj]) {
+      model.gameJuShu[GameType.xmmj] = 0;
+    }
+    model.gameJuShu[GameType.xmmj]++;
+    await Player.update({_id: model._id}, {$set: {gameJuShu: model.gameJuShu}});
+
+    if (score > 0) {
+      model.juWinCount++;
+    }
+    model.juRank = (model.juWinCount / model.juCount).toFixed(2);
+    model.goVillageCount++;
+
+    if (score > 0) {
+      model.juContinueWinCount++;
+
+      if (score > model.reapingMachineAmount) {
+        model.reapingMachineAmount = score;
+      }
+    }
+
+    if (score === 0) {
+      model.noStrokeCount++;
+    }
+
+    if (score < 0) {
+      model.juContinueWinCount = 0;
+
+      if (Math.abs(score) > model.looseMoneyBoyAmount) {
+        model.looseMoneyBoyAmount = Math.abs(score);
+      }
+    }
+
+    await model.save();
   }
 
   dissolveOverMassage() {
