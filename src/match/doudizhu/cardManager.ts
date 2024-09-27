@@ -102,6 +102,19 @@ export class CardManager {
         }
       }
 
+      // 计算顺子
+      let straights = [];
+      for (let k = CardTag.ha; k <= CardTag.h9; k++) {
+        const cardCount1 = newCardTags.filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+        const cardCount2 = newCardTags.filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
+        const cardCount3 = newCardTags.filter(c => [k + 2, k + 15, k + 28, k + 41].includes(c)).length;
+        const cardCount4 = newCardTags.filter(c => [k + 3, k + 16, k + 29, k + 42].includes(c)).length;
+        const cardCount5 = newCardTags.filter(c => [k + 4, k + 17, k + 30, k + 43].includes(c)).length;
+        if (cardCount1 && cardCount2 && cardCount3 && cardCount4 && cardCount5) {
+          straights.push(k);
+        }
+      }
+
       for (let i = 0; i < playerCards.length; i++) {
         // 真实用户不介入发牌
         if (!players[i].isRobot) {
@@ -111,6 +124,7 @@ export class CardManager {
         let straightTriplesCount = 0;
         let triplesCount = 0;
         let nextStraightTriplesCount = 0;
+        let straightsCount = 0;
 
         // 机器人先发0-2个炸弹
         const bombCount = Math.floor(Math.random() * 2);
@@ -147,7 +161,7 @@ export class CardManager {
 
         // 根据随机数，给机器人派发1飞机/2两个三张/3顺子(5顺子)
         const randomNum = Math.random();
-        const randomType = randomNum < 1 ? 1 : (randomNum < 0.8 ? 2 : 3);
+        const randomType = randomNum < 0.2 ? 1 : (randomNum < 0.8 ? 2 : 3);
 
         // 发放飞机
         if (randomType === 1) {
@@ -187,6 +201,21 @@ export class CardManager {
             }
             triples.splice(randomIndex, 1);
           }
+        }
+
+        // 发放顺子
+        if (randomType === 3) {
+          const randomIndex = Math.floor(Math.random() * straights.length);
+          for (let k = 0; k < 4; k++) {
+            const cardIndex = newCardTags.findIndex(c => c === straights[randomIndex] + k * 13);
+            if (cardIndex !== -1 && straightsCount < 1) {
+              straightsCount++;
+              const card = newCardTags[cardIndex];
+              newCardTags.splice(cardIndex, 1);
+              playerCards[i].push(card);
+            }
+          }
+          straights.splice(randomIndex, 1);
         }
 
         console.warn("index-%s, playerCards-%s", i, JSON.stringify(playerCards[i]));
