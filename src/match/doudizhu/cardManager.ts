@@ -248,12 +248,13 @@ export class CardManager {
         }
 
         // 计算飞机
-        for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+        for (let k = CardTag.ha; k <= CardTag.hq; k++) {
           const cardCount = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
           const nextCardCount = playerCards[i].filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
           if (cardCount >= 3 && nextCardCount >= 3) {
             playerChangeCards.push(k);
             changeAllCards.push(k);
+
           }
         }
 

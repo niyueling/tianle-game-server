@@ -769,19 +769,45 @@ class Room extends RoomBase {
     // 更新玩家位置
     await this.updatePosition();
 
-    this.gameState.destroy()
-    this.gameState = null
-    this.readyPlayers = [];
-    this.robotManager.model.step = RobotStep.waitRuby;
+    const updateNoRubyFunc = async() => {
+      if (this.isPublic) {
+        // 判断机器人是否需要补充金豆
+        await this.updateNoRuby();
+      }
 
-    if (this.isRoomAllOver()) {
-      const message = this.allOverMessage()
-      this.broadcast('room/allOver', {ok: true, data: message});
-      this.players.forEach(x => x && this.leave(x));
-      this.emit('empty', this.disconnected);
-      // 更新大赢家
-      await this.updateBigWinner();
+      this.gameState.destroy();
+      this.gameState = null
+      this.readyPlayers = [];
+      this.robotManager.model.step = RobotStep.waitRuby;
+
+      // 好友房总结算
+      if (this.isRoomAllOver()) {
+        const message = this.allOverMessage()
+        this.broadcast('room/allOver', {ok: true, data: message});
+        this.players.forEach(x => x && this.leave(x));
+        this.emit('empty', this.disconnected);
+        // 更新大赢家
+        await this.updateBigWinner();
+      }
     }
+
+    setTimeout(updateNoRubyFunc, 1200);
+  }
+
+  async updateNoRuby() {
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      if (!p || !p.isRobot()) {
+        continue;
+      }
+
+      const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
+      if (resp.isNeedRuby || resp.isUpgrade) {
+        this.broadcast('resource/robotIsNoRuby', {ok: true, data: {index: i, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
+      }
+    }
+
+    return true;
   }
 
   async savePublicCombatGain(player, score) {

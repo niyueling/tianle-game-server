@@ -1061,8 +1061,10 @@ class Room extends RoomBase {
     await this.updatePosition();
 
     const updateNoRubyFunc = async() => {
-      // 判断机器人是否需要补充金豆
-      await this.updateNoRuby();
+      if (this.isPublic) {
+        // 判断机器人是否需要补充金豆
+        await this.updateNoRuby();
+      }
 
       this.gameState.dissolve();
       this.gameState = null;
@@ -1078,7 +1080,7 @@ class Room extends RoomBase {
 
     }
 
-    setTimeout(updateNoRubyFunc, 500);
+    setTimeout(updateNoRubyFunc, 1200);
   }
 
   async updateNoRuby() {
