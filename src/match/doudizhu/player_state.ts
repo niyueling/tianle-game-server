@@ -340,7 +340,8 @@ class PlayerState implements Serializable {
       return;
     }
 
-    let minutes = 5 * 1000;
+    const randomNumber = Math.floor(Math.random() * 4) + 2;
+    let minutes = this.isRobot ? randomNumber * 1000 : 5 * 1000;
 
     // 好友房设置不托管
     if (!this.room.isPublic && !this.rule.ro.autoCommit) {
