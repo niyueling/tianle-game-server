@@ -425,9 +425,9 @@ abstract class Table implements Serializable {
     }
     for (let i = 0; i < this.players.length; i++) {
       if (i === index) {
-        pushMsg.status.push(this.players[i].statusForSelf(this))
+        pushMsg.status.push(await this.players[i].statusForSelf(this))
       } else {
-        pushMsg.status.push(this.players[i].statusForOther(this))
+        pushMsg.status.push(await this.players[i].statusForOther(this))
       }
     }
 

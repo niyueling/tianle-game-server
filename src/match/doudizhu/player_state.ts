@@ -285,11 +285,14 @@ class PlayerState implements Serializable {
     }, 0)
   }
 
-  private baseStatus(table: Table) {
+  private async baseStatus(table: Table) {
+    // 判断是否使用记牌器
+    const cardRecorderStatus = await this.room.gameState.getCardRecorder(this);
     return {
       model: this.model,
       mode: this.mode,
       multiple: this.multiple,
+      cardRecorderStatus,
       droppedCards: this.dropped,
       index: this.index,
       score: this.room.getScoreBy(this._id),
@@ -300,16 +303,16 @@ class PlayerState implements Serializable {
     }
   }
 
-  statusForSelf(table: Table) {
-    const base = this.baseStatus(table)
+  async statusForSelf(table: Table) {
+    const base = await this.baseStatus(table)
     return {
       ...base,
       pukerCards: this.cards,
     }
   }
 
-  statusForOther(table: Table) {
-    let base = this.baseStatus(table);
+  async statusForOther(table: Table) {
+    let base = await this.baseStatus(table);
     if (this.isOpenCard) {
       base["pukerCards"] = this.cards;
     }
