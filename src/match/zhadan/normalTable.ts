@@ -27,11 +27,10 @@ export default class NormalTable extends Table {
   private nextAction: () => void = null
 
   name() {
-    return "shuangq"
+    return "zhadan"
   }
 
   async start() {
-    console.log('start game')
     if (this.room.gameRule.isPublic) {
       // 金豆房发牌
       await this.publicRoomFapai();
@@ -52,9 +51,12 @@ export default class NormalTable extends Table {
 
     await this.fourJokersReward();
 
-    this.players.forEach((p, i) => {
-        p.onShuffle(0, this.restJushu, p.cards, i, this.room.game.juIndex, this.room.shuffleData.length > 0);
-      });
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      // 判断是否使用记牌器
+      const cardRecorderStatus = await this.getCardRecorder(p);
+      p.onShuffle(0, this.restJushu, p.cards, i, this.room.game.juIndex, this.room.shuffleData.length > 0, cardRecorderStatus);
+    }
 
     const shuffleData = this.room.shuffleData.map(x => {
       const p = this.players.find(y => y.model._id === x)
@@ -69,39 +71,7 @@ export default class NormalTable extends Table {
       await this.room.payRubyForStart();
     }
     this.broadcastModeRequest();
-    // 记录幸运星
-    for (const p of this.players) {
-      if (p.cards.filter(value => value.value === 8).length === 8) {
-        // 有8个8
-        if (this.rule.jokerCount === 0) {
-          // 一级
-          service.medal.updateLuckyMedal(p.model._id, p.model.shortId, 1, 0, GameType.zd).then();
-        } else if (this.rule.jokerCount === 4) {
-          // 4王
-          if (p.cards.filter(value => value.type === CardType.Joker).length !== 4) {
-            // 没有4王
-            continue;
-          }
-          service.medal.updateLuckyMedal(p.model._id, p.model.shortId, 2, 4, GameType.zd).then();
-        } else if (this.rule.jokerCount === 6) {
-          // 6王
-          if (p.cards.filter(value => value.type === CardType.Joker).length !== 6) {
-            // 没有6王
-            continue;
-          }
-          if (this.rule.ro.maxJokerBomb === 16) {
-            // 最多 16分
-            service.medal.updateLuckyMedal(p.model._id, p.model.shortId, 3, 6, GameType.zd).then();
-          } else if (this.rule.ro.maxJokerBomb === 32) {
-            // 最多 32分
-            service.medal.updateLuckyMedal(p.model._id, p.model.shortId, 4, 6, GameType.zd).then();
-          } else if (this.rule.ro.maxJokerBomb === 64) {
-            // 最多 64分
-            service.medal.updateLuckyMedal(p.model._id, p.model.shortId, 4, 6, GameType.zd).then();
-          }
-        }
-      }
-    }
+
     await this.room.robotManager.setCardReady();
   }
 
@@ -350,16 +320,18 @@ export default class NormalTable extends Table {
     }
   }
 
-  reconnectContent(index, reconnectPlayer: PlayerState) {
+  async reconnectContent(index, reconnectPlayer: PlayerState) {
     const stateData = this.stateData
     const juIndex = this.room.game.juIndex
+    const status = [];
 
-    const status = this.players.map(player => {
-      return player === reconnectPlayer ? {
-        ...player.statusForSelf(this),
-        teamMateCards: this.teamMateCards(player)
-      } : player.statusForOther(this)
-    })
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      status.push(p._id.toString() === reconnectPlayer._id.toString() ? {
+          ...p.statusForSelf(this),
+          teamMateCards: this.teamMateCards(p)
+        } : await p.statusForOther(this));
+    }
 
     const soloPlayer = this.players[this.soloPlayerIndex]
 

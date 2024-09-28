@@ -178,14 +178,14 @@ class PlayerState implements Serializable {
     }
   }
 
-  onShuffle(remainCards, juShu, cards: Card[], seatIndex, juIndex, needShuffle = false) {
+  onShuffle(remainCards, juShu, cards: Card[], seatIndex, juIndex, needShuffle = false, cardRecorderStatus) {
     this.cards = cards
     this.index = seatIndex
 
     this.recorder.recordUserEvent(this, 'shuffle')
     this.unusedJokers = this.cards.filter(c => c.type === CardType.Joker).length
 
-    this.sendMessage('game/ShuffleCards', {ok: true, data: {juShu, cards, remainCards, juIndex, needShuffle}})
+    this.sendMessage('game/ShuffleCards', {ok: true, data: {juShu, cards, remainCards, juIndex, needShuffle, cardRecorderStatus}})
   }
 
   tryDaPai(daCards) {
@@ -283,12 +283,15 @@ class PlayerState implements Serializable {
     }, 0)
   }
 
-  private baseStatus(table: Table) {
+  private async baseStatus(table: Table) {
+    // 判断是否使用记牌器
+    const cardRecorderStatus = await this.room.gameState.getCardRecorder(this);
     return {
       model: this.model,
       index: this.index,
       zhuaFen: this.zhuaFen,
       ip: this.ip,
+      cardRecorderStatus,
       droppedCards: this.dropped,
       score: this.room.getScoreBy(this._id),
       remains: this.cards.length,
@@ -300,16 +303,16 @@ class PlayerState implements Serializable {
     }
   }
 
-  statusForSelf(table: Table) {
-    const base = this.baseStatus(table)
+  async statusForSelf(table: Table) {
+    const base = await this.baseStatus(table)
     return {
       ...base,
       pukerCards: this.cards,
     }
   }
 
-  statusForOther(table: Table) {
-    return this.baseStatus(table)
+  async statusForOther(table: Table) {
+    return await this.baseStatus(table)
   }
 
   guo() {

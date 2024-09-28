@@ -27,7 +27,9 @@ import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher"
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {TianleErrorCode} from "@fm/common/constants";
+import {shopPropType, TianleErrorCode} from "@fm/common/constants";
+import GoodsProp from "../../database/models/GoodsProp";
+import PlayerProp from "../../database/models/PlayerProp";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -858,10 +860,10 @@ abstract class Table implements Serializable {
   }
 
   listenRoom(room) {
-    room.on('reconnect', this.onReconnect = (playerMsgDispatcher, index) => {
+    room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       const player = this.players[index]
       this.replaceSocketAndListen(player, playerMsgDispatcher)
-      const content = this.reconnectContent(index, player)
+      const content = await this.reconnectContent(index, player)
       player.sendMessage('game/reconnect', {ok: true, data: content})
     })
 
@@ -1055,6 +1057,27 @@ abstract class Table implements Serializable {
       p.cards = [...p.cards, ...this.takeQuarterCards(p)];
     }
   }
+
+  async getCardRecorder(player) {
+    const cardRecorder = await GoodsProp.findOne({propType: shopPropType.jiPaiQi}).lean();
+    if (!cardRecorder) {
+      return {status: false, day: 0};
+    }
+
+    let isHave = false;
+    let times = 0;
+
+    const playerProp = await PlayerProp.findOne({playerId: player._id.toString(), propId: cardRecorder.propId});
+
+    if (playerProp) {
+      // 用户是否拥有该道具
+      isHave = playerProp.times === -1 || playerProp.times >= new Date().getTime();
+      // 道具有效期
+      times = playerProp.times === -1 || playerProp.times >= new Date().getTime() ? playerProp.times : null;
+    }
+
+    return {status: !!(isHave && times), day: times}
+  };
 
   private haveFourJokers(p: PlayerState) {
     return p.cards.filter(c => c.type === CardType.Joker).length >= 4
