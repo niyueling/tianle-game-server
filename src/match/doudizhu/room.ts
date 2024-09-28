@@ -681,7 +681,16 @@ class Room extends RoomBase {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
-        this.broadcast('resource/robotIsNoRuby', {ok: true, data: {index: i, shortId: p.model.shortId, player: this.players, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
+        this.broadcast('resource/robotIsNoRuby', {
+          ok: true, data: {
+            index: i,
+            shortId: p.model.shortId,
+            player: this.players.map(pp => {return {shortId: pp.model.shortId}}),
+            isUpgrade: resp.isUpgrade,
+            isNeedRuby: resp.isNeedRuby,
+            conf: resp.conf
+          }
+        })
       }
     }
 
