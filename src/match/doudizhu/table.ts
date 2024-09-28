@@ -628,7 +628,6 @@ abstract class Table implements Serializable {
     if (cIndex === -1 && landlordCount > 1) {
       if (firstLandlordIndex !== -1) {
         nextPlayer = firstLandlordIndex;
-
         this.callLandlordStatus = true;
       }
     }
@@ -637,7 +636,6 @@ abstract class Table implements Serializable {
       const nextPlayerState = this.players[nextPlayer];
       this.room.broadcast('game/startChooseMode', {ok: true, data: {index: nextPlayer}})
       nextPlayerState.emitter.emit(enums.waitForPlayerChooseMode);
-      // this.depositForPlayerChooseMode(nextPlayerState);
     }
   }
 

@@ -542,7 +542,7 @@ class Room extends RoomBase {
     return true;
   }
 
-  private sortPlayer(nextStarterIndex: number) {
+  private async sortPlayer(nextStarterIndex: number) {
     if (nextStarterIndex === 0) {
       return
     }
@@ -636,7 +636,7 @@ class Room extends RoomBase {
       this.broadcast('resource/updateGold', {ok: true, data: {index: i, shortId: player.model.shortId, data: pick(playerModel, ['gold', 'diamond', 'tlGold'])}});
     }
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
-    this.sortPlayer(this.nextStarterIndex)
+    await this.sortPlayer(this.nextStarterIndex)
     this.clearReady();
     await this.robotManager.nextRound();
 
@@ -681,7 +681,7 @@ class Room extends RoomBase {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
-        this.broadcast('resource/robotIsNoRuby', {ok: true, data: {index: i, shortId: p.model.shortId, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
+        this.broadcast('resource/robotIsNoRuby', {ok: true, data: {index: i, shortId: p.model.shortId, player: this.players, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
       }
     }
 
