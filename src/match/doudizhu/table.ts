@@ -757,7 +757,7 @@ abstract class Table implements Serializable {
         bombs.push(14);
       }
 
-      if (player.mode !== enums.farmer && (bombs.length >= 2 || (this.rule.mustCallLandlord && (jokerCount === 2 || twoCount === 4)))) {
+      if (player.mode !== enums.farmer && ((bombs.length >= 2 || jokerCount === 2) || (this.rule.mustCallLandlord && (jokerCount === 2 || twoCount === 4)))) {
         mode = enums.landlord;
         this.callLandlord++;
 
