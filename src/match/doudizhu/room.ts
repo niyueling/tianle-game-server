@@ -633,7 +633,7 @@ class Room extends RoomBase {
       stateScore[state.model._id] = state.score;
 
       const playerModel = await service.playerService.getPlayerModel(player._id);
-      this.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(playerModel, ['gold', 'diamond', 'tlGold'])}});
+      this.broadcast('resource/updateGold', {ok: true, data: {index: i, shortId: player.model.shortId, data: pick(playerModel, ['gold', 'diamond', 'tlGold'])}});
     }
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)
