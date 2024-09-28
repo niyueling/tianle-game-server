@@ -276,7 +276,7 @@ class Room extends RoomBase {
       model: pick(player.model, ['nickname', 'avatar', 'tlGold', 'gold', 'shortId'])
     }))
     const playerArray = states.map(state => ({
-      name: state.model.nickname,
+      nickname: state.model.nickname,
       avatar: state.model.avatar,
       score: state.score,
       _id: state.model._id,
