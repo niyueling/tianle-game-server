@@ -976,7 +976,6 @@ abstract class Table implements Serializable {
 
   async onPlayerGuo(player) {
     if (!this.isCurrentStep(player)) {
-      this.guoPaiFail(player, TianleErrorCode.notDaRound)
       return
     }
 
