@@ -662,7 +662,7 @@ class Room extends RoomBase {
       if (this.game.isAllOver() && !this.isPublic) {
         const message = this.allOverMessage()
         this.broadcast('room/allOver', {ok: true, data: message})
-        this.players.forEach(x => x && this.leave(x))
+        // this.players.forEach(x => x && this.leave(x))
         this.emit('empty', this.disconnected)
         // 更新大赢家
         await this.updateBigWinner();
