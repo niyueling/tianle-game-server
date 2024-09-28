@@ -431,7 +431,7 @@ abstract class Table implements Serializable {
       }
     }
 
-    return pushMsg
+    return pushMsg;
   }
 
   showGameOverPlayerCards() {

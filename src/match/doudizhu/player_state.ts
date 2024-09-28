@@ -316,7 +316,7 @@ class PlayerState implements Serializable {
     if (this.isOpenCard) {
       base["pukerCards"] = this.cards;
     }
-    return base
+    return base;
   }
 
   guo() {
