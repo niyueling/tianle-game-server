@@ -440,6 +440,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   removePlayer(player) {
     for (let i = 0; i < this.players.length; i++) {
+      console.warn("_id1-%s, _id2-%s, status-%s", this.players[i]._id.toString(), player._id.toString(), this.players[i] && this.players[i]._id.toString() === player._id.toString());
       if (this.players[i] && this.players[i]._id.toString() === player._id.toString()) {
         this.players[i] = null
         break

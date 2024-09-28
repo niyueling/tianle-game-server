@@ -9,6 +9,7 @@ import Room from "./room";
 import NormalTable from "./normalTable"
 import {GameTypes} from "../gameTypes";
 import Enums from "./enums";
+import {stateGameOver} from "../xmmajiang/table_state";
 
 const gameType: GameTypes = GameType.ddz
 
@@ -69,19 +70,20 @@ export class PublicRoom extends Room {
   }
 
   leave(player) {
-    if (!player) {
-      // 玩家不存在
-      return false;
+    if (this.gameState || !player) {
+      // 游戏已开始 or 玩家不存在
+      return false
     }
     if (this.indexOf(player) < 0) {
       return true
     }
     player.removeListener('disconnect', this.disconnectCallback)
     this.removePlayer(player)
-    this.removeReadyPlayer(player.model._id.toString())
+    this.removeOrder(player);
     player.room = null
-    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player.model._id.toString(), roomId: this._id, location: "ddz.publicRoom"}})
-    this.clearScore(player.model._id.toString())
+    this.broadcast('room/leaveReply', {ok: true, data: {playerId: player.model._id, location: "xmmj.publicRoom"}})
+    this.removeReadyPlayer(player.model._id)
+    this.clearScore(player.model._id)
 
     return true
   }
