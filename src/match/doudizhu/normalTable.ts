@@ -330,10 +330,10 @@ export default class NormalTable extends Table {
     }
 
     if (player.mode === enums.landlord) {
-      return score > this.rule.capping ? this.rule.capping : score;
+      return score > this.rule.capping ? (player.balance > 0 ? this.rule.capping : -this.rule.capping) : player.balance;
     }
 
-    return score > this.rule.capping / 2 ? this.rule.capping / 2 : score;
+    return score > this.rule.capping / 2 ? (player.balance > 0 ? this.rule.capping / 2 : -this.rule.capping / 2) : player.balance;
   }
 
   private shangYouSettler() {
