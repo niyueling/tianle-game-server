@@ -21,7 +21,6 @@ import {eqlModelId} from "./modelId"
 import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
 import Table from "./table"
-import {stateGameOver} from "../doudizhu/table";
 import Player from "../../database/models/player";
 import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
@@ -422,7 +421,7 @@ class Room extends RoomBase {
     await this.updateBigWinner();
   }
 
-  addScore(playerId, v) {
+  async addScore(playerId, v) {
     console.warn("_id-%s, score-%s", playerId, v);
     this.scoreMap[playerId] += v;
   }
@@ -749,7 +748,7 @@ class Room extends RoomBase {
       }
 
       state.model.played += 1
-      this.addScore(state.model._id, state.score);
+      await this.addScore(state.model._id, state.score);
 
       const playerModel = await service.playerService.getPlayerModel(player._id);
       this.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(playerModel, ['gold', 'diamond', 'tlGold'])}})
