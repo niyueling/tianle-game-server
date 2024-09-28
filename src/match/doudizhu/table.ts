@@ -617,8 +617,7 @@ abstract class Table implements Serializable {
 
       this.resetCount++;
       this.players.map(p => {
-        p.mode = enums.unknown;
-        p.onDeposit = false;
+        this.resetPlayerConfig(p);
       });
       this.state = stateGameOver;
       this.start(this.startParams);
@@ -640,6 +639,15 @@ abstract class Table implements Serializable {
       nextPlayerState.emitter.emit(enums.waitForPlayerChooseMode);
       // this.depositForPlayerChooseMode(nextPlayerState);
     }
+  }
+
+  resetPlayerConfig(player) {
+    player.mode = enums.unknown;
+    player.openMultiple = 1;
+    player.onDeposit = false;
+    player.isOpenCard = false;
+    player.multiple = 1;
+    this.multiple = 1;
   }
 
   onPlayerChooseMultiple(player, msg) {
@@ -852,7 +860,9 @@ abstract class Table implements Serializable {
         }
 
         this.resetCount++;
-        this.players.map(p => p.mode = enums.unknown);
+        this.players.map(p => {
+          this.resetPlayerConfig(p);
+        });
         this.state = stateGameOver;
         this.start(this.startParams);
         return ;

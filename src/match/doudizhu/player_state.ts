@@ -102,10 +102,6 @@ class PlayerState implements Serializable {
   multiple: number = 1;
   // 是否机器人
   isRobot: boolean = false;
-  // 托管时间
-  depositTime: number = 15;
-  // 是否过牌托管
-  isGuoDeposit: boolean = false;
 
   // 已经出掉的牌
   @autoSerialize
