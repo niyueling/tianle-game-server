@@ -142,15 +142,12 @@ export default class NormalTable extends Table {
     super.listenPlayer(player)
   }
 
-  reconnectContent(index, reconnectPlayer: PlayerState) {
+  async reconnectContent(index, reconnectPlayer: PlayerState) {
     const stateData = this.stateData;
     const juIndex = this.room.game.juIndex;
 
     const status = this.players.map(async player => {
-      return player._id.toString() === reconnectPlayer._id.toString() ? {
-        ...await player.statusForSelf(this),
-        teamMateCards: this.teamMateCards(player)
-      } : await player.statusForOther(this)
+      return player._id.toString() === reconnectPlayer._id.toString() ? await player.statusForSelf(this) : await player.statusForOther(this)
     })
     const currentPlayerIndex = this.status.current.seatIndex;
 
