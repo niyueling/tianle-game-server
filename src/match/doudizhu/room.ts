@@ -680,7 +680,7 @@ class Room extends RoomBase {
       }
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
-      if (resp.isNeedRuby || resp.isUpgrade) {
+      if (resp.isNeedRuby) {
         this.broadcast('resource/robotIsNoRuby', {
           ok: true, data: {
             index: i,
