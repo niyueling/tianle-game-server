@@ -146,11 +146,11 @@ export default class NormalTable extends Table {
     const stateData = this.stateData;
     const juIndex = this.room.game.juIndex;
 
-    const status = this.players.map(player => {
+    const status = this.players.map(async player => {
       return player._id.toString() === reconnectPlayer._id.toString() ? {
-        ...player.statusForSelf(this),
+        ...await player.statusForSelf(this),
         teamMateCards: this.teamMateCards(player)
-      } : player.statusForOther(this)
+      } : await player.statusForOther(this)
     })
     const currentPlayerIndex = this.status.current.seatIndex;
 

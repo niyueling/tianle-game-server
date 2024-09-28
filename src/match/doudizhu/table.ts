@@ -1059,10 +1059,10 @@ abstract class Table implements Serializable {
   }
 
   listenRoom(room) {
-    room.on('reconnect', this.onReconnect = (playerMsgDispatcher, index) => {
+    room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
       const player = this.players[index]
       this.replaceSocketAndListen(player, playerMsgDispatcher)
-      const content = this.reconnectContent(index, player)
+      const content = await this.reconnectContent(index, player)
       player.sendMessage('game/reconnect', {ok: true, data: content})
     })
 
@@ -1077,13 +1077,13 @@ abstract class Table implements Serializable {
     this.listenPlayer(player)
   }
 
-  reconnectContent(index, reconnectPlayer: PlayerState): any {
+  async reconnectContent(index, reconnectPlayer: PlayerState): Promise<any> {
     const state = this.state
     const stateData = this.stateData
     const juIndex = this.room.game.juIndex
 
-    const status = this.players.map(player => {
-      return player._id.toString() === reconnectPlayer._id.toString() ? player.statusForSelf(this) : player.statusForOther(this)
+    const status = this.players.map(async player => {
+      return player._id.toString() === reconnectPlayer._id.toString() ? await player.statusForSelf(this) : await player.statusForOther(this)
     })
 
     return {
