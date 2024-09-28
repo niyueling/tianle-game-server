@@ -309,7 +309,11 @@ class PlayerState implements Serializable {
   }
 
   statusForOther(table: Table) {
-    return this.baseStatus(table)
+    let base = this.baseStatus(table);
+    if (this.isOpenCard) {
+      base["pukerCards"] = this.cards;
+    }
+    return base
   }
 
   guo() {
