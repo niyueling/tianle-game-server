@@ -145,10 +145,12 @@ export default class NormalTable extends Table {
   async reconnectContent(index, reconnectPlayer: PlayerState) {
     const stateData = this.stateData;
     const juIndex = this.room.game.juIndex;
+    const status = [];
 
-    const status = this.players.map(async player => {
-      return player._id.toString() === reconnectPlayer._id.toString() ? await player.statusForSelf(this) : await player.statusForOther(this)
-    })
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      status.push(p._id.toString() === reconnectPlayer._id.toString() ? await p.statusForSelf(this) : await p.statusForOther(this));
+    }
     const currentPlayerIndex = this.status.current.seatIndex;
 
     return {
