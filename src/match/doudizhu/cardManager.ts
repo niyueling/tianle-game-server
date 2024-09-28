@@ -271,7 +271,8 @@ export class CardManager {
               if (cardCount === 1) {
                 playerChangeCards.push(n);
                 changeAllCards.push(n);
-                console.warn("index %s straights begin %s end %s can change card %s CardCount %s", i, k, k + 5, n, JSON.stringify([cardCount1, cardCount2, cardCount3, cardCount4, cardCount5]));
+                console.warn("index %s straights begin %s end %s can change card %s CardCount %s", i, k, k + 4, n, JSON.stringify([cardCount1, cardCount2, cardCount3, cardCount4, cardCount5]));
+                break;
               }
             }
           }
