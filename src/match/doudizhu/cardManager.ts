@@ -258,7 +258,7 @@ export class CardManager {
           }
         }
 
-        // 计算顺子
+        // 计算顺子（换其中的单牌）
         for (let k = CardTag.ha; k <= CardTag.h9; k++) {
           const cardCount1 = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
           const cardCount2 = playerCards[i].filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
@@ -266,8 +266,14 @@ export class CardManager {
           const cardCount4 = playerCards[i].filter(c => [k + 3, k + 16, k + 29, k + 42].includes(c)).length;
           const cardCount5 = playerCards[i].filter(c => [k + 4, k + 17, k + 30, k + 43].includes(c)).length;
           if (cardCount1 && cardCount2 && cardCount3 && cardCount4 && cardCount5) {
-            playerChangeCards.push(k);
-            changeAllCards.push(k + 2);
+            for (let n = k; n < k + 5; n++) {
+              const cardCount = playerCards[i].filter(c => [n, n + 13, n + 26, n + 39].includes(c)).length;
+              if (cardCount === 1) {
+                playerChangeCards.push(n);
+                changeAllCards.push(n);
+                console.warn("index %s straights begin %s end %s can change card %s CardCount %s", i, k, k + 5, n, JSON.stringify([cardCount1, cardCount2, cardCount3, cardCount4, cardCount5]));
+              }
+            }
           }
         }
 
