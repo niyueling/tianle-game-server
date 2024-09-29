@@ -743,7 +743,7 @@ class Room extends RoomBase {
     for (let i = 0; i < states.length; i++) {
       const player = this.players[i];
       const state = states[i];
-      if (this.isPublic) {
+      if (this.isPublic && player) {
         await this.savePublicCombatGain(player, state.score);
         await this.setPlayerGameConfig(player, state.score);
       }
