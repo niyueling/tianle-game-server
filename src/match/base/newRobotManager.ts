@@ -127,13 +127,14 @@ export class NewRobotManager {
     // 添加公共房机器人
     await this.addRobotForPublicRoom();
 
+    console.warn("111 room %s step %s", this.room._id, this.model.step);
+
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
       this.waitUpdateRubyTime++;
       if (!this.waitUpdateRandomTime) {
         this.waitUpdateRandomTime = Math.floor(Math.random() * 12 + 4);
       }
-
 
       if (!this.room.gameState) {
         console.warn("room %s waitUpdateRubyTime %s random %s", this.room._id, this.waitUpdateRubyTime, this.waitUpdateRandomTime);
@@ -152,11 +153,15 @@ export class NewRobotManager {
       console.warn("room %s updateNoRuby success!", this.room._id);
     }
 
+    console.warn("222 room %s step %s", this.room._id, this.model.step);
+
     if (this.model.step === RobotStep.waitRuby && this.room.gameState) {
       this.model.step = RobotStep.start;
     }
 
-    if (this.model.step === RobotStep.start && !this.room.gameState && this.room.dissolveState !== "dissolve") {
+    console.warn("333 room %s step %s", this.room._id, this.model.step);
+
+    if (this.model.step === RobotStep.start && !this.room.gameState) {
       isOk = await this.isNoPlayerAbsent();
       if (!isOk) {
         console.warn("player is not absent %s", this.room._id);
@@ -169,6 +174,8 @@ export class NewRobotManager {
     if (isOk) {
       return;
     }
+
+    console.warn("444 room %s step %s", this.room._id, this.model.step);
 
     await this.readyAndPlay();
   }
@@ -590,7 +597,7 @@ export class NewRobotManager {
         return;
       }
 
-      // console.warn("flag %s step %s", flag, this.model.step);
+      console.warn("flag %s step %s", flag, this.model.step);
 
       if ((flag && this.room.isPublic) || !this.room.isPublic) {
         this.model.step = RobotStep.running;
@@ -598,7 +605,7 @@ export class NewRobotManager {
       await this.save();
     }
 
-    // console.warn("444 room %s step %s", this.room._id, this.model.step);
+    console.warn("555 room %s step %s", this.room._id, this.model.step);
 
     if (this.model.step === RobotStep.waitOherDa) {
       return;
