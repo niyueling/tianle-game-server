@@ -683,12 +683,6 @@ class Room extends RoomBase {
       return
     }
 
-    // 掉线托管
-    // if (this.isPublic && !this.gameState) {
-    //   this.leave(player)
-    //   return
-    // }
-
     p.room = null
     if (!this.gameState) {
       this.cancelReady(p._id)
@@ -699,6 +693,7 @@ class Room extends RoomBase {
     }
 
     // 如果离线的时候房间已结束
+    console.warn("gameState-%s, state-%s", this.gameState, this.gameState ? this.gameState.state : null);
     if (!this.gameState || (this.gameState && this.gameState.state === 'gameOver')) {
       // 金豆房直接解散房间
       if (this.isPublic) {
