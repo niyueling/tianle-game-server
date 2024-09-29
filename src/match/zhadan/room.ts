@@ -479,6 +479,7 @@ class Room extends RoomBase {
       location: newJoinPlayer.location,
       owner: this.ownerId,
       startIndex: index,
+      gameState: this.gameState ? this.gameState.state : null,
       isGameRunning: !!this.gameState || (this.gameState && this.gameState.state !== 'gameOver'),
       _id: this._id,
       score: this.getScore(newJoinPlayer),
