@@ -332,7 +332,7 @@ export default class NormalTable extends Table {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       status.push(p._id.toString() === reconnectPlayer._id.toString() ? {
-          ...p.statusForSelf(this),
+          ...await p.statusForSelf(this),
           teamMateCards: this.teamMateCards(p)
         } : await p.statusForOther(this));
     }
