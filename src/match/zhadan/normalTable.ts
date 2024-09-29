@@ -188,7 +188,11 @@ export default class NormalTable extends Table {
     this.players[startPlayerIndex].team = Team.HomeTeam
     this.mode = 'solo'
 
-    this.broadcastFirstDa()
+    const firstDaFunc = async() => {
+      this.broadcastFirstDa()
+    }
+
+    setTimeout(firstDaFunc, 1000);
   }
 
   broadcastFirstDa() {
