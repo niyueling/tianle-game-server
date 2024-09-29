@@ -353,7 +353,7 @@ export default class NormalTable extends Table {
       soloPlayerName: soloPlayer && soloPlayer.model.nickname,
       currentPlayer: this.status.current.seatIndex,
       lastPattern: this.status.lastPattern,
-      isGameRunning: this.state = 'gameOver',
+      isGameRunning: this.state === 'gameOver',
       lastIndex: this.status.lastIndex,
       fen: this.status.fen,
       from: this.status.from,
@@ -467,6 +467,7 @@ export default class NormalTable extends Table {
   }
 
   async gameOver() {
+    console.warn("gameOver state %s", this.state);
     if (this.state === 'gameOver') {
       return
     }
