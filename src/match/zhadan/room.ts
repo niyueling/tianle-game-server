@@ -701,12 +701,12 @@ class Room extends RoomBase {
     // await this.forceDissolve()
 
     this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
-    this.removePlayer(player)
+    // this.removePlayer(player)
     // 避免消息重试
-    const disconnectedIndex = this.disconnected.findIndex(value => value[0] === player._id);
-    if (disconnectedIndex === -1) {
-      this.disconnected.push([player._id, index])
-    }
+    // const disconnectedIndex = this.disconnected.findIndex(value => value[0] === player._id);
+    // if (disconnectedIndex === -1) {
+    //   this.disconnected.push([player._id, index])
+    // }
     // no effect
     this.emit('disconnect', p._id)
   }
