@@ -127,7 +127,7 @@ export class NewRobotManager {
     // 添加公共房机器人
     await this.addRobotForPublicRoom();
 
-    console.warn("111 room %s step %s", this.room._id, this.model.step);
+    // console.warn("111 room %s step %s", this.room._id, this.model.step);
 
     // 查看金豆
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
@@ -153,13 +153,13 @@ export class NewRobotManager {
       console.warn("room %s updateNoRuby success!", this.room._id);
     }
 
-    console.warn("222 room %s step %s", this.room._id, this.model.step);
+    // console.warn("222 room %s step %s", this.room._id, this.model.step);
 
     if (this.model.step === RobotStep.waitRuby && this.room.gameState) {
       this.model.step = RobotStep.start;
     }
 
-    console.warn("333 room %s step %s", this.room._id, this.model.step);
+    // console.warn("333 room %s step %s", this.room._id, this.model.step);
 
     if (this.model.step === RobotStep.start && !this.room.gameState) {
       isOk = await this.isNoPlayerAbsent();
@@ -175,7 +175,7 @@ export class NewRobotManager {
       return;
     }
 
-    console.warn("444 room %s step %s", this.room._id, this.model.step);
+    // console.warn("444 room %s step %s", this.room._id, this.model.step);
 
     await this.readyAndPlay();
   }
@@ -605,7 +605,7 @@ export class NewRobotManager {
       await this.save();
     }
 
-    console.warn("555 room %s step %s", this.room._id, this.model.step);
+    // console.warn("555 room %s step %s", this.room._id, this.model.step);
 
     if (this.model.step === RobotStep.waitOherDa) {
       return;
