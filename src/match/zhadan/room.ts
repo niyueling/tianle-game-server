@@ -449,8 +449,14 @@ class Room extends RoomBase {
       this.removeDisconnected(disconnectedItem)
     }
 
-    if (!this.gameState) {
-      await this.announcePlayerJoin(reconnectPlayer)
+    // 如果离线的时候房间已结束
+    if (!this.gameState || (this.gameState && this.gameState.state === 'gameOver')) {
+      if (this.isPublic) {
+        await this.forceDissolve();
+        return ;
+      } else {
+        await this.announcePlayerJoin(reconnectPlayer);
+      }
     }
 
     const i = this.snapshot.findIndex(p => p._id === reconnectPlayer._id)
@@ -693,7 +699,6 @@ class Room extends RoomBase {
     }
 
     // 如果离线的时候房间已结束
-    console.warn("gameState-%s, state-%s", this.gameState, this.gameState ? this.gameState.state : null);
     if (!this.gameState || (this.gameState && this.gameState.state === 'gameOver')) {
       // 金豆房直接解散房间
       if (this.isPublic) {

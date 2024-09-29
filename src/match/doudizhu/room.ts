@@ -407,7 +407,7 @@ class Room extends RoomBase {
       this.removeDisconnected(disconnectedItem)
     }
 
-    if (!this.gameState) {
+    if (!this.gameState || (this.gameState && this.gameState.state === 4)) {
       console.warn("gameState is dissolve");
       if (this.isPublic) {
         await this.forceDissolve();
