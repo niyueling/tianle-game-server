@@ -698,7 +698,13 @@ class Room extends RoomBase {
       this.updateDisconnectPlayerDissolveInfoAndBroadcast(player);
     }
 
-    // await this.forceDissolve()
+    // 如果离线的时候房间已结束
+    if (!this.gameState || (this.gameState && this.gameState.state === 'gameOver')) {
+      // 金豆房直接解散房间
+      if (this.isPublic) {
+        await this.forceDissolve();
+      }
+    }
 
     this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
     // this.removePlayer(player)

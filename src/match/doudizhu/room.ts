@@ -173,10 +173,9 @@ class Room extends RoomBase {
     this.capacity = this.rule.playerCount || 3;
     this.players = new Array(this.capacity).fill(null)
     this.playersOrder = new Array(this.capacity).fill(null)
-    this.disconnectCallback = messageBoyd => {
-
+    this.disconnectCallback = async messageBoyd => {
       const disconnectPlayer = this.getPlayerById(messageBoyd.from)
-      this.playerDisconnect(disconnectPlayer)
+      await this.playerDisconnect(disconnectPlayer)
     }
   }
 
@@ -493,7 +492,7 @@ class Room extends RoomBase {
     this.broadcast('room/dissolveReq', {ok: true, data: {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}})
   }
 
-  playerDisconnect(player) {
+  async playerDisconnect(player) {
     const p = player
     const index = this.players.indexOf(player)
     if (index === -1) {
@@ -514,9 +513,18 @@ class Room extends RoomBase {
       this.updateDisconnectPlayerDissolveInfoAndBroadcast(player)
     }
 
-    // this.forceDissolve();
+    // 如果离线的时候房间已结束
+    if (!this.gameState || (this.gameState && this.gameState.state === 4)) {
+      // 金豆房直接解散房间
+      if (this.isPublic) {
+        await this.forceDissolve();
+      }
+    }
 
-    this.broadcast('room/playerDisconnect', {ok: true, data: {index: this.players.indexOf(player)}}, player.msgDispatcher)
+    this.broadcast('room/playerDisconnect', {
+      ok: true,
+      data: {index: this.players.indexOf(player)}
+    }, player.msgDispatcher)
     // this.removePlayer(player)
     // this.disconnected.push([player._id, index])
     this.emit('disconnect', p._id)
