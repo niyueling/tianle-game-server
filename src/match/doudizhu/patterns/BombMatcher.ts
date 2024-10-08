@@ -45,7 +45,7 @@ export default class BombMatcher implements IMatcher {
         }
         return grp1[0].point - grp2[0].point
       })
-      .filter(group => this.verify(group).score > target.score);
+      .filter(group => this.verify(group) && this.verify(group).score > target.score);
 
     // 检查王炸
     const jokers = cards.filter(c => c.type === CardType.Joker);
