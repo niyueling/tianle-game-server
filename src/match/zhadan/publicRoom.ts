@@ -98,7 +98,30 @@ export class PublicRoom extends Room {
     } catch(e) {
       console.warn(e);
     }
+  }
 
+  async addBombScore(winnerId, failId, score) {
+    console.warn("winnerId %s failId %s score %s", winnerId, failId, score);
+
+    // 输家扣除金豆
+    const failIndex = this.players.findIndex(player => player && player.model._id.toString() === failId.toString());
+
+    if (failIndex !== -1) {
+      const findPlayer = this.players[failIndex];
+      await this.updatePlayer(failId, -score);
+      findPlayer.model = await service.playerService.getPlayerPlainModel(failId);
+      findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
+    }
+
+    // 赢家金豆
+    const winnerIndex = this.players.findIndex(player => player && player.model._id.toString() === winnerId.toString());
+
+    if (winnerIndex !== -1) {
+      const findPlayer = this.players[winnerIndex];
+      await this.updatePlayer(winnerId, score);
+      findPlayer.model = await service.playerService.getPlayerPlainModel(winnerId);
+      findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
+    }
   }
 
   // 更新 player model

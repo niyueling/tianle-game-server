@@ -297,22 +297,13 @@ export default class NormalTable extends Table {
     let bombLen = bomb.cards.length
 
     if (bomb.cards.every(c => c.type === CardType.Joker)) {
-      return Math.pow(2, bombLen)
-      // if (this.rule.ro.maxJokerBomb > 16) {
-      //   return Math.min(this.rule.ro.maxJokerBomb, jokerBombScore)
-      // }
-      // return 16
+      return Math.pow(2, bombLen);
     }
     if (bomb.cards.some(c => c.value === 2)) {
-      bombLen += 1
+      bombLen += 1;
     }
-    if (bombLen < 5) return 0
-    // if (this && this.rule.ro.maxBombLevel && bombLen > this.rule.ro.maxBombLevel) {
-    //   bombLen = this.rule.ro.maxBombLevel
-    // }
-    // if (bombLen > 13) {
-    //   bombLen = 13;
-    // }
+    if (bombLen < 5) return 0;
+
     return Math.pow(2, bombLen - 5)
   }
 

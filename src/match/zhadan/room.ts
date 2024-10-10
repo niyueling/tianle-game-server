@@ -426,6 +426,10 @@ class Room extends RoomBase {
     this.scoreMap[playerId] += v;
   }
 
+  async addBombScore(winnerId, failId, score) {
+    console.warn("winnerId %s failId %s score %s", winnerId, failId, score);
+  }
+
   removeDisconnected(item) {
     for (let i = 0; i < this.disconnected.length; i++) {
       if (this.disconnected[i] === item) {

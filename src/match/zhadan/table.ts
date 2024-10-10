@@ -30,6 +30,7 @@ import Rule from './Rule'
 import {shopPropType, TianleErrorCode} from "@fm/common/constants";
 import GoodsProp from "../../database/models/GoodsProp";
 import PlayerProp from "../../database/models/PlayerProp";
+import Enums from "./enums";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -375,7 +376,7 @@ abstract class Table implements Serializable {
   listenPlayer(player: PlayerState) {
     this.listenerOn = ['game/da', 'game/guo', 'game/cancelDeposit', 'game/refresh']
 
-    player.msgDispatcher.on('game/da', msg => this.onPlayerDa(player, msg))
+    player.msgDispatcher.on('game/da', async msg => await this.onPlayerDa(player, msg))
     player.msgDispatcher.on('game/guo', msg => this.onPlayerGuo(player))
     player.msgDispatcher.on('game/cancelDeposit', msg => this.onCancelDeposit(player))
     // 手动刷新
@@ -390,7 +391,7 @@ abstract class Table implements Serializable {
     this.autoCommitFunc()
   }
 
-  autoCommitForPlayers() {
+  async autoCommitForPlayers() {
     const player = this.players.find(x => x.seatIndex === this.currentPlayerStep)
     if (!player || player.msgDispatcher.isRobot()) {
       // 忽略机器人
@@ -402,12 +403,12 @@ abstract class Table implements Serializable {
 
     if (!this.canGuo()) {
       const cards = this.promptWithFirstPlay(player);
-      return this.onPlayerDa(player, {cards: cards})
+      return await this.onPlayerDa(player, {cards: cards})
     }
 
     const cards = this.promptWithPattern(player);
     if (cards.length > 0) {
-      return this.onPlayerDa(player, {cards: cards})
+      return await this.onPlayerDa(player, {cards: cards})
     }
 
     return this.guoPai(player);
@@ -475,28 +476,28 @@ abstract class Table implements Serializable {
     this.autoCommitStartTime = Date.now();
     const primaryDelayTime = playerIsOndeposit ? 1000 : time * 1000
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime)
-    this.autoCommitTimer = setTimeout(() => {
-      this.autoCommitForPlayers()
+    this.autoCommitTimer = setTimeout(async () => {
+      await this.autoCommitForPlayers()
     }, delayTime)
   }
 
-  onPlayerDa(player, {cards: plainCards}, onDeposit?) {
+  async onPlayerDa(player, {cards: plainCards}, onDeposit?) {
     if (!this.isCurrentStep(player)) {
       this.daPaiFail(player, TianleErrorCode.notDaRound);
-      return
+      return;
     }
     const cards = plainCards.map(Card.from);
     this.status.lastIndex = this.currentPlayerStep;
     const currentPattern = isGreaterThanPatternForPlainCards(plainCards, this.status.lastPattern, player.cards.length);
 
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
-      this.daPai(player, cards, currentPattern, onDeposit)
+      await this.daPai(player, cards, currentPattern, onDeposit)
     } else {
       this.cannotDaPai(player, cards)
     }
   }
 
-  daPai(player: PlayerState, cards: Card[], pattern: IPattern, onDeposit?) {
+  async daPai(player: PlayerState, cards: Card[], pattern: IPattern, onDeposit?) {
 
     player.daPai(cards.slice(), pattern)
     const remains = player.remains
@@ -527,24 +528,28 @@ abstract class Table implements Serializable {
       }
     })
 
-    // if (player.cards.length === 0 && player.onDeposit) {
-    //   player.onDeposit = false;
-    //   player.sendMessage('game/cancelDepositReply', {ok: true, data: {cards: player.cards}})
-    // }
-
     const isGameOver = this.isGameOver()
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
+    const score = this.bombScorer(pattern);
 
-    this.room.broadcast('game/otherDa', {ok: true, data: {
+    this.room.broadcast('game/otherDa', {
+      ok: true, data: {
         cards,
         remains,
         index: player.seatIndex,
         next: nextPlayer,
         pattern: this.status.lastPattern,
         fen: this.status.fen,
-        bomb: this.bombScorer(pattern),
+        bomb: score,
         newBombScore: player.bombScore(this.bombScorer.bind(this))
-      }})
+      }
+    })
+
+    // 实时结算炸弹分数
+    if (this.room.isPublic) {
+      await this.calcBombScore(player, score);
+    }
+
     this.notifyTeamMateWhenTeamMateWin(player, cards)
     if (this.players[nextPlayer]) {
       this.autoCommitFunc(this.players[nextPlayer].onDeposit)
@@ -556,6 +561,52 @@ abstract class Table implements Serializable {
       console.log('game over set seatIndex -1');
       this.gameOver()
     }
+  }
+
+  async calcBombScore(player, multiple) {
+    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
+    let goldNumber = conf.base * conf.Ante * multiple;
+    const changeGolds = [{index: 0, gold: 0, residueGold: 0, broke: false},
+      {index: 1, gold: 0, residueGold: 0, broke: false},{index: 2, gold: 0, residueGold: 0, broke: false},
+      {index: 3, gold: 0, residueGold: 0, broke: false}];
+
+    for (let i = 0; i < this.players.length; i ++) {
+      const p = this.players[i];
+      let changeGold = goldNumber;
+      if (p._id.toString() !== player._id.toString()) {
+        const currency = await this.PlayerGoldCurrency(p._id);
+        if (changeGold > currency) {
+          changeGold = currency;
+        }
+
+        changeGolds[i].gold -= changeGold;
+        changeGolds[player.seatIndex].gold += changeGold;
+
+        // 输家扣除金豆，赢家增加金豆
+        await this.room.addBombScore(player._id, p._id, changeGold);
+
+        const pModel = await service.playerService.getPlayerModel(p._id);
+        changeGolds[i].residueGold = pModel.gold;
+        changeGolds[i].broke = changeGolds[i].residueGold > 0;
+      }
+    }
+
+    const playerModel = await service.playerService.getPlayerModel(player._id);
+    changeGolds[player.seatIndex].residueGold = playerModel.gold;
+    changeGolds[player.seatIndex].broke = changeGolds[player.seatIndex].residueGold > 0;
+
+    this.room.broadcast("game/playerChangeGolds", {ok: true, data: changeGolds});
+  }
+
+  // 根据币种类型获取币种余额
+  async PlayerGoldCurrency(playerId) {
+    const model = await service.playerService.getPlayerModel(playerId);
+
+    if (this.rule.currency === Enums.goldCurrency) {
+      return model.gold;
+    }
+
+    return model.tlGold;
   }
 
   async restoreMessageForPlayer(player: PlayerState) {
