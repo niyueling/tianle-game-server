@@ -110,7 +110,6 @@ export class PublicRoom extends Room {
       const findPlayer = this.players[failIndex];
       await this.updatePlayer(failId, -score);
       findPlayer.model = await service.playerService.getPlayerPlainModel(failId);
-      findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
     }
 
     // 赢家金豆
@@ -120,7 +119,6 @@ export class PublicRoom extends Room {
       const findPlayer = this.players[winnerIndex];
       await this.updatePlayer(winnerId, score);
       findPlayer.model = await service.playerService.getPlayerPlainModel(winnerId);
-      findPlayer.sendMessage('resource/update', {ok: true, data: pick(findPlayer.model, ['gold', 'diamond', 'tlGold'])})
     }
   }
 

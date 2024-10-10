@@ -546,7 +546,7 @@ abstract class Table implements Serializable {
     })
 
     // 实时结算炸弹分数
-    if (this.room.isPublic) {
+    if (this.room.isPublic && score > 0) {
       await this.calcBombScore(player, score);
     }
 
@@ -587,13 +587,13 @@ abstract class Table implements Serializable {
 
         const pModel = await service.playerService.getPlayerModel(p._id);
         changeGolds[i].residueGold = pModel.gold;
-        changeGolds[i].broke = changeGolds[i].residueGold > 0;
+        changeGolds[i].broke = changeGolds[i].residueGold <= 0;
       }
     }
 
     const playerModel = await service.playerService.getPlayerModel(player._id);
     changeGolds[player.seatIndex].residueGold = playerModel.gold;
-    changeGolds[player.seatIndex].broke = changeGolds[player.seatIndex].residueGold > 0;
+    changeGolds[player.seatIndex].broke = changeGolds[player.seatIndex].residueGold <= 0;
 
     this.room.broadcast("game/playerChangeGolds", {ok: true, data: changeGolds});
   }
