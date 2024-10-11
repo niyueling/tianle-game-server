@@ -604,7 +604,11 @@ abstract class Table implements Serializable {
 
     this.notifyTeamMateWhenTeamMateWin(player, cards)
     if (this.players[nextPlayer]) {
-      this.autoCommitFunc(this.players[nextPlayer].onDeposit)
+      if (this.players[nextPlayer].broke) {
+        this.onPlayerGuo(this.players[nextPlayer]);
+      } else {
+        this.autoCommitFunc(this.players[nextPlayer].onDeposit)
+      }
     }
     if (isGameOver) {
       this.showGameOverPlayerCards()
@@ -846,7 +850,11 @@ abstract class Table implements Serializable {
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
 
     if (this.players[nextPlayer]) {
-      this.autoCommitFunc(this.players[nextPlayer].onDeposit)
+      if (this.players[nextPlayer].broke) {
+        this.onPlayerGuo(this.players[nextPlayer]);
+      } else {
+        this.autoCommitFunc(this.players[nextPlayer].onDeposit)
+      }
     }
   }
 
