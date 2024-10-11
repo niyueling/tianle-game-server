@@ -37,7 +37,7 @@ export default class NormalTable extends Table {
     } else {
       await this.fapai();
     }
-    // await this.publicRoomFapai();
+
     if (!this.selectFriendCard(this.players[0].cards)) {
       const player0 = this.players[0]
       const player1 = this.players[1]
@@ -49,8 +49,6 @@ export default class NormalTable extends Table {
       player1.cards.push(card0)
     }
 
-    await this.fourJokersReward();
-
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       // 判断是否使用记牌器
@@ -59,20 +57,18 @@ export default class NormalTable extends Table {
     }
 
     const shuffleData = this.room.shuffleData.map(x => {
-      const p = this.players.find(y => y.model._id === x)
-      return p.index
+      const p = this.players.find(y => y.model._id === x);
+      return p.index;
     })
-    this.shuffleDelayTime = Date.now() + this.room.shuffleData.length * 5000
-    this.room.broadcast('game/shuffleData', {ok: true, data: {shuffleData}})
-    this.status.current.seatIndex = -1
-    // console.log('fai pa seatIndex -1');
+    this.shuffleDelayTime = Date.now() + this.room.shuffleData.length * 5000;
+    this.room.broadcast('game/shuffleData', {ok: true, data: {shuffleData}});
+    this.status.current.seatIndex = -1;
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
       await this.room.payRubyForStart();
     }
-    this.broadcastModeRequest();
 
-    await this.room.robotManager.setCardReady();
+    await this.broadcastModeRequest();
   }
 
   resume(json) {
@@ -85,41 +81,15 @@ export default class NormalTable extends Table {
     return super.toJSON()
   }
 
-  private broadcastModeRequest() {
+  private async broadcastModeRequest() {
     this.tableState = 'selectMode';
     for (const player of this.players) {
       if (player.mode === 'unknown') {
-        player.msgDispatcher.on('game/selectMode', async ({mode}) => {
-          await this.onSelectMode(player, mode)
-          this.room.emit('selectMode', {});
-        })
-        player.sendMessage('game/startSelectMode', {ok: true, data: {}})
+        await this.onSelectMode(player, "teamwork")
+        this.room.emit('selectMode', {});
       }
     }
-    this.autoModeTimeFunc()
   }
-
-  autoModeTimeFunc() {
-    const extraDelayTime = Math.floor((this.shuffleDelayTime - Date.now()) / 1000)
-    const delayTime = 30 + extraDelayTime
-    this.selectModeTimeout = setTimeout(async () => {
-      // 初始化机器人 model(所有人都在线的话，不会加 model)
-      if (!this.room.robotManager) {
-        // 房间解散了
-        console.error('room dissolve')
-        clearTimeout(this.selectModeTimeout);
-        return;
-      }
-      if (this.players.some(p => p.mode === 'solo')) {
-        this.nextAction = this.startSoloModeGame
-      } else {
-        this.nextAction = this.startTeamworkGame
-      }
-      this.tableState = '';
-      this.next()
-    }, ms(delayTime + 's'))
-  }
-
   @once
   private next() {
 
@@ -136,8 +106,8 @@ export default class NormalTable extends Table {
   }
 
   async onSelectMode(player: PlayerState, mode: 'teamwork' | 'solo') {
-    player.mode = mode
-    player.record(`select-${mode}`, [])
+    player.mode = mode;
+    player.record(`select-${mode}`, []);
     const isOk = await this.canStartGame();
     if (isOk) {
       this.next()
@@ -157,75 +127,32 @@ export default class NormalTable extends Table {
   async canStartGame(): Promise<boolean> {
     for (const player of this.players) {
       if (player.mode === 'unknown') {
-        return false
-      }
-
-      if (player.mode === 'solo') {
-        this.nextAction = this.startSoloModeGame
-        return true
+        return false;
       }
     }
-    this.nextAction = this.startTeamworkGame
+    this.nextAction = this.startTeamworkGame;
     return true
   }
 
-  startSoloModeGame() {
-    let startPlayerIndex = 0
-    for (const [i, player] of this.players.entries()) {
-      if (player.mode === 'solo') {
-        startPlayerIndex = i
-        this.soloPlayerIndex = i
-        break;
-      }
-    }
-    this.room.broadcast('game/gameMode', {ok: true, data: {
-        mode: 'solo',
-        soloPlayer: startPlayerIndex,
-        soloPlayerName: this.players[startPlayerIndex].model.nickname
-      }})
-    this.setFirstDa(startPlayerIndex)
-    this.players.forEach(p => p.team = Team.AwayTeam)
-    this.players[startPlayerIndex].team = Team.HomeTeam
-    this.mode = 'solo'
-
-    const firstDaFunc = async() => {
-      this.broadcastFirstDa()
-    }
-
-    setTimeout(firstDaFunc, 1000);
-  }
-
   broadcastFirstDa() {
-    this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
+    this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}});
   }
 
   private beTeamMate(team: PlayerState[]) {
-    team[0].teamMate = team[1].index
-    team[1].teamMate = team[0].index
+    team[0].teamMate = team[1].index;
+    team[1].teamMate = team[0].index;
   }
 
   setTeamMate() {
-    this.beTeamMate(this.homeTeamPlayers())
-    this.beTeamMate(this.awayTeamPlayers())
+    this.beTeamMate(this.homeTeamPlayers());
+    this.beTeamMate(this.awayTeamPlayers());
   }
 
   startTeamworkGame() {
-    const zhuang = this.players[0]
-    this.friendCard = this.selectFriendCard(zhuang.cards)
-
-    for (const p of this.players) {
-      if (p.cards.find(c => Card.compare(this.friendCard, c) === 0)) {
-        p.team = Team.HomeTeam
-      } else {
-        p.team = Team.AwayTeam
-      }
-    }
-    this.setTeamMate()
-
-    this.setFirstDa(0)
-    this.mode = 'teamwork'
-    this.room.broadcast('game/gameMode', {ok: true, data: {mode: 'teamwork', friendCard: this.friendCard}})
-    this.broadcastFirstDa()
+    this.setTeamMate();
+    this.setFirstDa(0);
+    this.mode = 'teamwork';
+    this.broadcastFirstDa();
   }
 
   selectFriendCard(cards: Card[]): Card {

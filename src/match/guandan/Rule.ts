@@ -75,7 +75,7 @@ class Rule {
     return this.ro.useJoker
   }
   get jokerCount(): number {
-    return this.ro.jokerCount
+    return this.ro.jokerCount || 4
   }
 
   get shaoJi() {

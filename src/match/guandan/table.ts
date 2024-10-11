@@ -218,17 +218,12 @@ abstract class Table implements Serializable {
       p.resume(tableStateJson.gameState.players[i])
     }
 
-    if (this.tableState === 'selectMode') {
-      this.autoModeTimeFunc()
-    }
     this.autoCommitFunc()
   }
 
   abstract name()
 
   abstract async start()
-
-  abstract autoModeTimeFunc()
 
   async initPlayers() {
     const room = this.room
@@ -276,46 +271,12 @@ abstract class Table implements Serializable {
     return this.rule.useJoker ? 27 : 26;
   }
 
-  async fourJokersReward() {
-
-    const fourJokerReward = this.rule.specialReward
-    if (!fourJokerReward || fourJokerReward <= 0) {
-      return
-    }
-    if (this.room.game.juIndex > 1) {
-      this.players.forEach(async p => {
-        if (this.haveFourJokers(p)) {
-          await PlayerModel.findByIdAndUpdate(p._id,
-            {$inc: {redPocket: fourJokerReward}},
-            {new: true})
-
-          await RedPocketRecordModel.create({
-            player: p._id, amountInFen: fourJokerReward,
-            createAt: new Date(), from: `四王奖励 room:${this.room._id}`
-          })
-          const playerIndex = this.atIndex(p)
-          this.room.broadcast('room/fourJokersReward', {ok: true, data: {
-              playerId: p._id,
-              playerName: p.model.nickname,
-              index: playerIndex,
-              amountInFen: fourJokerReward
-            }})
-        }
-      })
-    }
-  }
-
   async fapai() {
 
     await this._fapai()
 
     if (this.players.some(p => this.haveFourJokers(p)) && this.rollReshuffle()) {
       this._fapai()
-    }
-
-    // 金豆房扣除开局金豆
-    if (this.room.gameRule.isPublic) {
-      await this.room.payRubyForStart();
     }
 
     this.players[0].team = this.players[2].team = Team.HomeTeam
@@ -332,12 +293,11 @@ abstract class Table implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       p.cards = playerCards[i].map(value => value.card);
-      // p.cards = [...p.cards, ...this.takeQuarterCards(p)];
     }
 
     // 分配队友
-    this.players[0].team = this.players[2].team = Team.HomeTeam
-    this.players[1].team = this.players[3].team = Team.AwayTeam
+    this.players[0].team = this.players[2].team = Team.HomeTeam;
+    this.players[1].team = this.players[3].team = Team.AwayTeam;
   }
 
   evictPlayer(evictPlayer: PlayerState) {

@@ -242,25 +242,6 @@ class CardManager {
     cards.push(new Card(CardType.Joker, 16));
     cards.push(new Card(CardType.Joker, 17));
     cards.push(new Card(CardType.Joker, 17));
-    const replace = [];
-    cards.forEach((value, index) => {
-      if (value.value === 3) {
-        replace.push(index);
-      }
-    });
-    let addJoker = 0;
-    if (jokerCount === 6) {
-      // 剔除 2 张3，换成 2 张大小王
-      addJoker = 2;
-    } else if (jokerCount === 8) {
-      // 8王，剔除 4张3，换成 4 张大小王
-      addJoker = 4;
-    }
-    service.utils.shuffleArray(replace);
-    for (let i = 0; i < addJoker; i++) {
-      // 偶数加小王，奇数加大王
-      cards[replace.shift()] = new Card(CardType.Joker, 16 + i % 2);
-    }
     return cards;
   }
 
@@ -336,9 +317,7 @@ class CardManager {
     const list = cardMap.getBoomCardValueList(exclude);
     const target = service.utils.sampleFromArray(list, uuid());
     const boomLength = service.utils.randomIntBetweenNumber(4, cardMap.getCardListByValue(target).length, uuid());
-    // if (boomLength === 8) {
-    //   console.log('full boom', target);
-    // }
+
     return cardMap.selectBoomCard(target, boomLength);
   }
 }
