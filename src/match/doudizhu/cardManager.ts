@@ -237,94 +237,109 @@ export class CardManager {
       }
 
       // 判断用户是否有炸弹，飞机，连对，顺子，各取一张牌，和其他用户的单张互换
-      // for (let i = 0; i < playerCards.length; i++) {
-      //   // 机器人不换牌
-      //   if (players[i].isRobot) {
-      //     continue;
-      //   }
-      //
-      //   // 判断是否有炸弹
-      //   let playerChangeCards = [];
-      //   let changeAllCards = [];
-      //   for (let k = CardTag.ha; k <= CardTag.hk; k++) {
-      //     const cardCount = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
-      //     if (cardCount === 4) {
-      //       playerChangeCards.push(k);
-      //       changeAllCards.push(k);
-      //     }
-      //   }
-      //
-      //   // 计算飞机
-      //   for (let k = CardTag.ha; k <= CardTag.hq; k++) {
-      //     const cardCount = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
-      //     const nextCardCount = playerCards[i].filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
-      //     if (cardCount >= 3 && nextCardCount >= 3) {
-      //       playerChangeCards.push(k);
-      //       changeAllCards.push(k);
-      //
-      //     }
-      //   }
-      //
-      //   // 计算顺子（换其中的单牌）
-      //   for (let k = CardTag.ha; k <= CardTag.h9; k++) {
-      //     const cardCount1 = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
-      //     const cardCount2 = playerCards[i].filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
-      //     const cardCount3 = playerCards[i].filter(c => [k + 2, k + 15, k + 28, k + 41].includes(c)).length;
-      //     const cardCount4 = playerCards[i].filter(c => [k + 3, k + 16, k + 29, k + 42].includes(c)).length;
-      //     const cardCount5 = playerCards[i].filter(c => [k + 4, k + 17, k + 30, k + 43].includes(c)).length;
-      //     if (cardCount1 && cardCount2 && cardCount3 && cardCount4 && cardCount5) {
-      //       for (let n = k; n < k + 5; n++) {
-      //         const cardCount = playerCards[i].filter(c => [n, n + 13, n + 26, n + 39].includes(c)).length;
-      //         if (cardCount === 1) {
-      //           playerChangeCards.push(n);
-      //           changeAllCards.push(n);
-      //           console.warn("index %s straights begin %s end %s can change card %s CardCount %s", i, k, k + 4, n, JSON.stringify([cardCount1, cardCount2, cardCount3, cardCount4, cardCount5]));
-      //           break;
-      //         }
-      //       }
-      //     }
-      //   }
-      //
-      //   // 从机器人手中去换牌
-      //   for (let j = 0; j < playerChangeCards.length; j++) {
-      //     const bombCard = playerChangeCards[j];
-      //     const bombCardIndex = playerCards[i].findIndex(c => c === bombCard);
-      //     for (let x = 0; x < playerCards.length; x++) {
-      //       if (!players[x].isRobot) {
-      //         continue;
-      //       }
-      //
-      //       // 计算用户单张对子数量
-      //       const playerDoubles = [];
-      //       for (let k = CardTag.ha; k <= CardTag.hk; k++) {
-      //         if (changeAllCards.includes(k)) {
-      //           continue;
-      //         }
-      //
-      //         const cardCount = playerCards[x].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
-      //         if (cardCount <= 2) {
-      //           playerDoubles.push(k);
-      //         }
-      //       }
-      //
-      //       const randomIndex = Math.floor(Math.random() * playerDoubles.length);
-      //       for (let k = 0; k < 4; k++) {
-      //         const cardIndex = playerCards[x].findIndex(c => c === playerDoubles[randomIndex] + k * 13);
-      //         if (cardIndex !== -1) {
-      //           const card = playerCards[x][cardIndex];
-      //           playerCards[x].splice(cardIndex, 1);
-      //           playerCards[i].splice(bombCardIndex, 1);
-      //           playerCards[i].push(card);
-      //           playerCards[x].push(bombCard);
-      //           console.warn("index %s card %s changeIndex %s changeCard %s change success", i, bombCard, x, card);
-      //           break;
-      //         }
-      //       }
-      //       playerDoubles.splice(randomIndex, 1);
-      //       break;
-      //     }
-      //   }
-      // }
+      for (let i = 0; i < playerCards.length; i++) {
+        // 机器人不换牌
+        if (players[i].isRobot) {
+          continue;
+        }
+
+        // 判断是否有炸弹
+        let playerChangeCards = [];
+        let changeAllCards = [];
+        for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+          const cardCount = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+          if (cardCount === 4) {
+            playerChangeCards.push(k);
+            changeAllCards.push(k);
+          }
+        }
+
+        // 计算飞机
+        for (let k = CardTag.ha; k <= CardTag.hq; k++) {
+          const cardCount = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+          const nextCardCount = playerCards[i].filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
+          if (cardCount >= 3 && nextCardCount >= 3) {
+            for (let vv = 0; vv < 4; vv++) {
+              const vvCardCount = playerCards[i].filter(c => c === k + vv * 13).length;
+              if (vvCardCount > 0) {
+                playerChangeCards.push(k + vv * 13);
+                changeAllCards.push(k + vv * 13);
+                break;
+              }
+            }
+          }
+        }
+
+        // 计算顺子（换其中的单牌）
+        for (let k = CardTag.ha; k <= CardTag.h9; k++) {
+          const cardCount1 = playerCards[i].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+          const cardCount2 = playerCards[i].filter(c => [k + 1, k + 14, k + 27, k + 40].includes(c)).length;
+          const cardCount3 = playerCards[i].filter(c => [k + 2, k + 15, k + 28, k + 41].includes(c)).length;
+          const cardCount4 = playerCards[i].filter(c => [k + 3, k + 16, k + 29, k + 42].includes(c)).length;
+          const cardCount5 = playerCards[i].filter(c => [k + 4, k + 17, k + 30, k + 43].includes(c)).length;
+          if (cardCount1 && cardCount2 && cardCount3 && cardCount4 && cardCount5) {
+            for (let n = k; n < k + 5; n++) {
+              const cardCount = playerCards[i].filter(c => [n, n + 13, n + 26, n + 39].includes(c)).length;
+              if (cardCount === 1) {
+                for (let vv = 0; vv < 4; vv++) {
+                  const vvCardCount = playerCards[i].filter(c => c === n + vv * 13).length;
+                  if (vvCardCount > 0) {
+                    playerChangeCards.push(n + vv * 13);
+                    changeAllCards.push(n + vv * 13);
+
+                    console.warn("index %s straights begin %s end %s can change card %s CardCount %s", i, k, k + 4, n, JSON.stringify([cardCount1, cardCount2, cardCount3, cardCount4, cardCount5]));
+                    break;
+                  }
+                }
+
+                break;
+              }
+            }
+          }
+        }
+
+        // 从机器人手中去换牌
+        for (let j = 0; j < playerChangeCards.length; j++) {
+          const bombCard = playerChangeCards[j];
+          const bombCardIndex = playerCards[i].findIndex(c => c === bombCard);
+          for (let x = 0; x < playerCards.length; x++) {
+            if (!players[x].isRobot) {
+              continue;
+            }
+
+            // 计算用户单张对子数量
+            const playerDoubles = [];
+            for (let k = CardTag.ha; k <= CardTag.hk; k++) {
+              if (changeAllCards.includes(k)) {
+                continue;
+              }
+
+              const cardCount = playerCards[x].filter(c => [k, k + 13, k + 26, k + 39].includes(c)).length;
+              if (cardCount <= 2) {
+                playerDoubles.push(k);
+              }
+            }
+
+            const randomIndex = Math.floor(Math.random() * playerDoubles.length);
+            for (let k = 0; k < 4; k++) {
+              const xCardIndex = playerCards[x].findIndex(c => c === playerDoubles[randomIndex] + k * 13);
+              const iCardIndex = playerCards[i].findIndex(c => c === bombCard);
+              if (xCardIndex !== -1 && iCardIndex !== -1) {
+                const card = playerCards[x][xCardIndex];
+                playerCards[x].splice(xCardIndex, 1);
+                playerCards[i].splice(bombCardIndex, 1);
+                playerCards[i].push(card);
+                playerCards[x].push(bombCard);
+                console.warn("changeA index %s card %s cardIndex %s", i, bombCard, bombCardIndex);
+                console.warn("changeB index %s card %s cardIndex %s", x, card, xCardIndex);
+                break;
+              }
+            }
+            playerDoubles.splice(randomIndex, 1);
+            break;
+          }
+        }
+      }
     }
 
     this.remainCardTags = newCardTags;
