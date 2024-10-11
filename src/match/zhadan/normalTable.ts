@@ -89,16 +89,16 @@ export default class NormalTable extends Table {
     this.tableState = 'selectMode';
     for (const player of this.players) {
       if (player.mode === 'unknown') {
-        if (this.room.isPublic) {
-          await this.onSelectMode(player, "teamwork");
-          this.room.emit('selectMode', {});
-        } else {
+        // if (this.room.isPublic) {
+        //   await this.onSelectMode(player, "teamwork");
+        //   this.room.emit('selectMode', {});
+        // } else {
           player.msgDispatcher.on('game/selectMode', async ({mode}) => {
             await this.onSelectMode(player, mode);
             this.room.emit('selectMode', {});
           })
           player.sendMessage('game/startSelectMode', {ok: true, data: {}})
-        }
+        // }
 
       }
     }

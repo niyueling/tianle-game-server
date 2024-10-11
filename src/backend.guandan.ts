@@ -25,7 +25,7 @@ if (!instanceId) {
   logger.info('run with instance_id id', instanceId)
 }
 async function boot() {
-  const cluster = `${hostname()}-zhadan-${instanceId}`
+  const cluster = `${hostname()}-guandan-${instanceId}`
 
   const process = new BackendProcessBuilder()
     .withGameName(GameType.guandan)
