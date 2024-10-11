@@ -118,6 +118,12 @@ class PlayerState implements Serializable {
   @autoSerialize
   dropped: any[]
 
+  // 是否机器人
+  robot: boolean = false;
+
+  // 是否破产
+  broke: boolean = false;
+
 
   constructor(userSocket, room, rule, isHelp = false) {
     this.room = room
@@ -133,13 +139,14 @@ class PlayerState implements Serializable {
     this.dropped = [];
     this.score = room.getScoreBy(userSocket)
     this.disconnectCallBack = player => {
-      if (player === this.msgDispatcher) {
+      if (player._id.toString() === this.msgDispatcher._id.toString()) {
         this.onDisconnect()
       }
     }
     this.listenDispatcher(userSocket)
     this.msgDispatcher = userSocket
     this.events = {}
+    this.robot = !!userSocket.isRobot();
 
     this.isOperated = false
     this.recorder = new DummyRecorder()

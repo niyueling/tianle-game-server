@@ -27,7 +27,7 @@ import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher"
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
-import {shopPropType, TianleErrorCode} from "@fm/common/constants";
+import {RobotStep, shopPropType, TianleErrorCode} from "@fm/common/constants";
 import GoodsProp from "../../database/models/GoodsProp";
 import PlayerProp from "../../database/models/PlayerProp";
 import Enums from "./enums";
@@ -162,6 +162,12 @@ abstract class Table implements Serializable {
   shuffleDelayTime: number = Date.now()
   bombScorer: (bomb: IPattern) => number
   private autoCommitTimer: NodeJS.Timer
+
+  // 等待复活人数
+  waitRechargeCount: number = 0;
+
+  // 已经复活人数
+  alreadyRechargeCount: number = 0;
 
   constructor(room, rule, restJushu) {
     this.restJushu = restJushu
@@ -378,6 +384,8 @@ abstract class Table implements Serializable {
 
     player.msgDispatcher.on('game/da', async msg => await this.onPlayerDa(player, msg))
     player.msgDispatcher.on('game/guo', msg => this.onPlayerGuo(player))
+    // 复活成功通知
+    player.msgDispatcher.on('game/restoreGame', msg => this.onPlayerRrestoreGame(player))
     player.msgDispatcher.on('game/cancelDeposit', msg => this.onCancelDeposit(player))
     // 手动刷新
     player.msgDispatcher.on('game/refresh', async () => {
@@ -497,6 +505,26 @@ abstract class Table implements Serializable {
     }
   }
 
+  async onPlayerRrestoreGame(player) {
+    this.alreadyRechargeCount++;
+    if (this.alreadyRechargeCount >= this.waitRechargeCount) {
+      this.room.robotManager.model.step = RobotStep.running;
+    }
+
+    // 接入托管
+    if (this.status.current.seatIndex !== -1 && this.status.current.seatIndex === player.seatIndex) {
+      if (this.players[this.status.current.seatIndex]) {
+        this.autoCommitFunc(this.players[this.status.current.seatIndex].onDeposit);
+      }
+    }
+
+    await this.room.broadcast('game/restoreGameReply', {
+      ok: true,
+      data: {roomId: this.room._id, index: player.seatIndex, step: this.room.robotManager.model.step}
+    });
+
+  }
+
   async daPai(player: PlayerState, cards: Card[], pattern: IPattern, onDeposit?) {
 
     player.daPai(cards.slice(), pattern)
@@ -566,6 +594,7 @@ abstract class Table implements Serializable {
   async calcBombScore(player, multiple) {
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
     let goldNumber = conf.base * conf.Ante * multiple;
+    const waits = [];
     const changeGolds = [{index: 0, gold: 0, residueGold: 0, broke: false},
       {index: 1, gold: 0, residueGold: 0, broke: false},{index: 2, gold: 0, residueGold: 0, broke: false},
       {index: 3, gold: 0, residueGold: 0, broke: false}];
@@ -573,7 +602,9 @@ abstract class Table implements Serializable {
     for (let i = 0; i < this.players.length; i ++) {
       const p = this.players[i];
       let changeGold = goldNumber;
-      if (p._id.toString() !== player._id.toString()) {
+
+      // 用户是被炸的玩家，并且用户未破产
+      if (p._id.toString() !== player._id.toString() && !p.broke) {
         const currency = await this.PlayerGoldCurrency(p._id);
         if (changeGold > currency) {
           changeGold = currency;
@@ -588,6 +619,33 @@ abstract class Table implements Serializable {
         const pModel = await service.playerService.getPlayerModel(p._id);
         changeGolds[i].residueGold = pModel.gold;
         changeGolds[i].broke = changeGolds[i].residueGold <= 0;
+
+        // 获取复活用户数据
+        let params = {
+          index: p.seatIndex,
+          robot: p.robot,
+          _id: p.model._id.toString(),
+          shortId: p.model.shortId,
+          broke: p.broke
+        };
+        if (changeGolds[i].broke) {
+          if (!params.robot) {
+            if (!p.broke) {
+              waits.push(params);
+            }
+          } else {
+            if (!p.broke) {
+              // 机器人破产,设置用户为破产状态
+              params.broke = true;
+              p.sendMessage("game/player-over", {ok: true, data: {
+                index: i,
+                _id: p.model._id.toString(),
+                shortId: p.model.shortId,
+                broke: p.broke
+              }})
+            }
+          }
+        }
       }
     }
 
@@ -596,6 +654,18 @@ abstract class Table implements Serializable {
     changeGolds[player.seatIndex].broke = changeGolds[player.seatIndex].residueGold <= 0;
 
     this.room.broadcast("game/playerChangeGolds", {ok: true, data: changeGolds});
+
+    if (waits.length > 0) {
+      const changeStateFunc = async() => {
+        this.room.robotManager.model.step = RobotStep.waitRuby;
+        this.waitRechargeCount = waits.length;
+
+        this.room.broadcast("game/waitRechargeReply", {ok: true, data: waits});
+      }
+
+      setTimeout(changeStateFunc, 2000);
+    }
+
   }
 
   // 根据币种类型获取币种余额
