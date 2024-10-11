@@ -391,6 +391,8 @@ abstract class Table implements Serializable {
     player.msgDispatcher.on('game/refresh', async () => {
       player.sendMessage('room/refresh', {ok: true, data: await this.restoreMessageForPlayer(player)});
     })
+    // 破产接口
+    player.msgDispatcher.on('game/broke', async msg => await this.onPlayerBroke(player))
   }
 
   onCancelDeposit(player: PlayerState) {
@@ -518,11 +520,33 @@ abstract class Table implements Serializable {
       }
     }
 
-    await this.room.broadcast('game/restoreGameReply', {
+    this.room.broadcast('game/restoreGameReply', {
       ok: true,
       data: {roomId: this.room._id, index: player.seatIndex, step: this.room.robotManager.model.step}
     });
+  }
 
+  async onPlayerBroke(player) {
+    if (!player.robot) {
+      this.alreadyRechargeCount++;
+      if (this.alreadyRechargeCount >= this.waitRechargeCount) {
+        this.room.robotManager.model.step = RobotStep.running;
+      }
+    }
+
+    // 如果牌局是当前用户操作，则自动过牌
+    if (this.status.current.seatIndex !== -1 && this.status.current.seatIndex === player.seatIndex) {
+      this.onPlayerGuo(player);
+    }
+
+    player.broke = true;
+
+    this.room.broadcast("game/player-over", {ok: true, data: {
+        index: player.seatIndex,
+        _id: player.model._id.toString(),
+        shortId: player.model.shortId,
+        broke: player.broke
+      }})
   }
 
   async daPai(player: PlayerState, cards: Card[], pattern: IPattern, onDeposit?) {
@@ -637,7 +661,7 @@ abstract class Table implements Serializable {
             if (!p.broke) {
               // 机器人破产,设置用户为破产状态
               params.broke = true;
-              p.sendMessage("game/player-over", {ok: true, data: {
+              this.room.broadcast("game/player-over", {ok: true, data: {
                 index: i,
                 _id: p.model._id.toString(),
                 shortId: p.model.shortId,
