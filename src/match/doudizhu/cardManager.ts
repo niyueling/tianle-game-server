@@ -115,7 +115,9 @@ export class CardManager {
       //   }
       // }
 
+      const allocationBombs = [];
       for (let i = 0; i < playerCards.length; i++) {
+        allocationBombs[i] = [];
         // 真实用户不介入发牌
         if (!players[i].isRobot) {
           continue;
@@ -129,6 +131,7 @@ export class CardManager {
         // 机器人先发0-2个炸弹
         const bombCount = Math.floor(Math.random() * 2);
         for (let j = 0; j < bombCount; j++) {
+          allocationBombs[i][j] = [];
           const isJokerBomb = Math.random() < 0.05;
           const jokerBombCount = newCardTags.filter(c => c > CardTag.dk).length;
           // console.warn("isJokerBomb-%s, jokerBombCount-%s, status-%s", isJokerBomb, jokerBombCount, isJokerBomb && jokerBombCount === 2);
@@ -147,17 +150,21 @@ export class CardManager {
 
           // 发放其他炸弹
           const randomIndex = Math.floor(Math.random() * bombs.length);
+
           for (let k = 0; k < 4; k++) {
             const cardIndex = newCardTags.findIndex(c => c === bombs[randomIndex] + k * 13);
             // console.warn("randomIndex-%s, boomCard-%s, card-%s, cardIndex-%s", randomIndex, bombs[randomIndex], bombs[randomIndex] + k * 13, cardIndex);
             if (cardIndex !== -1) {
               const card = newCardTags[cardIndex];
+              allocationBombs[i][j].push(card);
               newCardTags.splice(cardIndex, 1);
               playerCards[i].push(card);
             }
           }
           bombs.splice(randomIndex, 1);
         }
+
+        console.warn("index %s allocationBombs %s", i, JSON.stringify(allocationBombs[i]));
 
         // 根据随机数，给机器人派发1飞机/2两个三张/3顺子(5顺子)
         const randomNum = Math.random();
