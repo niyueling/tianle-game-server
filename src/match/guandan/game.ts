@@ -1,6 +1,7 @@
 import {autoSerialize, Serializable, serialize, serializeHelp} from "../serializeDecorator";
 import NormalTable from './normalTable'
 import Rule from './Rule'
+import {Team} from "./table"
 
 export default class Game implements Serializable {
   @serialize
@@ -21,12 +22,28 @@ export default class Game implements Serializable {
 
   startGame(room) {
     if (!room.isPublic) {
-      this.juShu--
+      // 根据juShu参数判断是否游戏结束
+      // this.juShu--
       this.juIndex++
-    } else {
-      // 金豆房，只要添加第几局
-      this.juIndex++;
     }
+
+    if (room.isPublic) {
+      // 金豆房如果过A，级牌回2
+      this.juIndex++
+    }
+
+    // 如果是第一局，队友级牌和对手级牌都设置为2
+    if (this.juIndex === 1) {
+      room.homeTeamCard = 2;
+      room.awayTeamCard = 2;
+      room.currentLevelCard = room.homeTeamCard;
+    }
+
+    // 如果不是第一局，根据上一局情况，判断队友级牌和对手级牌
+    if (this.juIndex > 1) {
+
+    }
+
     return this.createTable(room)
   }
 

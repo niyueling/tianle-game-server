@@ -178,14 +178,14 @@ class PlayerState implements Serializable {
     }
   }
 
-  onShuffle(remainCards, juShu, cards: Card[], seatIndex, juIndex, needShuffle = false, cardRecorderStatus) {
+  onShuffle(remainCards, juShu, cards: Card[], seatIndex, juIndex, needShuffle = false, cardRecorderStatus, levelCardArray) {
     this.cards = cards
     this.index = seatIndex
 
     this.recorder.recordUserEvent(this, 'shuffle')
     this.unusedJokers = this.cards.filter(c => c.type === CardType.Joker).length
 
-    this.sendMessage('game/ShuffleCards', {ok: true, data: {juShu, cards, remainCards, juIndex, needShuffle, cardRecorderStatus}})
+    this.sendMessage('game/ShuffleCards', {ok: true, data: {juShu, cards, remainCards, juIndex, needShuffle, cardRecorderStatus, levelCardArray}})
   }
 
   tryDaPai(daCards) {

@@ -1,10 +1,9 @@
 import {GameType} from "@fm/common/constants";
-import * as ms from "ms"
 import {service} from "../../service/importService";
 import Card, {CardType} from "./card"
 import {groupBy, IPattern, PatterNames} from "./patterns/base"
 import PlayerState from "./player_state"
-import Table, {Team} from "./table"
+import Table from "./table"
 import Enums from "./enums";
 
 function once(target, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -38,22 +37,12 @@ export default class NormalTable extends Table {
       await this.fapai();
     }
 
-    if (!this.selectFriendCard(this.players[0].cards)) {
-      const player0 = this.players[0]
-      const player1 = this.players[1]
-
-      const card0 = player0.cards.pop()
-      const card1 = player1.cards.pop()
-
-      player0.cards.push(card1)
-      player1.cards.push(card0)
-    }
-
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       // 判断是否使用记牌器
       const cardRecorderStatus = await this.getCardRecorder(p);
-      p.onShuffle(0, this.restJushu, p.cards, i, this.room.game.juIndex, this.room.shuffleData.length > 0, cardRecorderStatus);
+      p.onShuffle(0, this.restJushu, p.cards, i, this.room.game.juIndex, this.room.shuffleData.length > 0,
+        cardRecorderStatus, {homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard, currentLevelCard: this.room.currentLevelCard});
     }
 
     const shuffleData = this.room.shuffleData.map(x => {
@@ -107,7 +96,7 @@ export default class NormalTable extends Table {
     this.autoCommitFunc()
   }
 
-  async onSelectMode(player: PlayerState, mode: 'teamwork' | 'solo') {
+  async onSelectMode(player: PlayerState, mode: 'teamwork') {
     player.mode = mode;
     player.record(`select-${mode}`, []);
     const isOk = await this.canStartGame();
@@ -175,14 +164,6 @@ export default class NormalTable extends Table {
         this.awayTeamPlayers().some(p => p.cards.length === 0)
     }
     return super.isGameOver()
-  }
-
-  private winFromTeam(winTeam: PlayerState[], loseTeam: PlayerState[], score: number) {
-    for (const winner of winTeam) {
-      for (const loser of loseTeam) {
-        winner.winFrom(loser, score)
-      }
-    }
   }
 
   bombScorer = (bomb: IPattern) => {
