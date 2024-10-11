@@ -70,7 +70,7 @@ export default class NormalTable extends Table {
     if (this.room.gameRule.isPublic) {
       await this.room.payRubyForStart();
     }
-    this.broadcastModeRequest();
+    await this.broadcastModeRequest();
 
     await this.room.robotManager.setCardReady();
   }
@@ -85,15 +85,23 @@ export default class NormalTable extends Table {
     return super.toJSON()
   }
 
-  private broadcastModeRequest() {
+  private async broadcastModeRequest() {
     this.tableState = 'selectMode';
     for (const player of this.players) {
       if (player.mode === 'unknown') {
-        player.msgDispatcher.on('game/selectMode', async ({mode}) => {
-          await this.onSelectMode(player, mode)
+
+
+        if (this.room.isPublic) {
+          await this.onSelectMode(player, "teamwork");
           this.room.emit('selectMode', {});
-        })
-        player.sendMessage('game/startSelectMode', {ok: true, data: {}})
+        } else {
+          player.msgDispatcher.on('game/selectMode', async ({mode}) => {
+            await this.onSelectMode(player, mode);
+            this.room.emit('selectMode', {});
+          })
+          player.sendMessage('game/startSelectMode', {ok: true, data: {}})
+        }
+
       }
     }
     this.autoModeTimeFunc()
