@@ -598,9 +598,9 @@ abstract class Table implements Serializable {
     })
 
     // 实时结算炸弹分数
-    if (this.room.isPublic && score > 0) {
-      await this.calcBombScore(player, score);
-    }
+    // if (this.room.isPublic && score > 0) {
+    //   await this.calcBombScore(player, score);
+    // }
 
     this.notifyTeamMateWhenTeamMateWin(player, cards)
     if (this.players[nextPlayer]) {
@@ -615,7 +615,7 @@ abstract class Table implements Serializable {
       player.zhua(this.status.fen)
       this.status.current.seatIndex = -1
       console.log('game over set seatIndex -1');
-      this.gameOver()
+      await this.gameOver()
     }
   }
 
