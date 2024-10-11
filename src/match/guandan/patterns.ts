@@ -174,8 +174,6 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
   return [...prompts, ...bombPrompts]
 }
 
-/* share with client side */
-
 // noinspection JSUnusedGlobalSymbols
 export function findFullMatchedPatternForPlainCard(cards: any[]): IPattern | null {
   return findFullMatchedPattern(cards.map(pc => Card.from(pc)))

@@ -19,21 +19,23 @@ export default class Game implements Serializable {
   lastWinnerShortId: number;
 
   constructor(ruleObj) {
-    this.rule = new Rule(ruleObj)
-    this.juShu = ruleObj.juShu
+    this.rule = new Rule(ruleObj);
+    this.juShu = ruleObj.juShu;
     this.juIndex = 0;
     // 最后胜利的玩家
     this.lastWinnerShortId = -1;
-    this.reset()
+    this.reset();
   }
 
   startGame(room) {
     if (!room.isPublic) {
-      this.juShu--
+      // 根据juShu参数判断是否游戏结束
+      // this.juShu--
       this.juIndex++
     }
 
     if (room.isPublic) {
+      // 金豆房如果过A，级牌回2
       this.juIndex++
     }
 

@@ -197,26 +197,7 @@ class Room extends RoomBase {
   }
 
   static roomFee(rule): number {
-    const creatorFeeMap = {
-      5: 4, 10: 8, // old config
-      4: 2, 8: 4, 12: 6
-    }
-
-    const shareFeeMap = {
-      5: 1, 10: 2,
-      4: 1, 8: 1, 12: 2
-    }
-
-    const juShu = rule.juShu
-    // if (rule.clubPersonalRoom === false) {
-    //   return creatorFeeMap[juShu] || 6
-    // }
-
-    if (rule.share) {
-      return shareFeeMap[juShu] || 2
-    }
-
-    return creatorFeeMap[juShu] || 6
+    return 0;
   }
 
   // 30 分钟房间没动静就结束

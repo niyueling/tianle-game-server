@@ -1,14 +1,8 @@
 // @ts-ignore
 import {pick, remove} from 'lodash'
 import * as winston from 'winston'
-import PlayerModel from "../../database/models/player";
-import PlayerHelpDetail from "../../database/models/playerHelpModel";
-import RateRecordModel from "../../database/models/rateRecord";
-import {RedPocketRecordModel} from "../../database/models/redPocketRecord";
-import TreasureBox from "../../database/models/treasureBox";
 import GameRecorder from '../../match/GameRecorder'
 import {service} from "../../service/importService";
-import algorithm from "../../utils/algorithm";
 import alg from "../../utils/algorithm";
 import {eqlModelId} from "../modelId"
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, serializeHelp} from "../serializeDecorator"
@@ -649,15 +643,6 @@ abstract class Table implements Serializable {
     }
   }
 
-  calcExtraBomb() {
-    for (const winner of this.players) {
-      const allBombScore = winner.bombScore(this.bombScorer)
-      for (const loser of this.players) {
-        winner.winFrom(loser, allBombScore, 'bomb')
-      }
-    }
-  }
-
   atIndex(player: PlayerState) {
     return this.players.findIndex(p => p._id === player._id)
   }
@@ -715,19 +700,14 @@ abstract class Table implements Serializable {
         }
       }
 
-      if (this.mode === 'solo' && !this.rule.shaoJi) {
-        console.log('ignore solo')
-      } else {
-        for (const winner of this.players) {
-          for (const loser of this.players) {
-            winner.winFrom(loser, this.getPlayerUnUsedJokers(loser), 'joker')
-          }
+      for (const winner of this.players) {
+        for (const loser of this.players) {
+          winner.winFrom(loser, this.getPlayerUnUsedJokers(loser), 'joker')
         }
       }
-
     }
 
-    const states = this.players.map(p => {
+    return this.players.map(p => {
       return {
         model: p.model,
         index: p.index,
@@ -735,7 +715,6 @@ abstract class Table implements Serializable {
         detail: p.detailBalance
       }
     })
-    return states
   }
 
   async gameOver() {

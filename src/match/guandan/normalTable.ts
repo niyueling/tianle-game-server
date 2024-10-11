@@ -347,38 +347,6 @@ export default class NormalTable extends Table {
     return this.homeTeamPlayers().some(p => p.cards.length === 0)
   }
 
-  soloGameOver() {
-    if (this.isHomeTeamWin()) {
-      this.winFromTeam(this.homeTeamPlayers(), this.awayTeamPlayers(), 3)
-    } else {
-      this.winFromTeam(this.awayTeamPlayers(), this.homeTeamPlayers(), 3)
-    }
-  }
-
-  private calcSoloGameBombScore() {
-    if (this.isHomeTeamWin()) {
-
-      for (const winner of this.homeTeamPlayers()) {
-        const allBombScore = winner.bombScore(this.bombScorer)
-
-        for (const loser of this.awayTeamPlayers()) {
-          winner.winFrom(loser, allBombScore, 'bomb')
-        }
-      }
-    } else {
-      const loser = this.homeTeamPlayers()[0];
-      for (const winner of this.awayTeamPlayers()) {
-        let allBombScore = winner.bombScore(this.bombScorer)
-
-        if (this.rule.allBombScore) {
-          allBombScore += winner.unusedBombsScore(this.bombScorer)
-        }
-
-        winner.winFrom(loser, allBombScore * 3, 'bomb')
-      }
-    }
-  }
-
   async gameOver() {
     console.warn("gameOver state %s", this.state);
     if (this.state === 'gameOver') {
@@ -388,17 +356,9 @@ export default class NormalTable extends Table {
     this.state = 'gameOver'
     if (this.mode === 'teamwork') {
       this.calcUnusedJoker()
-    } else if (this.rule.shaoJi) {
-      this.calcUnusedJoker()
+      this.teamWorkGameOver()
     }
 
-    if (this.mode === 'teamwork') {
-      this.calcExtraBomb()
-      this.teamWorkGameOver()
-    } else {
-      this.calcSoloGameBombScore()
-      this.soloGameOver()
-    }
     // 计算金豆
     await this.recordRubyReward();
     const states = [];
@@ -421,7 +381,6 @@ export default class NormalTable extends Table {
       rubyReward: 0,
       juShu: this.restJushu,
       isPublic: this.room.isPublic,
-      ruleType: this.rule.ruleType,
       juIndex: this.room.game.juIndex,
       gameType: GameType.guandan,
       mode: this.mode,

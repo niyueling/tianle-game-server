@@ -1,65 +1,63 @@
 /**
  * Created by Color on 2016/9/2.
  */
-import Card, {CardType} from "./card";
 import Enums from './enums';
 
 class Rule {
   ro: any
 
   constructor(ruleObj: any) {
-    if (ruleObj.ruleType) {
-      if (ruleObj.ruleType === Enums.ruleType.lobby4Player) {
-        ruleObj.playerCount = 4
-      } else if (ruleObj.ruleType === Enums.ruleType.lobby3Player) {
-        ruleObj.playerCount = 3
-      } else if (ruleObj.ruleType === Enums.ruleType.lobby2Player) {
-        ruleObj.playerCount = 2
-      }
-    }
-
     this.ro = ruleObj;
   }
 
+  // 玩法
   get wanFa(): string {
     return this.ro.wanFa
-  }
-
-  // get clubPersonalRoom() {
-  //   return this.ro.clubPersonalRoom
-  // }
-
-  get isLuoSong(): boolean {
-    return this.wanFa === 'luoSong'
   }
 
   getOriginData() {
     return this.ro
   }
 
-  get share(): boolean {
-    return !!this.ro.share
-  }
-
-  get ruleType() {
-    return this.ro.ruleType || Enums.ruleType.lobby4Player;
-  }
-
+  // 局数, 过8：1，过10：2， 过A：3， 3把不过回2：4
   get juShu() {
-    return this.ro.juShu || 0
+    // return this.ro.juShu || 3
+    return 3;
   }
 
+  // 升级，双下升3级：1，双下升4级
+  get upgrade() {
+    return this.ro.upgrade || 1
+  }
+
+  // 还贡，点数10以下：1，任意牌(红桃级牌除外)：2
+  get resoreTribute() {
+    return this.ro.resoreTribute || 1
+  }
+
+  // 报牌，剩余10张：1，实时报牌：2
+  get showRemainCard() {
+    return this.ro.showRemainCard || 1
+  }
+
+  // 是否允许加倍
+  get allowDouble() {
+    return this.ro.allowDouble || false;
+  }
+
+  // 发牌，随即发牌：1， 不洗牌：2
+  get shuffleType() {
+    return this.ro.shuffleType || 1;
+  }
+
+  // 人数
   get playerCount() {
     return this.ro.playerCount || 4
   }
 
+  // 托管时间
   get autoCommit() {
-    return this.ro.autoCommit
-  }
-
-  get maPaiArray(): Card[] {
-    const maPaiArr = this.ro.maPaiArray || []
-    return maPaiArr.map(maPai => new Card(CardType.Heart, maPai))
+    return this.ro.autoCommit || 15
   }
 
   // 币种
@@ -71,23 +69,14 @@ class Rule {
     return this.ro.currency;
   }
 
+  // 是否有王玩法
   get useJoker(): boolean {
     return this.ro.useJoker
   }
+
+  // 王的数量
   get jokerCount(): number {
     return this.ro.jokerCount || 4
-  }
-
-  get shaoJi() {
-    return this.ro.shaoJi
-  }
-
-  get allBombScore() {
-    return this.ro.quanJiang
-  }
-
-  get specialReward() {
-    return this.ro.specialReward || 0
   }
 }
 
