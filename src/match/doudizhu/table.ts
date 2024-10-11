@@ -169,6 +169,7 @@ abstract class Table implements Serializable {
   // 发牌
   async fapai(payload) {
     this.startParams = payload;
+    this.cardManager = new CardManager(this.room.game.rule.playerCount);
     // 下一轮
     this.audit.startNewRound();
 
