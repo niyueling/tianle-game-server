@@ -69,6 +69,8 @@ export default class NormalTable extends Table {
     }
 
     await this.broadcastModeRequest();
+
+    await this.room.robotManager.setCardReady();
   }
 
   resume(json) {
