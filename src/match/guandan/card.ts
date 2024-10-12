@@ -24,6 +24,8 @@ export default class Card {
       this.currentLevelCard = levelCard;
     }
 
+    console.warn("value %s currentLevelCard %s", value, this.currentLevelCard);
+
     if (type === CardType.Joker) {
       this.point = this.value
     } else if (value === this.currentLevelCard) {
