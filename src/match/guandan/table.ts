@@ -39,21 +39,19 @@ export enum Team {
   NoTeam = 2,
 }
 
-export const genFullyCards = (useJoker: boolean = true) => {
+export const genFullyCards = (useJoker: boolean = true, currentLevelCard) => {
   const types = [CardType.Club, CardType.Diamond, CardType.Heart, CardType.Spades]
   const cards = []
 
-  console.warn("currentLevelCard %s", this.room.currentLevelCard);
-
   types.forEach((type: CardType) => {
     for (let v = 1; v <= 13; v += 1) {
-      cards.push(new Card(type, v, this.room.currentLevelCard), new Card(type, v, this.room.currentLevelCard));
+      cards.push(new Card(type, v, currentLevelCard), new Card(type, v, currentLevelCard));
     }
   })
 
   if (useJoker) {
-    cards.push(new Card(CardType.Joker, 16, this.room.currentLevelCard), new Card(CardType.Joker, 16, this.room.currentLevelCard));
-    cards.push(new Card(CardType.Joker, 17, this.room.currentLevelCard), new Card(CardType.Joker, 17, this.room.currentLevelCard));
+    cards.push(new Card(CardType.Joker, 16, currentLevelCard), new Card(CardType.Joker, 16, currentLevelCard));
+    cards.push(new Card(CardType.Joker, 17, currentLevelCard), new Card(CardType.Joker, 17, currentLevelCard));
   }
   return cards;
 }
@@ -165,7 +163,7 @@ abstract class Table implements Serializable {
     this.status = new Status()
     this.listenRoom(room)
 
-    this.initCards()
+    this.initCards(this.room.currentLevelCard)
     this.initPlayers()
     this.setGameRecorder(new GameRecorder(this))
   }
@@ -239,8 +237,8 @@ abstract class Table implements Serializable {
     this.status.current.seatIndex = startPlayerIndex
   }
 
-  initCards() {
-    this.cards = genFullyCards(this.rule.useJoker)
+  initCards(currentLevelCard) {
+    this.cards = genFullyCards(this.rule.useJoker, currentLevelCard)
     this.remainCards = this.cards.length
   }
 
@@ -282,7 +280,7 @@ abstract class Table implements Serializable {
   async publicRoomFapai() {
     console.warn("start game fapai currentLevelCard %s", this.room.currentLevelCard);
 
-    this.initCards()
+    this.initCards(this.room.currentLevelCard)
     this.shuffle()
     this.stateData = {};
     this.turn = 1;
@@ -976,7 +974,7 @@ abstract class Table implements Serializable {
   }
 
   private async _fapai() {
-    this.initCards()
+    this.initCards(this.room.currentLevelCard)
     this.shuffle()
     this.stateData = {}
 
