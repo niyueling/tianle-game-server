@@ -163,7 +163,10 @@ abstract class Table implements Serializable {
     this.status = new Status()
     this.listenRoom(room)
 
-    this.initCards(this.room.currentLevelCard)
+    if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
+      this.initCards(this.room.currentLevelCard)
+    }
+
     this.initPlayers()
     this.setGameRecorder(new GameRecorder(this))
   }
@@ -280,7 +283,9 @@ abstract class Table implements Serializable {
   async publicRoomFapai() {
     console.warn("start game fapai currentLevelCard %s", this.room.currentLevelCard);
 
-    this.initCards(this.room.currentLevelCard)
+    if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
+      this.initCards(this.room.currentLevelCard)
+    }
     this.shuffle()
     this.stateData = {};
     this.turn = 1;
@@ -974,7 +979,9 @@ abstract class Table implements Serializable {
   }
 
   private async _fapai() {
-    this.initCards(this.room.currentLevelCard)
+    if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
+      this.initCards(this.room.currentLevelCard)
+    }
     this.shuffle()
     this.stateData = {}
 
