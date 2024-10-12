@@ -425,7 +425,7 @@ export class NewRobotManager {
         index = this.room.readyPlayers.findIndex((p: any) => p.toString() === proxy.model._id.toString());
         if (index === -1) {
           // 在线用户超过10秒没有点击继续就踢出局
-          if (this.waitKickOutTime >= config.game.waitKickOutTime && ![GameType.ddz, GameType.zd].includes(this.room.gameRule.gameType)) {
+          if (this.waitKickOutTime >= config.game.waitKickOutTime && ![GameType.ddz, GameType.zd, GameType.guandan].includes(this.room.gameRule.gameType)) {
             const playerIndex = this.room.players.findIndex(p => p._id.toString() === proxy.model._id.toString());
             if (playerIndex !== -1) {
               this.room.broadcast("game/kickOutPlayer", {ok: true, data: {index: playerIndex}});
