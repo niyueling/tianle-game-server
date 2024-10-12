@@ -123,13 +123,13 @@ class Room extends RoomBase {
   isHelp: boolean = false
 
   // 队友级牌
-  homeTeamCard = -1
+  homeTeamCard: number = -1
 
   // 对手级牌
-  awayTeamCard = -1
+  awayTeamCard: number = -1
 
   // 本局级牌
-  currentLevelCard = -1
+  currentLevelCard: number = -1
 
   constructor(rule: any) {
     super()
