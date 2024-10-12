@@ -20,7 +20,6 @@ export default class Card {
   currentLevelCard: number
 
   constructor(readonly type: CardType, readonly value: number, readonly levelCard: number) {
-    this.currentLevelCard = levelCard;
     if (type === CardType.Joker) {
       this.point = this.value
     } else if (levelCard && value === levelCard) {
