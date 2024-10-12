@@ -280,7 +280,7 @@ abstract class Table implements Serializable {
 
   // 公共房发牌
   async publicRoomFapai() {
-    console.warn("start game fapai");
+    console.warn("start game fapai currentLevelCard %s", this.room.currentLevelCard);
 
     this.initCards()
     this.shuffle()
