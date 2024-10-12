@@ -17,27 +17,21 @@ const cardType2Symbol = {
 
 export default class Card {
   point: number
-  currentLevelCard:number
+  currentLevelCard: number
 
-  constructor(readonly type: CardType, readonly value: number, readonly levelCard?: number) {
-    if (levelCard && !this.currentLevelCard) {
-      this.currentLevelCard = levelCard;
-      console.warn("levelCard %s currentLevelCard %s", levelCard, this.currentLevelCard);
-    }
-
-    console.warn("value %s levelCard %s currentLevelCard %s", value, levelCard, this.currentLevelCard);
-
+  constructor(readonly type: CardType, readonly value: number, readonly levelCard: number) {
+    this.currentLevelCard = levelCard;
     if (type === CardType.Joker) {
       this.point = this.value
-    } else if (value === this.currentLevelCard) {
+    } else if (levelCard && value === levelCard) {
       this.point = 14;
     } else {
       this.point = this.value > 1 ? this.value : 13 + value
     }
   }
 
-  static from({type, value}): Card {
-    return new Card(type, value)
+  static from({type, value, levelCard}): Card {
+    return new Card(type, value, levelCard)
   }
 
   equal(other: Card) {

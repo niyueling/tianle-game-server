@@ -72,7 +72,7 @@ export class NullCheck implements IMatcher {
   }
 }
 
-const sideKick1Joker: Card[][] = Array.from({length: 13}, (_, i) => [new Card(CardType.Wild, i + 1)])
+const sideKick1Joker: Card[][] = Array.from({length: 13}, (_, i) => [new Card(CardType.Wild, i + 1, -1)])
 
 function mergeWithOneSuit(cards: Card[][]): Card[][] {
   const result1 = []

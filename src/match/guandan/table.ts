@@ -39,20 +39,21 @@ export enum Team {
   NoTeam = 2,
 }
 
-export const genFullyCards = (useJoker: boolean = true, currentLevelCard) => {
+export const genFullyCards = (useJoker: boolean = true, room) => {
   const types = [CardType.Club, CardType.Diamond, CardType.Heart, CardType.Spades]
   const cards = []
 
   types.forEach((type: CardType) => {
     for (let v = 1; v <= 13; v += 1) {
-      cards.push(new Card(type, v, currentLevelCard), new Card(type, v, currentLevelCard));
+      cards.push(new Card(type, v, room.currentLevelCard), new Card(type, v, room.currentLevelCard));
     }
   })
 
   if (useJoker) {
-    cards.push(new Card(CardType.Joker, 16, currentLevelCard), new Card(CardType.Joker, 16, currentLevelCard));
-    cards.push(new Card(CardType.Joker, 17, currentLevelCard), new Card(CardType.Joker, 17, currentLevelCard));
+    cards.push(new Card(CardType.Joker, 16, room.currentLevelCard), new Card(CardType.Joker, 16, room.currentLevelCard));
+    cards.push(new Card(CardType.Joker, 17, room.currentLevelCard), new Card(CardType.Joker, 17, room.currentLevelCard));
   }
+
   return cards;
 }
 
@@ -164,7 +165,7 @@ abstract class Table implements Serializable {
     this.listenRoom(room)
 
     if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
-      this.initCards(this.room.currentLevelCard)
+      this.initCards()
     }
 
     this.initPlayers()
@@ -240,8 +241,8 @@ abstract class Table implements Serializable {
     this.status.current.seatIndex = startPlayerIndex
   }
 
-  initCards(currentLevelCard) {
-    this.cards = genFullyCards(this.rule.useJoker, currentLevelCard)
+  initCards() {
+    this.cards = genFullyCards(this.rule.useJoker, this.room)
     this.remainCards = this.cards.length
   }
 
@@ -284,12 +285,12 @@ abstract class Table implements Serializable {
     console.warn("start game fapai currentLevelCard %s", this.room.currentLevelCard);
 
     if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
-      this.initCards(this.room.currentLevelCard)
+
     }
     this.shuffle()
     this.stateData = {};
     this.turn = 1;
-    this.cards = manager.withJokerCards(this.rule.jokerCount);
+    this.cards = manager.withJokerCards(this.room);
     const playerCards = manager.makeCards(this.cards);
     this.remainCards = this.cards.length;
     for (let i = 0; i < this.players.length; i++) {
@@ -980,7 +981,7 @@ abstract class Table implements Serializable {
 
   private async _fapai() {
     if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
-      this.initCards(this.room.currentLevelCard)
+      this.initCards()
     }
     this.shuffle()
     this.stateData = {}

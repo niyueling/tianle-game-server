@@ -223,25 +223,25 @@ export class CardMap {
 class CardManager {
 
   // 无大小王
-  noJokerCards() {
+  noJokerCards(levelCard) {
     const types = [CardType.Club, CardType.Diamond, CardType.Heart, CardType.Spades]
     const cards = []
 
     types.forEach((type: CardType) => {
       for (let v = 1; v <= 13; v += 1) {
-        cards.push(new Card(type, v), new Card(type, v))
+        cards.push(new Card(type, v, levelCard), new Card(type, v, levelCard))
       }
     })
     return cards;
   }
 
   // 带大小王
-  withJokerCards(jokerCount) {
-    const cards = this.noJokerCards();
-    cards.push(new Card(CardType.Joker, 16));
-    cards.push(new Card(CardType.Joker, 16));
-    cards.push(new Card(CardType.Joker, 17));
-    cards.push(new Card(CardType.Joker, 17));
+  withJokerCards(room) {
+    const cards = this.noJokerCards(room.currentLevelCard);
+    cards.push(new Card(CardType.Joker, 16, room.currentLevelCard));
+    cards.push(new Card(CardType.Joker, 16, room.currentLevelCard));
+    cards.push(new Card(CardType.Joker, 17, room.currentLevelCard));
+    cards.push(new Card(CardType.Joker, 17, room.currentLevelCard));
     return cards;
   }
 
