@@ -43,6 +43,8 @@ export const genFullyCards = (useJoker: boolean = true) => {
   const types = [CardType.Club, CardType.Diamond, CardType.Heart, CardType.Spades]
   const cards = []
 
+  console.warn("currentLevelCard %s", this.room.currentLevelCard);
+
   types.forEach((type: CardType) => {
     for (let v = 1; v <= 13; v += 1) {
       cards.push(new Card(type, v, this.room.currentLevelCard), new Card(type, v, this.room.currentLevelCard));
