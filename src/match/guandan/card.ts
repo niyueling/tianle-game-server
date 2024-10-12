@@ -17,19 +17,20 @@ const cardType2Symbol = {
 
 export default class Card {
   point: number
+  currentLevelCard:number
 
-  constructor(readonly type: CardType, readonly value: number) {
+  constructor(readonly type: CardType, readonly value: number, readonly levelCard?: number) {
+    if (levelCard) {
+      this.currentLevelCard = levelCard;
+    }
+
     if (type === CardType.Joker) {
       this.point = this.value
+    } else if (value === this.currentLevelCard) {
+      this.point = 14;
     } else {
       this.point = this.value > 1 ? this.value : 13 + value
     }
-  }
-
-  static littleAce(type: CardType): Card {
-    const ace = new Card(type, 1)
-    ace.point = 1
-    return ace
   }
 
   static from({type, value}): Card {

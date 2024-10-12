@@ -45,13 +45,13 @@ export const genFullyCards = (useJoker: boolean = true) => {
 
   types.forEach((type: CardType) => {
     for (let v = 1; v <= 13; v += 1) {
-      cards.push(new Card(type, v), new Card(type, v));
+      cards.push(new Card(type, v, this.room.currentLevelCard), new Card(type, v, this.room.currentLevelCard));
     }
   })
 
   if (useJoker) {
-    cards.push(new Card(CardType.Joker, 16), new Card(CardType.Joker, 16));
-    cards.push(new Card(CardType.Joker, 17), new Card(CardType.Joker, 17));
+    cards.push(new Card(CardType.Joker, 16, this.room.currentLevelCard), new Card(CardType.Joker, 16, this.room.currentLevelCard));
+    cards.push(new Card(CardType.Joker, 17, this.room.currentLevelCard), new Card(CardType.Joker, 17, this.room.currentLevelCard));
   }
   return cards;
 }
@@ -279,6 +279,9 @@ abstract class Table implements Serializable {
   // 公共房发牌
   async publicRoomFapai() {
     console.warn("start game fapai");
+
+    this.initCards()
+    this.shuffle()
     this.stateData = {};
     this.turn = 1;
     this.cards = manager.withJokerCards(this.rule.jokerCount);
