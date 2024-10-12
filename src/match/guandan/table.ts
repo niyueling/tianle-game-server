@@ -266,7 +266,6 @@ abstract class Table implements Serializable {
   }
 
   async fapai() {
-    console.warn("start game fapai");
     await this._fapai()
 
     if (this.players.some(p => this.haveFourJokers(p)) && this.rollReshuffle()) {
@@ -279,6 +278,7 @@ abstract class Table implements Serializable {
 
   // 公共房发牌
   async publicRoomFapai() {
+    console.warn("start game fapai");
     this.stateData = {};
     this.turn = 1;
     this.cards = manager.withJokerCards(this.rule.jokerCount);
