@@ -34,8 +34,8 @@ export default class Game implements Serializable {
 
     // 如果是第一局，队友级牌和对手级牌都设置为2
     if (this.juIndex === 1) {
-      room.homeTeamCard = 2;
-      room.awayTeamCard = 2;
+      room.homeTeamCard = 5;
+      room.awayTeamCard = 5;
       room.currentLevelCard = room.homeTeamCard;
       console.warn("本局级牌 %s", room.currentLevelCard);
     }
