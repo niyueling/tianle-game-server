@@ -17,10 +17,11 @@ const cardType2Symbol = {
 
 export default class Card {
   point: number
-  currentLevelCard:number
+  currentLevelCard:number = -1
 
   constructor(readonly type: CardType, readonly value: number, readonly levelCard?: number) {
-    if (levelCard && !this.currentLevelCard) {
+    if (levelCard && this.currentLevelCard === -1) {
+      console.warn("levelCard %s currentLevelCard %s", levelCard, this.currentLevelCard);
       this.currentLevelCard = levelCard;
     }
 
