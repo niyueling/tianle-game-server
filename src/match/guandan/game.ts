@@ -37,6 +37,7 @@ export default class Game implements Serializable {
       room.homeTeamCard = 2;
       room.awayTeamCard = 2;
       room.currentLevelCard = room.homeTeamCard;
+      console.warn("本局级牌 %s", room.currentLevelCard);
     }
 
     // 如果不是第一局，根据上一局情况，判断队友级牌和对手级牌

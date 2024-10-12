@@ -266,11 +266,11 @@ abstract class Table implements Serializable {
   }
 
   async fapai() {
-
+    console.warn("start game fapai");
     await this._fapai()
 
     if (this.players.some(p => this.haveFourJokers(p)) && this.rollReshuffle()) {
-      this._fapai()
+      await this._fapai()
     }
 
     this.players[0].team = this.players[2].team = Team.HomeTeam

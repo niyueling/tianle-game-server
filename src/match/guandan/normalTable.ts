@@ -146,18 +146,6 @@ export default class NormalTable extends Table {
     this.broadcastFirstDa();
   }
 
-  selectFriendCard(cards: Card[]): Card {
-    const singleCarsGroup = groupBy(cards, card => card.type * 100 + card.point)
-      .filter(grp => grp.length === 1)
-      .sort((grp1, grp2) => grp2[0].point - grp1[0].point)
-
-    if (singleCarsGroup.length === 1) {
-      return singleCarsGroup[0][0]
-    }
-
-    return singleCarsGroup.filter(grp => grp[0].type !== CardType.Joker)[0][0];
-  }
-
   isGameOver(): boolean {
     if (this.mode === 'solo') {
       return this.homeTeamPlayers().some(p => p.cards.length === 0) ||
@@ -197,13 +185,13 @@ export default class NormalTable extends Table {
 
   // 金豆房炸弹计分
   rubyRoomBoomScorer(bomb: IPattern) {
-    if (!bomb) return 0
+    if (!bomb) return 0;
 
-    if (bomb.name !== PatterNames.bomb) return 0
-    let bombLen = bomb.cards.length
+    if (bomb.name !== PatterNames.bomb) return 0;
+    let bombLen = bomb.cards.length;
 
     if (bomb.cards.every(c => c.type === CardType.Joker)) {
-      return Math.pow(2, bombLen)
+      return Math.pow(2, bombLen);
     }
 
     if (bombLen < 5) return 0;
@@ -213,7 +201,7 @@ export default class NormalTable extends Table {
   calcUnusedJoker() {
     for (const winner of this.players) {
       for (const loser of this.players) {
-        winner.winFrom(loser, loser.unusedJokers, 'joker')
+        winner.winFrom(loser, loser.unusedJokers, 'joker');
       }
     }
   }
