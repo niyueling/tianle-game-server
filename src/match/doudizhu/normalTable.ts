@@ -221,7 +221,7 @@ export default class NormalTable extends Table {
       // 查询地主
       const landloadId = this.players.findIndex(p => p.mode === enums.landlord);
       const landload = this.players[landloadId];
-      let landloadUpgradeGold = landload.balance * times;
+      let landloadUpgradeGold = -landload.balance * times;
       const landloadCurrency = await this.PlayerGoldCurrency(landload._id);
       if (landloadUpgradeGold > landloadCurrency) {
         landloadUpgradeGold = landloadCurrency;
