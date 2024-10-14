@@ -226,16 +226,24 @@ export default class NormalTable extends Table {
       if (landloadUpgradeGold > landloadCurrency) {
         landloadUpgradeGold = landloadCurrency;
       }
-      landload.balance = landloadUpgradeGold;
+      let landloadDeductGold = 0;
 
       for (let i = 0; i < this.players.length; i ++) {
         const p = this.players[i];
 
         // 赢家是地主
         if (p._id.toString() !== landload._id.toString()) {
-          p.balance = landloadUpgradeGold * p.multiple / landload.multiple;
+          const currency = await this.PlayerGoldCurrency(p._id);
+          let playerWinnerGold = landloadUpgradeGold * p.multiple / landload.multiple;
+          if (playerWinnerGold > currency) {
+            playerWinnerGold = currency;
+          }
+          p.balance = playerWinnerGold;
+          landloadDeductGold += playerWinnerGold;
         }
       }
+
+      landload.balance = landloadDeductGold;
     }
   }
 
