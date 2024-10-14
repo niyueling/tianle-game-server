@@ -27,8 +27,8 @@ export default class SingleMatcher implements IMatcher {
     console.warn("singleCards %s jokerCount %s", JSON.stringify(singleCards), jokerCount);
     if (jokerCount === 2) {
       const littleJokerIndex = singleCards.findIndex(c => c[0].point === 16);
-      const bigJokerIndex = singleCards.findIndex(c => c[0].point === 17);
       singleCards.splice(littleJokerIndex, 1);
+      const bigJokerIndex = singleCards.findIndex(c => c[0].point === 17);
       singleCards.splice(bigJokerIndex, 1);
 
       console.warn("littleJokerIndex %s, bigJokerIndex %s singleCards %s", littleJokerIndex, bigJokerIndex, JSON.stringify(singleCards));
