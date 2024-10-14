@@ -431,14 +431,15 @@ class Room extends RoomBase {
     })
   }
 
-  updatePosition(player, position) {
-    if (position) {
-      player.model.position = position
-
-      const positions = this.players.map(p => p && p.model)
-
-      this.broadcast('room/playersPosition', {positions});
+  async updatePosition() {
+    const positions = [];
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      const position = i;
+      positions.push({_id: p._id, shortId: p.model.shortId, position});
     }
+
+    this.broadcast("game/updatePosition", {ok: true, data: {positions}});
   }
 
   async recordRoomScore(roomState = 'normal', scores = [], players = []): Promise<any> {
@@ -1008,19 +1009,47 @@ class Room extends RoomBase {
     this.clearReady()
     await this.delPlayerBless();
     // 下一局
-    // await this.robotManager.nextRound();
+    await this.robotManager.nextRound();
 
-    this.gameState.dissolve()
-    this.gameState = null
-    this.readyPlayers = [];
-    this.robotManager.model.step = RobotStep.waitRuby;
+    // 更新玩家位置
+    await this.updatePosition();
 
-    if (this.isRoomAllOver() && !this.isPublic) {
-      const message = this.allOverMessage()
-      this.broadcast('room/allOver', message)
-      this.players.forEach(x => x && this.leave(x))
-      this.emit('empty', this.disconnected)
+    const updateNoRubyFunc = async() => {
+      if (this.isPublic) {
+        // 判断机器人是否需要补充金豆
+        await this.updateNoRuby();
+      }
+
+      this.gameState.dissolve();
+      this.gameState = null;
+      this.readyPlayers = [];
+      this.robotManager.model.step = RobotStep.waitRuby;
+
+      if (this.isRoomAllOver() && !this.isPublic) {
+        const message = this.allOverMessage()
+        this.broadcast('room/allOver', message)
+        this.players.forEach(x => x && this.leave(x))
+        this.emit('empty', this.disconnected)
+      }
     }
+
+    setTimeout(updateNoRubyFunc, 1200);
+  }
+
+  async updateNoRuby() {
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      if (!p || !p.isRobot()) {
+        continue;
+      }
+
+      const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
+      if (resp.isNeedRuby || resp.isUpgrade) {
+        this.broadcast('resource/robotIsNoRuby', {ok: true, data: {index: i, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
+      }
+    }
+
+    return true;
   }
 
   allOverMessage(): any {
