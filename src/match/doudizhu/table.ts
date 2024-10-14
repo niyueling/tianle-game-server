@@ -477,41 +477,44 @@ abstract class Table implements Serializable {
 
     // 判断队友
     const famerIndex = this.players.findIndex(p => p.mode === enums.farmer && p._id.toString() !== nextPlayerState._id.toString());
-    const famer = this.players[famerIndex];
+    console.warn("famerIndex-%s", famerIndex);
+    if (famerIndex !== -1) {
+      const famer = this.players[famerIndex];
 
-    // 计算队友单张数量
-    const famerSingleCards = groupBy(famer.cards.filter(c => c), card => card.point)
-      .filter(g => g.length === 1)
-      .sort(lengthFirstThenPointGroupComparator)
-      .map(grp => {
-        return [grp[0]]
-      });
+      // 计算队友单张数量
+      const famerSingleCards = groupBy(famer.cards.filter(c => c), card => card.point)
+        .filter(g => g.length === 1)
+        .sort(lengthFirstThenPointGroupComparator)
+        .map(grp => {
+          return [grp[0]]
+        });
 
-    // 计算队友对子数量
-    const famerDoubleCards = groupBy(famer.cards.filter(c => c), card => card.point)
-      .filter(g => g.length === 2)
-      .sort(lengthFirstThenPointGroupComparator)
-      .map(grp => {
-        return [grp[0], grp[1]]
-      });
+      // 计算队友对子数量
+      const famerDoubleCards = groupBy(famer.cards.filter(c => c), card => card.point)
+        .filter(g => g.length === 2)
+        .sort(lengthFirstThenPointGroupComparator)
+        .map(grp => {
+          return [grp[0], grp[1]]
+        });
 
-    console.warn("famer index %s mode %s singleCardCount %s doubleCardCount %s", famer.seatIndex, famer.mode,
-      JSON.stringify(famerSingleCards), JSON.stringify(famerDoubleCards));
+      console.warn("famer index %s mode %s singleCardCount %s doubleCardCount %s", famer.seatIndex, famer.mode,
+        JSON.stringify(famerSingleCards), JSON.stringify(famerDoubleCards));
 
-    // 如果队友只剩一张牌，打出队友可以单吃的单牌
-    if (famerSingleCards.length === 1 && famer.cards.length === 1) {
-      for (let i = 0; i < prompts.length; i++) {
-        if (prompts[i].length === 1 && prompts[i][0].point > famerSingleCards[0][0].point) {
-          return [prompts[i]];
+      // 如果队友只剩一张牌，打出队友可以单吃的单牌
+      if (famerSingleCards.length === 1 && famer.cards.length === 1) {
+        for (let i = 0; i < prompts.length; i++) {
+          if (prompts[i].length === 1 && prompts[i][0].point > famerSingleCards[0][0].point) {
+            return [prompts[i]];
+          }
         }
       }
-    }
 
-    // 如果队友只剩一个对子，打出队友可以单吃的对子
-    if (famerDoubleCards.length === 1 && famer.cards.length === 2) {
-      for (let i = 0; i < prompts.length; i++) {
-        if (prompts[i].length === 2 && prompts[i][0].point > famerDoubleCards[0][0].point) {
-          return [prompts[i]];
+      // 如果队友只剩一个对子，打出队友可以单吃的对子
+      if (famerDoubleCards.length === 1 && famer.cards.length === 2) {
+        for (let i = 0; i < prompts.length; i++) {
+          if (prompts[i].length === 2 && prompts[i][0].point > famerDoubleCards[0][0].point) {
+            return [prompts[i]];
+          }
         }
       }
     }
