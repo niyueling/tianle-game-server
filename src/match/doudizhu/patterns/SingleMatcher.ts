@@ -18,8 +18,12 @@ export default class SingleMatcher implements IMatcher {
     if (target.name !== this.name) {
       return [];
     }
-    return groupBy(cards.filter(c => c.point > target.score), card => card.point)
+    const singleCards = groupBy(cards.filter(c => c.point > target.score), card => card.point)
       .sort(lengthFirstThenPointGroupComparator)
-      .map(grp => [grp[0]])
+      .map(grp => [grp[0]]);
+
+    console.warn("singleCards %s", JSON.stringify(singleCards));
+
+    return singleCards;
   }
 }

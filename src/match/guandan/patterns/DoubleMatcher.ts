@@ -20,12 +20,12 @@ export default class DoubleMatcher implements IMatcher {
   promptWithPattern(target: IPattern, cards: Card[]): Card[][] {
     //炸弹包括普通炸弹和王炸弹
     let haveBomb = groupBy(cards, card => card.point)
-    .filter(g => g.length >= 4 ).length>0 || cards.filter(c => c.point >=16).length>=4?true:false;
+      .filter(g => g.length >= 4).length > 0 || cards.filter(c => c.point >= 16).length >= 4;
     const haveBombFilter = function (g: Card[]) {
       return g.length >= 2 && g.length < 4 && g[0].point < 16
     }
     const noBombFilter = function (g: Card[]) {
-      return g.length >= 2 && g.length < 4 
+      return g.length >= 2 && g.length < 4
     }
     let filterFun = haveBomb?haveBombFilter:noBombFilter;
 
