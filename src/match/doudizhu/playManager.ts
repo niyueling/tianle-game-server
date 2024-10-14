@@ -215,7 +215,7 @@ export class PlayManager {
       const remainingCardsCopy = remainCards.slice();
       const remainingCardsSlice = arraySubtract(remainingCardsCopy, cards);
 
-      console.warn("remainingCardsCopy %s remainingCardsSlice %s point %s", remainingCardsCopy.length, remainingCardsSlice.length, cards[0].point);
+      // console.warn("remainingCardsCopy %s remainingCardsSlice %s point %s", remainingCardsCopy.length, remainingCardsSlice.length, cards[0].point);
 
       if (cards[0].point < CardTag.hk || remainingCardsSlice.length === 0) {
         possibles.push(cards);
@@ -336,7 +336,7 @@ export class PlayManager {
   getPossibleResultCard(allPossibles) {
     const bestPlay = this.findBestFirstPlay(allPossibles);
     if (bestPlay) {
-      console.warn("bestPlay %s", JSON.stringify(bestPlay));
+      // console.warn("bestPlay %s", JSON.stringify(bestPlay));
       return bestPlay.data; // 返回单张数量最少的牌型
     }
 
@@ -355,7 +355,7 @@ export class PlayManager {
 
   findBestFirstPlay(allPossibles: { simpleCount: number, name: string, data: Card[] }[]): { simpleCount: number, name: string, data: Card[] } | undefined {
     if (allPossibles.length === 0) {
-      console.warn("allPossibles is empty");
+      // console.warn("allPossibles is empty");
       return undefined; // 没有可用的牌型
     }
 

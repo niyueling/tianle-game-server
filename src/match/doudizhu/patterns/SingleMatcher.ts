@@ -24,14 +24,14 @@ export default class SingleMatcher implements IMatcher {
 
     // 如果有王炸， 过滤王炸
     const jokerCount = singleCards.filter(c => c[0].point === 16 || c[0].point === 17).length;
-    console.warn("singleCards %s jokerCount %s", JSON.stringify(singleCards), jokerCount);
+    // console.warn("singleCards %s jokerCount %s", JSON.stringify(singleCards), jokerCount);
     if (jokerCount === 2) {
       const littleJokerIndex = singleCards.findIndex(c => c[0].point === 16);
       singleCards.splice(littleJokerIndex, 1);
       const bigJokerIndex = singleCards.findIndex(c => c[0].point === 17);
       singleCards.splice(bigJokerIndex, 1);
 
-      console.warn("littleJokerIndex %s, bigJokerIndex %s singleCards %s", littleJokerIndex, bigJokerIndex, JSON.stringify(singleCards));
+      // console.warn("littleJokerIndex %s, bigJokerIndex %s singleCards %s", littleJokerIndex, bigJokerIndex, JSON.stringify(singleCards));
     }
 
     return singleCards;

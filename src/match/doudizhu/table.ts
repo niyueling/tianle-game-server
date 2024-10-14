@@ -513,6 +513,8 @@ abstract class Table implements Serializable {
       }
     }
 
+    console.warn("singleCardCount %s doubleCardCount %s newPrompts %s", JSON.stringify(singleCards), JSON.stringify(doubleCards), JSON.stringify(newPrompts));
+
     // 如果没有可以出牌的牌型，则按照原牌型出牌
     if (!newPrompts.length) {
       return prompts;
