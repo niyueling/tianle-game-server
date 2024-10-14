@@ -21,7 +21,9 @@ export class RobotDDZ extends RobotRmqProxy {
         }
       } else {
         const cards = this.room.gameState.playManager.firstPlayCard(this.playerState.cards);
-        this.room.gameState.onPlayerDa(this.playerState, { cards: cards[0] })
+        //如果是自己出牌，过滤下牌型
+        const newPrompts = this.room.gameState.filterPromptsCards(this.playerState, cards);
+        this.room.gameState.onPlayerDa(this.playerState, { cards: newPrompts[0] })
       }
     }
 
