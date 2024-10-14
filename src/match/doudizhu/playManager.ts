@@ -24,8 +24,8 @@ const nameOrder = {
   'triple++': 6,
   tripleX: 7,
   triple: 8,
-  double: 10,
-  single: 9,
+  double: 9,
+  single: 10,
   bomb: 11
 }
 

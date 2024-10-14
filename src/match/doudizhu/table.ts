@@ -6,7 +6,7 @@ import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, seria
 import {AuditPdk} from "./auditPdk";
 import Card, {CardTag, CardType} from "./card"
 import {CardManager} from "./cardManager";
-import {IPattern, PatterNames, patternCompare} from "./patterns/base"
+import {groupBy, IPattern, lengthFirstThenPointGroupComparator, PatterNames, patternCompare} from "./patterns/base"
 import PlayerState from './player_state'
 import {PlayManager} from "./playManager";
 import Room from './room'
@@ -458,11 +458,61 @@ abstract class Table implements Serializable {
 
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards, nextPlayerState.mode, this.status.lastPlayerMode);
       if (prompts.length > 0) {
+        //
         await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
       } else {
         await this.onPlayerGuo(nextPlayerState)
       }
     })
+  }
+
+  // 根据情况过滤不合适的牌型
+  filterPromptsCards(nextPlayerState, prompts) {
+    const newPrompts = [];
+    // 如果是地主出牌，直接返回
+    if (nextPlayerState.mode === enums.landlord) {
+      return prompts;
+    }
+
+    // 查找到地主
+    const landloadIndex = this.players.findIndex(p => p.mode === enums.landlord);
+    const landload = this.players[landloadIndex];
+
+    // 计算地主单张数量
+    const singleCards = groupBy(landload.cards.filter(c => c), card => card.point)
+      .filter(g => g.length === 1)
+      .sort(lengthFirstThenPointGroupComparator)
+      .map(grp => {
+        return [grp[0]]
+      });
+
+    // 计算地主单张数量
+    const doubleCards = groupBy(landload.cards.filter(c => c), card => card.point)
+      .filter(g => g.length === 2)
+      .sort(lengthFirstThenPointGroupComparator)
+      .map(grp => {
+        return [grp[0], grp[1]]
+      });
+
+    // 如果地主只剩一张牌，则过滤掉所有单牌
+    if (singleCards.length === 1) {
+      for (let i = 0; i < prompts.length; i++) {
+        if (prompts[i].length > 1) {
+          newPrompts.push(prompts[i]);
+        }
+      }
+    }
+
+    // 如果地主只剩一个对子，则过滤掉所有对子
+    if (doubleCards.length === 1) {
+      for (let i = 0; i < prompts.length; i++) {
+        if (prompts[i].length !== 2) {
+          newPrompts.push(prompts[i]);
+        }
+      }
+    }
+
+    return newPrompts;
   }
 
   broadcastLandlordAndPlayer() {
