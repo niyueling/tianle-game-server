@@ -2481,7 +2481,7 @@ class TableState implements Serializable {
         const state = this.state;
         const daPlayer = this.stateData[Enums.da];
         if (daPlayer._id.toString() === player._id.toString()) {
-          console.warn("reconnect msg-%s", JSON.stringify(this.stateData.msg));
+          player.emitter.emit('waitForDa', this.stateData.msg)
           pushMsg.current = {
             index,
             state: 'waitDa',
