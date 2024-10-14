@@ -458,8 +458,9 @@ abstract class Table implements Serializable {
 
       const prompts = this.playManager.getCardByPattern(this.status.lastPattern, nextPlayerState.cards, nextPlayerState.mode, this.status.lastPlayerMode);
       if (prompts.length > 0) {
-        //
-        await this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
+        //如果是自己出牌，过滤下牌型
+        const newPrompts = this.status.lastPattern ? prompts : this.filterPromptsCards(nextPlayerState, prompts);
+        await this.onPlayerDa(nextPlayerState, {cards: newPrompts[0]})
       } else {
         await this.onPlayerGuo(nextPlayerState)
       }
@@ -510,6 +511,11 @@ abstract class Table implements Serializable {
           newPrompts.push(prompts[i]);
         }
       }
+    }
+
+    // 如果没有可以出牌的牌型，则按照原牌型出牌
+    if (!newPrompts.length) {
+      return prompts;
     }
 
     return newPrompts;
