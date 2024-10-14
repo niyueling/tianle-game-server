@@ -156,7 +156,10 @@ export class NewRobotManager {
     // console.warn("222 room %s step %s", this.room._id, this.model.step);
 
     if (this.model.step === RobotStep.waitRuby && this.room.gameState) {
-      this.model.step = RobotStep.start;
+      if ([GameType.mj, GameType.xueliu].includes(this.room.gameRule.gameType)) {
+        this.model.step = RobotStep.start;
+      }
+
     }
 
     // console.warn("333 room %s step %s", this.room._id, this.model.step);
