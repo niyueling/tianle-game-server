@@ -192,7 +192,7 @@ export default class NormalTable extends Table {
     // 查询斗地主的赢家
     const winnerId = this.players.findIndex(p => p.cards.length === 0);
     const winner = this.players[winnerId];
-    const winnerUpgradeGold = winner.balance * times;
+    const winnerUpgradeGold = winner.multiple * times;
     let winnerGold = 0;
 
     // 赢家是地主
@@ -221,7 +221,7 @@ export default class NormalTable extends Table {
       // 查询地主
       const landloadId = this.players.findIndex(p => p.mode === enums.landlord);
       const landload = this.players[landloadId];
-      let landloadUpgradeGold = -landload.balance * times;
+      let landloadUpgradeGold = -landload.multiple * times;
       const landloadCurrency = await this.PlayerGoldCurrency(landload._id);
       if (landloadUpgradeGold > landloadCurrency) {
         landloadUpgradeGold = landloadCurrency;
