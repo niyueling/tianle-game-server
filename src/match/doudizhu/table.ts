@@ -495,8 +495,11 @@ abstract class Table implements Serializable {
         return [grp[0], grp[1]]
       });
 
+    console.warn("famer index %s mode %s singleCardCount %s doubleCardCount %s", famer.seatIndex, famer.mode,
+      JSON.stringify(famerSingleCards), JSON.stringify(famerDoubleCards));
+
     // 如果队友只剩一张牌，打出队友可以单吃的单牌
-    if (famerSingleCards.length === 1) {
+    if (famerSingleCards.length === 1 && famer.cards.length === 1) {
       for (let i = 0; i < prompts.length; i++) {
         if (prompts[i].length === 1 && prompts[i][0].point > famerSingleCards[0][0].point) {
           return [prompts[i]];
@@ -504,8 +507,8 @@ abstract class Table implements Serializable {
       }
     }
 
-    // 如果地主只剩一个对子，则过滤掉所有对子
-    if (famerDoubleCards.length === 1) {
+    // 如果队友只剩一个对子，打出队友可以单吃的对子
+    if (famerDoubleCards.length === 1 && famer.cards.length === 2) {
       for (let i = 0; i < prompts.length; i++) {
         if (prompts[i].length === 2 && prompts[i][0].point > famerDoubleCards[0][0].point) {
           return [prompts[i]];
@@ -534,7 +537,7 @@ abstract class Table implements Serializable {
       });
 
     // 如果地主只剩一张牌，则过滤掉所有单牌
-    if (singleCards.length === 1) {
+    if (singleCards.length === 1 && landload.cards.length === 1) {
       for (let i = 0; i < prompts.length; i++) {
         if (prompts[i].length > 1) {
           newPrompts.push(prompts[i]);
@@ -543,7 +546,7 @@ abstract class Table implements Serializable {
     }
 
     // 如果地主只剩一个对子，则过滤掉所有对子
-    if (doubleCards.length === 1) {
+    if (doubleCards.length === 1 && landload.cards.length === 2) {
       for (let i = 0; i < prompts.length; i++) {
         if (prompts[i].length !== 2) {
           newPrompts.push(prompts[i]);
@@ -551,8 +554,8 @@ abstract class Table implements Serializable {
       }
     }
 
-    console.warn("index %s mode %s singleCardCount %s doubleCardCount %s newPrompts %s", nextPlayerState.seatIndex, nextPlayerState.mode,
-      JSON.stringify(singleCards), JSON.stringify(doubleCards), JSON.stringify(newPrompts));
+    // console.warn(" landloadindex %s mode %s singleCardCount %s doubleCardCount %s newPrompts %s", nextPlayerState.seatIndex, nextPlayerState.mode,
+    //   JSON.stringify(singleCards), JSON.stringify(doubleCards), JSON.stringify(newPrompts));
 
     // 如果没有可以出牌的牌型，则按照原牌型出牌
     if (!newPrompts.length) {
