@@ -144,7 +144,7 @@ export class PlayManager {
     // 如果本轮轮到自己出牌
     if (!pattern) {
       const cards = this.firstPlayCard(remainCards);
-      return [cards];
+      return cards[0];
     }
 
     const prompts = [];
@@ -182,7 +182,7 @@ export class PlayManager {
     // 如果本轮轮到自己出牌
     if (!pattern) {
       const cards = this.firstPlayCard(remainCards);
-      return [cards];
+      return cards[0];
     }
 
     const prompts = [];
@@ -337,7 +337,7 @@ export class PlayManager {
     const bestPlay = this.findBestFirstPlay(allPossibles);
     if (bestPlay) {
       // console.warn("bestPlay %s", JSON.stringify(bestPlay));
-      return bestPlay.data; // 返回单张数量最少的牌型
+      return bestPlay; // 返回单张数量最少的牌型
     }
 
     return [];
@@ -353,11 +353,13 @@ export class PlayManager {
     return orderA - orderB;
   }
 
-  findBestFirstPlay(allPossibles: { simpleCount: number, name: string, data: Card[] }[]): { simpleCount: number, name: string, data: Card[] } | undefined {
+  findBestFirstPlay(allPossibles: { simpleCount: number, name: string, data: Card[] }[]) {
     if (allPossibles.length === 0) {
       // console.warn("allPossibles is empty");
       return undefined; // 没有可用的牌型
     }
+
+    const cards = [];
 
     // 首先找到simpleCount最小的值
     const minSimpleCount = Math.min(...allPossibles.map(p => p.simpleCount));
@@ -368,8 +370,12 @@ export class PlayManager {
     // 根据name进行排序
     bestPlays.sort(this.compareNames);
 
+    for (let i = 0; i < bestPlays.length; i++) {
+      cards.push(bestPlays[i].data);
+    }
+
     // 取第一个
-    return bestPlays[0]; // 返回第一个单牌数量最少且按name排序的牌型
+    return cards; // 返回第一个单牌数量最少且按name排序的牌型
   }
 
   getCardSimpleCount(cards: Card[], chooseCards: Card[]) {

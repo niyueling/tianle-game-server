@@ -21,7 +21,7 @@ export class RobotDDZ extends RobotRmqProxy {
         }
       } else {
         const cards = this.room.gameState.playManager.firstPlayCard(this.playerState.cards);
-        this.room.gameState.onPlayerDa(this.playerState, { cards })
+        this.room.gameState.onPlayerDa(this.playerState, { cards: cards[0] })
       }
     }
 
