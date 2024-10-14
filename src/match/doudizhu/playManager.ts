@@ -143,8 +143,7 @@ export class PlayManager {
   getCardByPattern(pattern: IPattern, remainCards: Card[], mode, lastPlayerMode): Card[][] {
     // 如果本轮轮到自己出牌
     if (!pattern) {
-      const cards = this.firstPlayCard(remainCards);
-      return cards[0];
+      return this.firstPlayCard(remainCards);
     }
 
     const prompts = [];
@@ -182,7 +181,7 @@ export class PlayManager {
     // 如果本轮轮到自己出牌
     if (!pattern) {
       const cards = this.firstPlayCard(remainCards);
-      return cards[0];
+      return cards;
     }
 
     const prompts = [];
