@@ -1,16 +1,13 @@
 import Card, {CardType} from "./card"
-import {
-  findFullMatchedPattern,
-  findMatchedPatternByPattern,
-} from "./patterns"
+import {findFullMatchedPattern, findMatchedPatternByPattern,} from "./patterns"
 import {IPattern, PatterNames} from "./patterns/base"
 import PlayerState from "./player_state"
 import Rule from './Rule'
 import Table, {stateGameOver} from './table'
 import {GameType} from "@fm/common/constants";
 import enums from "./enums";
-import {service} from "../../service/importService";
 import Enums from "./enums";
+import {service} from "../../service/importService";
 
 function once(target, propertyKey: string, descriptor: PropertyDescriptor) {
   const originCall = descriptor.value
@@ -190,77 +187,54 @@ export default class NormalTable extends Table {
   async getBigWinner() {
     // 将分数 * 倍率
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-    let times = 1;
-    if (!conf) {
-      // 配置失败
-      console.error('invalid room level');
-    } else {
-      times = conf.base * conf.Ante;
-    }
-    let winRuby = 0;
-    let lostRuby = 0;
-    let maxBalance = 0;
-    let maxLostBalance = 0;
-    const winnerList = [];
-    const lostList = [];
-    for (let i = 0; i < this.players.length; i++) {
-      const p = this.players[i]
-      if (p) {
-        p.balance *= times;
-        if (p.balance > 0) {
+    let times = conf.base * conf.Ante;
+
+    // 查询斗地主的赢家
+    const winnerId = this.players.findIndex(p => p.cards.length === 0);
+    const winner = this.players[winnerId];
+    const winnerUpgradeGold = winner.balance * times;
+    let winnerGold = 0;
+
+    // 赢家是地主
+    if (winner.mode === enums.landlord) {
+      for (let i = 0; i < this.players.length; i ++) {
+        const p = this.players[i];
+
+        // 赢家是地主
+        if (p._id.toString() !== winner._id.toString()) {
           const currency = await this.PlayerGoldCurrency(p._id);
-          if (p.balance > currency) {
-            console.warn("winner balance-%s currency-%s", p.balance, currency);
-            p.balance = currency;
+          let changeGold = winnerUpgradeGold * p.multiple / winner.multiple;
+          if (changeGold > currency) {
+            changeGold = currency;
           }
 
-          winnerList.push(p);
-          winRuby += p.balance;
-          maxBalance += p.balance;
-        } else {
-          const currency = await this.PlayerGoldCurrency(p._id);
-          if (currency < -p.balance) {
-            console.warn("loser balance-%s currency-%s", p.balance, currency);
-            p.balance = -currency;
-          }
-
-          lostList.push(p);
-          maxLostBalance += p.balance;
-          lostRuby += p.balance;
+          p.balance = changeGold;
+          winnerGold += changeGold;
         }
       }
+
+      winner.balance = winnerGold;
     }
 
-
-    if (winRuby > -lostRuby) {
-      winRuby = -lostRuby;
-    }
-
-    if (-lostRuby > winRuby) {
-      lostRuby = -winRuby;
-    }
-
-    if (isNaN(winRuby)) {
-      winRuby = 0;
-    }
-    if (isNaN(lostRuby)) {
-      lostRuby = 0;
-    }
-    console.log('win ruby', winRuby, 'lost ruby', lostRuby, 'maxBalance', maxBalance, 'maxLostBalance', maxLostBalance);
-
-    if (winRuby > 0) {
-      for (const p of winnerList) {
-        const oldBalance = p.balance;
-        p.balance = Math.floor(p.balance / maxBalance * winRuby);
-        console.log('winner after balance %s oldBalance %s shortId %s', p.balance, oldBalance, p.model.shortId)
+    // 赢家是农民
+    if (winner.mode === enums.farmer) {
+      // 查询地主
+      const landloadId = this.players.findIndex(p => p.mode === enums.landlord);
+      const landload = this.players[landloadId];
+      let landloadUpgradeGold = landload.balance * times;
+      const landloadCurrency = await this.PlayerGoldCurrency(landload._id);
+      if (landloadUpgradeGold > landloadCurrency) {
+        landloadUpgradeGold = landloadCurrency;
       }
-    }
+      landload.balance = landloadUpgradeGold;
 
-    if (lostRuby < 0) {
-      for (const p of lostList) {
-        const oldBalance = p.balance;
-        p.balance = Math.floor(p.balance / maxLostBalance * lostRuby);
-        console.log('lost after balance %s oldBalance %s shortId %s', p.balance, oldBalance, p.model.shortId)
+      for (let i = 0; i < this.players.length; i ++) {
+        const p = this.players[i];
+
+        // 赢家是地主
+        if (p._id.toString() !== landload._id.toString()) {
+          p.balance = landloadUpgradeGold * p.multiple / landload.multiple;
+        }
       }
     }
   }
