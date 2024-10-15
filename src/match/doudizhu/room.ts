@@ -724,6 +724,7 @@ class Room extends RoomBase {
 
         for (let j = 0; j < game.record.length; j++) {
           const record = game.record[j];
+          console.warn("record-%s", JSON.stringify(record));
           if (record && record.playerId === player._id.toString() && record.score > 0) {
             winnerCount++;
           }
