@@ -651,9 +651,6 @@ class Room extends RoomBase {
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
 
-    // 重置模式
-    this.players.map(v => v.mode = enums.unknown);
-
     // 更新玩家位置
     await this.updatePosition();
 
