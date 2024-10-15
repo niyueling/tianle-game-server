@@ -204,6 +204,7 @@ class Room extends RoomBase {
     GameRecord.create({
         room,
         players,
+        landload: this.gameState.landload,
         juShu: this.game.juIndex,
         playersInfo,
         record: playerArray,

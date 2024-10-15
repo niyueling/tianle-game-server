@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose'
 const gameRecordSchema = new mongoose.Schema({
   players: {type: [String], ref: 'player'},
   records: {type: Object},
+  landload: {type: String },
   time: {type: Date, default: Date.now},
   room: {type: String},
   roomId: {type: String},
