@@ -719,15 +719,14 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     return true
   }
 
-  dissolveOverMassage(lowScoreTimes?: number) {
-    return this.allOverMessage(lowScoreTimes)
+  async dissolveOverMassage() {
+    return await this.allOverMessage()
   }
 
   @once
   async forceDissolve() {
     clearTimeout(this.autoDissolveTimer)
-    const lowScoreTimes = await this.recordDrawGameScore()
-    const allOverMessage = this.dissolveOverMassage(lowScoreTimes)
+    const allOverMessage = await this.dissolveOverMassage()
     allOverMessage.location = "IRoom";
 
     // @ts-ignore

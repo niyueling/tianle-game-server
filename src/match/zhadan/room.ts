@@ -877,7 +877,7 @@ class Room extends RoomBase {
     await model.save();
   }
 
-  dissolveOverMassage() {
+  async dissolveOverMassage() {
     const message = this.allOverMessage()
 
     if (this.gameState) {
