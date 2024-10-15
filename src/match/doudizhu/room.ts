@@ -723,16 +723,6 @@ class Room extends RoomBase {
       message.players.push(playerData);
     }
 
-    this.snapshot
-      .filter(p => p)
-      .forEach(player => {
-        message.players.push({
-          _id: player._id.toString(),
-          userName: player.model.nickname,
-          avatar: player.model.avatar,
-          shortId: player.model.shortId,
-        });
-      })
     Object.keys(this.counterMap).forEach(x => {
       this.counterMap[x].forEach(p => {
         const index = message.players.findIndex(p1 => p1._id === p);
@@ -741,6 +731,7 @@ class Room extends RoomBase {
         }
       })
     })
+
     Object.keys(this.scoreMap).forEach(playerId => {
       const index = message.players.findIndex(p1 => p1._id === playerId);
       if (index !== -1) {
