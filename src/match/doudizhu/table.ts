@@ -690,6 +690,7 @@ abstract class Table implements Serializable {
       this.landlordCards = cards;
       this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
       this.landload = this.players[firstLandlordIndex]._id;
+      this.players[firstLandlordIndex].landloadCount++;
       this.room.broadcast("game/openLandlordCard", {
         ok: true,
         data: {
@@ -940,6 +941,7 @@ abstract class Table implements Serializable {
         this.landlordCards = cards;
         this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
         this.landload = this.players[firstLandlordIndex]._id;
+        this.players[firstLandlordIndex].landloadCount++;
         this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, multiple: this.players[firstLandlordIndex].multiple, landlordCards: cards}});
 
         if (this.rule.allowDouble) {

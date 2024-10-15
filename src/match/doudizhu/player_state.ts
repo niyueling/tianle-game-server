@@ -107,6 +107,9 @@ class PlayerState implements Serializable {
   @autoSerialize
   dropped: any[]
 
+  // 地主次数
+  landloadCount: number = 0;
+
   constructor(userSocket, room, rule) {
     this.room = room
     this.zhuang = false
