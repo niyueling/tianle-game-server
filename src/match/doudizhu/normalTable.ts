@@ -304,7 +304,7 @@ export default class NormalTable extends Table {
     this.room.broadcast('game/gameOverReply', {ok: true, data: gameOverMsg})
     this.stateData.gameOver = gameOverMsg
 
-    let firstPlayer = this.players.find(p => p.cards.length === 0)
+    let firstPlayer = this.players.find(p => p.cards.length === 0);
 
     await this.roomGameOver(states, firstPlayer._id);
   }

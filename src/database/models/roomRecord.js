@@ -10,11 +10,12 @@ const RoomRecordSchema = new Schema({
     createAt: {type: Date, required: true, default: Date.now},
     roomNum: {type: Number, required: true},
     creatorId: {type: Number },
+    landload: {type: String },
     rule: {type: Object, required: true},
     category: {type: String, required: true, default: 'shisanshui'},
     roomState: {type: String, required: true, default: 'normal'},
     // 该房间玩到第几局
-    juIndex: {type: Number, required: false,},
+    juIndex: {type: Number, required: false},
     // 本场大赢家
     bigWinner: {type: [], required: false},
 });

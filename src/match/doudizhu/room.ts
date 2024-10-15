@@ -23,6 +23,7 @@ import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
 import Player from "../../database/models/player";
 import {stateGameOver} from "./table";
+import enums from "./enums";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -332,12 +333,15 @@ class Room extends RoomBase {
       await this.updatePlayerClubGold();
     }
 
+    const landload = this.players.find(p => p.mode === enums.landlord);
+
     const roomRecord = {
       players,
       scores,
       roomNum: this._id,
       room: this.uid,
       creatorId: this.creator.model.shortId || 0,
+      landload: landload._id || null,
       createAt: Date.now(),
       club: null,
       category: GameType.ddz,
@@ -362,7 +366,6 @@ class Room extends RoomBase {
   }
 
   async addScore(playerId, v) {
-    console.warn("_id-%s, score-%s", playerId, v);
     this.scoreMap[playerId] += v;
   }
 
@@ -650,6 +653,9 @@ class Room extends RoomBase {
 
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents())
+
+    // 重置模式
+    this.players.map(v => v.mode = enums.unknown);
 
     // 更新玩家位置
     await this.updatePosition();
