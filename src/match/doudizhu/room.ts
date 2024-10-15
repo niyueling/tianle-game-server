@@ -668,8 +668,8 @@ class Room extends RoomBase {
       this.dissolveState = "dissolve";
 
       // 好友房总结算
-      if (this.game.isAllOver() && !this.isPublic) {
-        const message = this.allOverMessage()
+      if ((this.game.isAllOver() && !this.isPublic) || this.isPublic) {
+        const message = await this.allOverMessage()
         this.broadcast('room/allOver', {ok: true, data: message})
         // this.players.forEach(x => x && this.leave(x))
         this.emit('empty', this.disconnected)
@@ -706,8 +706,23 @@ class Room extends RoomBase {
     return true;
   }
 
-  allOverMessage() {
-    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.xmmj}
+  async allOverMessage() {
+    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.ddz}
+    const filteredPlayers = this.snapshot.filter(p => p);
+    for (const player of filteredPlayers) {
+      const landloadCount = await GameRecord.count({landload: player._id.toString()});
+      // 但在这个例子中，我们直接使用player的数据
+      const playerData = {
+        _id: player._id.toString(),
+        userName: player.model.nickname,
+        avatar: player.model.avatar,
+        shortId: player.model.shortId,
+        landloadCount
+      };
+
+      message.players.push(playerData);
+    }
+
     this.snapshot
       .filter(p => p)
       .forEach(player => {
@@ -715,7 +730,7 @@ class Room extends RoomBase {
           _id: player._id.toString(),
           userName: player.model.nickname,
           avatar: player.model.avatar,
-          shortId: player.model.shortId
+          shortId: player.model.shortId,
         });
       })
     Object.keys(this.counterMap).forEach(x => {
