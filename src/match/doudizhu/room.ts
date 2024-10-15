@@ -669,7 +669,7 @@ class Room extends RoomBase {
       this.dissolveState = "dissolve";
 
       // 好友房总结算
-      if ((this.game.isAllOver() && !this.isPublic) || this.isPublic) {
+      if ((this.game.isAllOver() && !this.isPublic) || (this.isPublic && this.game.juIndex > 5)) {
         const message = await this.allOverMessage()
         this.broadcast('room/allOver', {ok: true, data: message})
         // this.players.forEach(x => x && this.leave(x))
