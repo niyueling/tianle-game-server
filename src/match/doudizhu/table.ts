@@ -237,7 +237,7 @@ abstract class Table implements Serializable {
 
   listenPlayer(player: PlayerState) {
     player.on(enums.da, msg => this.onPlayerDa(player, msg))
-    player.on(enums.chooseMode, msg => this.onPlayerChooseMode(player, msg));
+    player.on(enums.chooseMode, async msg => await this.onPlayerChooseMode(player, msg));
     player.on(enums.chooseMultiple, msg => this.onPlayerChooseMultiple(player, msg))
     player.on(enums.openDeal, msg => this.onPlayerOpenCard(player, msg))
     player.on(enums.waitForDa, async () => this.depositForPlayer(player))
@@ -602,9 +602,9 @@ abstract class Table implements Serializable {
     setTimeout(startDaFunc, 1000);
   }
 
-  onPlayerChooseMode(player, msg) {
+  async onPlayerChooseMode(player, msg) {
     if (this.currentPlayerStep !== player.index || this.state === stateGameOver) {
-      return ;
+      return;
     }
 
     let mode = msg.mode;
@@ -629,7 +629,10 @@ abstract class Table implements Serializable {
             p.multiple = p.multiple / 2;
           }
 
-          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}});
+          p.sendMessage("game/multipleChange", {
+            ok: true,
+            data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}
+          });
         })
       }
 
@@ -637,7 +640,10 @@ abstract class Table implements Serializable {
     }
 
     player.mode = mode;
-    this.room.broadcast("game/chooseModeReply", {ok: true, data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple, deposit: false}});
+    this.room.broadcast("game/chooseModeReply", {
+      ok: true,
+      data: {seatIndex: player.index, mode: player.mode, multiple: this.multiple, deposit: false}
+    });
 
     // 如果所有人都选择模式
     let cIndex = this.players.findIndex(p => p.mode === enums.unknown);
@@ -654,7 +660,10 @@ abstract class Table implements Serializable {
         this.multiple *= 2;
         this.players.map((p) => {
           p.multiple = (p.mode === enums.landlord ? this.multiple : this.multiple / 2);
-          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}});
+          p.sendMessage("game/multipleChange", {
+            ok: true,
+            data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}
+          });
         })
       }
 
@@ -662,7 +671,10 @@ abstract class Table implements Serializable {
       if (msg.mode === enums.farmer && this.callLandlordStatus) {
         this.players.map((p) => {
           p.multiple = (p.mode === enums.landlord ? this.multiple * 2 : this.multiple);
-          p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}});
+          p.sendMessage("game/multipleChange", {
+            ok: true,
+            data: {seatIndex: p.index, mode: p.mode, multiple: p.multiple, changeMultiple: 2}
+          });
         })
       }
 
@@ -676,7 +688,15 @@ abstract class Table implements Serializable {
       const cards = this.cardManager.getLandlordCard();
       this.landlordCards = cards;
       this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
-      this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, landlordCards: cards, multiple: this.players[firstLandlordIndex].multiple}});
+      await RoomRecord.update({room: this.room.uid}, {landload: this.players[firstLandlordIndex]._id}).exec()
+      this.room.broadcast("game/openLandlordCard", {
+        ok: true,
+        data: {
+          seatIndex: this.players[firstLandlordIndex].index,
+          landlordCards: cards,
+          multiple: this.players[firstLandlordIndex].multiple
+        }
+      });
 
       if (this.rule.allowDouble) {
         //设置状态为选择翻倍
@@ -684,7 +704,7 @@ abstract class Table implements Serializable {
         // 设置用户为不托管
         this.players.map(p => p.onDeposit = false);
 
-        const startDaFunc = async() => {
+        const startDaFunc = async () => {
           this.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
           // 下发开始翻倍消息
@@ -701,7 +721,7 @@ abstract class Table implements Serializable {
         // 设置用户为不托管
         this.players.map(p => p.onDeposit = false);
 
-        const startDaFunc = async() => {
+        const startDaFunc = async () => {
           this.status.current.seatIndex = this.players[firstLandlordIndex].index;
 
           this.room.broadcast('game/startDa', {ok: true, data: {index: this.currentPlayerStep}})
@@ -711,7 +731,7 @@ abstract class Table implements Serializable {
         setTimeout(startDaFunc, 500);
       }
 
-      return ;
+      return;
     }
 
     // 所有人都选择模式，并且没人选择地主,则重新发牌
@@ -726,7 +746,7 @@ abstract class Table implements Serializable {
       });
       this.state = stateGameOver;
       this.start(this.startParams);
-      return ;
+      return;
     }
 
     // 有多人选择地主,让第一个用户重新选择模式
