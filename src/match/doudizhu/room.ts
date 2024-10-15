@@ -198,6 +198,7 @@ class Room extends RoomBase {
         nickname: state.model.nickname,
         avatar: state.model.avatar,
         score: state.score,
+        playerId: state.model._id
       }
     })
 
@@ -710,7 +711,24 @@ class Room extends RoomBase {
     const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.ddz}
     const filteredPlayers = this.snapshot.filter(p => p);
     for (const player of filteredPlayers) {
-      const landloadCount = await GameRecord.count({landload: player._id.toString()});
+      const gameRecords = await GameRecord.find({roomId: this._id});
+      let landloadCount = 0;
+      let winnerCount = 0;
+
+      for (let i = 0; i < gameRecords.length; i++) {
+        const game = gameRecords[i];
+        // 用户是地主，则累计地主次数
+        if (game.landload === player._id.toString()) {
+          landloadCount++;
+        }
+
+        for (let j = 0; j < game.record.length; j++) {
+          const record = game.record[j];
+          if (record && record.playerId === player._id.toString() && record.score > 0) {
+            winnerCount++;
+          }
+        }
+      }
 
       // 但在这个例子中，我们直接使用player的数据
       const playerData = {
@@ -718,7 +736,8 @@ class Room extends RoomBase {
         userName: player.model.nickname,
         avatar: player.model.avatar,
         shortId: player.model.shortId,
-        landloadCount
+        landloadCount,
+        winnerCount
       };
 
       message.players.push(playerData);
@@ -726,7 +745,7 @@ class Room extends RoomBase {
 
     Object.keys(this.counterMap).forEach(x => {
       this.counterMap[x].forEach(p => {
-        const index = message.players.findIndex(p1 => p1._id === p);
+        const index = message.players.findIndex(p1 => p1._id.toString() === p.toString());
         if (index !== -1) {
           message.players[index][x] = (message.players[index][x] || 0) + 1;
         }
@@ -734,13 +753,13 @@ class Room extends RoomBase {
     })
 
     Object.keys(this.scoreMap).forEach(playerId => {
-      const index = message.players.findIndex(p1 => p1._id === playerId);
+      const index = message.players.findIndex(p1 => p1._id.toString() === playerId.toString());
       if (index !== -1) {
         message.players[index].score = this.scoreMap[playerId];
       }
     })
 
-    const index = message.players.findIndex(p1 => p1._id === this.creator.model._id.toString());
+    const index = message.players.findIndex(p1 => p1._id.toString() === this.creator.model._id.toString());
     if (index !== -1) {
       message.players[index].isCreator = true;
     }
