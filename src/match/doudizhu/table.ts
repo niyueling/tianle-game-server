@@ -17,6 +17,7 @@ import enums from "./enums";
 import GameCategory from "../../database/models/gameCategory";
 import GoodsProp from "../../database/models/GoodsProp";
 import PlayerProp from "../../database/models/PlayerProp";
+import RoomRecord from "../../database/models/roomRecord";
 
 const stateWaitMultiple = 2 // 翻倍
 const stateWaitDa = 3 // 对局中
@@ -917,6 +918,7 @@ abstract class Table implements Serializable {
         const cards = this.cardManager.getLandlordCard();
         this.landlordCards = cards;
         this.players[firstLandlordIndex].cards = [...this.players[firstLandlordIndex].cards, ...cards];
+        await RoomRecord.update({room: this.room.uid}, {landload: this.players[firstLandlordIndex]._id}).exec()
         this.room.broadcast("game/openLandlordCard", {ok: true, data: {seatIndex: this.players[firstLandlordIndex].index, multiple: this.players[firstLandlordIndex].multiple, landlordCards: cards}});
 
         if (this.rule.allowDouble) {

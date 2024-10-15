@@ -333,15 +333,12 @@ class Room extends RoomBase {
       await this.updatePlayerClubGold();
     }
 
-    const landloadIndex = this.players.findIndex(p => p.mode === enums.landlord);
-
     const roomRecord = {
       players,
       scores,
       roomNum: this._id,
       room: this.uid,
       creatorId: this.creator.model.shortId || 0,
-      landload: landloadIndex !== -1 ? this.players[landloadIndex]._id : null,
       createAt: Date.now(),
       club: null,
       category: GameType.ddz,
