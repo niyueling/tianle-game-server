@@ -856,6 +856,75 @@ abstract class Table implements Serializable {
     this.room.broadcast("game/openDealReply", {ok: true, data: {index: player.index, isOpenCard: player.isOpenCard, multiple: player.openMultiple, cards: player.cards}});
   }
 
+  async checkChooseLandload(player) {
+    // 双王/4个二必叫
+    const jokerCount = player.cards.filter(c => c.type === CardType.Joker).length;
+    const twoCount = player.cards.filter(c => c.point === 15).length;
+    const aCount = player.cards.filter(c => c.point === 14).length;
+    const kCount = player.cards.filter(c => c.point === 13).length;
+    const qCount = player.cards.filter(c => c.point === 12).length;
+
+    // 计算用户拥有的炸弹
+    const bombs = [];
+    for (let i = CardTag.ha; i <= CardTag.hk; i++) {
+      const cardCount = player.cards.filter(c => c.value === i).length;
+      if (cardCount === 4) {
+        bombs.push(i);
+      }
+    }
+
+    if (jokerCount === 2) {
+      bombs.push(14);
+    }
+
+    // 好友房规则设置双王，4个2必叫
+    if (this.rule.mustCallLandlord && (jokerCount === 2 || twoCount === 4)) {
+      return true;
+    }
+
+    // 如果手上有2个炸弹或者王炸或者4个2必叫
+    if (bombs.length >= 2 || jokerCount === 2 || twoCount === 4) {
+      return true;
+    }
+
+    // 3个2带1个炸弹必叫
+    if (twoCount === 3 && bombs.length === 1) {
+      return true;
+    }
+
+    // 3个2带3个A必叫
+    if (twoCount === 3 && aCount === 3) {
+      return true;
+    }
+
+    // 2个2带A炸必叫
+    if (twoCount === 2 && aCount === 4) {
+      return true;
+    }
+
+    // 4个A+3个K必叫
+    if (aCount === 4 && kCount === 3) {
+      return true;
+    }
+
+    // 2个2+3个A+3个K必叫
+    if (twoCount === 2 && aCount === 3 && kCount === 3) {
+      return true;
+    }
+
+    // 单炸+3个A+3个K必叫
+    if (bombs.length === 1 && aCount === 3 && kCount === 3) {
+      return true;
+    }
+
+    // 单炸+3个A+3个Q必叫
+    if (bombs.length === 1 && aCount === 3 && qCount === 3) {
+      return true;
+    }
+
+    return false;
+  }
+
   // 托管选择地主
   depositForPlayerChooseMode(player: PlayerState) {
     player.deposit(async () => {
@@ -866,25 +935,9 @@ abstract class Table implements Serializable {
       player.onDeposit = false;
       let mode = enums.farmer;
 
-      // 双王/4个二必叫
-      const jokerCount =   player.cards.filter(c => c.type === CardType.Joker).length;
-      const twoCount =   player.cards.filter(c => c.point === 15).length;
-      const index = this.players.findIndex(p => p.mode === enums.landlord);
+      const landloadStatus = await this.checkChooseLandload(player);
 
-      // 计算用户拥有的炸弹
-      const bombs = [];
-      for (let i = CardTag.ha; i <= CardTag.hk; i++) {
-        const cardCount = player.cards.filter(c => c.value === i).length;
-        if (cardCount === 4) {
-          bombs.push(i);
-        }
-      }
-
-      if (jokerCount === 2) {
-        bombs.push(14);
-      }
-
-      if (player.mode !== enums.farmer && ((bombs.length >= 2 || jokerCount === 2) || (this.rule.mustCallLandlord && (jokerCount === 2 || twoCount === 4)))) {
+      if (player.mode !== enums.farmer && landloadStatus) {
         mode = enums.landlord;
         this.callLandlord++;
 
