@@ -477,6 +477,12 @@ abstract class Table implements Serializable {
       return prompts;
     }
 
+    // 如果自己只剩最后一手牌，则直接出牌
+    const nextPlayerPrompt = prompts.filter(prompt => prompt.length === nextPlayerState.cards.length);
+    if (nextPlayerState) {
+      return nextPlayerPrompt;
+    }
+
     // 判断队友
     const famerIndex = this.players.findIndex(p => p.mode === enums.farmer && p._id.toString() !== nextPlayerState._id.toString());
     console.warn("famerIndex-%s", famerIndex);
@@ -505,7 +511,7 @@ abstract class Table implements Serializable {
       // 如果队友只剩一张牌，打出队友可以单吃的单牌
       if (famerSingleCards.length === 1 && famer.cards.length === 1) {
         for (let i = 0; i < prompts.length; i++) {
-          if (prompts[i].length === 1 && prompts[i][0].point > famerSingleCards[0][0].point) {
+          if (prompts[i].length === 1 && prompts[i][0].point < famerSingleCards[0][0].point) {
             return [prompts[i]];
           }
         }
@@ -514,7 +520,7 @@ abstract class Table implements Serializable {
       // 如果队友只剩一个对子，打出队友可以单吃的对子
       if (famerDoubleCards.length === 1 && famer.cards.length === 2) {
         for (let i = 0; i < prompts.length; i++) {
-          if (prompts[i].length === 2 && prompts[i][0].point > famerDoubleCards[0][0].point) {
+          if (prompts[i].length === 2 && prompts[i][0].point < famerDoubleCards[0][0].point) {
             return [prompts[i]];
           }
         }
