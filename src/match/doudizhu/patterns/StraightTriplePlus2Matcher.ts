@@ -20,15 +20,15 @@ export default class StraightTriplePlus2Matcher implements IMatcher {
         })
       let start = 0
       while (start < groups.length) {
-        let prevGroup = groups[start].slice(0, 3)
-        const stripes = [...prevGroup]
+        let prevGroup = groups[start].slice(0, 3);
+        const stripes = [...prevGroup];
 
         for (let i = start + 1; i < groups.length; i++) {
-          const currentGroup = groups[i].slice(0, 3)
+          const currentGroup = groups[i].slice(0, 3);
 
           if (currentGroup[0].point - prevGroup[0].point === 1) {
-            prevGroup = currentGroup
-            stripes.push(...currentGroup)
+            prevGroup = currentGroup;
+            stripes.push(...currentGroup);
 
             if (stripes.length === allTriplesLen) {
               pattern = {
@@ -93,14 +93,6 @@ export default class StraightTriplePlus2Matcher implements IMatcher {
           prompts.push([...prompt, ...carryCards]);
           i++;
           break;
-        } else {
-          // 判断是否可以少带出完
-          const subtract = arraySubtract(cards, prompt);
-          if (subtract.length < prompt.length) {
-            prompts.push([...prompt, ...subtract]);
-            i++;
-            break;
-          }
         }
       } else {
         i = j;
