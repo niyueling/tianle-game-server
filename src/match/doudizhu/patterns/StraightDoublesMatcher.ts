@@ -69,6 +69,8 @@ export default class StraightDoublesMatcher implements IMatcher {
         }
       }
 
+      console.warn("prompt-%S, len-%s", JSON.stringify(prompt), );
+
       if (prompt.length >= len) {
         i++
         prompts.push(prompt);
