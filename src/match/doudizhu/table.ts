@@ -479,7 +479,7 @@ abstract class Table implements Serializable {
 
     // 如果自己只剩最后一手牌，则直接出牌
     const nextPlayerPrompt = prompts.filter(prompt => prompt.length === nextPlayerState.cards.length);
-    if (nextPlayerPrompt) {
+    if (nextPlayerPrompt.length) {
       console.warn("index %s cards %s prompts %s nextPlayerPrompt %s can finish game", nextPlayerState.seatIndex, JSON.stringify(nextPlayerState.cards), JSON.stringify(prompts), JSON.stringify(nextPlayerPrompt));
       return nextPlayerPrompt;
     }
