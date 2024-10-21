@@ -274,7 +274,6 @@ export class PlayManager {
     for (const p of firstCardPatternOrder) {
       for (const allowPattern of this.allowPattern) {
         res = allowPattern.promptWithPattern(p as IPattern, cards);
-        console.warn("res-%s, pattern-%s", JSON.stringify(res), p.name);
         for (let i = 0; i < res.length; i++) {
           if (res[i]) {
             remain = cards.slice();
