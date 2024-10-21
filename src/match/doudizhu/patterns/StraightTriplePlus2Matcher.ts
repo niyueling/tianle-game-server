@@ -78,19 +78,30 @@ export default class StraightTriplePlus2Matcher implements IMatcher {
         if (nextCard.point - prevCard.point === 1) {
           prevCard = nextCard;
           prompt.push(...groups[j].slice(0, 3));
-          // if (prompt.length === len) {
-          //   break;
-          // }
         } else {
           break;
         }
       }
 
-      console.warn("prompt-%S, len-%s", JSON.stringify(prompt), len);
-
       if (prompt.length >= len) {
-        i++
-        prompts.push(prompt);
+        const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length >= 1).sort(lengthFirstThenPointGroupComparator);
+        if (leftCards.length >= prompt.length) {
+          const carryCards = [];
+          for (let h = 0; h < prompt.length; h++) {
+            carryCards.push(...leftCards[i].slice(0, 1));
+          }
+          prompts.push([...prompt, ...carryCards]);
+          i++;
+          break;
+        } else {
+          // 判断是否可以少带出完
+          const subtract = arraySubtract(cards, prompt);
+          if (subtract.length < prompt.length) {
+            prompts.push([...prompt, ...subtract]);
+            i++;
+            break;
+          }
+        }
       } else {
         i = j;
       }
