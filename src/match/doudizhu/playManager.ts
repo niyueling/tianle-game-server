@@ -216,7 +216,7 @@ export class PlayManager {
 
       // console.warn("remainingCardsCopy %s remainingCardsSlice %s point %s", remainingCardsCopy.length, remainingCardsSlice.length, cards[0].point);
 
-      if (cards[0].point < CardTag.hk || remainingCardsSlice.length === 0) {
+      if (cards[0].point < 14 || remainingCardsSlice.length === 0) {
         // 如果队友打单张，不拆对子吃队友单张
         const cardCount = remainCards.filter(c => c.point === cards[0].point).length;
         console.warn("promptCount %s cardCount %s", cards.length, cardCount);

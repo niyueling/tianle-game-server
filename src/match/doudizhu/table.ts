@@ -541,10 +541,10 @@ abstract class Table implements Serializable {
         return [grp[0], grp[1]]
       });
 
-    // 如果地主只剩一张牌，则过滤掉所有单牌
+    // 如果地主只剩一张牌，则过滤掉所有比地主小的单牌
     if (singleCards.length === 1 && landload.cards.length === 1) {
       for (let i = 0; i < prompts.length; i++) {
-        if (prompts[i].length > 1) {
+        if (prompts[i].length > 1 || (prompts[i].length === 1 && prompts[i][0].point >= landload.cards[0].point)) {
           newPrompts.push(prompts[i]);
         }
       }
@@ -556,6 +556,11 @@ abstract class Table implements Serializable {
         if (prompts[i].length !== 2) {
           newPrompts.push(prompts[i]);
         }
+      }
+
+      // 如果过滤后没有合适的出牌，则出一个单张
+      if (!newPrompts.length) {
+        newPrompts.push([prompts[0][0]]);
       }
     }
 
