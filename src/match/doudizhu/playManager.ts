@@ -158,6 +158,7 @@ export class PlayManager {
         prompts.push(...result);
       }
     }
+
     // 上一个不是队友，并且没有相同牌型可吃，可以出炸
     if (pattern.name !== PatterNames.bomb && mode !== lastPlayerMode) {
       for (const matcher of this.boomPattern) {
@@ -180,8 +181,7 @@ export class PlayManager {
   getPlayerCardByPattern(pattern: IPattern, remainCards: Card[]): Card[][] {
     // 如果本轮轮到自己出牌
     if (!pattern) {
-      const cards = this.firstPlayCard(remainCards);
-      return cards;
+      return this.firstPlayCard(remainCards);
     }
 
     const prompts = [];
@@ -217,6 +217,13 @@ export class PlayManager {
       // console.warn("remainingCardsCopy %s remainingCardsSlice %s point %s", remainingCardsCopy.length, remainingCardsSlice.length, cards[0].point);
 
       if (cards[0].point < CardTag.hk || remainingCardsSlice.length === 0) {
+        // 如果队友打单张，不拆对子吃队友单张
+        const cardCount = remainCards.filter(c => c.point === cards[0].point).length;
+        console.warn("promptCount %s cardCount %s", cards.length, cardCount);
+        if (cards.length === 1 && cardCount > 1) {
+          continue;
+        }
+
         possibles.push(cards);
       }
     }
