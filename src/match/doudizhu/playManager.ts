@@ -252,8 +252,12 @@ export class PlayManager {
   // 过滤牌
   excludeCard(target: Card[], source: Card[]) {
     for (const t of target) {
+      if (!t) {
+        continue;
+      }
+
       for (let i = 0; i < source.length; i++) {
-        if (t.equal(source[i])) {
+        if (source[i] && t.equal(source[i])) {
           source.splice(i, 1);
           break;
         }
