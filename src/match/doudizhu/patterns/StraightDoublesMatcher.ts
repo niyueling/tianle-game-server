@@ -47,37 +47,37 @@ export default class StraightDoublesMatcher implements IMatcher {
       card => card.point)
       .filter(g => g.length >= 2)
       .sort((grp1, grp2) => {
-        return grp1[0].point - grp2[0].point
+        return grp1[0].point - grp2[0].point;
       })
 
-    const prompts = []
+    const prompts = [];
     for (let i = 0; i < groups.length;) {
-      let prevCard = groups[i][0]
-      const prompt = [...groups[i].slice(0, 2)]
+      let prevCard = groups[i][0];
+      const prompt = [...groups[i].slice(0, 2)];
 
-      let j = i + 1
+      let j = i + 1;
       for (; j < groups.length; j++) {
-        const nextCard = groups[j][0]
+        const nextCard = groups[j][0];
         if (nextCard.point - prevCard.point === 1) {
-          prevCard = nextCard
-          prompt.push(...groups[j].slice(0, 2))
-          if (prompt.length === len) {
-            break;
-          }
+          prevCard = nextCard;
+          prompt.push(...groups[j].slice(0, 2));
+          // if (prompt.length === len) {
+          //   break;
+          // }
         } else {
           break;
         }
       }
 
-      if (prompt.length === len) {
+      if (prompt.length >= len) {
         i++
-        prompts.push(prompt)
+        prompts.push(prompt);
       } else {
-        i = j
+        i = j;
       }
 
     }
 
-    return prompts
+    return prompts;
   }
 }
