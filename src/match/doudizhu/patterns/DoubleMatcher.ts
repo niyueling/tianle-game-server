@@ -22,7 +22,7 @@ export default class DoubleMatcher implements IMatcher {
       return [];
     }
     return groupBy(cards.filter(c => c.point > target.score), card => card.point)
-      .filter(g => g.length < 4)
+      .filter(g => g.length > 1 && g.length < 4)
       .sort(lengthFirstThenPointGroupComparator)
       .map(grp => {
         return [grp[0], grp[1]]

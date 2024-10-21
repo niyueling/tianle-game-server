@@ -19,7 +19,7 @@ export default class SingleMatcher implements IMatcher {
       return [];
     }
     const singleCards = groupBy(cards.filter(c => c.point > target.score), card => card.point)
-      .filter(grp => grp.length < 4)
+      .filter(grp => grp.length > 0 && grp.length < 4)
       .sort(lengthFirstThenPointGroupComparator)
       .map(grp => [grp[0]]);
 
