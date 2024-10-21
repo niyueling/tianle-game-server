@@ -71,7 +71,7 @@ const firstCardPatternOrder = [
     // 飞机不带
     name: PatterNames.straightTriples,
     score: 0,
-    cards: [],
+    cards: Array.from({ length: 6 }),
   },
   {
     // 3张不带
