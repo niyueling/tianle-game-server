@@ -299,6 +299,7 @@ export class PlayManager {
     const card = chooseCards[0];
 
     if (card.type !== CardType.Joker) {
+      console.warn("chooseCards-%s", JSON.stringify(chooseCards));
       const valueCount = chooseCards.filter(c => c.point === card.point).length;
       if (chooseCards.length === 4 && valueCount === 4) {
         return true;
