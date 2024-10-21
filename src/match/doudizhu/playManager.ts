@@ -276,10 +276,10 @@ export class PlayManager {
         res = allowPattern.promptWithPattern(p as IPattern, cards);
         for (let i = 0; i < res.length; i++) {
           remain = cards.slice();
-          this.excludeCard(res[0], remain);
-          if (this.isAllowPlayCard(res[0], remain) && this.checkCardIsBomb(cards.slice(), res[0])) {
-            const patternSimpleCount = this.getCardSimpleCount(cards.slice(), res[0]);
-            allPossibles.push({simpleCount: patternSimpleCount, name: p.name, data: res[0]});
+          this.excludeCard(res[i], remain);
+          if (this.isAllowPlayCard(res[i], remain) && this.checkCardIsBomb(cards.slice(), res[i])) {
+            const patternSimpleCount = this.getCardSimpleCount(cards.slice(), res[i]);
+            allPossibles.push({simpleCount: patternSimpleCount, name: p.name, data: res[i]});
           }
         }
       }
