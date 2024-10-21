@@ -274,6 +274,7 @@ export class PlayManager {
     for (const p of firstCardPatternOrder) {
       for (const allowPattern of this.allowPattern) {
         res = allowPattern.promptWithPattern(p as IPattern, cards);
+        console.warn("res-%s, pattern-%s", JSON.stringify(res), p.name);
         for (let i = 0; i < res.length; i++) {
           if (res[i]) {
             remain = cards.slice();
@@ -301,8 +302,7 @@ export class PlayManager {
     const card = chooseCards[0];
 
     if (card.type !== CardType.Joker) {
-      console.warn("chooseCards-%s", JSON.stringify(chooseCards));
-      const valueCount = chooseCards.filter(c => c.point === card.point).length;
+      const valueCount = chooseCards.filter(c => c && c.point === card.point).length;
       if (chooseCards.length === 4 && valueCount === 4) {
         return true;
       }
