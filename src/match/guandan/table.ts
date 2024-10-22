@@ -17,7 +17,6 @@ import {
 } from "./patterns"
 import {groupBy, IPattern, PatterNames, patternCompare} from "./patterns/base"
 import BombMatcher from './patterns/BombMatcher'
-import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher"
 import PlayerState from './player_state'
 import Room from './room'
 import Rule from './Rule'
@@ -94,8 +93,6 @@ export function cardChangeDebugger<T extends new (...args: any[]) => {
     }
   }
 }
-
-const triplePlusXMatcher = new TriplePlusXMatcher()
 
 abstract class Table implements Serializable {
 

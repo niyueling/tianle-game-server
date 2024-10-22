@@ -6,32 +6,27 @@ import DoubleMatcher from './patterns/DoubleMatcher'
 import SingleMatcher from './patterns/SingleMatcher'
 import StraightDoublesMatcher from './patterns/StraightDoublesMatcher'
 import StraightMatcher from './patterns/StraightMatcher'
-import StraightTriplePlus2Matcher from "./patterns/StraightTriplePlus2Matcher"
-import StraightTriplePlusXMatcher, {default as StraightTriplesPlusXMatcher} from "./patterns/StraightTriplePlusXMatcher"
 import StraightTriplesMatcher from './patterns/StraightTriplesMatcher'
 import TriplePlus2Matcher from './patterns/TriplePlus2Matcher'
-import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher"
 import TripleMatcher from "./patterns/TripleMatcher";
 
 const matchers: IMatcher[] = [
   new BombMatcher(),
   new StraightMatcher(),
   new StraightDoublesMatcher(),
-  new StraightTriplePlus2Matcher(),
   new TriplePlus2Matcher(),
   new TripleMatcher(),
   new DoubleMatcher(),
   new SingleMatcher(),
+  new StraightTriplesMatcher()
 ]
 
 class TriplePlus2MatcherExtra implements IMatcher {
 
-  tpx: IMatcher
   tp2: IMatcher
 
   constructor() {
     this.tp2 = new TriplePlus2Matcher()
-    this.tpx = new TriplePlusXMatcher()
   }
 
   promptWithPattern(target: IPattern, cards: Card[]): Card[][] {
@@ -40,39 +35,7 @@ class TriplePlus2MatcherExtra implements IMatcher {
       return tp2Prompts
     }
 
-    return this.tpx.promptWithPattern(target, cards)
-  }
-
-  verify(cards: Card[]): IPattern {
-    return null
-  }
-}
-
-class StraightTriplePlusXMatcherExtra implements IMatcher {
-
-  tsp2: IMatcher
-
-  constructor() {
-    this.tsp2 = new StraightTriplePlus2Matcher()
-  }
-
-  promptWithPattern(target: IPattern, cards: Card[]): Card[][] {
-    const tp2Prompts = this.tsp2.promptWithPattern(target, cards)
-    if (tp2Prompts.length > 0) {
-      return tp2Prompts
-    }
-
-    if (target) {
-      if (target.name.startsWith(PatterNames.straightTriplePlus2)) {
-        const tspx = new StraightTriplesPlusXMatcher(target.level)
-        return tspx.promptWithPattern(target, cards)
-      }
-    } else {
-      const tspx = new StraightTriplesPlusXMatcher(0)
-      return tspx.promptWithPattern(target, cards)
-    }
-
-    return []
+    return [];
   }
 
   verify(cards: Card[]): IPattern {
@@ -84,12 +47,12 @@ function patternNameToPatternMatcher(name: string): IMatcher {
   if (name === PatterNames.single) return new SingleMatcher()
   if (name === PatterNames.bomb) return new BombMatcher()
   if (name === PatterNames.double) return new DoubleMatcher()
-  if (name === PatterNames.triplePlus2) return new TriplePlus2MatcherExtra()
-  if (name === PatterNames.triple) return new TripleMatcher()
+  if (name === PatterNames.triplePlus2) return new TriplePlus2MatcherExtra() // 三带二
+  if (name === PatterNames.triple) return new TripleMatcher() // 三张
 
-  if (name.startsWith(PatterNames.straight)) return new StraightMatcher()
-  if (name.startsWith(PatterNames.doubles)) return new StraightDoublesMatcher()
-  if (name.startsWith(PatterNames.triples)) return new StraightTriplesMatcher()
+  if (name.startsWith(PatterNames.straight)) return new StraightMatcher() // 顺子
+  if (name.startsWith(PatterNames.doubles)) return new StraightDoublesMatcher() // 连对
+  if (name.startsWith(PatterNames.triples)) return new StraightTriplesMatcher() // 钢板
 
   return new NullCheck()
 }
@@ -104,24 +67,8 @@ export function findFullMatchedPattern(cards: Card[]): IPattern | null {
   return null
 }
 
-const triplePlusX = new TriplePlusXMatcher()
-
 export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount: number = 0): IPattern | null {
     let foundPattern = findFullMatchedPattern(cards)
-
-    if (!foundPattern && cards.length === cardCount) {
-    foundPattern = triplePlusX.verify(cards)
-
-    if (pattern) {
-      if (pattern.name.startsWith(PatterNames.straightTriplePlus2)) {
-        const straightTriplePlusX = new StraightTriplePlusXMatcher(pattern.level)
-        foundPattern = foundPattern || straightTriplePlusX.verify(cards)
-      }
-    } else {
-      const straightTriplePlusX = new StraightTriplePlusXMatcher(0)
-      foundPattern = foundPattern || straightTriplePlusX.verify(cards)
-    }
-  }
 
     if (foundPattern) {
     if (!pattern) return foundPattern
@@ -135,17 +82,6 @@ export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount
 
     if (foundPattern.name === PatterNames.bomb) {
       return foundPattern
-    }
-
-    if (cardCount === cards.length && pattern.name.startsWith(PatterNames.straightTriplePlus2)) {
-      const straightTriplePlusX = new StraightTriplePlusXMatcher(pattern.level)
-      foundPattern = straightTriplePlusX.verify(cards)
-
-      if (foundPattern && foundPattern.name === pattern.name) {
-        if (foundPattern.score > pattern.score) {
-          return foundPattern
-        }
-      }
     }
   }
     return null
@@ -231,7 +167,7 @@ const firstPattern = [
     },
   },
   {
-    // 最后3张
+    // 3张
     matcher: new TripleMatcher(),
     pattern: {
       name: PatterNames.triple,
@@ -311,42 +247,4 @@ export function firstPlayCard(cards: Card[], excludePattern: string[]) {
     // 试试单张
   }
   throw new Error('no card to play for cards' + JSON.stringify(cards))
-}
-
-export function publicRoomFirstPlayCard(cards: Card[]) {
-  const patternList =   [
-    {
-      // 顺子
-      matcher: new StraightMatcher(),
-      pattern: {
-        name: PatterNames.straight + '7',
-        score: 0,
-        cards: Array.from({ length: 7 }),
-      },
-    },
-    {
-      // 顺子
-      matcher: new StraightMatcher(),
-      pattern: {
-        name: PatterNames.straight + '6',
-        score: 0,
-        cards: Array.from({ length: 6 }),
-      },
-    },
-    {
-      // 顺子
-      matcher: new StraightMatcher(),
-      pattern: {
-        name: PatterNames.straight + '5',
-        score: 0,
-        cards: Array.from({ length: 5 }),
-      },
-    }];
-  for (const p of patternList) {
-    const result = p.matcher.promptWithPattern(p.pattern as IPattern, cards);
-    if (result.length > 0) {
-      return result[0];
-    }
-  }
-  return null;
 }
