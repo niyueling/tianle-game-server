@@ -8,12 +8,12 @@ export default class StraightMatcher implements IMatcher {
     if (cards.length === 5) {
       const copyCards = cards.slice().sort(Card.compare)
 
-      if (last(copyCards).point >= 15) return null
+      // if (last(copyCards).point >= 15) return null
 
       let lastCard = copyCards[0]
       for (let i = 1; i < copyCards.length; i++) {
         const currentCard = copyCards[i]
-        if (currentCard.point - lastCard.point === 1) {
+        if (currentCard.point - lastCard.point === 1 || currentCard.value - lastCard.value === 1) {
           lastCard = currentCard
         } else {
           return null
@@ -39,33 +39,32 @@ export default class StraightMatcher implements IMatcher {
 
     const groups = groupBy(
       cards.filter(
-        c => c.point > target.score && c.point < Enums.c2.point),
-      c => c.point)
+        c => c.point > target.score && c.point < Enums.c2.point), c => c.point)
       .filter(g => g.length < 4)
       .sort((grp1, grp2) => grp1[0].point - grp2[0].point)
 
     const prompts = []
     for (let i = 0; i < groups.length;) {
-      let prevCard = groups[i][0]
-      const prompt = [prevCard]
+      let prevCard = groups[i][0];
+      const prompt = [prevCard];
 
-      let j = i + 1
+      let j = i + 1;
       for (; j < groups.length; j++) {
-        const nextCard = groups[j][0]
-        if (nextCard.point - prevCard.point === 1) {
-          prevCard = nextCard
-          prompt.push(nextCard)
+        const nextCard = groups[j][0];
+        if ((nextCard.point - prevCard.point === 1 && nextCard.point < 15) || nextCard.value - prevCard.value === 1) {
+          prevCard = nextCard;
+          prompt.push(nextCard);
           if (prompt.length === len) {
-            break
+            break;
           }
         } else {
-          break
+          break;
         }
       }
 
       if (prompt.length === len) {
         i++
-        prompts.push(prompt)
+        prompts.push(prompt);
       } else {
         i = j
       }
