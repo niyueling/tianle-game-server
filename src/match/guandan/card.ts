@@ -23,7 +23,7 @@ export default class Card {
     if (type === CardType.Joker) {
       this.point = this.value
     } else if (levelCard && value === levelCard) {
-      this.point = 14;
+      this.point = 15;
     } else {
       this.point = this.value > 1 ? this.value : 13 + value
     }
