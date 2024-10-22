@@ -263,7 +263,7 @@ abstract class Table implements Serializable {
   }
 
   getQuarterCount() {
-    return this.rule.useJoker ? 27 : 26;
+    return 27;
   }
 
   async fapai() {
