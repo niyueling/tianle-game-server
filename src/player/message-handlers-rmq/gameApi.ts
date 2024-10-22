@@ -91,7 +91,7 @@ export class GameApi extends BaseApi {
 
       if (records[i].failList.includes(this.player._id)) {
         const index = records[i].failList.findIndex(p => p === this.player._id);
-        totalGold -= records[i].failGoldList[index];
+        totalGold += records[i].failGoldList[index];
         scoreRecords.push({
           playerId: this.player._id,
           gold: records[i].failGoldList[index],
