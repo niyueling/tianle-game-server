@@ -24,7 +24,6 @@ function mustBeRealBomb(target, propKey: string, propDesc: PropertyDescriptor) {
 export default class BombMatcher implements IMatcher {
 
   @mustBeRealBomb
-  @verifyWithJoker
   verify(cards: Card[]): IPattern | null {
     if (cards.length >= 4) {
       const firstCard = cards[0]
