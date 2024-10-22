@@ -38,7 +38,7 @@ export default class TriplePlus2Matcher implements IMatcher {
 
      // 炸弹包括普通炸弹和王炸弹
     const haveBomb = groupBy(cards, card => card.point)
-     .filter(g => g.length >= 4 ).length > 0 || cards.filter(c => c.point >= 16).length >= 4 ? true : false;
+      .filter(g => g.length >= 4).length > 0 || cards.filter(c => c.point >= 16).length >= 4;
 
     const haveBombFilter = function (g: Card[]) {
       return g.length === 3 && g[0].point < 16
@@ -52,11 +52,11 @@ export default class TriplePlus2Matcher implements IMatcher {
       .filter(filterFun)
       .sort(lengthFirstThenPointGroupComparator)
       .map(group => {
-        const triple = group.slice(0, 3)
-        const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point)
+        const triple = group.slice(0, 3);
+        const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point).filter(g => g.length >= 2)
           .sort(lengthFirstThenPointXXGroupComparator))
 
-        return [...triple, leftCards[0], leftCards[1]]
+        return [...triple, leftCards[0], leftCards[1]];
       })
   }
 }

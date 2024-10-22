@@ -11,6 +11,7 @@ import StraightTriplePlusXMatcher, {default as StraightTriplesPlusXMatcher} from
 import StraightTriplesMatcher from './patterns/StraightTriplesMatcher'
 import TriplePlus2Matcher from './patterns/TriplePlus2Matcher'
 import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher"
+import TripleMatcher from "./patterns/TripleMatcher";
 
 const matchers: IMatcher[] = [
   new BombMatcher(),
@@ -196,17 +197,17 @@ export function isGreaterThanPatternForPlainCards(plainCards: any[],
 // 先出 飞机，连对，顺子，对子，单张，炸弹
 const firstPattern = [
   {
-    matcher: new StraightTriplePlus2Matcher(),
-    // 333444 xxxx
+    matcher: new StraightTriplesMatcher(),
+    // 钢板
     pattern: {
-      name: PatterNames.straightTriplePlus2 + '4',
+      name: PatterNames.straightTriplePlus2 + '0',
       score: 0,
-      cards: Array.from({ length: 10 }),
+      cards: Array.from({ length: 6 }),
     },
   },
   {
     matcher: new TriplePlus2Matcher(),
-    // 333 xx
+    // 三带对
     pattern: {
       name: PatterNames.triplePlus2,
       score: 0,
@@ -214,30 +215,12 @@ const firstPattern = [
     },
   },
   {
-    // 33445566
-    matcher: new StraightDoublesMatcher(),
-    pattern: {
-      name: PatterNames.doubles + '4',
-      score: 0,
-      cards: Array.from({ length: 8 }),
-    }
-  },
-  {
-    // 334455
+    // 连对
     matcher: new StraightDoublesMatcher(),
     pattern: {
       name: PatterNames.doubles + '3',
       score: 0,
       cards: Array.from({ length: 6 }),
-    }
-  },
-  {
-    // 3344
-    matcher: new StraightDoublesMatcher(),
-    pattern: {
-      name: PatterNames.doubles + '2',
-      score: 0,
-      cards: Array.from({ length: 4 }),
     }
   },
   {
@@ -250,32 +233,14 @@ const firstPattern = [
     },
   },
   {
-    // 顺子
-    matcher: new StraightMatcher(),
+    // 最后3张
+    matcher: new TripleMatcher(),
     pattern: {
-      name: PatterNames.straight + '6',
+      name: PatterNames.triple,
       score: 0,
-      cards: Array.from({ length: 6 }),
     },
+    cards: Array.from({ length: 3 }),
   },
-  {
-    // 顺子
-    matcher: new StraightMatcher(),
-    pattern: {
-      name: PatterNames.straight + '7',
-      score: 0,
-      cards: Array.from({ length: 7 }),
-    },
-  },
-  // {
-  //   // 最后3张
-  //   matcher: new TripleMatcher(),
-  //   pattern: {
-  //     name: PatterNames.triple,
-  //     score: 0,
-  //   },
-  //   cards: Array.from({ length: 3 }),
-  // },
   {
     // 对子
     matcher: new DoubleMatcher(),
