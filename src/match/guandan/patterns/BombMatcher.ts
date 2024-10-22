@@ -21,28 +21,6 @@ function mustBeRealBomb(target, propKey: string, propDesc: PropertyDescriptor) {
   }
 }
 
-function appendJokers(prototype, propKey: string, propDesc: PropertyDescriptor) {
-  const originVerify = propDesc.value as (target, cards: Card[]) => Card[][]
-
-  propDesc.value = function (target, cards: Card[]): Card[][] {
-    const prompts = originVerify.call(this, target, cards)
-
-    const jokers = cards.filter(c => c.type === CardType.Joker).sort(Card.compare)
-
-    const allBombs = groupBy(cards.filter(c => c.type !== CardType.Joker), c => c.point).filter(grp => grp.length >= 4)
-
-    if (jokers.length > 0) {
-      const promptsWithJokers = allBombs
-        .map(bomb => [...bomb, ...jokers])
-        .filter(newBomb => patternCompare(this.verify(newBomb), target) > 0)
-
-      return [...prompts, ...promptsWithJokers].sort((cs1, cs2) => this.verify(cs1).score - this.verify(cs2).score)
-    }
-
-    return prompts
-  }
-}
-
 export default class BombMatcher implements IMatcher {
 
   @mustBeRealBomb
@@ -95,7 +73,6 @@ export default class BombMatcher implements IMatcher {
     return null
   }
 
-  @appendJokers
   promptWithPattern(target, cards: Card[]): Card[][] {
 
     const minScore = target.name === PatterNames.bomb ? target.score : 0
@@ -112,14 +89,14 @@ export default class BombMatcher implements IMatcher {
       .filter(group => this.verify(group).score > minScore)
 
     const jockerCount = cards.filter(c => c.type === CardType.Joker).length
-    if (normalBomb.length === 1) { // 如果只有一个炸弹，并且有1-3个王的情况下
-      if (jockerCount > 0 && jockerCount < 4) {
-        // 带上王，防止烧机
-        // normalBomb[0].push(...cards.filter(c => c.type === CardType.Joker));
-        normalBomb.shift()
-        return normalBomb;
-      }
-    }
+    // if (normalBomb.length === 1) { // 如果只有一个炸弹，并且有1-3个王的情况下
+    //   if (jockerCount > 0 && jockerCount < 4) {
+    //     // 带上王，防止烧机
+    //     // normalBomb[0].push(...cards.filter(c => c.type === CardType.Joker));
+    //     normalBomb.shift()
+    //     return normalBomb;
+    //   }
+    // }
 
     if (jockerCount >= 4) {
       normalBomb.push(cards.filter(c => c.type === CardType.Joker));

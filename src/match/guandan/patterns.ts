@@ -21,33 +21,11 @@ const matchers: IMatcher[] = [
   new StraightTriplesMatcher()
 ]
 
-class TriplePlus2MatcherExtra implements IMatcher {
-
-  tp2: IMatcher
-
-  constructor() {
-    this.tp2 = new TriplePlus2Matcher()
-  }
-
-  promptWithPattern(target: IPattern, cards: Card[]): Card[][] {
-    const tp2Prompts = this.tp2.promptWithPattern(target, cards)
-    if (tp2Prompts.length > 0) {
-      return tp2Prompts
-    }
-
-    return [];
-  }
-
-  verify(cards: Card[]): IPattern {
-    return null
-  }
-}
-
 function patternNameToPatternMatcher(name: string): IMatcher {
   if (name === PatterNames.single) return new SingleMatcher()
   if (name === PatterNames.bomb) return new BombMatcher()
   if (name === PatterNames.double) return new DoubleMatcher()
-  if (name === PatterNames.triplePlus2) return new TriplePlus2MatcherExtra() // 三带二
+  if (name === PatterNames.triplePlus2) return new TriplePlus2Matcher() // 三带二
   if (name === PatterNames.triple) return new TripleMatcher() // 三张
 
   if (name.startsWith(PatterNames.straight)) return new StraightMatcher() // 顺子
