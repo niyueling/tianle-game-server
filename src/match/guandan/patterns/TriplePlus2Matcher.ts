@@ -18,7 +18,7 @@ export default class TriplePlus2Matcher implements IMatcher {
         return grp2.length - grp1.length
       })
 
-      if (groups[0].length >= 3) {
+      if (groups[0].length === 3 && groups[1].length === 2) {
         return {
           name: PatterNames.triplePlus2,
           score: groups[0][0].point,
