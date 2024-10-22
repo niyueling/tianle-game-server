@@ -71,7 +71,7 @@ export class GameApi extends BaseApi {
     if (message.juIndex) {
       params["juIndex"] = message.juIndex;
     }
-    const records = await RoomGoldRecord.where(params).find();
+    const records = await RoomGoldRecord.where(params).find().sort({createAt: -1});
     const scoreRecords = [];
     let totalGold = 0;
 
