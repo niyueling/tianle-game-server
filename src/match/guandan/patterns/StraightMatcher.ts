@@ -5,7 +5,7 @@ import {groupBy, IMatcher, IPattern, last, PatterNames, promptWithWildJoker, ver
 export default class StraightMatcher implements IMatcher {
 
   verify(cards: Card[]): IPattern | null {
-    if (cards.length >= 5) {
+    if (cards.length === 5) {
       const copyCards = cards.slice().sort(Card.compare)
 
       if (last(copyCards).point >= 15) return null
