@@ -386,8 +386,7 @@ export class PlayManager {
       cards.push(bestPlays[i].data);
     }
 
-    // 取第一个
-    return cards; // 返回第一个单牌数量最少且按name排序的牌型
+    return cards;
   }
 
   getCardSimpleCount(cards: Card[], chooseCards: Card[]) {

@@ -549,7 +549,7 @@ abstract class Table implements Serializable {
       });
 
     // 如果地主只剩一张牌，则过滤掉所有比地主小的单牌
-    if (singleCards.length === 1 && landload.cards.length === 1) {
+    if (landload.cards.length === 1) {
       for (let i = 0; i < prompts.length; i++) {
         if (prompts[i].length > 1 || (prompts[i].length === 1 && prompts[i][0].point >= landload.cards[0].point)) {
           newPrompts.push(prompts[i]);
@@ -571,8 +571,8 @@ abstract class Table implements Serializable {
       }
     }
 
-    console.warn(" landloadindex %s mode %s singleCardCount %s doubleCardCount %s newPrompts %s", nextPlayerState.seatIndex, nextPlayerState.mode,
-      JSON.stringify(singleCards), JSON.stringify(doubleCards), JSON.stringify(newPrompts));
+    console.warn(" nextPlayerIndex %s mode %s singleCardCount %s doubleCardCount %s prompts %s newPrompts %s", nextPlayerState.seatIndex, nextPlayerState.mode,
+      JSON.stringify(singleCards), JSON.stringify(doubleCards), JSON.stringify(prompts), JSON.stringify(newPrompts));
 
     // 如果没有可以出牌的牌型，则按照原牌型出牌
     if (!newPrompts.length) {
