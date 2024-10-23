@@ -377,7 +377,7 @@ export class PlayManager {
     const minSimpleCount = Math.min(...allPossibles.map(p => p.simpleCount));
 
     // 然后筛选出所有simpleCount等于最小值的元素
-    const bestPlays = allPossibles.filter(p => p.simpleCount === minSimpleCount);
+    const bestPlays = allPossibles.filter(p => p.simpleCount <= minSimpleCount + 1);
 
     // 根据name进行排序
     bestPlays.sort(this.compareNames);
