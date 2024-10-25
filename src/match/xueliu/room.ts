@@ -679,12 +679,6 @@ class Room extends RoomBase {
 
     await this.announcePlayerJoin(thePlayer)
 
-    const joinFunc = async() => {
-      this.robotManager.model.step = RobotStep.start;
-    }
-
-    setTimeout(joinFunc, 1000);
-
     return true
   }
 
@@ -1021,21 +1015,47 @@ class Room extends RoomBase {
     this.clearReady()
     await this.delPlayerBless();
     // 下一局
-    // await this.robotManager.nextRound();
+    await this.robotManager.nextRound();
 
-    if (this.gameState) {
+    // 更新玩家位置
+    await this.updatePosition();
+
+    const updateNoRubyFunc = async() => {
+      if (this.isPublic) {
+        // 判断机器人是否需要补充金豆
+        await this.updateNoRuby();
+      }
+
       this.gameState.dissolve()
       this.gameState = null
       this.readyPlayers = [];
       this.robotManager.model.step = RobotStep.waitRuby;
+
+      if (this.isRoomAllOver() && !this.isPublic) {
+        const message = this.allOverMessage()
+        this.broadcast('room/allOver', message)
+        this.players.forEach(x => x && this.leave(x))
+        this.emit('empty', this.disconnected)
+      }
     }
 
-    if (this.isRoomAllOver()) {
-      const message = this.allOverMessage()
-      this.broadcast('room/allOver', message)
-      this.players.forEach(x => x && this.leave(x))
-      this.emit('empty', this.disconnected)
+    setTimeout(updateNoRubyFunc, 1200);
+  }
+
+  async updateNoRuby() {
+    for (let i = 0; i < this.players.length; i++) {
+      const p = this.players[i];
+      if (!p || !p.isRobot()) {
+        continue;
+      }
+
+      const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
+      if (resp.isNeedRuby || resp.isUpgrade) {
+        this.broadcast('resource/robotIsNoRuby', {ok: true, data: {index: i, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
+      }
     }
+
+    return true;
   }
 
   allOverMessage(): any {
