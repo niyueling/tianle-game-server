@@ -83,17 +83,17 @@ export default class StraightTriplePlus2Matcher implements IMatcher {
         }
       }
 
-      if (prompt.length >= len) {
-        const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length >= 1).sort(lengthFirstThenPointGroupComparator);
-        if (leftCards.length >= prompt.length) {
-          const carryCards = [];
-          for (let h = 0; h < prompt.length; h++) {
-            carryCards.push(...leftCards[i].slice(0, 1));
-          }
-          prompts.push([...prompt, ...carryCards]);
-          i++;
-          break;
-        }
+      const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length >= 1).sort(lengthFirstThenPointGroupComparator);
+      const flattenedArrayUsingReduce = leftCards.reduce((acc, curr) => {
+        return acc.concat(curr);
+      }, []);
+      const len = prompt.length / 3;
+      if (prompt.length >= triples * 3 && leftCards.length >= len) {
+        const carryCards = [];
+        carryCards.push(...flattenedArrayUsingReduce.slice(0, len));
+        prompts.push([...prompt, ...carryCards]);
+        i++;
+        break;
       } else {
         i = j;
       }
