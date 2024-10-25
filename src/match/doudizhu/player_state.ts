@@ -339,7 +339,7 @@ class PlayerState implements Serializable {
   // 托管
   deposit(callback) {
     if (this.room.gameState.currentPlayerStep === -1) {
-      console.warn(this.room.gameState.currentPlayerStep);
+      console.warn("currentPlayerStep %s", this.room.gameState.currentPlayerStep);
       return;
     }
 
@@ -348,11 +348,13 @@ class PlayerState implements Serializable {
 
     // 好友房设置不托管
     if (!this.room.isPublic && !this.rule.ro.autoCommit) {
+      console.warn("friend room is not autoCommit");
       return ;
     }
 
     // 游戏结束不进入托管
     if (this.room.gameState && this.room.gameState.state === 4) {
+      console.warn("game over id not autoCommit");
       return;
     }
 
