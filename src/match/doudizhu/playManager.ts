@@ -43,12 +43,12 @@ const firstCardPatternOrder = [
     score: 0,
     cards:  Array.from({ length: 5 }),
   },
-  {
-    // 飞机带翅膀
-    name: PatterNames.straightTriplePlus2 + '2',
-    score: 0,
-    cards:  Array.from({ length: 8 }),
-  },
+  // {
+  //   // 飞机带翅膀
+  //   name: PatterNames.straightTriplePlus2 + '2',
+  //   score: 0,
+  //   cards:  Array.from({ length: 8 }),
+  // },
   {
     // 连对(6张)
     name: PatterNames.doubles,
@@ -67,12 +67,12 @@ const firstCardPatternOrder = [
     score: 0,
     cards:  Array.from({ length: 5 }),
   },
-  {
-    // 飞机不带
-    name: PatterNames.straightTriples,
-    score: 0,
-    cards: Array.from({ length: 6 }),
-  },
+  // {
+  //   // 飞机不带
+  //   name: PatterNames.straightTriples,
+  //   score: 0,
+  //   cards: Array.from({ length: 6 }),
+  // },
   {
     // 3张不带
     name: PatterNames.triple,
