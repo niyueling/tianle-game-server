@@ -16,14 +16,14 @@ import TripleMatcher from "./patterns/TripleMatcher";
 import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 
 const nameOrder = {
-  'triplesX_2': 1,
-  'triples++_2': 2,
-  triples: 3,
-  doubles_: 4,
-  straight_: 5,
-  'triple++': 6,
-  tripleX: 7,
-  triple: 8,
+  doubles_: 1,
+  straight_: 2,
+  'triple++': 3,
+  tripleX: 4,
+  triple: 5,
+  'triplesX_2': 6,
+  'triples++_2': 7,
+  triples: 8,
   double: 9,
   single: 10,
   bomb: 11
