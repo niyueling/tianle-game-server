@@ -67,12 +67,12 @@ const firstCardPatternOrder = [
     score: 0,
     cards:  Array.from({ length: 5 }),
   },
-  // {
-  //   // 飞机不带
-  //   name: PatterNames.straightTriples,
-  //   score: 0,
-  //   cards: Array.from({ length: 6 }),
-  // },
+  {
+    // 飞机不带
+    name: PatterNames.straightTriples,
+    score: 0,
+    cards: Array.from({ length: 6 }),
+  },
   {
     // 3张不带
     name: PatterNames.triple,
