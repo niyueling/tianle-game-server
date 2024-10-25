@@ -86,19 +86,17 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
       }
 
       const len = prompt.length / 3;
+      const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length >= 2).sort(lengthFirstThenPointGroupComparator);
       console.warn("prompt %s straightTripleCount %s len %s", JSON.stringify(prompt), triples * 3, len);
 
-      if (prompt.length >= triples * 3) {
-        const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length >= 2).sort(lengthFirstThenPointGroupComparator);
-        if (leftCards.length >= len) {
-          const carryCards = [];
-          for (let h = 0; h < len; h++) {
-            carryCards.push(...leftCards[h].slice(0, 2));
-          }
-          prompts.push([...prompt, ...carryCards]);
-          i++;
-          break;
+      if (prompt.length >= triples * 3 && leftCards.length >= len) {
+        const carryCards = [];
+        for (let h = 0; h < len; h++) {
+          carryCards.push(...leftCards[h].slice(0, 2));
         }
+        prompts.push([...prompt, ...carryCards]);
+        i++;
+        break;
       } else {
         i = j;
       }
