@@ -52,7 +52,6 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
   }
 
   promptWithPattern(target, cards: Card[]): Card[][] {
-    const len = target.cards.length;
     if (!target.name.startsWith(this.name)) {
       return [];
     }
@@ -86,12 +85,13 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
         }
       }
 
-      if (prompt.length >= len) {
+      if (prompt.length >= triples * 3) {
+        const len = prompt.length / 3;
         const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length >= 2).sort(lengthFirstThenPointGroupComparator);
-        if (leftCards.length >= prompt.length) {
+        if (leftCards.length >= len) {
           const carryCards = [];
-          for (let h = 0; h < prompt.length; h++) {
-            carryCards.push(...leftCards[i].slice(0, 2));
+          for (let h = 0; h < len; h++) {
+            carryCards.push(...leftCards[h].slice(0, 2));
           }
           prompts.push([...prompt, ...carryCards]);
           i++;

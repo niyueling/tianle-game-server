@@ -16,13 +16,15 @@ import TripleMatcher from "./patterns/TripleMatcher";
 import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 
 const nameOrder = {
-  triples: 1,
-  doubles_: 2,
-  straight_: 3,
-  'triple++': 4,
-  tripleX: 5,
-  triple: 6,
-  'triplesX_2': 7,
+  'triplesX_2': 1,
+  triples: 2,
+
+  doubles_: 3,
+  straight_: 4,
+  'triple++': 5,
+  tripleX: 6,
+  triple: 7,
+
   'triples++_2': 8,
 
   double: 9,
@@ -56,12 +58,12 @@ const firstCardPatternOrder = [
     score: 0,
     cards:  Array.from({ length: 6 }),
   },
-  // {
-  //   // 飞机带对子
-  //   name: PatterNames.straightTriplePlusX + '2',
-  //   score: 0,
-  //   cards:  Array.from({ length: 10 }),
-  // },
+  {
+    // 飞机带对子
+    name: PatterNames.straightTriplePlusX + '2',
+    score: 0,
+    cards:  Array.from({ length: 10 }),
+  },
   {
     // 3带2
     name: PatterNames.triplePlus2,
