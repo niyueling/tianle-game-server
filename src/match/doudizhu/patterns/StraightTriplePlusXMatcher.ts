@@ -85,8 +85,10 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
         }
       }
 
+      const len = prompt.length / 3;
+      console.warn("prompt %s straightTripleCount %s len %s", JSON.stringify(prompt), triples * 3, len);
+
       if (prompt.length >= triples * 3) {
-        const len = prompt.length / 3;
         const leftCards = groupBy(arraySubtract(cards, prompt), card => card.point).filter(grp1 => grp1.length >= 2).sort(lengthFirstThenPointGroupComparator);
         if (leftCards.length >= len) {
           const carryCards = [];
@@ -100,8 +102,9 @@ export default class StraightTriplesPlusXMatcher implements IMatcher {
       } else {
         i = j;
       }
-
     }
+
+    console.warn("straightTriplePrompts %s", JSON.stringify(prompts));
 
     return prompts;
   }

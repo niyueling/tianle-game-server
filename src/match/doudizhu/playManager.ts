@@ -18,7 +18,6 @@ import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher";
 const nameOrder = {
   'triplesX_2': 1,
   triples: 2,
-
   doubles_: 3,
   straight_: 4,
   'triple++': 5,
