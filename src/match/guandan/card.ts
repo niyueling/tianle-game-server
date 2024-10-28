@@ -53,7 +53,17 @@ export default class Card {
   }
 
   static compare(card1: Card, card2: Card) {
-    const cmp = card1.point - card2.point
+    let cmp = card1.point - card2.point;
+
+    if (cmp === 0) {
+      return card1.type - card2.type
+    } else {
+      return cmp
+    }
+  }
+
+  static compareByValue(card1: Card, card2: Card) {
+    let cmp = card1.value - card2.value;
     if (cmp === 0) {
       return card1.type - card2.type
     } else {

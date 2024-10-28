@@ -7,7 +7,12 @@ export default class StraightMatcher implements IMatcher {
     if (cards.length === 5) {
       const copyCards = cards.slice().sort(Card.compare)
 
-      // if (last(copyCards).point >= 15) return null
+      let result = {
+        name: PatterNames.straight + copyCards.length,
+        score: copyCards[0].point,
+        cards,
+        level: copyCards.length
+      };
 
       let lastCard = copyCards[0]
       for (let i = 1; i < copyCards.length; i++) {
@@ -15,18 +20,34 @@ export default class StraightMatcher implements IMatcher {
         if (currentCard.point - lastCard.point === 1 || currentCard.value - lastCard.value === 1) {
           lastCard = currentCard
         } else {
-          return null
+          result = null;
         }
       }
 
-      return {
-        name: PatterNames.straight + copyCards.length,
-        score: copyCards[0].point,
-        cards,
-        level: copyCards.length
+      if (result) {
+        return result;
       }
+
+      const copyCardsByValue = cards.slice().sort(Card.compareByValue)
+
+      let lastCard1 = copyCardsByValue[0]
+      for (let i = 1; i < copyCardsByValue.length; i++) {
+        const currentCard = copyCardsByValue[i]
+        if (currentCard.point - lastCard1.point === 1 || currentCard.value - lastCard1.value === 1) {
+          lastCard1 = currentCard
+        } else {
+          result = null;
+        }
+      }
+
+      if (result) {
+        return result;
+      }
+
+      return null;
     }
-    return null
+
+    return null;
   }
 
   promptWithPattern(target: IPattern, cards: Card[]): Card[][] {
