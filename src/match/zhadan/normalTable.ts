@@ -497,6 +497,7 @@ export default class NormalTable extends Table {
         index: p.index,
         score: p.balance,
         detail: p.detailBalance,
+        winOrder: p.winOrder,
         mode: p.mode,
         // 是否破产
         isBroke: p.isBroke,
