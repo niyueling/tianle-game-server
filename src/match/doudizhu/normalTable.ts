@@ -207,7 +207,7 @@ export default class NormalTable extends Table {
         // 赢家是地主
         if (p._id.toString() !== winner._id.toString()) {
           const currency = await this.PlayerGoldCurrency(p._id);
-          let changeGold = winnerUpgradeGold * p.multiple / winner.multiple;
+          let changeGold = Math.floor(winnerUpgradeGold * p.multiple / winner.multiple);
           if (changeGold > currency) {
             changeGold = currency;
           }
@@ -238,7 +238,7 @@ export default class NormalTable extends Table {
         // 赢家是地主
         if (p._id.toString() !== landload._id.toString()) {
           const currency = await this.PlayerGoldCurrency(p._id);
-          let playerWinnerGold = landloadUpgradeGold * p.multiple / landload.multiple;
+          let playerWinnerGold = Math.floor(landloadUpgradeGold * p.multiple / landload.multiple);
           if (playerWinnerGold > currency) {
             playerWinnerGold = currency;
           }

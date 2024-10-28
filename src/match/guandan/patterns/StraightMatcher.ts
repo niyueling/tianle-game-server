@@ -29,7 +29,6 @@ export default class StraightMatcher implements IMatcher {
       }
 
       const copyCardsByValue = cards.slice().sort(Card.compareByValue);
-      console.warn("copyCardsByValue %s", JSON.stringify(copyCardsByValue));
 
       let lastCard1 = copyCardsByValue[0];
       for (let i = 1; i < copyCardsByValue.length; i++) {
