@@ -567,7 +567,7 @@ abstract class Table implements Serializable {
 
     let teamMateCards = []
     if (remains === 0) {
-      player.winOrder = this.status.winOrder++
+      player.winOrder = ++this.status.winOrder
       teamMateCards = this.teamMateCards(player)
     }
 
