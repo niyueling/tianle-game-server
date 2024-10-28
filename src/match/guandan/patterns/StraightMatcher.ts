@@ -10,14 +10,14 @@ export default class StraightMatcher implements IMatcher {
       let result = {
         name: PatterNames.straight + copyCards.length,
         score: copyCards[0].point,
-        cards,
+        cards: copyCards,
         level: copyCards.length
       };
 
       let lastCard = copyCards[0]
       for (let i = 1; i < copyCards.length; i++) {
         const currentCard = copyCards[i]
-        if (currentCard.point - lastCard.point === 1 || currentCard.value - lastCard.value === 1) {
+        if (currentCard.point - lastCard.point === 1) {
           lastCard = currentCard
         } else {
           result = null;
@@ -44,7 +44,7 @@ export default class StraightMatcher implements IMatcher {
       return {
         name: PatterNames.straight + copyCards.length,
         score: copyCards[0].point,
-        cards,
+        cards: copyCardsByValue,
         level: copyCards.length
       };
     }
