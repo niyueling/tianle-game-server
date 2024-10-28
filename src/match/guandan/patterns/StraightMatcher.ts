@@ -28,13 +28,14 @@ export default class StraightMatcher implements IMatcher {
         return result;
       }
 
-      const copyCardsByValue = cards.slice().sort(Card.compareByValue)
+      const copyCardsByValue = cards.slice().sort(Card.compareByValue);
+      console.warn("copyCardsByValue %s", JSON.stringify(copyCardsByValue));
 
-      let lastCard1 = copyCardsByValue[0]
+      let lastCard1 = copyCardsByValue[0];
       for (let i = 1; i < copyCardsByValue.length; i++) {
-        const currentCard = copyCardsByValue[i]
-        if (currentCard.point - lastCard1.point === 1 || currentCard.value - lastCard1.value === 1) {
-          lastCard1 = currentCard
+        const currentCard = copyCardsByValue[i];
+        if (currentCard.value - lastCard1.value === 1) {
+          lastCard1 = currentCard;
         } else {
           result = null;
         }
