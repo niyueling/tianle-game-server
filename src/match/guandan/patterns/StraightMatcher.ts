@@ -1,6 +1,5 @@
-import Card from "../card"
-import Enums from "../enums"
-import {groupBy, IMatcher, IPattern, last, PatterNames, promptWithWildJoker, verifyWithJoker} from "./base"
+import Card, {CardType} from "../card"
+import {groupBy, IMatcher, IPattern, PatterNames} from "./base"
 
 export default class StraightMatcher implements IMatcher {
 
@@ -39,7 +38,7 @@ export default class StraightMatcher implements IMatcher {
 
     const groups = groupBy(
       cards.filter(
-        c => c.point > target.score && c.point < Enums.c2.point), c => c.point)
+        c => c.point > target.score && c.type !== CardType.Joker), c => c.point)
       .filter(g => g.length < 4)
       .sort((grp1, grp2) => grp1[0].point - grp2[0].point)
 
