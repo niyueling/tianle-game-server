@@ -37,15 +37,11 @@ export default class StraightMatcher implements IMatcher {
         if (currentCard.value - lastCard1.value === 1) {
           lastCard1 = currentCard;
         } else {
-          result = null;
+          return null;
         }
       }
 
-      if (result) {
-        return result;
-      }
-
-      return null;
+      return result;
     }
 
     return null;
