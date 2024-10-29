@@ -7,6 +7,11 @@ export default class StraightFlushMatcher implements IMatcher {
     if (cards.length === 5) {
       const copyCards = cards.slice().sort(Card.compare)
 
+      const startCard = cards[0];
+      if (!cards.every(card => card.type === startCard.type)) {
+        return null;
+      }
+
       let result = {
         name: PatterNames.straightFlush + copyCards.length,
         score: copyCards[0].point,

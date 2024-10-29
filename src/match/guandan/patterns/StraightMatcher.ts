@@ -8,7 +8,7 @@ export default class StraightMatcher implements IMatcher {
       const copyCards = cards.slice().sort(Card.compare)
 
       const startCard = cards[0];
-      if (!cards.every(card => card.type === startCard.type)) {
+      if (cards.every(card => card.type === startCard.type)) {
         return null;
       }
 
@@ -90,7 +90,7 @@ export default class StraightMatcher implements IMatcher {
 
       if (prompt.length === len) {
         const startCard = prompt[0];
-        if (!prompt.every(card => card.type === startCard.type)) {
+        if (prompt.every(card => card.type === startCard.type)) {
           i = j;
         } else {
           i++;
