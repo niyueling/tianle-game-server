@@ -2,14 +2,14 @@
 import {RobotStep} from "@fm/common/constants";
 import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
-import {RobotZD} from "./robotProxy";
+import {RobotGuanDan} from "./robotProxy";
 
 export class RobotManager extends NewRobotManager {
-  disconnectPlayers: { [key: string]: RobotZD }
+  disconnectPlayers: { [key: string]: RobotGuanDan }
 
   async createProxy(playerId) {
     const model = await service.playerService.getPlayerPlainModel(playerId);
-    return new RobotZD(model);
+    return new RobotGuanDan(model);
   }
 
   async readyAndPlay() {

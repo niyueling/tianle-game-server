@@ -639,7 +639,7 @@ export class NewRobotManager {
         if (this.waitInterval[key] >= this.getWaitSecond()) {
           this.waitInterval[key] = 0;
           await proxy.playCard();
-          console.log(playerId, 'play card', this.room._id)
+          // console.log(playerId, 'play card', this.room._id)
         }
         break;
       }

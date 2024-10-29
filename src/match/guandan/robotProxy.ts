@@ -1,7 +1,7 @@
 import {RobotRmqProxy} from "../base/robotRmqProxy";
 
 // 机器人
-export class RobotZD extends RobotRmqProxy {
+export class RobotGuanDan extends RobotRmqProxy {
   constructor(model) {
     super(model, 'guandan');
   }
