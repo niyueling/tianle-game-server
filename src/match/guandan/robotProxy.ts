@@ -19,7 +19,7 @@ export class RobotGuanDan extends RobotRmqProxy {
       }
     } else {
       const cards = this.room.gameState.promptWithFirstPlay(this.playerState);
-      console.warn("play card notGuo index %s cards %s", this.playerState.seatIndex, JSON.stringify(cards));
+      // console.warn("play card notGuo index %s cards %s", this.playerState.seatIndex, JSON.stringify(cards));
       this.room.gameState.onPlayerDa(this.playerState, { cards }, true)
     }
   }

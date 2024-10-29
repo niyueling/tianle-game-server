@@ -62,7 +62,7 @@ export default class TriplePlus2Matcher implements IMatcher {
           return [];
         }
 
-        console.warn("cards %s, triple %s, leftCards %s", JSON.stringify(cards), JSON.stringify(triple), JSON.stringify(leftCards));
+        // console.warn("cards %s, triple %s, leftCards %s", JSON.stringify(cards), JSON.stringify(triple), JSON.stringify(leftCards));
 
         return [...triple, leftCards[0], leftCards[1]];
       }).filter(result => result.length > 0);  // 过滤掉空结果
