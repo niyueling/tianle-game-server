@@ -9,16 +9,18 @@ import StraightMatcher from './patterns/StraightMatcher'
 import StraightTriplesMatcher from './patterns/StraightTriplesMatcher'
 import TriplePlus2Matcher from './patterns/TriplePlus2Matcher'
 import TripleMatcher from "./patterns/TripleMatcher";
+import StraightFlushMatcher from "./patterns/StraightFlushMatcher";
 
 const matchers: IMatcher[] = [
-  new BombMatcher(),
-  new StraightMatcher(),
-  new StraightDoublesMatcher(),
-  new TriplePlus2Matcher(),
-  new TripleMatcher(),
-  new DoubleMatcher(),
-  new SingleMatcher(),
-  new StraightTriplesMatcher()
+  new BombMatcher(),// 炸弹
+  new StraightMatcher(),// 顺子
+  new StraightDoublesMatcher(),// 连对
+  new TriplePlus2Matcher(),// 三带对
+  new TripleMatcher(),// 三张不带
+  new DoubleMatcher(),// 对子
+  new SingleMatcher(),// 单张
+  new StraightTriplesMatcher(),// 钢板
+  new StraightFlushMatcher()// 同花顺
 ]
 
 function patternNameToPatternMatcher(name: string): IMatcher {
@@ -31,6 +33,7 @@ function patternNameToPatternMatcher(name: string): IMatcher {
   if (name.startsWith(PatterNames.straight)) return new StraightMatcher() // 顺子
   if (name.startsWith(PatterNames.doubles)) return new StraightDoublesMatcher() // 连对
   if (name.startsWith(PatterNames.triples)) return new StraightTriplesMatcher() // 钢板
+  if (name.startsWith(PatterNames.straightFlush)) return new StraightFlushMatcher() // 同花顺
 
   return new NullCheck()
 }
@@ -106,7 +109,7 @@ export function isGreaterThanPatternForPlainCards(plainCards: any[],
   return isGreaterThanPattern(cards, pattern, cardCount)
 }
 
-// 先出 飞机，连对，顺子，对子，单张，炸弹
+// 先出 飞机，连对，顺子，对子，单张，炸弹，同花顺
 const firstPattern = [
   {
     matcher: new StraightTriplesMatcher(),
@@ -176,6 +179,15 @@ const firstPattern = [
       name: PatterNames.bomb,
       score: 0,
       cards: Array.from({ length: 4 }),
+    },
+  },
+  {
+    // 同花顺
+    matcher: new StraightFlushMatcher(),
+    pattern: {
+      name: PatterNames.straightFlush + '5',
+      score: 0,
+      cards: Array.from({ length: 5 }),
     },
   },
 ]

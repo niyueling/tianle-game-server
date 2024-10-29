@@ -33,7 +33,8 @@ export const PatterNames = {
   triple: 'triple',
   triplePlus2: 'triple++',
   straightTriplePlus2: 'triples++_',
-  straight: 'straight_'
+  straight: 'straight_',
+  straightFlush: 'straightFlush_'
 }
 
 export interface IMatcher {

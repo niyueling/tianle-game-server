@@ -1,14 +1,14 @@
 import Card, {CardType} from "../card"
 import {groupBy, IMatcher, IPattern, PatterNames} from "./base"
 
-export default class StraightMatcher implements IMatcher {
+export default class StraightFlushMatcher implements IMatcher {
 
   verify(cards: Card[]): IPattern | null {
     if (cards.length === 5) {
       const copyCards = cards.slice().sort(Card.compare)
 
       let result = {
-        name: PatterNames.straight + copyCards.length,
+        name: PatterNames.straightFlush + copyCards.length,
         score: copyCards[0].point,
         cards: copyCards,
         level: copyCards.length
@@ -17,7 +17,7 @@ export default class StraightMatcher implements IMatcher {
       let lastCard = copyCards[0]
       for (let i = 1; i < copyCards.length; i++) {
         const currentCard = copyCards[i]
-        if (currentCard.point - lastCard.point === 1) {
+        if (currentCard.point - lastCard.point === 1 && currentCard.type === lastCard.type) {
           lastCard = currentCard
         } else {
           result = null;
@@ -33,7 +33,7 @@ export default class StraightMatcher implements IMatcher {
       let lastCard1 = copyCardsByValue[0];
       for (let i = 1; i < copyCardsByValue.length; i++) {
         const currentCard = copyCardsByValue[i];
-        if (currentCard.value - lastCard1.value === 1) {
+        if (currentCard.value - lastCard1.value === 1 && currentCard.type === lastCard.type) {
           lastCard1 = currentCard;
         } else {
           return null;
@@ -41,7 +41,7 @@ export default class StraightMatcher implements IMatcher {
       }
 
       return {
-        name: PatterNames.straight + copyCards.length,
+        name: PatterNames.straightFlush + copyCards.length,
         score: copyCards[0].point,
         cards: copyCardsByValue,
         level: copyCards.length
@@ -72,7 +72,7 @@ export default class StraightMatcher implements IMatcher {
       let j = i + 1;
       for (; j < groups.length; j++) {
         const nextCard = groups[j][0];
-        if ((nextCard.point - prevCard.point === 1 && nextCard.point < 15) || nextCard.value - prevCard.value === 1) {
+        if (((nextCard.point - prevCard.point === 1 && nextCard.point < 15) || nextCard.value - prevCard.value === 1) && nextCard.type === prevCard.type) {
           prevCard = nextCard;
           prompt.push(nextCard);
           if (prompt.length === len) {
@@ -84,13 +84,8 @@ export default class StraightMatcher implements IMatcher {
       }
 
       if (prompt.length === len) {
-        const startCard = prompt[0];
-        if (!prompt.every(card => card.type === startCard.type)) {
-          i = j;
-        } else {
-          i++;
-          prompts.push(prompt);
-        }
+        i++
+        prompts.push(prompt);
       } else {
         i = j
       }
