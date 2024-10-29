@@ -56,9 +56,15 @@ export default class TriplePlus2Matcher implements IMatcher {
         const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point).filter(g => g.length >= 2)
           .sort(lengthFirstThenPointXXGroupComparator))
 
+        if (leftCards.length < 2) {
+          // 可以选择返回一个空数组或null，或者执行其他逻辑
+          console.warn("Not enough cards to form a valid 'three with a pair'");
+          return [];
+        }
+
         console.warn("cards %s, triple %s, leftCards %s", JSON.stringify(cards), JSON.stringify(triple), JSON.stringify(leftCards));
 
         return [...triple, leftCards[0], leftCards[1]];
-      })
+      }).filter(result => result.length > 0);  // 过滤掉空结果
   }
 }
