@@ -11,6 +11,7 @@ export class RobotGuanDan extends RobotRmqProxy {
     if (this.room.gameState.canGuo()) {
       // 自动托管
       const cards = this.room.gameState.promptWithPattern(this.playerState);
+      console.warn("play card index %s cards %s", this.playerState.seatIndex, JSON.stringify(cards));
       if (cards.length > 0) {
         this.room.gameState.onPlayerDa(this.playerState, { cards }, true)
       } else {

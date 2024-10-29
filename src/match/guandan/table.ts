@@ -429,7 +429,7 @@ abstract class Table implements Serializable {
       this.daPaiFail(player, TianleErrorCode.notDaRound);
       return
     }
-    console.warn("index %s cards %s", player.seatIndex, JSON.stringify(plainCards));
+    console.warn("onPlayerDa index %s cards %s", player.seatIndex, JSON.stringify(plainCards));
     const cards = plainCards.map(Card.from);
     this.status.lastIndex = this.currentPlayerStep;
     const currentPattern = isGreaterThanPatternForPlainCards(plainCards, this.status.lastPattern, player.cards.length);
