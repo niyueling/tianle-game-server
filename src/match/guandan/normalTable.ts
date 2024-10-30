@@ -4,7 +4,7 @@ import Card, {CardType} from "./card";
 import {groupBy, IPattern, PatterNames} from "./patterns/base";
 import PlayerState from "./player_state";
 import Table from "./table";
-import Enums from "./enums";;
+import Enums from "./enums";
 
 function once(target, propertyKey: string, descriptor: PropertyDescriptor) {
   const originCall = descriptor.value
@@ -78,10 +78,10 @@ export default class NormalTable extends Table {
     this.tableState = 'selectMode';
     for (const player of this.players) {
       if (!player.isChooseMode) {
-        player.msgDispatcher.on('game/chooseMultiple', async ({double}) => {
-          await this.onSelectMode(player, double);
-          this.room.emit('selectMode', {});
-        })
+        // player.msgDispatcher.on('game/chooseMultiple', async ({double}) => {
+        //   await this.onSelectMode(player, double);
+        //   this.room.emit('selectMode', {});
+        // })
         player.sendMessage('game/startChooseMultiple', {ok: true, data: {}})
       }
     }
@@ -103,11 +103,12 @@ export default class NormalTable extends Table {
   }
 
   async onSelectMode(player: PlayerState, multiple = 1) {
+    const index = this.players.findIndex(p => p._id.toString() === player._id.toString());
     player.multiple = multiple;
     player.isChooseMode = true;
     player.record(`select-mode-${multiple}`, []);
-    this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, isMultiple: player.isChooseMode, double: player.multiple}});
-    console.warn("index %s multiple %s isChooseMode %s", player.seatIndex, player.multiple, player.isChooseMode);
+    this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: index, isMultiple: player.isChooseMode, double: player.multiple}});
+    console.warn("index %s multiple %s isChooseMode %s", index, player.multiple, player.isChooseMode);
     const isOk = await this.canStartGame();
     if (isOk) {
       this.next()
