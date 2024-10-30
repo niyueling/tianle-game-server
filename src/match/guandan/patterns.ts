@@ -78,8 +78,9 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
     cards.sort((c1, c2) => c1.point - c2.point)
     return [[cards[0]]]
   }
-
-  console.warn("pattern %s", JSON.stringify(pattern));
+  if ([PatterNames.straightFlush + "5", PatterNames.doubles + "2"].includes(pattern.name)) {
+    console.warn("pattern %s", JSON.stringify(pattern));
+  }
 
   const matcher = patternNameToPatternMatcher(pattern.name)
   let prompts = matcher.promptWithPattern(pattern, cards)
