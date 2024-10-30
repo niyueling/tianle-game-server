@@ -34,6 +34,7 @@ export default class NormalTable extends Table {
       await this.broadcastModeRequest();
     } else {
       await this.startFaPai();
+      this.nextAction = this.startTeamworkGame;
     }
 
     await this.room.robotManager.setCardReady(this.rule.allowDouble);
