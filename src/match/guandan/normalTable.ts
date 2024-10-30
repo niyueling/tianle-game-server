@@ -1,10 +1,10 @@
 import {GameType} from "@fm/common/constants";
 import {service} from "../../service/importService";
-import Card, {CardType} from "./card"
-import {groupBy, IPattern, PatterNames} from "./patterns/base"
-import PlayerState from "./player_state"
-import Table from "./table"
-import Enums from "./enums";
+import Card, {CardType} from "./card";
+import {groupBy, IPattern, PatterNames} from "./patterns/base";
+import PlayerState from "./player_state";
+import Table from "./table";
+import Enums from "./enums";;
 
 function once(target, propertyKey: string, descriptor: PropertyDescriptor) {
   const originCall = descriptor.value
