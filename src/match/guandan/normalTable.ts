@@ -30,9 +30,13 @@ export default class NormalTable extends Table {
   }
 
   async start() {
-    await this.broadcastModeRequest();
+    if (this.rule.allowDouble) {
+      await this.broadcastModeRequest();
+    } else {
+      await this.startFaPai();
+    }
 
-    await this.room.robotManager.setCardReady();
+    await this.room.robotManager.setCardReady(this.rule.allowDouble);
   }
 
   async startFaPai() {

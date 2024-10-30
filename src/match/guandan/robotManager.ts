@@ -104,8 +104,13 @@ export class RobotManager extends NewRobotManager {
   }
 
   // 发牌完成
-  async setCardReady() {
+  async setCardReady(allowDouble) {
+    this.model.step = RobotStep.running;
+
+    if (allowDouble) {
       this.model.step = RobotStep.selectMode;
-      await this.save();
+    }
+
+    await this.save();
   }
 }
