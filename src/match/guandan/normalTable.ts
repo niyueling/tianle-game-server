@@ -30,6 +30,12 @@ export default class NormalTable extends Table {
   }
 
   async start() {
+    await this.broadcastModeRequest();
+
+    await this.room.robotManager.setCardReady();
+  }
+
+  async startFaPai() {
     if (this.room.gameRule.isPublic) {
       // 金豆房发牌
       await this.publicRoomFapai();
@@ -56,10 +62,6 @@ export default class NormalTable extends Table {
     if (this.room.gameRule.isPublic) {
       await this.room.payRubyForStart();
     }
-
-    await this.broadcastModeRequest();
-
-    await this.room.robotManager.setCardReady();
   }
 
   resume(json) {
@@ -127,6 +129,9 @@ export default class NormalTable extends Table {
         return false;
       }
     }
+
+    await this.startFaPai();
+
     this.nextAction = this.startTeamworkGame;
     return true
   }
