@@ -22,6 +22,8 @@ export default class StraightDoublesMatcher implements IMatcher {
         result = null;
       }
 
+      console.warn("sortedGroups %s", JSON.stringify(sortedGroups));
+
       if (!sortedGroups.every(grp => grp.length === 2)) {
         result = null;
       }
