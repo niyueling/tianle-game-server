@@ -401,8 +401,8 @@ abstract class Table implements Serializable {
     return this.currentPlayerStep === player.seatIndex
   }
 
-  daPaiFail(player, info = TianleErrorCode.systemError) {
-    player.sendMessage('game/daCardReply', {ok: false, info, data: {roomId: this.room._id, deposit: player.onDeposit}})
+  daPaiFail(player, info = TianleErrorCode.systemError, cards = []) {
+    player.sendMessage('game/daCardReply', {ok: false, info, data: {roomId: this.room._id, deposit: player.onDeposit, cards}})
   }
 
   guoPaiFail(player, info = TianleErrorCode.systemError) {
@@ -426,7 +426,7 @@ abstract class Table implements Serializable {
 
   onPlayerDa(player, {cards: plainCards}, onDeposit?) {
     if (!this.isCurrentStep(player)) {
-      this.daPaiFail(player, TianleErrorCode.notDaRound);
+      this.daPaiFail(player, TianleErrorCode.notDaRound, plainCards);
       return
     }
     // console.warn("onPlayerDa index %s cards %s", player.seatIndex, JSON.stringify(plainCards));
