@@ -75,7 +75,7 @@ export default class NormalTable extends Table {
   private async broadcastModeRequest() {
     this.tableState = 'selectMode';
     for (const player of this.players) {
-      if (player.mode === 'unknown') {
+      if (!player.isChooseMode) {
         player.msgDispatcher.on('game/selectMode', async ({multiple}) => {
           await this.onSelectMode(player, multiple);
           this.room.emit('selectMode', {});
