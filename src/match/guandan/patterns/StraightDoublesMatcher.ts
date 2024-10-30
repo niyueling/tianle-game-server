@@ -14,22 +14,25 @@ export default class StraightDoublesMatcher implements IMatcher {
         name: PatterNames.doubles + sortedGroups.length,
         score: sortedGroups[0][0].point,
         cards,
-        level: sortedGroups.length
+        level: sortedGroups.length,
+        sortKey: "point"
       }
 
-      if (last(sortedGroups)[0].point >= 15) result = null
+      if (last(sortedGroups)[0].point >= 15) {
+        result = null;
+      }
 
       if (!sortedGroups.every(grp => grp.length === 2)) {
-        result = null
+        result = null;
       }
 
       let prevGroup = sortedGroups[0]
       for (let i = 1; i < sortedGroups.length; i++) {
-        const currentGroup = sortedGroups[i]
+        const currentGroup = sortedGroups[i];
         if (currentGroup[0].point - prevGroup[0].point === 1) {
-          prevGroup = currentGroup
+          prevGroup = currentGroup;
         } else {
-          result = null
+          result = null;
         }
       }
 
@@ -60,7 +63,8 @@ export default class StraightDoublesMatcher implements IMatcher {
         name: PatterNames.doubles + sortedGroups.length,
         score: sortedGroups[0][0].point,
         cards,
-        level: sortedGroups.length
+        level: sortedGroups.length,
+        sortKey: "value"
       }
     }
     return null

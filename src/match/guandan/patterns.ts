@@ -41,7 +41,7 @@ function patternNameToPatternMatcher(name: string): IMatcher {
 export function findFullMatchedPattern(cards: Card[]): IPattern | null {
   for (let i = 0; i < matchers.length; i++) {
     const matcher = matchers[i]
-    const pattern = matcher.verify(cards)
+    const pattern = matcher.verify(cards);
     if (pattern) {
       if (pattern.name.startsWith(PatterNames.doubles)) {
         console.warn("test pattern %s", JSON.stringify(pattern));
@@ -55,7 +55,6 @@ export function findFullMatchedPattern(cards: Card[]): IPattern | null {
 
 export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount: number = 0): IPattern | null {
   let foundPattern = findFullMatchedPattern(cards);
-
     if (foundPattern) {
       if (!pattern) return foundPattern;
 

@@ -21,7 +21,8 @@ export interface IPattern {
   name: string;
   score: number;
   cards: Card[];
-  level?: number
+  level?: number,
+  sortKey?: string
 }
 
 export const PatterNames = {
