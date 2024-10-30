@@ -31,7 +31,7 @@ export default class TriplePlus2Matcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target, cards: Card[]): Card[][] {
+  promptWithPattern(target, cards: Card[], levelCard?: Card): Card[][] {
     if (cards.length < 5) {
       return []
     }

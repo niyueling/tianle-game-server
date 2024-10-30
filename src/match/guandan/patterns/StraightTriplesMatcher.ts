@@ -68,7 +68,7 @@ export default class StraightTriplesMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target: IPattern, cards: Card[]): Card[][] {
+  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Card): Card[][] {
     const len = target.cards.length;
 
     if (cards.length < len) {

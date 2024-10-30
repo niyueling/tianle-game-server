@@ -86,19 +86,19 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
   }
 
   const matcher = patternNameToPatternMatcher(pattern.name)
-  let prompts = matcher.promptWithPattern(pattern, cards)
+  let prompts = matcher.promptWithPattern(pattern, cards, this.room.currentLevelCard);
 
   // 计算同花顺
   let straightFlushPrompts = [];
   if (![PatterNames.bomb, PatterNames.straightFlush + "5"].includes(pattern.name) && flag) {
-    straightFlushPrompts = new StraightFlushMatcher().promptWithPattern(pattern, cards);
+    straightFlushPrompts = new StraightFlushMatcher().promptWithPattern(pattern, cards, this.room.currentLevelCard);
 
     prompts = [...prompts, ...straightFlushPrompts];
   }
 
   let bombPrompts = []
   if (pattern.name !== PatterNames.bomb && flag) {
-    bombPrompts = new BombMatcher().promptWithPattern(pattern, cards);
+    bombPrompts = new BombMatcher().promptWithPattern(pattern, cards, this.room.currentLevelCard);
 
     // 判断是否是同花顺
     if (pattern.name !== PatterNames.straightFlush + "5") {
@@ -237,7 +237,7 @@ export function firstPlayCard(cards: Card[], excludePattern: string[]) {
     score: 0,
     cards: Array.from({ length: 4 }),
   };
-  const bombCard = bombMatcher.promptWithPattern( bombPattern as IPattern, cards);
+  const bombCard = bombMatcher.promptWithPattern( bombPattern as IPattern, cards, this.room.currentLevelCard);
   // 没有炸弹卡
   const noBomb = bombCard.length === 0;
   let nextResult;
@@ -246,7 +246,7 @@ export function firstPlayCard(cards: Card[], excludePattern: string[]) {
       continue;
     }
     nextResult = false;
-    const result = matcher.promptWithPattern(pattern as IPattern, cards);
+    const result = matcher.promptWithPattern(pattern as IPattern, cards, this.room.currentLevelCard);
     for (const cardList of result) {
       if (!noBomb) {
         // 有炸弹，普通牌不能带鬼牌

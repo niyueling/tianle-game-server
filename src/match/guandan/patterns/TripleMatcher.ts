@@ -16,7 +16,7 @@ export default class TripleMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target: IPattern, cards: Card[]): Card[][] {
+  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Card): Card[][] {
     return groupBy(cards.filter(c => c.point > target.score), card => card.point)
       .filter(g => g.length === 3)
       .sort(lengthFirstThenPointGroupComparator)

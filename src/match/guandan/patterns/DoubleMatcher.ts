@@ -17,7 +17,8 @@ export default class DoubleMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target: IPattern, cards: Card[]): Card[][] {
+  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Card): Card[][] {
+    console.warn("levelCard %s", levelCard);
     //炸弹包括普通炸弹和王炸弹
     let haveBomb = groupBy(cards, card => card.point)
       .filter(g => g.length >= 4).length > 0 || cards.filter(c => c.point >= 16).length >= 4;
