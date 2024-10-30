@@ -138,7 +138,7 @@ abstract class Table implements Serializable {
   mode: 'solo' | 'teamwork' | 'unknown' = 'unknown'
 
   @autoSerialize
-  foundFriend: boolean = false
+  foundFriend: boolean = true
 
   @autoSerialize
   friendCard: Card = null
@@ -932,7 +932,7 @@ abstract class Table implements Serializable {
     const bombCard = matcher.promptWithPattern( bombPattern as IPattern, player.cards);
     // 没有炸弹卡
     const noBomb = bombCard.length === 0;
-    const cardList = findMatchedPatternByPattern(this.status.lastPattern, player.cards, flag)
+    const cardList = findMatchedPatternByPattern(this.status.lastPattern, player.cards, flag);
     for (const cards of cardList) {
       const bombResult = matcher.verify(cards);
       if (bombResult && skipBomb) {

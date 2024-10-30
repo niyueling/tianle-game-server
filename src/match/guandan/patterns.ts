@@ -80,7 +80,15 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
   }
 
   const matcher = patternNameToPatternMatcher(pattern.name)
-  const prompts = matcher.promptWithPattern(pattern, cards)
+  let prompts = matcher.promptWithPattern(pattern, cards)
+
+  // 计算同花顺
+  let straightFlushPrompts = [];
+  if (![PatterNames.bomb, PatterNames.straightFlush + "5"].includes(pattern.name) && flag) {
+    straightFlushPrompts = new StraightFlushMatcher().promptWithPattern(pattern, cards);
+
+    prompts = [...prompts, ...straightFlushPrompts];
+  }
 
   let bombPrompts = []
   if (pattern.name !== PatterNames.bomb && flag) {
