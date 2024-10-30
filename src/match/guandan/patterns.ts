@@ -49,22 +49,22 @@ export function findFullMatchedPattern(cards: Card[]): IPattern | null {
 }
 
 export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount: number = 0): IPattern | null {
-    let foundPattern = findFullMatchedPattern(cards)
+  let foundPattern = findFullMatchedPattern(cards)
 
     if (foundPattern) {
-    if (!pattern) return foundPattern
+      if (!pattern) return foundPattern
 
-    if (foundPattern.name === pattern.name) {
-      if (foundPattern.score > pattern.score) {
+      if (foundPattern.name === pattern.name) {
+        if (foundPattern.score > pattern.score) {
+          return foundPattern
+        }
+        return null
+      }
+
+      if (foundPattern.name === PatterNames.bomb) {
         return foundPattern
       }
-      return null
     }
-
-    if (foundPattern.name === PatterNames.bomb) {
-      return foundPattern
-    }
-  }
     return null
 }
 
@@ -84,10 +84,35 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
 
   let bombPrompts = []
   if (pattern.name !== PatterNames.bomb && flag) {
-    bombPrompts = new BombMatcher().promptWithPattern(pattern, cards)
+    bombPrompts = new BombMatcher().promptWithPattern(pattern, cards);
+    console.warn("patternName %s", pattern.name);
+
+    // 判断是否是同花顺
+    if (pattern.name !== PatterNames.straightFlush) {
+      return [...prompts, ...bombPrompts];
+    }
+
+    // 将王炸和6星以下炸弹排除掉
+    const filterPrompts = [];
+    for (let i = 0; i < bombPrompts.length; i++) {
+      const prompt = bombPrompts[i];
+
+      if (prompt.length === 4) {
+        const jokerCount = prompt.filter(c => c.type === CardType.Joker).length;
+        if (jokerCount === 4) {
+          filterPrompts.push(prompt);
+        }
+      }
+
+      if (prompt.length > 5) {
+        filterPrompts.push(prompt);
+      }
+    }
+
+    return [...prompts, ...bombPrompts];
   }
 
-  return [...prompts, ...bombPrompts]
+  return prompts;
 }
 
 // noinspection JSUnusedGlobalSymbols

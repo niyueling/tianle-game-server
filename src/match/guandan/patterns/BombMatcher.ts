@@ -87,40 +87,11 @@ export default class BombMatcher implements IMatcher {
       })
       .filter(group => this.verify(group).score > minScore)
 
-    const jockerCount = cards.filter(c => c.type === CardType.Joker).length
-    // if (normalBomb.length === 1) { // 如果只有一个炸弹，并且有1-3个王的情况下
-    //   if (jockerCount > 0 && jockerCount < 4) {
-    //     // 带上王，防止烧机
-    //     // normalBomb[0].push(...cards.filter(c => c.type === CardType.Joker));
-    //     normalBomb.shift()
-    //     return normalBomb;
-    //   }
-    // }
+    const jockerCount = cards.filter(c => c.type === CardType.Joker).length;
 
-    if (jockerCount >= 4) {
+    if (jockerCount === 4) {
       normalBomb.push(cards.filter(c => c.type === CardType.Joker));
     }
-      // if (cards.filter(c => c.point === 17).length === 2) {
-      //   normalBomb.push([Enums.j1, Enums.j1, Enums.j2, Enums.j2])
-      // }
-      //
-      // if (cards.filter(c => c.point === 17).length === 3) {
-      //   normalBomb.push([Enums.j1, Enums.j2, Enums.j2, Enums.j2])
-      // }
-      // if (cards.filter(c => c.point === 16).length === 3) {
-      //   normalBomb.push([Enums.j1, Enums.j1, Enums.j1, Enums.j2])
-      // }
-    // }
-    // if (jockerCount === 5) {
-    //   if (cards.filter(c => c.point === 17).length === 3) {
-    //     normalBomb.push([Enums.j1, Enums.j1, Enums.j2, Enums.j2, Enums.j2])
-    //   } else {
-    //     normalBomb.push([Enums.j1, Enums.j1, Enums.j1, Enums.j2, Enums.j2])
-    //   }
-    // }
-    // if (jockerCount === 6) {
-    //   normalBomb.push([Enums.j1, Enums.j1, Enums.j1, Enums.j2, Enums.j2, Enums.j2])
-    // }
 
     return normalBomb
   }
