@@ -117,7 +117,7 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
       }
     }
 
-    return [...prompts, ...bombPrompts];
+    return [...prompts, ...filterPrompts];
   }
 
   return prompts;
