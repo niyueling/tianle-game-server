@@ -78,8 +78,8 @@ export default class NormalTable extends Table {
     this.tableState = 'selectMode';
     for (const player of this.players) {
       if (!player.isChooseMode) {
-        player.msgDispatcher.on('game/chooseMultiple', async ({multiple}) => {
-          await this.onSelectMode(player, multiple);
+        player.msgDispatcher.on('game/chooseMultiple', async ({double}) => {
+          await this.onSelectMode(player, double);
           this.room.emit('selectMode', {});
         })
         player.sendMessage('game/startChooseMultiple', {ok: true, data: {}})
@@ -115,11 +115,12 @@ export default class NormalTable extends Table {
   }
 
   listenPlayer(player) {
-    super.listenPlayer(player)
+    super.listenPlayer(player);
     this.listenerOn.push('game/chooseMultiple')
 
-    player.msgDispatcher.on('game/chooseMultiple', async ({multiple}) => {
-      await this.onSelectMode(player, multiple);
+    player.msgDispatcher.on('game/chooseMultiple', async ({double}) => {
+      console.warn("double %s", double);
+      await this.onSelectMode(player, double);
       this.room.emit('selectMode', {});
     })
   }
