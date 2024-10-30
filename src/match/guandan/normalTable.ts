@@ -76,11 +76,15 @@ export default class NormalTable extends Table {
     this.tableState = 'selectMode';
     for (const player of this.players) {
       if (player.mode === 'unknown') {
-        await this.onSelectMode(player, "teamwork")
-        this.room.emit('selectMode', {});
+        player.msgDispatcher.on('game/selectMode', async ({multiple}) => {
+          await this.onSelectMode(player, multiple);
+          this.room.emit('selectMode', {});
+        })
+        player.sendMessage('game/startSelectMode', {ok: true, data: {}})
       }
     }
   }
+
   @once
   private next() {
 
@@ -96,9 +100,11 @@ export default class NormalTable extends Table {
     this.autoCommitFunc()
   }
 
-  async onSelectMode(player: PlayerState, mode: 'teamwork') {
-    player.mode = mode;
-    player.record(`select-${mode}`, []);
+  async onSelectMode(player: PlayerState, multiple = 1) {
+    player.multiple = multiple;
+    player.isChooseMode = true;
+    player.record(`select-mode-${multiple}`, []);
+    console.warn("index %s multiple %s isChooseMode %s", player.seatIndex, player.multiple, player.isChooseMode);
     const isOk = await this.canStartGame();
     if (isOk) {
       this.next()
@@ -109,15 +115,15 @@ export default class NormalTable extends Table {
     super.listenPlayer(player)
     this.listenerOn.push('game/selectMode')
 
-    player.msgDispatcher.on('game/selectMode', async ({mode}) => {
-      await this.onSelectMode(player, mode)
+    player.msgDispatcher.on('game/selectMode', async ({multiple}) => {
+      await this.onSelectMode(player, multiple)
       this.room.emit('selectMode', {});
     })
   }
 
   async canStartGame(): Promise<boolean> {
     for (const player of this.players) {
-      if (player.mode === 'unknown') {
+      if (!player.isChooseMode) {
         return false;
       }
     }

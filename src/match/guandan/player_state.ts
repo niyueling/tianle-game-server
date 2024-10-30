@@ -91,7 +91,13 @@ class PlayerState implements Serializable {
   zhuaFen = 0
 
   @autoSerialize
-  mode: "teamwork" | "solo" | "unknown" = 'unknown'
+  mode = "teamwork";
+
+  @autoSerialize
+  isChooseMode = false;
+
+  @autoSerialize
+  multiple: number = 1
 
   @autoSerialize
   usedBombs: IPattern[] = []
