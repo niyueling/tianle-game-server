@@ -42,30 +42,35 @@ export function findFullMatchedPattern(cards: Card[]): IPattern | null {
   for (let i = 0; i < matchers.length; i++) {
     const matcher = matchers[i]
     const pattern = matcher.verify(cards)
-    if (pattern) return pattern;
+    if (pattern) {
+      if (pattern.name.startsWith(PatterNames.doubles)) {
+        console.warn("test pattern %s", JSON.stringify(pattern));
+      }
+      return pattern;
+    }
   }
 
   return null
 }
 
 export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount: number = 0): IPattern | null {
-  let foundPattern = findFullMatchedPattern(cards)
+  let foundPattern = findFullMatchedPattern(cards);
 
     if (foundPattern) {
-      if (!pattern) return foundPattern
+      if (!pattern) return foundPattern;
 
       if (foundPattern.name === pattern.name) {
         if (foundPattern.score > pattern.score) {
-          return foundPattern
+          return foundPattern;
         }
-        return null
+        return null;
       }
 
       if (foundPattern.name === PatterNames.bomb) {
-        return foundPattern
+        return foundPattern;
       }
     }
-    return null
+    return null;
 }
 
 export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], flag = true): Card[][] {

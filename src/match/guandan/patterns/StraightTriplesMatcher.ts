@@ -77,7 +77,7 @@ export default class StraightTriplesMatcher implements IMatcher {
     const groups = groupBy(
       cards.filter(c => c.point > target.score && c.point < Enums.c2.point),
       card => card.point)
-      .filter(g => g.length >= 3)
+      .filter(g => g.length === 3)
       .sort((grp1, grp2) => {
         return grp1[0].point - grp2[0].point
       })
