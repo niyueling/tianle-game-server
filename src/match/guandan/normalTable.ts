@@ -78,11 +78,11 @@ export default class NormalTable extends Table {
     this.tableState = 'selectMode';
     for (const player of this.players) {
       if (!player.isChooseMode) {
-        player.msgDispatcher.on('game/selectMode', async ({multiple}) => {
+        player.msgDispatcher.on('game/chooseMultiple', async ({multiple}) => {
           await this.onSelectMode(player, multiple);
           this.room.emit('selectMode', {});
         })
-        player.sendMessage('game/startSelectMode', {ok: true, data: {}})
+        player.sendMessage('game/startChooseMultiple', {ok: true, data: {}})
       }
     }
   }
@@ -92,7 +92,7 @@ export default class NormalTable extends Table {
 
     clearTimeout(this.selectModeTimeout)
     for (const p of this.players) {
-      p.msgDispatcher.removeAllListeners('game/selectMode')
+      p.msgDispatcher.removeAllListeners('game/chooseMultiple')
     }
 
     this.tableState = '';
@@ -106,6 +106,7 @@ export default class NormalTable extends Table {
     player.multiple = multiple;
     player.isChooseMode = true;
     player.record(`select-mode-${multiple}`, []);
+    this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: player.index, isMultiple: player.isChooseMode, double: player.multiple}});
     console.warn("index %s multiple %s isChooseMode %s", player.seatIndex, player.multiple, player.isChooseMode);
     const isOk = await this.canStartGame();
     if (isOk) {
@@ -115,10 +116,10 @@ export default class NormalTable extends Table {
 
   listenPlayer(player) {
     super.listenPlayer(player)
-    this.listenerOn.push('game/selectMode')
+    this.listenerOn.push('game/chooseMultiple')
 
-    player.msgDispatcher.on('game/selectMode', async ({multiple}) => {
-      await this.onSelectMode(player, multiple)
+    player.msgDispatcher.on('game/chooseMultiple', async ({multiple}) => {
+      await this.onSelectMode(player, multiple);
       this.room.emit('selectMode', {});
     })
   }
@@ -158,11 +159,7 @@ export default class NormalTable extends Table {
   }
 
   isGameOver(): boolean {
-    if (this.mode === 'solo') {
-      return this.homeTeamPlayers().some(p => p.cards.length === 0) ||
-        this.awayTeamPlayers().some(p => p.cards.length === 0)
-    }
-    return super.isGameOver()
+    return super.isGameOver();
   }
 
   bombScorer = (bomb: IPattern) => {
