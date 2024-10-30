@@ -42,7 +42,7 @@ export function findFullMatchedPattern(cards: Card[]): IPattern | null {
   for (let i = 0; i < matchers.length; i++) {
     const matcher = matchers[i]
     const pattern = matcher.verify(cards)
-    if (pattern) return pattern
+    if (pattern) return pattern;
   }
 
   return null
@@ -79,6 +79,8 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
     return [[cards[0]]]
   }
 
+  console.warn("pattern %s", JSON.stringify(pattern));
+
   const matcher = patternNameToPatternMatcher(pattern.name)
   let prompts = matcher.promptWithPattern(pattern, cards)
 
@@ -93,7 +95,6 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
   let bombPrompts = []
   if (pattern.name !== PatterNames.bomb && flag) {
     bombPrompts = new BombMatcher().promptWithPattern(pattern, cards);
-    console.warn("patternName %s", pattern.name);
 
     // 判断是否是同花顺
     if (pattern.name !== PatterNames.straightFlush + "5") {
