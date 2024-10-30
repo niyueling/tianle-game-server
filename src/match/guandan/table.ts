@@ -446,21 +446,22 @@ abstract class Table implements Serializable {
     player.daPai(cards.slice(), pattern)
     const remains = player.remains
 
-    this.status.from = this.status.current.seatIndex
-    this.status.lastPattern = pattern
-    this.status.lastCards = cards
-    this.status.fen += this.fenInCards(cards)
+    this.status.from = this.status.current.seatIndex;
+    this.status.lastPattern = pattern;
+    this.status.lastCards = cards;
+    this.status.fen += this.fenInCards(cards);
 
     if (pattern.name === PatterNames.bomb) {
-      player.recordBomb(pattern)
-      const usedJoker = pattern.cards.filter(c => c.type === CardType.Joker).length
-      player.unusedJokers -= usedJoker
+      player.recordBomb(pattern);
+      const usedJoker = pattern.cards.filter(c => c.type === CardType.Joker).length;
+      player.unusedJokers -= usedJoker;
     }
 
-    let teamMateCards = []
+    let teamMateCards = [];
     if (remains === 0) {
-      player.winOrder = this.status.winOrder++
-      teamMateCards = this.teamMateCards(player)
+      player.winOrder = ++this.status.winOrder;
+      teamMateCards = this.teamMateCards(player);
+      this.room.broadcast("game/showWinOrder", {ok: true, data: {index: player.seatIndex, winOrder: player.winOrder}});
     }
 
     this.moveToNext()
