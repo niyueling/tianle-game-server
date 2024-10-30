@@ -88,7 +88,7 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
     console.warn("patternName %s", pattern.name);
 
     // 判断是否是同花顺
-    if (pattern.name !== PatterNames.straightFlush) {
+    if (pattern.name !== PatterNames.straightFlush + "5") {
       return [...prompts, ...bombPrompts];
     }
 
