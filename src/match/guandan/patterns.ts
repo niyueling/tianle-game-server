@@ -145,6 +145,15 @@ export function isGreaterThanPatternForPlainCards(plainCards: any[],
 // 先出 飞机，连对，顺子，对子，单张，炸弹，同花顺
 const firstPattern = [
   {
+    // 同花顺
+    matcher: new StraightFlushMatcher(),
+    pattern: {
+      name: PatterNames.straightFlush + '5',
+      score: 0,
+      cards: Array.from({ length: 5 }),
+    },
+  },
+  {
     matcher: new StraightTriplesMatcher(),
     // 钢板
     pattern: {
@@ -212,15 +221,6 @@ const firstPattern = [
       name: PatterNames.bomb,
       score: 0,
       cards: Array.from({ length: 4 }),
-    },
-  },
-  {
-    // 同花顺
-    matcher: new StraightFlushMatcher(),
-    pattern: {
-      name: PatterNames.straightFlush + '5',
-      score: 0,
-      cards: Array.from({ length: 5 }),
     },
   },
 ]
