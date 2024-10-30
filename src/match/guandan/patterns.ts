@@ -44,7 +44,6 @@ export function findFullMatchedPattern(cards: Card[]): IPattern | null {
     const pattern = matcher.verify(cards);
     if (pattern) {
       if (pattern.name.startsWith(PatterNames.doubles)) {
-        console.warn("test pattern %s", JSON.stringify(pattern));
       }
       return pattern;
     }

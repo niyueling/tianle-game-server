@@ -17,10 +17,12 @@ export default class StraightTriplesMatcher implements IMatcher {
         level: sortedGroups.length
       }
 
-      if (last(sortedGroups)[0].point > Enums.c1.point) result = null;
+      if (last(sortedGroups)[0].point > Enums.c1.point) {
+        return null;
+      }
 
       if (!sortedGroups.every(grp => grp.length === 3)) {
-        result = null;
+        return null;
       }
 
       let prevGroup = sortedGroups[0]

@@ -19,13 +19,11 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
 
       if (last(sortedGroups)[0].point >= 15) {
-        result = null;
+        return null;
       }
 
-      console.warn("sortedGroups %s", JSON.stringify(sortedGroups));
-
       if (!sortedGroups.every(grp => grp.length === 2)) {
-        result = null;
+        return null;
       }
 
       let prevGroup = sortedGroups[0]
