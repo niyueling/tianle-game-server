@@ -17,6 +17,13 @@ export function intersectComposite<T>(arrayA: T[], arrayB: T[], equalFn: (a: T, 
   return composites
 }
 
+export function getRandomInt(min, max) {
+  // 包括 min，不包括 max
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export function groupBy<T>(array: T[], fn: (T) => number): T[][] {
   const hash: { [id: number]: T[] } = {}
   array.forEach(item => {

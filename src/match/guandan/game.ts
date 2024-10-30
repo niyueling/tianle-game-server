@@ -1,7 +1,7 @@
 import {autoSerialize, Serializable, serialize, serializeHelp} from "../serializeDecorator";
 import NormalTable from './normalTable'
 import Rule from './Rule'
-import {Team} from "./table"
+import {getRandomInt} from "./utils";
 
 export default class Game implements Serializable {
   @serialize
@@ -22,27 +22,38 @@ export default class Game implements Serializable {
 
   startGame(room) {
     if (!room.isPublic) {
-      // 根据juShu参数判断是否游戏结束
-      // this.juShu--
-      this.juIndex++
+      this.juIndex++;
+
+      // 如果是第一局，队友级牌和对手级牌都设置为2
+      if (this.juIndex === 1) {
+        room.homeTeamCard = 5;
+        room.awayTeamCard = 5;
+        room.currentLevelCard = room.homeTeamCard;
+        console.warn("本局级牌 %s", room.currentLevelCard);
+      }
     }
 
     if (room.isPublic) {
-      // 金豆房如果过A，级牌回2
-      this.juIndex++
-    }
+      let levelCard = -1;
 
-    // 如果是第一局，队友级牌和对手级牌都设置为2
-    if (this.juIndex === 1) {
-      room.homeTeamCard = 5;
-      room.awayTeamCard = 5;
+      this.juIndex++;
+
+      console.warn("juShu %s", this.rule.juShu);
+
+      // 如果是随机级牌
+      if (this.rule.juShu === 6) {
+        levelCard = getRandomInt(1, 13);
+      }
+
+      // 如果是过5或者过A
+      if ([1, 5].includes(this.rule.juShu) && this.juIndex === 1) {
+        levelCard = 2;
+      }
+
+      room.homeTeamCard = levelCard;
+      room.awayTeamCard = levelCard;
       room.currentLevelCard = room.homeTeamCard;
       console.warn("本局级牌 %s", room.currentLevelCard);
-    }
-
-    // 如果不是第一局，根据上一局情况，判断队友级牌和对手级牌
-    if (this.juIndex > 1) {
-
     }
 
     return this.createTable(room)
