@@ -31,15 +31,6 @@ class Pattern {
     ];
     this.firstPattern = [
       {
-        // 同花顺
-        matcher: new StraightFlushMatcher(),
-        pattern: {
-          name: PatterNames.straightFlush + '5',
-          score: 0,
-          cards: Array.from({ length: 5 }),
-        },
-      },
-      {
         matcher: new StraightTriplesMatcher(),
         // 钢板
         pattern: {
@@ -107,6 +98,15 @@ class Pattern {
           name: PatterNames.bomb,
           score: 0,
           cards: Array.from({ length: 4 }),
+        },
+      },
+      {
+        // 同花顺
+        matcher: new StraightFlushMatcher(),
+        pattern: {
+          name: PatterNames.straightFlush + '5',
+          score: 0,
+          cards: Array.from({ length: 5 }),
         },
       },
     ]
