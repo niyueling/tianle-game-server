@@ -52,6 +52,14 @@ export const lengthFirstThenPointGroupComparator = function (g1: Card[], g2: Car
   return g1[0].point - g2[0].point
 }
 
+export const lengthFirstThenPointGroupDescComparator = function (g1: Card[], g2: Card[]) {
+  if (g2.length !== g1.length) {
+    return g2.length - g1.length
+  }
+
+  return g2[0].point - g1[0].point
+}
+
 //增强版本，排序的时候不仅仅先长度再大小，而且还参考大小的相差范围，以及长度的差
 export const lengthFirstThenPointXXGroupComparator = function (g1: Card[], g2: Card[]) {
   if (g1.length !== g2.length) {
