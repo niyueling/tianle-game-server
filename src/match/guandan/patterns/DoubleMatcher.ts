@@ -41,7 +41,7 @@ export default class DoubleMatcher implements IMatcher {
         return [grp[0], grp[1]]
       });
 
-    if (prompts.length) {
+    if (prompts && prompts.length) {
       return prompts;
     }
 
