@@ -48,11 +48,11 @@ export default class StraightTriplesMatcher implements IMatcher {
         return null;
       }
 
-      let prevGroup1 = sortedGroupsByValue[0]
+      let prevGroup1 = sortedGroupsByValue[0];
       for (let i = 1; i < sortedGroupsByValue.length; i++) {
         const currentGroup = sortedGroupsByValue[i]
         if (currentGroup[0].value - prevGroup1[0].value === 1) {
-          prevGroup1 = currentGroup
+          prevGroup1 = currentGroup;
         } else {
           return null;
         }
@@ -119,7 +119,7 @@ export default class StraightTriplesMatcher implements IMatcher {
     const groupsByValue = groupBy(
       cards.filter(c => c.value > target.score && c.value <= Enums.c13.value),
       card => card.value)
-      .filter(g => g.length >= 3)
+      .filter(g => g.length === 3)
       .sort((grp1, grp2) => {
         return grp1[0].value - grp2[0].value
       })
