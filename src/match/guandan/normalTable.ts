@@ -30,15 +30,21 @@ export default class NormalTable extends Table {
   }
 
   async start() {
-    if (this.rule.allowDouble) {
-      await this.broadcastModeRequest();
-    } else {
-      await this.startFaPai();
-      this.nextAction = this.startTeamworkGame;
-      this.next();
+    this.room.broadcast("game/openLevelCard", {ok: true, data: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard}})
+
+    const faPaiFunc = async() => {
+      if (this.rule.allowDouble) {
+        await this.broadcastModeRequest();
+      } else {
+        await this.startFaPai();
+        this.nextAction = this.startTeamworkGame;
+        this.next();
+      }
+
+      await this.room.robotManager.setCardReady(this.rule.allowDouble);
     }
 
-    await this.room.robotManager.setCardReady(this.rule.allowDouble);
+    setTimeout(faPaiFunc, 1000);
   }
 
   async startFaPai() {

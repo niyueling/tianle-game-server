@@ -24,7 +24,7 @@ export default class Game implements Serializable {
     if (!room.isPublic) {
       this.juIndex++;
 
-      // 如果是第一局，队友级牌和对手级牌都设置为2
+      // 好友房第一局，队友级牌和对手级牌都设置为2
       if (this.juIndex === 1) {
         room.homeTeamCard = 5;
         room.awayTeamCard = 5;
@@ -38,22 +38,22 @@ export default class Game implements Serializable {
 
       this.juIndex++;
 
-      console.warn("juShu %s", this.rule.juShu);
-
       // 如果是随机级牌
       if (this.rule.juShu === 6) {
         levelCard = getRandomInt(1, 13);
       }
 
-      // 如果是过5或者过A
+      // 如果是过5或者过A,第一局设置级牌为2
       if ([1, 5].includes(this.rule.juShu) && this.juIndex === 1) {
         levelCard = 2;
       }
 
-      room.homeTeamCard = levelCard;
-      room.awayTeamCard = levelCard;
-      room.currentLevelCard = room.homeTeamCard;
-      console.warn("本局级牌 %s", room.currentLevelCard);
+      if (levelCard !== -1) {
+        room.homeTeamCard = levelCard;
+        room.awayTeamCard = levelCard;
+        room.currentLevelCard = room.homeTeamCard;
+        console.warn("本局级牌 %s", room.currentLevelCard);
+      }
     }
 
     return this.createTable(room)
