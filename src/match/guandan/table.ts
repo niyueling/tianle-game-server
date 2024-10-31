@@ -493,6 +493,11 @@ abstract class Table implements Serializable {
       this.autoCommitFunc(this.players[nextPlayer].onDeposit)
     }
     if (isGameOver) {
+      const lostPlayers = this.players.filter(p => p.winOrder === 99);
+      for (let i = 0; i < lostPlayers.length; i++) {
+        this.room.broadcast("game/showWinOrder", {ok: true, data: {index: lostPlayers[i].seatIndex, winOrder: lostPlayers[i].winOrder}});
+      }
+
       this.showGameOverPlayerCards()
       player.zhua(this.status.fen)
       this.status.current.seatIndex = -1
