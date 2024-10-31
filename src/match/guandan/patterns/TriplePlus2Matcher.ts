@@ -154,7 +154,7 @@ export default class TriplePlus2Matcher implements IMatcher {
         const addCount = 3 - triple.length;
         const caiShenSlice = caiShen.slice();
 
-        if (caiShenSlice.length > addCount) {
+        if (caiShenSlice.length >= addCount) {
           for (let i = 0; i < addCount; i++) {
             triple.push(caiShenSlice[i]);
             caiShenSlice.splice(i, 1);
