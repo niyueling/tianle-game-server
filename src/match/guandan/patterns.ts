@@ -130,7 +130,7 @@ class Pattern {
   findFullMatchedPattern(cards: Card[]): IPattern | null {
     for (let i = 0; i < this.matchers.length; i++) {
       const matcher = this.matchers[i];
-      const pattern = matcher.verify(cards);
+      const pattern = matcher.verify(cards, this.room.currentLevelCard);
       if (pattern) {
         if (pattern.name.startsWith(PatterNames.doubles)) {
         }
@@ -252,7 +252,7 @@ class Pattern {
         if (!noBomb) {
           // 有炸弹，普通牌不能带鬼牌
           const jokerCount = cardList.filter(value => value.type === CardType.Joker).length;
-          const patternResult = bombMatcher.verify(cardList);
+          const patternResult = bombMatcher.verify(cardList, this.room.currentLevelCard);
           if (jokerCount > 0 && !patternResult) {
             // 非炸弹，带鬼牌，跳过
             nextResult = true;

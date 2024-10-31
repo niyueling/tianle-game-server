@@ -2,7 +2,7 @@ import Card from "../card";
 import {groupBy, IMatcher, IPattern, lengthFirstThenPointGroupComparator, PatterNames} from "./base";
 
 export default class TripleMatcher implements IMatcher {
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length === 3) {
       const sameCount = cards.filter(c => c.point === cards[0].point).length
       if (sameCount === 3) {
@@ -16,7 +16,7 @@ export default class TripleMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Card): Card[][] {
+  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
     return groupBy(cards.filter(c => c.point > target.score), card => card.point)
       .filter(g => g.length === 3)
       .sort(lengthFirstThenPointGroupComparator)

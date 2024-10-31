@@ -11,7 +11,7 @@ import {
 
 export default class TriplePlus2Matcher implements IMatcher {
 
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length === 5) {
 
       const groups = groupBy(cards, (card: Card) => card.point).sort((grp1, grp2) => {
@@ -31,7 +31,7 @@ export default class TriplePlus2Matcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target, cards: Card[], levelCard?: Card): Card[][] {
+  promptWithPattern(target, cards: Card[], levelCard?: Number): Card[][] {
     if (cards.length < 5) {
       return []
     }

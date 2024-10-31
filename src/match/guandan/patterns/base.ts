@@ -39,9 +39,9 @@ export const PatterNames = {
 }
 
 export interface IMatcher {
-  verify (cards: Card[]): IPattern | null
+  verify (cards: Card[], levelCard?: Number): IPattern | null
 
-  promptWithPattern (target: IPattern, cards: Card[], levelCard?: Card): Card[][]
+  promptWithPattern (target: IPattern, cards: Card[], levelCard?: Number): Card[][]
 }
 
 export const lengthFirstThenPointGroupComparator = function (g1: Card[], g2: Card[]) {

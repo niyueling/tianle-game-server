@@ -4,7 +4,7 @@ import {groupBy, IMatcher, IPattern, last, PatterNames, promptWithWildJoker, ver
 
 export default class StraightDoublesMatcher implements IMatcher {
 
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length === 6) {
       const sortedGroups = groupBy(cards.slice(), card => card.point)
         .sort((grp1, grp2) => {
@@ -70,7 +70,7 @@ export default class StraightDoublesMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Card): Card[][] {
+  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
     const len = target.cards.length
 
     if (cards.length < len) {

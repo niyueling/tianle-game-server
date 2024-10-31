@@ -658,7 +658,7 @@ abstract class Table implements Serializable {
 
     const unUsedBombs = groupBy(player.cards.filter(c => c.type !== CardType.Joker), c => c.value)
       .filter(g => g.length >= 4)
-      .sort((g1, g2) => new BombMatcher().verify(g2).score - new BombMatcher().verify(g1).score)
+      .sort((g1, g2) => new BombMatcher().verify(g2, this.room.currentLevelCard).score - new BombMatcher().verify(g1, this.room.currentLevelCard).score)
 
     if (unUsedBombs.length > 0 && jokers.length < 4) {
       unUsedBombs[0] = [...jokers, ...unUsedBombs[0]]
@@ -931,7 +931,7 @@ abstract class Table implements Serializable {
     const noBomb = bombCard.length === 0;
     const cardList = this.pattern.findMatchedPatternByPattern(this.status.lastPattern, player.cards, flag);
     for (const cards of cardList) {
-      const bombResult = matcher.verify(cards);
+      const bombResult = matcher.verify(cards, this.room.currentLevelCard);
       if (bombResult && skipBomb) {
         // 跳过炸弹
         continue;

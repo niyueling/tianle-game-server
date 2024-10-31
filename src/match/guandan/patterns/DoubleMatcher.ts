@@ -5,8 +5,8 @@ import {
 
 export default class DoubleMatcher implements IMatcher {
 
-  verify(cards: Card[]): IPattern | null {
-    if (cards.length === 2 && cards[0].point === cards[1].point) {
+  verify(cards: Card[], levelCard?: Number): IPattern | null {
+    if (cards.length === 2 && (cards[0].point === cards[1].point)) {
       return {
         name: PatterNames.double,
         score: cards[0].point,
@@ -16,7 +16,7 @@ export default class DoubleMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Card): Card[][] {
+  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
     console.warn("levelCard %s", levelCard);
     //炸弹包括普通炸弹和王炸弹
     let haveBomb = groupBy(cards, card => card.point)

@@ -24,7 +24,7 @@ function mustBeRealBomb(target, propKey: string, propDesc: PropertyDescriptor) {
 export default class BombMatcher implements IMatcher {
 
   @mustBeRealBomb
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length >= 4) {
       const firstCard = cards[0]
       const sameAsFirst = cards.filter(c => firstCard.point === c.point).length
@@ -72,7 +72,7 @@ export default class BombMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target, cards: Card[], levelCard?: Card): Card[][] {
+  promptWithPattern(target, cards: Card[], levelCard?: Number): Card[][] {
 
     const minScore = target.name === PatterNames.bomb ? target.score : 0
 
@@ -85,7 +85,7 @@ export default class BombMatcher implements IMatcher {
 
         return grp1[0].point - grp2[0].point
       })
-      .filter(group => this.verify(group).score > minScore)
+      .filter(group => this.verify(group, levelCard).score > minScore)
 
     const jockerCount = cards.filter(c => c.type === CardType.Joker).length;
 

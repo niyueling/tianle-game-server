@@ -2,7 +2,7 @@ import Card from "../card";
 import {groupBy, IMatcher, IPattern, lengthFirstThenPointGroupComparator, PatterNames} from "./base";
 
 export default class SingleMatcher implements IMatcher {
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length === 1) {
       return {
         name: PatterNames.single,
@@ -13,7 +13,7 @@ export default class SingleMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Card): Card[][] {
+  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
     // 炸弹包括普通炸弹和王炸弹
     const haveBomb = groupBy(cards, card => card.point)
       .filter(g => g.length >= 4).length > 0 || cards.filter(c => c.point >= 16).length >= 4;

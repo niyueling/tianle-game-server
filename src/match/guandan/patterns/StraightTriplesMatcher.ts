@@ -3,7 +3,7 @@ import Enums from "../enums"
 import {groupBy, IMatcher, IPattern, last, PatterNames} from "./base"
 
 export default class StraightTriplesMatcher implements IMatcher {
-  verify(cards: Card[]): IPattern | null {
+  verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length >= 6 && cards.length % 3 === 0) {
 
       const sortedGroups = groupBy(cards.slice(), card => card.point)
@@ -68,7 +68,7 @@ export default class StraightTriplesMatcher implements IMatcher {
     return null
   }
 
-  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Card): Card[][] {
+  promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
     const len = target.cards.length;
 
     if (cards.length < len) {
