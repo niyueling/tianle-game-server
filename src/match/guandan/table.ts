@@ -270,17 +270,15 @@ abstract class Table implements Serializable {
       await this._fapai()
     }
 
-    this.players[0].team = this.players[2].team = Team.HomeTeam
-    this.players[1].team = this.players[3].team = Team.AwayTeam
+    // 分配队友
+    if (this.room.game.juIndex === 1) {
+      this.players[0].team = this.players[2].team = Team.HomeTeam;
+      this.players[1].team = this.players[3].team = Team.AwayTeam;
+    }
   }
 
   // 公共房发牌
   async publicRoomFapai() {
-    console.warn("start game fapai currentLevelCard %s", this.room.currentLevelCard);
-
-    if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
-
-    }
     this.shuffle()
     this.stateData = {};
     this.turn = 1;
@@ -293,8 +291,10 @@ abstract class Table implements Serializable {
     }
 
     // 分配队友
-    this.players[0].team = this.players[2].team = Team.HomeTeam;
-    this.players[1].team = this.players[3].team = Team.AwayTeam;
+    if (this.room.game.juIndex === 1) {
+      this.players[0].team = this.players[2].team = Team.HomeTeam;
+      this.players[1].team = this.players[3].team = Team.AwayTeam;
+    }
   }
 
   evictPlayer(evictPlayer: PlayerState) {
