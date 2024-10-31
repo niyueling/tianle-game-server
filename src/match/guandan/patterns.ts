@@ -276,9 +276,6 @@ class Pattern {
       // 试试单张
     }
 
-    if (this.room.isPublic) {
-      this.room.forceDissolve();
-    }
     throw new Error('no card to play for cards ' + JSON.stringify(cards))
   }
 }
