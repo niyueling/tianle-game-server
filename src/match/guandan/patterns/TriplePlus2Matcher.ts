@@ -54,16 +54,17 @@ export default class TriplePlus2Matcher implements IMatcher {
       if (groups.length === 2 && caiShen.length === 2) {
         const maxCardIndex = groups[0][0].point > groups[1][0].point ? 0 : 1;
         const caiShenSlice = caiShen.slice();
+        let caiShenCount = caiShenSlice.length;
 
         const addCount = 3 - groups[maxCardIndex].length;
         for (let i = 0; i < addCount; i++) {
-          if (caiShenSlice.length > 0) {
+          if (caiShenCount > 0) {
             groups[maxCardIndex].push(caiShenSlice[i]);
-            caiShenSlice.splice(i, 1);
+            caiShenCount--;
           }
         }
 
-        if (caiShenSlice.length > 0) {
+        if (caiShenCount > 0) {
           const addCount = 2 - groups[1 - maxCardIndex].length;
           for (let i = 0; i < addCount; i++) {
             groups[1 - maxCardIndex].push(caiShenSlice[i]);
@@ -100,7 +101,6 @@ export default class TriplePlus2Matcher implements IMatcher {
 
         if (caiShenSlice.length > 0) {
           groups[maxCardIndex].push(caiShenSlice[0]);
-          caiShenSlice.splice(0, 1);
         }
 
         prompts.push({
@@ -157,7 +157,6 @@ export default class TriplePlus2Matcher implements IMatcher {
         if (caiShenSlice.length >= addCount) {
           for (let i = 0; i < addCount; i++) {
             triple.push(caiShenSlice[i]);
-            caiShenSlice.splice(i, 1);
           }
         }
 
