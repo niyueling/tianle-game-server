@@ -8,13 +8,6 @@ import {eqlModelId} from "../modelId"
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, serializeHelp} from "../serializeDecorator"
 import Card, {CardType} from "./card"
 import {manager} from "./cardManager";
-import {
-  findFullMatchedPattern,
-  findMatchedPatternByPattern,
-  firstPlayCard,
-  isGreaterThanPattern,
-  isGreaterThanPatternForPlainCards,
-} from "./patterns"
 import {groupBy, IPattern, PatterNames, patternCompare} from "./patterns/base"
 import BombMatcher from './patterns/BombMatcher'
 import PlayerState from './player_state'
@@ -23,6 +16,7 @@ import Rule from './Rule'
 import {shopPropType, TianleErrorCode} from "@fm/common/constants";
 import GoodsProp from "../../database/models/GoodsProp";
 import PlayerProp from "../../database/models/PlayerProp";
+import Pattern from "./patterns";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -149,6 +143,8 @@ abstract class Table implements Serializable {
   @autoSerialize
   autoCommitStartTime: number
 
+  pattern: Pattern
+
   @autoSerialize
   shuffleDelayTime: number = Date.now()
   bombScorer: (bomb: IPattern) => number
@@ -159,6 +155,7 @@ abstract class Table implements Serializable {
     this.rule = rule
     this.room = room
     this.status = new Status()
+    this.pattern = new Pattern(room);
     this.listenRoom(room)
 
     if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
@@ -432,7 +429,7 @@ abstract class Table implements Serializable {
     // console.warn("onPlayerDa index %s cards %s", player.seatIndex, JSON.stringify(plainCards));
     const cards = plainCards.map(Card.from);
     this.status.lastIndex = this.currentPlayerStep;
-    const currentPattern = isGreaterThanPatternForPlainCards(plainCards, this.status.lastPattern, player.cards.length);
+    const currentPattern = this.pattern.isGreaterThanPatternForPlainCards(plainCards, this.status.lastPattern, player.cards.length);
 
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
       this.daPai(player, cards, currentPattern, onDeposit)
@@ -667,8 +664,8 @@ abstract class Table implements Serializable {
       unUsedBombs[0] = [...jokers, ...unUsedBombs[0]]
     } else if (jokers.length >= 4) {
       if (unUsedBombs.length > 0) {
-        if (this.bombScorer(findFullMatchedPattern(
-          [...jokers, ...unUsedBombs[0]])) > this.bombScorer(findFullMatchedPattern(jokers))
+        if (this.bombScorer(this.pattern.findFullMatchedPattern(
+          [...jokers, ...unUsedBombs[0]])) > this.bombScorer(this.pattern.findFullMatchedPattern(jokers))
         ) {
           unUsedBombs[0] = [...jokers, ...unUsedBombs[0]]
         } else {
@@ -877,7 +874,7 @@ abstract class Table implements Serializable {
       // 对手只剩一张，且有非单张的牌，不出单张
       excludePattern.push(PatterNames.single);
     }
-    return firstPlayCard(player.cards, excludePattern);
+    return this.pattern.firstPlayCard(player.cards, excludePattern);
   }
 
   // 根据出牌模式出牌
@@ -932,7 +929,7 @@ abstract class Table implements Serializable {
     const bombCard = matcher.promptWithPattern( bombPattern as IPattern, player.cards);
     // 没有炸弹卡
     const noBomb = bombCard.length === 0;
-    const cardList = findMatchedPatternByPattern(this.status.lastPattern, player.cards, flag);
+    const cardList = this.pattern.findMatchedPatternByPattern(this.status.lastPattern, player.cards, flag);
     for (const cards of cardList) {
       const bombResult = matcher.verify(cards);
       if (bombResult && skipBomb) {
@@ -964,7 +961,7 @@ abstract class Table implements Serializable {
           }
         }
       }
-      const isOk = isGreaterThanPattern(cards, this.status.lastPattern)
+      const isOk = this.pattern.isGreaterThanPattern(cards, this.status.lastPattern)
       if (isOk) {
         return cards;
       }
@@ -1025,7 +1022,7 @@ abstract class Table implements Serializable {
 
     const usedBombScore = player.usedBombs.reduce((score, b) => this.bombScorer(b) + score, 0)
 
-    const unUsedBombScore = unUsedBombs.map(cards => findFullMatchedPattern(cards))
+    const unUsedBombScore = unUsedBombs.map(cards => this.pattern.findFullMatchedPattern(cards))
       .reduce((score, bomb) => this.bombScorer(bomb) + score, 0)
 
     return usedBombScore + unUsedBombScore

@@ -5,7 +5,6 @@ import {DummyRecorder, IGameRecorder} from '../GameRecorder'
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serializeHelp} from "../serializeDecorator"
 import Card, {CardType} from './card'
 import Timer = NodeJS.Timer;
-import {findFullMatchedPattern, findMatchedPatternByPattern} from "./patterns"
 import {IPattern, PatterNames} from "./patterns/base"
 import Room from './room'
 import Rule from './Rule'
@@ -388,7 +387,7 @@ class PlayerState implements Serializable {
 
     const cardsExcludeJoker = this.cards.filter(c => c.type !== CardType.Joker)
     const jokers = this.cards.filter(c => c.type === CardType.Joker)
-    const bombs = findMatchedPatternByPattern({name: PatterNames.bomb, score: 1, cards: []}, cardsExcludeJoker)
+    const bombs = this.room.gameState.pattern.findMatchedPatternByPattern({name: PatterNames.bomb, score: 1, cards: []}, cardsExcludeJoker)
 
     const maxLengthGroup = bombs[bombs.length - 1] || []
 
@@ -406,7 +405,7 @@ class PlayerState implements Serializable {
       }
     }
 
-    return bombs.map(cs => findFullMatchedPattern(cs))
+    return bombs.map(cs => this.room.gameState.pattern.findFullMatchedPattern(cs))
   }
 
   unusedBombsScore(bombScorer: (bomb: IPattern) => number) {

@@ -1,7 +1,6 @@
 import Card from "../card";
 import {
-  groupBy, IMatcher, IPattern, lengthFirstThenPointGroupComparator, PatterNames, promptWithWildJoker,
-  verifyWithJoker
+  groupBy, IMatcher, IPattern, lengthFirstThenPointGroupComparator, PatterNames
 } from "./base";
 
 export default class DoubleMatcher implements IMatcher {
