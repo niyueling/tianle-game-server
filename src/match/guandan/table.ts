@@ -448,6 +448,7 @@ abstract class Table implements Serializable {
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
       this.daPai(player, cards, currentPattern, onDeposit)
     } else {
+      console.warn("cards %s currentPattern %s lastPattern %s patternCompare %s", JSON.stringify(cards), JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
       this.cannotDaPai(player, cards, currentPattern)
     }
   }

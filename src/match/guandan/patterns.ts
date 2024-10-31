@@ -132,8 +132,10 @@ class Pattern {
       const matcher = this.matchers[i];
       const pattern = matcher.verify(cards, this.room.currentLevelCard);
       if (pattern) {
-        if (pattern.name.startsWith(PatterNames.doubles)) {
+        if (pattern.name.startsWith(PatterNames.straightTriplePlus2)) {
+          console.warn("foundPattern %s", JSON.stringify(pattern));
         }
+
         return pattern;
       }
     }
@@ -144,7 +146,10 @@ class Pattern {
   isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount: number = 0): IPattern | null {
     let foundPattern = this.findFullMatchedPattern(cards);
     if (foundPattern) {
-      if (!pattern) return foundPattern;
+      if (!pattern) {
+        // console.warn("foundPattern %s", JSON.stringify(foundPattern));
+        return foundPattern;
+      }
 
       if (foundPattern.name === pattern.name) {
         if (foundPattern.score > pattern.score) {
