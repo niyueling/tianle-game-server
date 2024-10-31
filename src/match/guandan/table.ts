@@ -399,7 +399,7 @@ abstract class Table implements Serializable {
   }
 
   daPaiFail(player, info = TianleErrorCode.systemError, cards = []) {
-    player.sendMessage('game/daCardReply', {ok: false, info, data: {roomId: this.room._id, deposit: player.onDeposit, cards}})
+    player.sendMessage('game/daCardReply', {ok: false, info, data: {index: player.seatIndex, currentPlayerStep: this.currentPlayerStep, roomId: this.room._id, deposit: player.onDeposit, cards}})
   }
 
   guoPaiFail(player, info = TianleErrorCode.systemError) {
@@ -424,7 +424,7 @@ abstract class Table implements Serializable {
   onPlayerDa(player, {cards: plainCards}, onDeposit?) {
     if (!this.isCurrentStep(player)) {
       this.daPaiFail(player, TianleErrorCode.notDaRound, plainCards);
-      return
+      return;
     }
     // console.warn("onPlayerDa index %s cards %s", player.seatIndex, JSON.stringify(plainCards));
     const cards = plainCards.map(Card.from);
