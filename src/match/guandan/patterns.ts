@@ -275,7 +275,7 @@ class Pattern {
       }
       // 试试单张
     }
-    throw new Error('no card to play for cards' + JSON.stringify(cards))
+    throw new Error('no card to play for cards ' + JSON.stringify(cards))
   }
 }
 
