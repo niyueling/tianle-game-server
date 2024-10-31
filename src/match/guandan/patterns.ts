@@ -276,7 +276,7 @@ class Pattern {
       // 试试单张
     }
 
-    return cards[0];
+    return [cards[0]];
   }
 }
 
