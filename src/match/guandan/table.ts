@@ -274,6 +274,13 @@ abstract class Table implements Serializable {
     if (this.room.game.juIndex === 1) {
       this.players[0].team = this.players[2].team = Team.HomeTeam;
       this.players[1].team = this.players[3].team = Team.AwayTeam;
+      this.room.homeTeam = [this.players[0]._id.toString(), this.players[2]._id.toString()];
+      this.room.awayTeam = [this.players[1]._id.toString(), this.players[3]._id.toString()];
+    } else {
+      const homeTeamPlayers = this.players.filter(p => this.room.homeTeam.includes(p._id.toString()));
+      const awayTeamPlayers = this.players.filter(p => this.room.awayTeam.includes(p._id.toString()));
+      homeTeamPlayers[0].team = homeTeamPlayers[1].team = Team.HomeTeam;
+      awayTeamPlayers[0].team = awayTeamPlayers[1].team = Team.AwayTeam;
     }
   }
 
@@ -294,6 +301,13 @@ abstract class Table implements Serializable {
     if (this.room.game.juIndex === 1) {
       this.players[0].team = this.players[2].team = Team.HomeTeam;
       this.players[1].team = this.players[3].team = Team.AwayTeam;
+      this.room.homeTeam = [this.players[0]._id.toString(), this.players[2]._id.toString()];
+      this.room.awayTeam = [this.players[1]._id.toString(), this.players[3]._id.toString()];
+    } else {
+      const homeTeamPlayers = this.players.filter(p => this.room.homeTeam.includes(p._id.toString()));
+      const awayTeamPlayers = this.players.filter(p => this.room.awayTeam.includes(p._id.toString()));
+      homeTeamPlayers[0].team = homeTeamPlayers[1].team = Team.HomeTeam;
+      awayTeamPlayers[0].team = awayTeamPlayers[1].team = Team.AwayTeam;
     }
   }
 

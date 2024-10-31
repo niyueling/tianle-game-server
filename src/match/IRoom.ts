@@ -142,6 +142,21 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   @autoSerialize
   preventTimes: any = {}
 
+  @autoSerialize
+  homeTeam: any = [];
+
+  @autoSerialize
+  awayTeam: any = [];
+
+  // 队友级牌
+  homeTeamCard: number = -1
+
+  // 对手级牌
+  awayTeamCard: number = -1
+
+  // 本局级牌
+  currentLevelCard: number = -1
+
   abstract initScore(player)
 
   // 保存祈福等级

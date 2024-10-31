@@ -122,15 +122,6 @@ class Room extends RoomBase {
   @autoSerialize
   isHelp: boolean = false
 
-  // 队友级牌
-  homeTeamCard: number = -1
-
-  // 对手级牌
-  awayTeamCard: number = -1
-
-  // 本局级牌
-  currentLevelCard: number = -1
-
   constructor(rule: any) {
     super()
     this.uid = ObjectId().toString()
