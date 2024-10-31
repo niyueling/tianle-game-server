@@ -150,7 +150,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       .filter(filterFun)
       .sort(lengthFirstThenPointGroupComparator)
       .map(group => {
-        const triple = group.length >= 3 ? group.slice(0, 3): group;
+        const triple = (group.length >= 3 ? group.slice(0, 3): group);
         const addCount = 3 - triple.length;
         const caiShenSlice = caiShen.slice();
 
@@ -160,6 +160,8 @@ export default class TriplePlus2Matcher implements IMatcher {
             caiShenSlice.splice(i, 1);
           }
         }
+
+        console.warn("tripleCount %s addCount %s triple %s", triple.length, addCount, JSON.stringify(triple));
 
         const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point).filter(g => g.length >= 2)
           .sort(lengthFirstThenPointXXGroupComparator))

@@ -42,7 +42,7 @@ export default class TripleMatcher implements IMatcher {
       .filter(g => g.length > 1 && g.length < 4 && (g[0].value !== levelCard))
       .sort(lengthFirstThenPointGroupComparator)
       .map(grp => {
-        console.warn("levelCard %s grp %s card %s", levelCard, JSON.stringify(grp), JSON.stringify(cards[cardIndex]));
+        // console.warn("levelCard %s grp %s card %s", levelCard, JSON.stringify(grp), JSON.stringify(cards[cardIndex]));
         return [grp[0], grp[1], cards[cardIndex]]
       });
   }
