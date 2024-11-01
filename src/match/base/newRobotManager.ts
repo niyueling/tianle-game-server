@@ -665,10 +665,12 @@ export class NewRobotManager {
       //   console.warn(this.room.players[i].model._id.toString(), playerId);
       // }
       if (this.room.players[i] && this.room.players[i].model._id.toString() === playerId.toString()) {
-        return i
+        return i;
       }
     }
-    console.error("no seatIndex found", playerId, this.room._id)
-    return -1
+    console.error("no seatIndex found", playerId, this.room._id, JSON.stringify(this.room.players.map(v => {
+      return v.model._id
+    })));
+    return -1;
   }
 }
