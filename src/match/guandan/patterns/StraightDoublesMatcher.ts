@@ -20,13 +20,9 @@ export default class StraightDoublesMatcher implements IMatcher {
           return grp1[0].point - grp2[0].point
         })
 
-      if (last(sortedGroups)[0].point >= 15) {
-        console.warn("sortedGroups last card is gt 15");
-        return null;
-      }
-
       // 计算红心级牌数量
       const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
+
       if (caiShen.length) {
         // 去除红心级牌
         const subtractCards = arraySubtract(cards.slice(), caiShen);
@@ -35,6 +31,11 @@ export default class StraightDoublesMatcher implements IMatcher {
         const subtractGroups = groupBy(subtractCards, card => card.point).sort((grp1, grp2) => {
           return grp1[0].point - grp2[0].point
         })
+
+        if (last(subtractGroups)[0].point >= 15) {
+          console.warn("sortedGroups last card is gt 15");
+          return null;
+        }
 
         let caiShenCount = caiShen.length;
 
@@ -100,6 +101,11 @@ export default class StraightDoublesMatcher implements IMatcher {
         if (result) {
           return result;
         }
+      }
+
+      if (last(sortedGroups)[0].point >= 15) {
+        console.warn("sortedGroups last card is gt 15");
+        return null;
       }
 
       let result = {
