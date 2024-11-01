@@ -3,7 +3,7 @@ import {
   arraySubtract,
   groupBy,
   IMatcher,
-  IPattern,
+  IPattern, lengthFirstThenPointGroupAscComparator,
   lengthFirstThenPointGroupComparator, lengthFirstThenPointGroupDescComparator,
   lengthFirstThenPointXXGroupComparator,
   PatterNames,
@@ -139,7 +139,7 @@ export default class TriplePlus2Matcher implements IMatcher {
     const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
 
     const haveLevelFilter = function (g: Card[]) {
-      return g.length >= 3 - caiShen.length
+      return g.length >= 3 - caiShen.length && g.length < 4 && g[0].value !== levelCard
     }
     const noLevelFilter = function (g: Card[]) {
       return g.length === 3
@@ -148,7 +148,7 @@ export default class TriplePlus2Matcher implements IMatcher {
 
     const prompts = groupBy(cards.filter(c => c.point > target.score), c => c.point)
       .filter(filterFun)
-      .sort(lengthFirstThenPointGroupComparator)
+      .sort(lengthFirstThenPointGroupAscComparator)
       .map(group => {
         const triple = (group.length >= 3 ? group.slice(0, 3): group);
         const addCount = 3 - triple.length;
