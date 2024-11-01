@@ -114,7 +114,7 @@ export default class TriplePlus2Matcher implements IMatcher {
         return null;
       }
 
-      console.warn("triplePlus2 verify prompts %s", JSON.stringify(prompts));
+      // console.warn("triplePlus2 verify prompts %s", JSON.stringify(prompts));
 
       // 计算分数最大的情况返回
       let maxInfo = prompts[0];
@@ -160,7 +160,7 @@ export default class TriplePlus2Matcher implements IMatcher {
           }
         }
 
-        console.warn("tripleCount %s addCount %s triple %s", triple.length, addCount, JSON.stringify(triple));
+        // console.warn("tripleCount %s addCount %s triple %s", triple.length, addCount, JSON.stringify(triple));
 
         const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point).filter(g => g.length >= 2)
           .sort(lengthFirstThenPointXXGroupComparator))
