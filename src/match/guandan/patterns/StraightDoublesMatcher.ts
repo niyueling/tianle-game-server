@@ -1,6 +1,15 @@
-import Card from "../card"
+import Card, {CardType} from "../card"
 import Enums from "../enums"
-import {groupBy, IMatcher, IPattern, last, PatterNames, promptWithWildJoker, verifyWithJoker} from "./base"
+import {
+  arraySubtract,
+  groupBy,
+  IMatcher,
+  IPattern,
+  last, lengthFirstThenPointGroupDescComparator,
+  PatterNames,
+  promptWithWildJoker,
+  verifyWithJoker
+} from "./base"
 
 export default class StraightDoublesMatcher implements IMatcher {
 
@@ -10,29 +19,105 @@ export default class StraightDoublesMatcher implements IMatcher {
         .sort((grp1, grp2) => {
           return grp1[0].point - grp2[0].point
         })
-      let result = {
-        name: PatterNames.doubles + sortedGroups.length,
-        score: sortedGroups[0][0].point,
-        cards,
-        level: sortedGroups.length,
-        sortKey: "point"
-      }
 
       if (last(sortedGroups)[0].point >= 15) {
         return null;
       }
 
-      if (!sortedGroups.every(grp => grp.length === 2)) {
+      // 计算红心级牌数量
+      const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
+      if (!caiShen.length) {
         return null;
       }
 
-      let prevGroup = sortedGroups[0]
+      // 去除红心级牌
+      const subtractCards = arraySubtract(cards.slice(), caiShen);
+
+      // 根据新的数组分组
+      const subtractGroups = groupBy(subtractCards, card => card.point).sort((grp1, grp2) => {
+        return grp1[0].point - grp2[0].point
+      })
+
+      let caiShenCount = caiShen.length;
+
+      // 判断不够对子的，用红星级牌去补
+      for (let i = 0; i < subtractGroups.length; i++) {
+        const subtractGroup = subtractGroups[i];
+
+        // 如果是对子，则跳过
+        if (subtractGroup.length === 2) {
+          continue;
+        }
+
+        // 如果超过2张，则一定无法组成连对
+        if (subtractGroup.length > 2) {
+          return null;
+        }
+
+        // 如果小于2张，并且红心级牌不足以补足，则一定无法组成连对
+        if (subtractGroup.length < 2 &&caiShenCount < 2 - subtractGroup.length) {
+          return null;
+        }
+
+        const addCount = 2 - subtractGroup.length;
+        for (let j = 0; j < addCount; j++) {
+          subtractGroups[i].push(caiShen[0]);
+          caiShenCount--;
+        }
+      }
+
+      // 如果红心级牌补完的不符合都是对子，则一定无法组成连对
+      if (!subtractGroups.every(grp => grp.length === 2)) {
+        return null;
+      }
+
+      let result = {
+        name: PatterNames.doubles + sortedGroups.length,
+        score: sortedGroups[0][0].point,
+        cards,
+        level: sortedGroups.length,
+      }
+
+      // 判断原始牌能否直接组成连对
+      let prevGroup = sortedGroups[0];
       for (let i = 1; i < sortedGroups.length; i++) {
         const currentGroup = sortedGroups[i];
         if (currentGroup[0].point - prevGroup[0].point === 1) {
           prevGroup = currentGroup;
         } else {
           result = null;
+        }
+      }
+
+      if (result) {
+        return result;
+      }
+
+      result = {
+        name: PatterNames.doubles + sortedGroups.length,
+        score: sortedGroups[0][0].point,
+        cards,
+        level: sortedGroups.length,
+      }
+
+      // 原始牌无法直接组成连对，判断红心癞子做级牌是否能组成连对
+      let prevGroupByLevelPoint = subtractGroups[0][0].point;
+      const addGroupCards = [];
+      for (let i = 1; i < subtractGroups.length; i++) {
+        const currentGroup = subtractGroups[i][0].point;
+
+        // 如果符合连对特征，进行下一轮比较
+        if (currentGroup - prevGroupByLevelPoint === 1) {
+          prevGroupByLevelPoint = currentGroup[0].point;
+        } else {
+          if (caiShenCount === 2) {
+            addGroupCards.push(caiShen[0]);
+            addGroupCards.push(caiShen[0]);
+            prevGroupByLevelPoint = prevGroupByLevelPoint + 1;
+            caiShenCount = 0;
+          } else {
+            result = null;
+          }
         }
       }
 
@@ -64,7 +149,6 @@ export default class StraightDoublesMatcher implements IMatcher {
         score: sortedGroups[0][0].point,
         cards,
         level: sortedGroups.length,
-        sortKey: "value"
       }
     }
     return null

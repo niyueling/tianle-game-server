@@ -4,7 +4,7 @@ import {
   groupBy,
   IMatcher,
   IPattern, lengthFirstThenPointGroupAscComparator,
-  lengthFirstThenPointGroupComparator, lengthFirstThenPointGroupDescComparator,
+  lengthFirstThenPointGroupDescComparator,
   lengthFirstThenPointXXGroupComparator,
   PatterNames,
 } from "./base";
