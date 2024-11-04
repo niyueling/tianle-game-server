@@ -25,7 +25,7 @@ class Rule {
     return 6;
   }
 
-  // 升级，双下升3级：1，双下升4级
+  // 升级，双下升3级：2，双下升4级:2
   get upgrade() {
     return this.ro.upgrade || 1
   }

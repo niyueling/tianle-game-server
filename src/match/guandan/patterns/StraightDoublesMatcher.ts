@@ -38,6 +38,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         }
 
         let caiShenCount = caiShen.length;
+        let useCaiShenCount = caiShen.length;
 
         // 判断不够对子的，用红星级牌去补
         for (let i = 0; i < subtractGroups.length; i++) {
@@ -54,14 +55,14 @@ export default class StraightDoublesMatcher implements IMatcher {
           }
 
           // 如果小于2张，并且红心级牌不足以补足，则一定无法组成连对
-          if (subtractGroup.length < 2 &&caiShenCount < 2 - subtractGroup.length) {
+          if (subtractGroup.length < 2 && caiShenCount - useCaiShenCount < 2 - subtractGroup.length) {
             return null;
           }
 
           const addCount = 2 - subtractGroup.length;
           for (let j = 0; j < addCount; j++) {
             subtractGroups[i].push(caiShen[0]);
-            caiShenCount--;
+            useCaiShenCount++;
           }
         }
 
@@ -71,10 +72,10 @@ export default class StraightDoublesMatcher implements IMatcher {
         }
 
         let result = {
-          name: PatterNames.doubles + sortedGroups.length,
+          name: PatterNames.doubles + 3,
           score: sortedGroups[0][0].point,
           cards,
-          level: sortedGroups.length,
+          level: 3
         }
 
         // 原始牌无法直接组成连对，判断红心癞子做级牌是否能组成连对
@@ -109,10 +110,10 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
 
       let result = {
-        name: PatterNames.doubles + sortedGroups.length,
+        name: PatterNames.doubles + 3,
         score: sortedGroups[0][0].point,
         cards,
-        level: sortedGroups.length,
+        level: 3
       }
 
       // 判断原始牌能否直接组成连对
@@ -130,10 +131,94 @@ export default class StraightDoublesMatcher implements IMatcher {
         return result;
       }
 
+      // A最小组成连对
       const sortedGroupsByValue = groupBy(cards.slice(), card => card.value)
         .sort((grp1, grp2) => {
           return grp1[0].value - grp2[0].value
         })
+      // 计算红心级牌数量
+      const caiShenByValue = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
+
+      if (caiShenByValue.length) {
+        // 去除红心级牌
+        const subtractCards = arraySubtract(cards.slice(), caiShen);
+
+        // 根据新的数组分组
+        const subtractGroupsByValue = groupBy(subtractCards, card => card.value).sort((grp1, grp2) => {
+          return grp1[0].value - grp2[0].value
+        })
+
+        if (last(subtractGroupsByValue)[0].value > 13) {
+          console.warn("subtractGroupsByValue last card is gt 13");
+          return null;
+        }
+
+        let caiShenCount = caiShenByValue.length;
+        let useCaiShenCount = 0;
+
+        // 判断不够对子的，用红星级牌去补
+        for (let i = 0; i < subtractGroupsByValue.length; i++) {
+          const subtractGroup = subtractGroupsByValue[i];
+
+          // 如果是对子，则跳过
+          if (subtractGroup.length === 2) {
+            continue;
+          }
+
+          // 如果超过2张，则一定无法组成连对
+          if (subtractGroup.length > 2) {
+            return null;
+          }
+
+          // 如果小于2张，并且红心级牌不足以补足，则一定无法组成连对
+          if (subtractGroup.length < 2 &&caiShenCount - useCaiShenCount < 2 - subtractGroup.length) {
+            return null;
+          }
+
+          const addCount = 2 - subtractGroup.length;
+          for (let j = 0; j < addCount; j++) {
+            subtractGroupsByValue[i].push(caiShen[0]);
+            useCaiShenCount++;
+          }
+        }
+
+        // 如果红心级牌补完的不符合都是对子，则一定无法组成连对
+        if (!subtractGroupsByValue.every(grp => grp.length === 2)) {
+          return null;
+        }
+
+        let result = {
+          name: PatterNames.doubles + 3,
+          score: sortedGroupsByValue[0][0].point,
+          cards,
+          level: 3
+        }
+
+        // 原始牌无法直接组成连对，判断红心癞子做级牌是否能组成连对
+        let prevGroupByLevelPoint = subtractGroupsByValue[0][0].point;
+        const addGroupCards = [];
+        for (let i = 1; i < subtractGroupsByValue.length; i++) {
+          const currentGroup = subtractGroupsByValue[i][0].point;
+
+          // 如果符合连对特征，进行下一轮比较
+          if (currentGroup - prevGroupByLevelPoint === 1) {
+            prevGroupByLevelPoint = currentGroup[0].point;
+          } else {
+            if (caiShenCount === 2) {
+              addGroupCards.push(caiShen[0]);
+              addGroupCards.push(caiShen[0]);
+              prevGroupByLevelPoint = prevGroupByLevelPoint + 1;
+              caiShenCount = 0;
+            } else {
+              result = null;
+            }
+          }
+        }
+
+        if (result) {
+          return result;
+        }
+      }
 
       if (last(sortedGroupsByValue)[0].value > 13) {
         return null;
@@ -150,10 +235,10 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
 
       return {
-        name: PatterNames.doubles + sortedGroups.length,
-        score: sortedGroups[0][0].point,
+        name: PatterNames.doubles + 3,
+        score: sortedGroupsByValue[0][0].point,
         cards,
-        level: sortedGroups.length,
+        level: 3
       }
     }
     return null
