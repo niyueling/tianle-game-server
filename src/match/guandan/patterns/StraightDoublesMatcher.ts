@@ -36,7 +36,8 @@ export default class StraightDoublesMatcher implements IMatcher {
           name: PatterNames.doubles + 3,
           score: sortedGroups[0][0].point,
           cards,
-          level: 3
+          level: 3,
+          sortKey: "pointWithCaishen"
         }
 
         if (last(subtractGroups)[0].point >= 15) {
@@ -108,15 +109,14 @@ export default class StraightDoublesMatcher implements IMatcher {
         name: PatterNames.doubles + 3,
         score: sortedGroups[0][0].point,
         cards,
-        level: 3
+        level: 3,
+        sortKey: "pointNotCaishen"
       }
 
       if (last(sortedGroups)[0].point >= 15) {
         console.warn("sortBy point not CaiShen sortedGroups last card is gt 15 %s", JSON.stringify(sortedGroups));
         result = null;
       }
-
-
 
       // 判断原始牌能否直接组成连对
       let prevGroup = sortedGroups[0];
@@ -144,7 +144,8 @@ export default class StraightDoublesMatcher implements IMatcher {
         name: PatterNames.doubles + 3,
         score: sortedGroupsByValue[0][0].value,
         cards,
-        level: 3
+        level: 3,
+        sortKey: "valueWithCaishen"
       }
 
       if (caiShenByValue.length) {
@@ -242,7 +243,8 @@ export default class StraightDoublesMatcher implements IMatcher {
         name: PatterNames.doubles + 3,
         score: sortedGroupsByValue[0][0].value,
         cards,
-        level: 3
+        level: 3,
+        sortKey: "pointNotCaishen"
       }
     }
     return null

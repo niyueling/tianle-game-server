@@ -54,7 +54,7 @@ export default class StraightTriplesMatcher implements IMatcher {
         if (currentGroup[0].value - prevGroup1[0].value === 1) {
           prevGroup1 = currentGroup;
         } else {
-          console.warn("sortedGroupsByValue %s", JSON.stringify(sortedGroupsByValue));
+          // console.warn("sortedGroupsByValue %s", JSON.stringify(sortedGroupsByValue));
           return null;
         }
       }
