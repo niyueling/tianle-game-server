@@ -189,20 +189,20 @@ export default class StraightDoublesMatcher implements IMatcher {
 
         let result = {
           name: PatterNames.doubles + 3,
-          score: sortedGroupsByValue[0][0].point,
+          score: sortedGroupsByValue[0][0].value,
           cards,
           level: 3
         }
 
         // 原始牌无法直接组成连对，判断红心癞子做级牌是否能组成连对
-        let prevGroupByLevelPoint = subtractGroupsByValue[0][0].point;
+        let prevGroupByLevelPoint = subtractGroupsByValue[0][0].value;
         const addGroupCards = [];
         for (let i = 1; i < subtractGroupsByValue.length; i++) {
-          const currentGroup = subtractGroupsByValue[i][0].point;
+          const currentGroup = subtractGroupsByValue[i][0].value;
 
           // 如果符合连对特征，进行下一轮比较
           if (currentGroup - prevGroupByLevelPoint === 1) {
-            prevGroupByLevelPoint = currentGroup[0].point;
+            prevGroupByLevelPoint = currentGroup[0].value;
           } else {
             if (caiShenCount === 2) {
               addGroupCards.push(caiShen[0]);
@@ -227,7 +227,7 @@ export default class StraightDoublesMatcher implements IMatcher {
       let prevGroup1 = sortedGroupsByValue[0];
       for (let i = 1; i < sortedGroupsByValue.length; i++) {
         const currentGroup = sortedGroupsByValue[i];
-        if (currentGroup[0].point - prevGroup1[0].point === 1) {
+        if (currentGroup[0].value - prevGroup1[0].value === 1) {
           prevGroup1 = currentGroup
         } else {
           console.warn("sortedGroupsByValue %s", JSON.stringify(sortedGroupsByValue));
