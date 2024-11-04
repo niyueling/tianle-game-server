@@ -20,6 +20,10 @@ export default class StraightDoublesMatcher implements IMatcher {
           return grp1[0].point - grp2[0].point
         })
 
+      if (!sortedGroups.every(grp => grp.length === 3)) {
+        return null;
+      }
+
       // 计算红心级牌数量
       const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
 
@@ -38,6 +42,10 @@ export default class StraightDoublesMatcher implements IMatcher {
           cards,
           level: 3,
           sortKey: "pointWithCaishen"
+        }
+
+        if (!subtractGroups.every(grp => grp.length > 2)) {
+          resultCaiShen = null;
         }
 
         if (last(subtractGroups)[0].point >= 15) {
@@ -113,6 +121,10 @@ export default class StraightDoublesMatcher implements IMatcher {
         sortKey: "pointNotCaishen"
       }
 
+      if (!sortedGroups.every(grp => grp.length === 2)) {
+        result = null;
+      }
+
       if (last(sortedGroups)[0].point >= 15) {
         console.warn("sortBy point not CaiShen sortedGroups last card is gt 15 %s", JSON.stringify(sortedGroups));
         result = null;
@@ -156,6 +168,10 @@ export default class StraightDoublesMatcher implements IMatcher {
         const subtractGroupsByValue = groupBy(subtractCards, card => card.value).sort((grp1, grp2) => {
           return grp1[0].value - grp2[0].value
         })
+
+        if (!subtractGroupsByValue.every(grp => grp.length > 2)) {
+          resultCaiShenByValue = null;
+        }
 
         if (last(subtractGroupsByValue)[0].value > 13) {
           console.warn("sortBy value useCaiShen subtractGroupsByValue last card is gt 13");
@@ -224,6 +240,10 @@ export default class StraightDoublesMatcher implements IMatcher {
 
       if (last(sortedGroupsByValue)[0].value > 13) {
         console.warn("sortBy value not CaiShen subtractGroupsByValue last card is gt 13");
+        return null;
+      }
+
+      if (!sortedGroupsByValue.every(grp => grp.length === 2)) {
         return null;
       }
 
