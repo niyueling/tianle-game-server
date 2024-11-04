@@ -224,19 +224,20 @@ export default class StraightDoublesMatcher implements IMatcher {
         return null;
       }
 
-      let prevGroup1 = sortedGroupsByValue[0]
+      let prevGroup1 = sortedGroupsByValue[0];
       for (let i = 1; i < sortedGroupsByValue.length; i++) {
-        const currentGroup = sortedGroupsByValue[i]
+        const currentGroup = sortedGroupsByValue[i];
         if (currentGroup[0].point - prevGroup1[0].point === 1) {
           prevGroup1 = currentGroup
         } else {
+          console.warn("sortedGroupsByValue %s", JSON.stringify(sortedGroupsByValue));
           return null
         }
       }
 
       return {
         name: PatterNames.doubles + 3,
-        score: sortedGroupsByValue[0][0].point,
+        score: sortedGroupsByValue[0][0].value,
         cards,
         level: 3
       }

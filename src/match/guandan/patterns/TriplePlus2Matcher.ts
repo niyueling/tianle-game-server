@@ -174,7 +174,7 @@ export default class TriplePlus2Matcher implements IMatcher {
         return [...triple, leftCards[0], leftCards[1]];
       }).filter(result => result.length > 0);
 
-    console.warn("triplePlus2 promptWithPattern prompts %s", JSON.stringify(prompts));
+    // console.warn("triplePlus2 promptWithPattern prompts %s", JSON.stringify(prompts));
 
     return prompts;
   }
