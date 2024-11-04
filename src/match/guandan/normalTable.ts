@@ -48,7 +48,7 @@ export default class NormalTable extends Table {
   }
 
   async startFaPai() {
-    if (this.room.gameRule.isPublic) {
+    if (this.room.gameRule.isPublic && this.rule.shuffleType === 2) {
       // 金豆房发牌
       await this.publicRoomFapai();
     } else {
