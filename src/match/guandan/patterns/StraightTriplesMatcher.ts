@@ -18,7 +18,7 @@ export default class StraightTriplesMatcher implements IMatcher {
       }
 
       if (last(sortedGroups)[0].point > Enums.c1.point) {
-        return null;
+        result = null;
       }
 
       if (!sortedGroups.every(grp => grp.length === 3)) {
