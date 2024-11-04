@@ -222,6 +222,7 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
 
       if (last(sortedGroupsByValue)[0].value > 13) {
+        console.warn("sortBy value not CaiShen subtractGroupsByValue last card is gt 13");
         return null;
       }
 
