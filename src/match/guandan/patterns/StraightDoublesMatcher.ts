@@ -20,10 +20,6 @@ export default class StraightDoublesMatcher implements IMatcher {
           return grp1[0].point - grp2[0].point
         })
 
-      if (!sortedGroups.every(grp => grp.length === 3)) {
-        return null;
-      }
-
       // 计算红心级牌数量
       const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
 
