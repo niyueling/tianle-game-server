@@ -225,13 +225,14 @@ export default class StraightDoublesMatcher implements IMatcher {
         return null;
       }
 
+      console.warn("sort by value arrays %s", JSON.stringify(sortedGroupsByValue));
       let prevGroup1 = sortedGroupsByValue[0];
       for (let i = 1; i < sortedGroupsByValue.length; i++) {
         const currentGroup = sortedGroupsByValue[i];
         if (currentGroup[0].value - prevGroup1[0].value === 1) {
           prevGroup1 = currentGroup
         } else {
-          console.warn("sortedGroupsByValue %s", JSON.stringify(sortedGroupsByValue));
+          // console.warn("sortedGroupsByValue %s", JSON.stringify(sortedGroupsByValue));
           return null
         }
       }
