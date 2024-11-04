@@ -112,7 +112,7 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
 
       if (last(sortedGroups)[0].point >= 15) {
-        console.warn("sortBy point not CaiShen sortedGroups last card is gt 15");
+        console.warn("sortBy point not CaiShen sortedGroups last card is gt 15 %s", JSON.stringify(sortedGroups));
         result = null;
       }
 
