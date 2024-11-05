@@ -32,12 +32,14 @@ export default class StraightDoublesMatcher implements IMatcher {
         }
 
         if (!subtractGroups.every(grp => grp.length > 2)) {
+          console.warn("error-1");
           resultCaiShen = null;
         }
 
         const lastCard = last(subtractGroups)[0];
         if (lastCard.point >= 15) {
           if (lastCard.value !== levelCard || lastCard.type !== CardType.Heart) {
+            console.warn("error-2");
             console.warn("sortBy point useCaiShen sortedGroups last card is gt 15");
             resultCaiShen = null;
           }
@@ -57,11 +59,13 @@ export default class StraightDoublesMatcher implements IMatcher {
 
           // 如果超过2张，则一定无法组成连对
           if (subtractGroup.length > 2) {
+            console.warn("error-3");
             resultCaiShen = null;
           }
 
           // 如果小于2张，并且红心级牌不足以补足，则一定无法组成连对
           if (subtractGroup.length < 2 && caiShenCount - useCaiShenCount < 2 - subtractGroup.length) {
+            console.warn("error-4");
             resultCaiShen = null;
           }
 
@@ -74,6 +78,7 @@ export default class StraightDoublesMatcher implements IMatcher {
 
         // 如果红心级牌补完的不符合都是对子，则一定无法组成连对
         if (!subtractGroups.every(grp => grp.length === 2)) {
+          console.warn("error-5");
           resultCaiShen = null;
         }
 
@@ -93,6 +98,7 @@ export default class StraightDoublesMatcher implements IMatcher {
               prevGroupByLevelPoint = prevGroupByLevelPoint + 1;
               caiShenCount = 0;
             } else {
+              console.warn("error-6");
               resultCaiShen = null;
             }
           }
@@ -118,6 +124,7 @@ export default class StraightDoublesMatcher implements IMatcher {
       const lastCard = last(sortedGroups)[0];
       if (lastCard.point >= 15) {
         if (lastCard.value !== levelCard || lastCard.type !== CardType.Heart) {
+          console.warn("error-7");
           console.warn("sortBy point not CaiShen sortedGroups last card is gt 15 %s", JSON.stringify(sortedGroups));
           result = null;
         }
@@ -130,6 +137,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         if (currentGroup[0].point - prevGroup[0].point === 1) {
           prevGroup = currentGroup;
         } else {
+          console.warn("error-8");
           result = null;
         }
       }
@@ -163,10 +171,12 @@ export default class StraightDoublesMatcher implements IMatcher {
         })
 
         if (!subtractGroupsByValue.every(grp => grp.length > 2)) {
+          console.warn("error-9");
           resultCaiShenByValue = null;
         }
 
         if (last(subtractGroupsByValue)[0].value > 13) {
+          console.warn("error-10");
           console.warn("sortBy value useCaiShen subtractGroupsByValue last card is gt 13");
           resultCaiShenByValue = null;
         }
@@ -185,11 +195,13 @@ export default class StraightDoublesMatcher implements IMatcher {
 
           // 如果超过2张，则一定无法组成连对
           if (subtractGroup.length > 2) {
+            console.warn("error-11");
             resultCaiShenByValue = null;
           }
 
           // 如果小于2张，并且红心级牌不足以补足，则一定无法组成连对
           if (subtractGroup.length < 2 &&caiShenCount - useCaiShenCount < 2 - subtractGroup.length) {
+            console.warn("error-12");
             resultCaiShenByValue = null;
           }
 
@@ -202,6 +214,7 @@ export default class StraightDoublesMatcher implements IMatcher {
 
         // 如果红心级牌补完的不符合都是对子，则一定无法组成连对
         if (!subtractGroupsByValue.every(grp => grp.length === 2)) {
+          console.warn("error-13");
           resultCaiShenByValue = null;
         }
 
@@ -221,6 +234,7 @@ export default class StraightDoublesMatcher implements IMatcher {
               prevGroupByLevelPoint = prevGroupByLevelPoint + 1;
               caiShenCount = 0;
             } else {
+              console.warn("error-14");
               resultCaiShenByValue = null;
             }
           }
@@ -232,11 +246,13 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
 
       if (last(sortedGroupsByValue)[0].value > 13) {
+        console.warn("error-15");
         console.warn("sortBy value not CaiShen subtractGroupsByValue last card is gt 13");
         return null;
       }
 
       if (!sortedGroupsByValue.every(grp => grp.length === 2)) {
+        console.warn("error-16");
         return null;
       }
 
@@ -247,6 +263,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         if (currentGroup[0].value - prevGroup1[0].value === 1) {
           prevGroup1 = currentGroup
         } else {
+          console.warn("error-17");
           // console.warn("sortedGroupsByValue %s", JSON.stringify(sortedGroupsByValue));
           return null
         }
@@ -260,6 +277,8 @@ export default class StraightDoublesMatcher implements IMatcher {
         sortKey: "pointNotCaishen"
       }
     }
+
+    console.warn("error-18");
     return null
   }
 
