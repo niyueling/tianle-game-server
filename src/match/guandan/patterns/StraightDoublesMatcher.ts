@@ -1,15 +1,6 @@
 import Card, {CardType} from "../card"
 import Enums from "../enums"
-import {
-  arraySubtract,
-  groupBy,
-  IMatcher,
-  IPattern,
-  last, lengthFirstThenPointGroupDescComparator,
-  PatterNames,
-  promptWithWildJoker,
-  verifyWithJoker
-} from "./base"
+import {arraySubtract, groupBy, IMatcher, IPattern, last, PatterNames} from "./base"
 
 export default class StraightDoublesMatcher implements IMatcher {
 
@@ -44,9 +35,12 @@ export default class StraightDoublesMatcher implements IMatcher {
           resultCaiShen = null;
         }
 
-        if (last(subtractGroups)[0].point >= 15) {
-          console.warn("sortBy point useCaiShen sortedGroups last card is gt 15");
-          resultCaiShen = null;
+        const lastCard = last(subtractGroups)[0];
+        if (lastCard.point >= 15) {
+          if (lastCard.value !== levelCard || lastCard.type !== CardType.Heart) {
+            console.warn("sortBy point useCaiShen sortedGroups last card is gt 15");
+            resultCaiShen = null;
+          }
         }
 
         let caiShenCount = caiShen.length;
@@ -121,9 +115,12 @@ export default class StraightDoublesMatcher implements IMatcher {
         result = null;
       }
 
-      if (last(sortedGroups)[0].point >= 15) {
-        console.warn("sortBy point not CaiShen sortedGroups last card is gt 15 %s", JSON.stringify(sortedGroups));
-        result = null;
+      const lastCard = last(sortedGroups)[0];
+      if (lastCard.point >= 15) {
+        if (lastCard.value !== levelCard || lastCard.type !== CardType.Heart) {
+          console.warn("sortBy point not CaiShen sortedGroups last card is gt 15 %s", JSON.stringify(sortedGroups));
+          result = null;
+        }
       }
 
       // 判断原始牌能否直接组成连对
