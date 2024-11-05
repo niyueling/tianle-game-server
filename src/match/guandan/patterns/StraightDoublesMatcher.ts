@@ -117,7 +117,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         sortKey: "pointNotCaishen"
       }
 
-      if (!sortedGroups.every(grp => grp.length === 2)) {
+      if (!sortedGroups.every(grp => grp.length <= 2)) {
         result = null;
       }
 
@@ -251,7 +251,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         return null;
       }
 
-      if (!sortedGroupsByValue.every(grp => grp.length === 2)) {
+      if (!sortedGroupsByValue.every(grp => grp.length <= 2)) {
         console.warn("error-16");
         return null;
       }
