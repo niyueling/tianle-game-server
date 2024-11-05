@@ -37,8 +37,12 @@ export default class NormalTable extends Table {
         await this.broadcastModeRequest();
       } else {
         await this.startFaPai();
-        this.nextAction = this.startTeamworkGame;
-        this.next();
+        const startFunc = async() => {
+          this.nextAction = this.startTeamworkGame;
+          this.next();
+        }
+
+        setTimeout(startFunc, 1000);
       }
 
       await this.room.robotManager.setCardReady(this.rule.allowDouble);
@@ -147,7 +151,11 @@ export default class NormalTable extends Table {
 
     await this.startFaPai();
 
-    this.nextAction = this.startTeamworkGame;
+    const startFunc = async() => {
+      this.nextAction = this.startTeamworkGame;
+    }
+
+    setTimeout(startFunc, 1000);
     return true
   }
 
