@@ -41,8 +41,8 @@ export class RobotManager extends NewRobotManager {
           // 离线用户选择
           console.log('select offline player mode')
           await this.selectMode();
-          this.model.step = RobotStep.running;
-          await this.save();
+          // this.model.step = RobotStep.running;
+          // await this.save();
         }
       }
     }
@@ -54,6 +54,8 @@ export class RobotManager extends NewRobotManager {
 
   // 为离线用户选择模式
   async selectMode() {
+    const random = Math.random();
+
     // 在线用户都选好模式了
     for (const proxy of Object.values(this.disconnectPlayers)) {
       if (!proxy.playerState) {
@@ -61,8 +63,12 @@ export class RobotManager extends NewRobotManager {
         continue;
       }
 
-      await this.room.gameState.onSelectMode(proxy.playerState, 2);
+      if (random < 0.5) {
+        await this.room.gameState.onSelectMode(proxy.playerState, 2);
+        return true;
+      }
     }
+
     return true;
   }
 
@@ -77,9 +83,9 @@ export class RobotManager extends NewRobotManager {
       proxy = this.room.players[i];
       if (playerState && !this.isHumanPlayerOffline(proxy)) {
         // 在线用户
-        if (!playerState.isChooseMode) {
-          return false;
-        }
+        // if (!playerState.isChooseMode) {
+        //   return false;
+        // }
       }
     }
     return true;
