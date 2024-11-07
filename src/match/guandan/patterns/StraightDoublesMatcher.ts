@@ -31,7 +31,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           sortKey: "pointWithCaishen"
         }
 
-        if (!subtractGroups.every(grp => grp.length > 2)) {
+        if (!subtractGroups.every(grp => grp.length <= 2)) {
           console.warn("error-1");
           resultCaiShen = null;
         }
@@ -163,14 +163,14 @@ export default class StraightDoublesMatcher implements IMatcher {
 
       if (caiShenByValue.length) {
         // 去除红心级牌
-        const subtractCards = arraySubtract(cards.slice(), caiShen);
+        const subtractCards = arraySubtract(cards.slice(), caiShenByValue);
 
         // 根据新的数组分组
         const subtractGroupsByValue = groupBy(subtractCards, card => card.value).sort((grp1, grp2) => {
           return grp1[0].value - grp2[0].value
         })
 
-        if (!subtractGroupsByValue.every(grp => grp.length > 2)) {
+        if (!subtractGroupsByValue.every(grp => grp.length <= 2)) {
           console.warn("error-9");
           resultCaiShenByValue = null;
         }
