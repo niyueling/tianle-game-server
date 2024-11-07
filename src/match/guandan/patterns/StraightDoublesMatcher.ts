@@ -46,7 +46,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         }
 
         let caiShenCount = caiShen.length;
-        let useCaiShenCount = caiShen.length;
+        let useCaiShenCount = 0;
 
         // 判断不够对子的，用红星级牌去补
         for (let i = 0; i < subtractGroups.length; i++) {
@@ -261,7 +261,7 @@ export default class StraightDoublesMatcher implements IMatcher {
       for (let i = 1; i < sortedGroupsByValue.length; i++) {
         const currentGroup = sortedGroupsByValue[i];
         if (currentGroup[0].value - prevGroup1[0].value === 1) {
-          prevGroup1 = currentGroup
+          prevGroup1 = currentGroup;
         } else {
           console.warn("error-17");
           // console.warn("sortedGroupsByValue %s", JSON.stringify(sortedGroupsByValue));
@@ -274,7 +274,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         score: sortedGroupsByValue[0][0].value,
         cards,
         level: 3,
-        sortKey: "pointNotCaishen"
+        sortKey: "valueNotCaishen"
       }
     }
 
