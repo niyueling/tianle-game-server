@@ -146,9 +146,10 @@ export default class NormalTable extends Table {
     }
 
     await this.startFaPai();
+    const _this = this;
 
     const nextFunc = async () => {
-      this.nextAction = this.startTeamworkGame;
+      _this.nextAction = _this.startTeamworkGame;
     }
 
     setTimeout(nextFunc, 1000);
