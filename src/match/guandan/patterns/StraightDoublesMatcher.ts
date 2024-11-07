@@ -94,7 +94,7 @@ export default class StraightDoublesMatcher implements IMatcher {
 
           // 如果符合连对特征，进行下一轮比较
           if (currentGroup - prevGroupByLevelPoint === 1) {
-            prevGroupByLevelPoint = currentGroup[0];
+            prevGroupByLevelPoint = currentGroup;
           } else {
             if (caiShenCount === 2) {
               addGroupCards.push(caiShen[0]);
@@ -230,7 +230,7 @@ export default class StraightDoublesMatcher implements IMatcher {
 
           // 如果符合连对特征，进行下一轮比较
           if (currentGroup - prevGroupByLevelPoint === 1) {
-            prevGroupByLevelPoint = currentGroup[0];
+            prevGroupByLevelPoint = currentGroup;
           } else {
             if (caiShenCount === 2) {
               addGroupCards.push(caiShen[0]);
