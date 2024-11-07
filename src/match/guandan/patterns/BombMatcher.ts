@@ -11,7 +11,7 @@ export default class BombMatcher implements IMatcher {
       const firstCard = sortCards.find(c => c.type !== CardType.Heart || c.value !== levelCard);
       const sameAsFirst = sortCards.filter(c => firstCard.point === c.point).length;
       const caiShenCount = sortCards.filter(c => c.type === CardType.Heart && c.value === levelCard).length;
-      console.warn("sortCards %s firstCard %s sameAsFirst %s caiShenCount %s", JSON.stringify(sortCards), JSON.stringify(firstCard), sameAsFirst, caiShenCount);
+      // console.warn("sortCards %s firstCard %s sameAsFirst %s caiShenCount %s", JSON.stringify(sortCards), JSON.stringify(firstCard), sameAsFirst, caiShenCount);
       if (sameAsFirst === sortCards.length || sameAsFirst + caiShenCount === sortCards.length) {
         return {
           name: PatterNames.bomb,
