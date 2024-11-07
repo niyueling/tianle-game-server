@@ -146,13 +146,7 @@ export default class NormalTable extends Table {
     }
 
     await this.startFaPai();
-    const _this = this;
-
-    const nextFunc = async () => {
-      _this.nextAction = _this.startTeamworkGame;
-    }
-
-    setTimeout(nextFunc, 1000);
+    this.nextAction = this.startTeamworkGame;
 
     return true
   }
@@ -172,10 +166,14 @@ export default class NormalTable extends Table {
   }
 
   startTeamworkGame() {
-    this.setTeamMate();
-    this.setFirstDa(0);
-    this.mode = 'teamwork';
-    this.broadcastFirstDa();
+    const startFunc = async () => {
+      this.setTeamMate();
+      this.setFirstDa(0);
+      this.mode = 'teamwork';
+      this.broadcastFirstDa();
+    }
+
+    setTimeout(startFunc, 1500);
   }
 
   isGameOver(): boolean {
