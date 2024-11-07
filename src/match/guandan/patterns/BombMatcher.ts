@@ -1,39 +1,22 @@
 import Card, {CardType} from "../card"
-import Enums from '../enums'
-import {groupBy, IMatcher, IPattern, PatterNames, patternCompare, verifyWithJoker} from "./base"
-
-// noinspection JSUnusedLocalSymbols
-function mustBeRealBomb(target, propKey: string, propDesc: PropertyDescriptor) {
-  const originVerify = propDesc.value as (cards: Card[]) => IPattern | null
-
-  propDesc.value = function (cards: Card[]): IPattern | null {
-    const pattern = originVerify.call(this, cards)
-    if (!pattern) {
-      return pattern
-    }
-
-    const normalCards = pattern.cards.filter(c => c.type !== CardType.Joker)
-    if (normalCards.length <= 3 && normalCards.length !== 0) {
-      return null
-    }
-
-    return pattern
-  }
-}
+import {groupBy, IMatcher, IPattern, PatterNames} from "./base"
 
 export default class BombMatcher implements IMatcher {
 
-  @mustBeRealBomb
   verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length >= 4) {
-      const firstCard = cards[0]
-      const sameAsFirst = cards.filter(c => firstCard.point === c.point).length
-      if (sameAsFirst === cards.length) {
+      const sortCards = cards.sort((grp1, grp2) => {
+        return grp1[0].point - grp2[0].point
+      });
+      const firstCard = sortCards[0];
+      const sameAsFirst = sortCards.filter(c => firstCard.point === c.point).length;
+      const caiShenCount = sortCards.filter(c => c.type === CardType.Heart && c.value === levelCard).length;
+      if (sameAsFirst === sortCards.length || sameAsFirst + caiShenCount === sortCards.length) {
         return {
           name: PatterNames.bomb,
-          score: cards.length * 100 + cards[0].point,
-          cards,
-          level: cards.length
+          score: sortCards.length * 100 + sortCards[0].point,
+          cards: sortCards,
+          level: sortCards.length
         }
       }
     }
@@ -48,28 +31,8 @@ export default class BombMatcher implements IMatcher {
         }
       }
     }
-    if (cards.length === 5) {
-      const jokers = cards.filter(c => c.type === CardType.Joker).length
-      if (jokers === 5) {
-        return {
-          name: PatterNames.bomb,
-          score: 2000,
-          cards
-        }
-      }
-    }
-    if (cards.length === 6) {
-      const jokers = cards.filter(c => c.type === CardType.Joker).length
-      if (jokers === 6) {
-        return {
-          name: PatterNames.bomb,
-          score: 3000,
-          cards
-        }
-      }
-    }
 
-    return null
+    return null;
   }
 
   promptWithPattern(target, cards: Card[], levelCard?: Number): Card[][] {
@@ -93,6 +56,6 @@ export default class BombMatcher implements IMatcher {
       normalBomb.push(cards.filter(c => c.type === CardType.Joker));
     }
 
-    return normalBomb
+    return normalBomb;
   }
 }
