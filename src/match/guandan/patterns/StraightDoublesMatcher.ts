@@ -25,7 +25,7 @@ export default class StraightDoublesMatcher implements IMatcher {
 
         let resultCaiShen = {
           name: PatterNames.doubles + 3,
-          score: sortedGroups[0][0].point,
+          score: subtractGroups[0][0].point,
           cards,
           level: 3,
           sortKey: "pointWithCaishen"
@@ -157,13 +157,6 @@ export default class StraightDoublesMatcher implements IMatcher {
         })
       // 计算红心级牌数量
       const caiShenByValue = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
-      let resultCaiShenByValue = {
-        name: PatterNames.doubles + 3,
-        score: sortedGroupsByValue[0][0].value,
-        cards,
-        level: 3,
-        sortKey: "valueWithCaishen"
-      }
 
       if (caiShenByValue.length) {
         // 去除红心级牌
@@ -173,6 +166,14 @@ export default class StraightDoublesMatcher implements IMatcher {
         const subtractGroupsByValue = groupBy(subtractCards, card => card.value).sort((grp1, grp2) => {
           return grp1[0].value - grp2[0].value
         })
+
+        let resultCaiShenByValue = {
+          name: PatterNames.doubles + 3,
+          score: subtractGroupsByValue[0][0].value,
+          cards,
+          level: 3,
+          sortKey: "valueWithCaishen"
+        }
 
         if (!subtractGroupsByValue.every(grp => grp.length <= 2)) {
           console.warn("error-9");
