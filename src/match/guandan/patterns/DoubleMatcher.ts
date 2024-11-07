@@ -5,8 +5,9 @@ export default class DoubleMatcher implements IMatcher {
 
   verify(cards: Card[], levelCard?: Number): IPattern | null {
     // 对子或者单张带红心级牌
-    if (cards.length === 2 && (cards[0].point === cards[1].point || (cards[0].type === CardType.Heart && cards[0].value === levelCard)
-      || (cards[1].type === CardType.Heart && cards[1].value === levelCard))) {
+    if (cards.length === 2 && (cards[0].point === cards[1].point ||
+      (cards[0].type === CardType.Heart && cards[0].value === levelCard && cards[1].point < 16)
+      || (cards[1].type === CardType.Heart && cards[1].value === levelCard && cards[0].point < 16))) {
       // 查找是否有非红心级牌
       const cardIndex = cards.findIndex(c => c.type !== CardType.Heart || c.value !== levelCard);
 

@@ -43,7 +43,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       }
 
       // 区分4种情况，剩下一个三张，剩下一个单张一个对子，剩下两个对子，剩下三带一
-      if (groups.length === 1 && caiShen.length === 2) {
+      if (groups.length === 1 && caiShen.length === 2 && groups[0][0].point < 16) {
         prompts.push({
           name: PatterNames.triplePlus2,
           score: groups[0][0].point,
@@ -52,7 +52,15 @@ export default class TriplePlus2Matcher implements IMatcher {
       }
 
       if (groups.length === 2 && caiShen.length === 2) {
-        const maxCardIndex = groups[0][0].point > groups[1][0].point ? 0 : 1;
+        let maxCardIndex = -1;
+
+        if (groups[0][0].point > groups[1][0].point) {
+          maxCardIndex = (groups[0][0].point < 16 ? 0 : 1);
+        }
+
+        if (groups[1][0].point > groups[0][0].point && groups[1][0].point < 16) {
+          maxCardIndex = (groups[1][0].point < 16 ? 1 : 0);
+        }
         const caiShenSlice = caiShen.slice();
         let caiShenCount = caiShenSlice.length;
 
@@ -80,8 +88,16 @@ export default class TriplePlus2Matcher implements IMatcher {
       }
 
       if (groups.length === 2 && caiShen.length === 1 && groups[0].length === 2) {
-        const maxCardIndex = groups[0][0].point > groups[1][0].point ? 0 : 1;
+        let maxCardIndex = -1;
         const caiShenSlice = caiShen.slice();
+
+        if (groups[0][0].point > groups[1][0].point) {
+          maxCardIndex = (groups[0][0].point < 16 ? 0 : 1);
+        }
+
+        if (groups[1][0].point > groups[0][0].point && groups[1][0].point < 16) {
+          maxCardIndex = (groups[1][0].point < 16 ? 1 : 0);
+        }
 
         if (caiShenSlice.length > 0) {
           groups[maxCardIndex].push(caiShenSlice[0]);
@@ -99,15 +115,15 @@ export default class TriplePlus2Matcher implements IMatcher {
         const maxCardIndex = groups[0].length === 3 ? 1 : 0;
         const caiShenSlice = caiShen.slice();
 
-        if (caiShenSlice.length > 0) {
+        if (caiShenSlice.length > 0 && groups[1 - maxCardIndex][0].point < 16) {
           groups[maxCardIndex].push(caiShenSlice[0]);
-        }
 
-        prompts.push({
-          name: PatterNames.triplePlus2,
-          score: groups[1 - maxCardIndex][0].point,
-          cards: groups
-        })
+          prompts.push({
+            name: PatterNames.triplePlus2,
+            score: groups[1 - maxCardIndex][0].point,
+            cards: groups
+          })
+        }
       }
 
       if (!prompts.length) {
@@ -139,7 +155,7 @@ export default class TriplePlus2Matcher implements IMatcher {
     const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
 
     const haveLevelFilter = function (g: Card[]) {
-      return g.length >= 3 - caiShen.length && g.length < 4 && g[0].value !== levelCard
+      return g.length >= 3 - caiShen.length && g.length < 4 && g[0].value !== levelCard && g[0].point < 16
     }
     const noLevelFilter = function (g: Card[]) {
       return g.length === 3

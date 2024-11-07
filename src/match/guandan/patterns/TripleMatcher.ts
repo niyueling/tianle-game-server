@@ -8,8 +8,9 @@ export default class TripleMatcher implements IMatcher {
       const cardIndex = cards.findIndex(c => c.type !== CardType.Heart || c.value !== levelCard);
       const doubleCount = cards.filter(c => c.point === cards[cardIndex].point).length;
       const caiShenCount = cards.filter(c => c.type === CardType.Heart && c.value === levelCard).length;
+      const noCaiShen = cards.filter(c => c.point === cards[cardIndex].point);
       // 三张或者单张+2癞子或者1癞子+对子
-      if (sameCount === 3 || caiShenCount === 2 || (caiShenCount === 1 && doubleCount === 2)) {
+      if (sameCount === 3 || (caiShenCount === 2 && noCaiShen[0].point < 16) || (caiShenCount === 1 && doubleCount === 2 && noCaiShen[0].point < 16)) {
         return {
           name: PatterNames.triple,
           score: cards[cardIndex].point,
@@ -39,7 +40,7 @@ export default class TripleMatcher implements IMatcher {
     }
 
     return groupBy(cards.filter(c => c.point > target.score), card => card.point)
-      .filter(g => g.length > 1 && g.length < 4 && (g[0].value !== levelCard))
+      .filter(g => g.length > 1 && g.length < 4 && (g[0].value !== levelCard) && g[0].point < 16)
       .sort(lengthFirstThenPointGroupComparator)
       .map(grp => {
         // console.warn("levelCard %s grp %s card %s", levelCard, JSON.stringify(grp), JSON.stringify(cards[cardIndex]));
