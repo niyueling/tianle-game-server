@@ -54,7 +54,7 @@ export class RobotManager extends NewRobotManager {
 
   // 为离线用户选择模式
   async selectMode() {
-    const random = Math.random();
+
 
     // 在线用户都选好模式了
     for (const proxy of Object.values(this.disconnectPlayers)) {
@@ -63,8 +63,9 @@ export class RobotManager extends NewRobotManager {
         continue;
       }
 
+      const random = Math.random();
       if (random < 0.5) {
-        await this.room.gameState.onSelectMode(proxy.playerState, 2);
+        await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
         return true;
       }
     }
