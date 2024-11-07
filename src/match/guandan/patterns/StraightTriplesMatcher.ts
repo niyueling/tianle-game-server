@@ -4,7 +4,7 @@ import {groupBy, IMatcher, IPattern, last, PatterNames} from "./base"
 
 export default class StraightTriplesMatcher implements IMatcher {
   verify(cards: Card[], levelCard?: Number): IPattern | null {
-    if (cards.length >= 6 && cards.length % 3 === 0) {
+    if (cards.length === 6 && cards.length % 3 === 0) {
 
       const sortedGroups = groupBy(cards.slice(), card => card.point)
         .sort((grp1, grp2) => {
