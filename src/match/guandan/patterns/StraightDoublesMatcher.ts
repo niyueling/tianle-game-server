@@ -82,6 +82,8 @@ export default class StraightDoublesMatcher implements IMatcher {
           resultCaiShen = null;
         }
 
+
+
         // 原始牌无法直接组成连对，判断红心癞子做级牌是否能组成连对
         let prevGroupByLevelPoint = subtractGroups[0][0].point;
         const addGroupCards = [];
@@ -98,7 +100,7 @@ export default class StraightDoublesMatcher implements IMatcher {
               prevGroupByLevelPoint = prevGroupByLevelPoint + 1;
               caiShenCount = 0;
             } else {
-              console.warn("error-6");
+              console.warn("error-6 %s", JSON.stringify(subtractGroups));
               resultCaiShen = null;
             }
           }
