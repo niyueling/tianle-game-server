@@ -6,7 +6,7 @@ export default class BombMatcher implements IMatcher {
   verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length >= 4) {
       const sortCards = cards.sort((grp1, grp2) => {
-        return grp1[0].point - grp2[0].point
+        return grp1.point - grp2.point
       });
       const firstCard = sortCards[0];
       const sameAsFirst = sortCards.filter(c => firstCard.point === c.point).length;
