@@ -52,7 +52,7 @@ export default class DoubleMatcher implements IMatcher {
     }
 
      return groupBy(cards.filter(c => c.point > target.score), card => card.point)
-       .filter(g => g.length === 1 && (g[0].type !== CardType.Heart || g[0].value !== levelCard))
+       .filter(g => g.length === 1 && (g[0].type !== CardType.Heart || g[0].value !== levelCard) && g[0].point < 16)
        .sort(lengthFirstThenPointGroupComparator)
        .map(grp => {
          return [grp[0], cards[cardIndex]]
