@@ -8,7 +8,7 @@ export default class BombMatcher implements IMatcher {
       const sortCards = cards.sort((grp1, grp2) => {
         return grp1.point - grp2.point
       });
-      const firstCard = sortCards[0];
+      const firstCard = sortCards.find(c => c.type !== CardType.Heart || c.value !== levelCard);
       const sameAsFirst = sortCards.filter(c => firstCard.point === c.point).length;
       const caiShenCount = sortCards.filter(c => c.type === CardType.Heart && c.value === levelCard).length;
       console.warn("sortCards %s firstCard %s sameAsFirst %s caiShenCount %s", JSON.stringify(sortCards), JSON.stringify(firstCard), sameAsFirst, caiShenCount);
