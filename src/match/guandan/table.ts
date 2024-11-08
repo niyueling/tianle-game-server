@@ -529,7 +529,6 @@ abstract class Table implements Serializable {
       }
 
       this.showGameOverPlayerCards()
-      player.zhua(this.status.fen)
       this.status.current.seatIndex = -1
       console.log('game over set seatIndex -1');
       this.gameOver()
@@ -656,18 +655,6 @@ abstract class Table implements Serializable {
 
     this.moveToNext()
 
-    if (!this.status.lastPattern) {
-      const zhuaFenPlayer = this.players[this.status.from]
-      zhuaFenPlayer.zhua(this.status.fen)
-
-      this.room.broadcast('game/zhuaFen', {ok: true, data: {
-          index: this.status.from,
-          win: this.status.fen,
-          zhuaFen: zhuaFenPlayer.zhuaFen
-        }})
-
-      this.status.fen = 0
-    }
     this.room.broadcast("game/otherGuo", {ok: true, data: {
         index: player.seatIndex,
         next: this.currentPlayerStep,
