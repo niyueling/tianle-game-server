@@ -94,7 +94,9 @@ export default class NormalTable extends Table {
         //   await this.onSelectMode(player, double);
         //   this.room.emit('selectMode', {});
         // })
+
         player.sendMessage('game/startChooseMultiple', {ok: true, data: {}})
+        this.autoCommitFunc();
       }
     }
   }
