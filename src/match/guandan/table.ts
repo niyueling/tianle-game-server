@@ -445,7 +445,6 @@ abstract class Table implements Serializable {
     this.autoCommitStartTime = Date.now();
     const primaryDelayTime = playerIsOndeposit ? 1000 : time * 1000
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime)
-    console.warn("tableState %s minutes %s", this.tableState, time);
     this.autoCommitTimer = setTimeout(async () => {
       await this.autoCommitForPlayers()
     }, delayTime)
