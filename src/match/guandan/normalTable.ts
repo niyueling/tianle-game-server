@@ -118,8 +118,9 @@ export default class NormalTable extends Table {
     const index = this.players.findIndex(p => p._id.toString() === player._id.toString());
     player.multiple = multiple;
     player.isChooseMode = true;
+    this.multiple += (multiple === 1 ? 0 : 1);
     player.record(`select-mode-${multiple}`, []);
-    this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: index, isMultiple: player.isChooseMode, double: player.multiple}});
+    this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: index, isMultiple: player.isChooseMode, double: player.multiple, gameMultiple: this.multiple}});
     // console.warn("index %s multiple %s isChooseMode %s", index, player.multiple, player.isChooseMode);
     const isOk = await this.canStartGame();
     if (isOk) {

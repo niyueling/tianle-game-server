@@ -143,6 +143,9 @@ abstract class Table implements Serializable {
   @autoSerialize
   autoCommitStartTime: number
 
+  @autoSerialize
+  multiple: number = 1
+
   pattern: Pattern
 
   @autoSerialize
