@@ -7,8 +7,9 @@ export default class StraightMatcher implements IMatcher {
     if (cards.length === 5) {
       const copyCards = cards.slice().sort(Card.compare)
 
-      const startCard = cards[0];
-      if (cards.every(card => card.type === startCard.type)) {
+      // 如果癞子除外都是同一个花色，则为同花顺，不是顺子
+      const startCard = cards.find(c => c.type !== CardType.Heart || c.value !== levelCard);
+      if (cards.every(card => card.type === startCard.type && (card.type !== CardType.Heart || card.value !== levelCard))) {
         return null;
       }
 
@@ -21,9 +22,12 @@ export default class StraightMatcher implements IMatcher {
 
       let lastCard = copyCards[0]
       for (let i = 1; i < copyCards.length; i++) {
-        const currentCard = copyCards[i]
+        const currentCard = copyCards[i];
+
         if (currentCard.point - lastCard.point === 1) {
-          lastCard = currentCard
+          lastCard = currentCard;
+        } else if (currentCard.type === CardType.Heart && currentCard.value === levelCard) {
+          lastCard.point++;
         } else {
           result = null;
         }
@@ -38,18 +42,21 @@ export default class StraightMatcher implements IMatcher {
       let lastCard1 = copyCardsByValue[0];
       for (let i = 1; i < copyCardsByValue.length; i++) {
         const currentCard = copyCardsByValue[i];
+
         if (currentCard.value - lastCard1.value === 1) {
           lastCard1 = currentCard;
+        } else if (currentCard.type === CardType.Heart && currentCard.value === levelCard) {
+          lastCard1.point++;
         } else {
           return null;
         }
       }
 
       return {
-        name: PatterNames.straight + copyCards.length,
-        score: copyCards[0].point,
+        name: PatterNames.straight + copyCardsByValue.length,
+        score: copyCardsByValue[0].point,
         cards: copyCardsByValue,
-        level: copyCards.length
+        level: copyCardsByValue.length
       };
     }
 
