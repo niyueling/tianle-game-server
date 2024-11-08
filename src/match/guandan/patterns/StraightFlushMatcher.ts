@@ -7,9 +7,8 @@ export default class StraightFlushMatcher implements IMatcher {
     if (cards.length === 5) {
       const copyCards = cards.slice().sort(Card.compare);
 
-
       const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
-      const subtractCards = arraySubtract(cards, levelCards);
+      let subtractCards = arraySubtract(cards, levelCards);
       const startCard = subtractCards[0];
       if (!subtractCards.every(card => card.type === startCard.type)) {
         return null;
@@ -22,12 +21,14 @@ export default class StraightFlushMatcher implements IMatcher {
         level: copyCards.length
       };
 
-      let lastCard = copyCards[0];
-      for (let i = 1; i < copyCards.length; i++) {
-        const currentCard = copyCards[i];
+      let lastCard = subtractCards[0];
+      let caiShenCount = levelCards.length;
+      for (let i = 1; i < subtractCards.length; i++) {
+        const currentCard = subtractCards[i];
         if (currentCard.point - lastCard.point === 1 && currentCard.type === lastCard.type) {
           lastCard = currentCard;
-        } else if (currentCard.type === CardType.Heart && currentCard.value === levelCard) {
+        } else if (caiShenCount > 0) {
+          caiShenCount--;
           lastCard.point++;
         } else {
           result = null;
@@ -39,13 +40,16 @@ export default class StraightFlushMatcher implements IMatcher {
       }
 
       const copyCardsByValue = cards.slice().sort(Card.compareByValue);
+      subtractCards = arraySubtract(copyCardsByValue, levelCards);
+      caiShenCount = levelCards.length;
 
-      let lastCard1 = copyCardsByValue[0];
-      for (let i = 1; i < copyCardsByValue.length; i++) {
-        const currentCard = copyCardsByValue[i];
+      let lastCard1 = subtractCards[0];
+      for (let i = 1; i < subtractCards.length; i++) {
+        const currentCard = subtractCards[i];
         if (currentCard.value - lastCard1.value === 1 && currentCard.type === lastCard.type) {
           lastCard1 = currentCard;
-        } else if (currentCard.type === CardType.Heart && currentCard.value === levelCard) {
+        } else if (caiShenCount > 0) {
+          caiShenCount--;
           lastCard1.point++;
         } else {
           return null;

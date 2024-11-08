@@ -1,3 +1,5 @@
+import StraightMatcher from "./patterns/StraightMatcher";
+
 export enum CardType {
   Joker = 0,
   Spades,
