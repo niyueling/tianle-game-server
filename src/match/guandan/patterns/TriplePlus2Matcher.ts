@@ -39,6 +39,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       const prompts = [];
 
       if (groups.length > 2) {
+        console.warn("TriplePlus2Matcher error 1 %s", JSON.stringify(groups));
         return null;
       }
 
@@ -95,7 +96,7 @@ export default class TriplePlus2Matcher implements IMatcher {
           maxCardIndex = (groups[0][0].point < 16 ? 0 : 1);
         }
 
-        if (groups[1][0].point > groups[0][0].point && groups[1][0].point < 16) {
+        if (groups[1][0].point > groups[0][0].point) {
           maxCardIndex = (groups[1][0].point < 16 ? 1 : 0);
         }
 
@@ -127,6 +128,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       }
 
       if (!prompts.length) {
+        console.warn("TriplePlus2Matcher error 2 %s", JSON.stringify(prompts));
         return null;
       }
 
@@ -143,6 +145,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       return maxInfo;
     }
 
+    console.warn("TriplePlus2Matcher error 3");
     return null;
   }
 
