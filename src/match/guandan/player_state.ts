@@ -342,14 +342,14 @@ class PlayerState implements Serializable {
   }
 
   deposit(callback) {
-    let minutes = 15 * 1000
+    let minutes = 5 * 1000;
 
-    // if (!this.canDeposit) {
-    //   return
-    // }
+    if (this.room.gameState.tableState !== 'selectMode') {
+      minutes = 15;
+    }
 
     if (!this.msgDispatcher) {
-      return
+      return ;
     }
 
     if (!this.room.isPublic && !this.rule.ro.autoCommit) {
@@ -360,11 +360,17 @@ class PlayerState implements Serializable {
     }
 
     if (!this.onDeposit) {
-      this.timeoutTask = setTimeout(() => {
-        this.onDeposit = true
-        this.sendMessage('game/startDeposit', {ok: true, data: {}})
-        callback()
-        this.timeoutTask = null
+      this.timeoutTask = setTimeout(async () => {
+        // 如果是选择加倍，默认选择不加倍
+        if (this.room.gameState.tableState === 'selectMode') {
+          await this.room.gameState.onSelectMode(this, 1);
+        } else {
+          this.onDeposit = true
+          this.sendMessage('game/startDeposit', {ok: true, data: {}})
+          callback()
+          this.timeoutTask = null
+        }
+
       }, minutes)
     } else {
       const isRobot = this.msgDispatcher.isRobot()

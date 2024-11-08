@@ -120,7 +120,7 @@ export default class NormalTable extends Table {
     player.isChooseMode = true;
     player.record(`select-mode-${multiple}`, []);
     this.room.broadcast("game/chooseMultipleReply", {ok: true, data: {seatIndex: index, isMultiple: player.isChooseMode, double: player.multiple}});
-    console.warn("index %s multiple %s isChooseMode %s", index, player.multiple, player.isChooseMode);
+    // console.warn("index %s multiple %s isChooseMode %s", index, player.multiple, player.isChooseMode);
     const isOk = await this.canStartGame();
     if (isOk) {
       this.next()
@@ -129,10 +129,9 @@ export default class NormalTable extends Table {
 
   listenPlayer(player) {
     super.listenPlayer(player);
-    this.listenerOn.push('game/chooseMultiple')
+    this.listenerOn.push('game/chooseMultiple');
 
     player.msgDispatcher.on('game/chooseMultiple', async ({double}) => {
-      console.warn("double %s", double);
       await this.onSelectMode(player, double);
       this.room.emit('selectMode', {});
     })

@@ -1076,6 +1076,10 @@ abstract class Table implements Serializable {
   getAnotherTeam(team) {
     return this.players.filter(p => p && p.team !== team)
   }
+
+  async onSelectMode(player: PlayerState, multiple = 1) {
+
+  }
 }
 
 export default Table
