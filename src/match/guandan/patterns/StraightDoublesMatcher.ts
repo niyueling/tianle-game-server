@@ -283,7 +283,6 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
     }
 
-    console.warn("error-18");
     return null
   }
 

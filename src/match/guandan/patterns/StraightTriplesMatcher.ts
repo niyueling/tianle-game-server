@@ -265,7 +265,6 @@ export default class StraightTriplesMatcher implements IMatcher {
         level: 2,
         sortKey: "valueNotCaishen"
       }
-
     }
     return null
   }
