@@ -145,7 +145,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       return maxInfo;
     }
 
-    console.warn("TriplePlus2Matcher error 3");
+    // console.warn("TriplePlus2Matcher error 3");
     return null;
   }
 
