@@ -348,11 +348,16 @@ abstract class Table implements Serializable {
     this.autoCommitFunc()
   }
 
-  autoCommitForPlayers() {
-    const player = this.players.find(x => x.seatIndex === this.currentPlayerStep)
+  async autoCommitForPlayers() {
+    const player = this.players.find(x => x.seatIndex === this.currentPlayerStep);
     if (!player || player.msgDispatcher.isRobot()) {
       // 忽略机器人
-      return
+      return;
+    }
+
+    // 如果是选择加倍，默认选择不加倍
+    if (this.room.gameState.tableState === 'selectMode') {
+      return await this.room.gameState.onSelectMode(player, 1);
     }
 
     player.onDeposit = true
@@ -424,17 +429,22 @@ abstract class Table implements Serializable {
   }
 
   autoCommitFunc(playerIsOndeposit = false) {
-    let time = 15;
+    let time = 5;
+
     if (this.rule.autoCommit) {
       time = this.rule.autoCommit;
+    }
+
+    if (this.tableState !== 'selectMode') {
+      time = 15;
     }
 
     clearTimeout(this.autoCommitTimer)
     this.autoCommitStartTime = Date.now();
     const primaryDelayTime = playerIsOndeposit ? 1000 : time * 1000
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime)
-    this.autoCommitTimer = setTimeout(() => {
-      this.autoCommitForPlayers()
+    this.autoCommitTimer = setTimeout(async () => {
+      await this.autoCommitForPlayers()
     }, delayTime)
   }
 
