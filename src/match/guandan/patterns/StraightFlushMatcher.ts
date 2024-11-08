@@ -8,7 +8,7 @@ export default class StraightFlushMatcher implements IMatcher {
       const copyCards = cards.slice().sort(Card.compare);
 
       const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
-      let subtractCards = arraySubtract(cards, levelCards);
+      let subtractCards = arraySubtract(copyCards.slice(), levelCards);
       const startCard = subtractCards[0];
       if (!subtractCards.every(card => card.type === startCard.type)) {
         return null;
@@ -40,7 +40,7 @@ export default class StraightFlushMatcher implements IMatcher {
       }
 
       const copyCardsByValue = cards.slice().sort(Card.compareByValue);
-      subtractCards = arraySubtract(copyCardsByValue, levelCards);
+      subtractCards = arraySubtract(copyCardsByValue.slice(), levelCards);
       caiShenCount = levelCards.length;
 
       let lastCard1 = subtractCards[0];

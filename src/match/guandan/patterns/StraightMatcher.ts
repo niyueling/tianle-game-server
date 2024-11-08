@@ -8,8 +8,8 @@ export default class StraightMatcher implements IMatcher {
       const copyCards = cards.slice().sort(Card.compare)
 
       // 如果癞子除外都是同一个花色，则为同花顺，不是顺子
-      const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
-      let subtractCards = arraySubtract(cards, levelCards);
+      const levelCards = copyCards.filter(card => card.type === CardType.Heart && card.value === levelCard);
+      let subtractCards = arraySubtract(copyCards.slice(), levelCards);
       const startCard = subtractCards[0];
       if (subtractCards.every(card => card.type === startCard.type)) {
         return null;
@@ -22,10 +22,10 @@ export default class StraightMatcher implements IMatcher {
         level: copyCards.length
       };
 
-      let lastCard = copyCards[0];
+      let lastCard = subtractCards[0];
       let caiShenCount = levelCards.length;
-      for (let i = 1; i < copyCards.length; i++) {
-        const currentCard = copyCards[i];
+      for (let i = 1; i < subtractCards.length; i++) {
+        const currentCard = subtractCards[i];
 
         if (currentCard.point - lastCard.point === 1) {
           lastCard = currentCard;
@@ -42,7 +42,7 @@ export default class StraightMatcher implements IMatcher {
       }
 
       const copyCardsByValue = cards.slice().sort(Card.compareByValue);
-      subtractCards = arraySubtract(copyCardsByValue, levelCards);
+      subtractCards = arraySubtract(copyCardsByValue.slice(), levelCards);
 
       let lastCard1 = subtractCards[0];
       for (let i = 1; i < subtractCards.length; i++) {
