@@ -361,6 +361,7 @@ class PlayerState implements Serializable {
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(async () => {
+        console.warn("tableState %s minutes %s", this.room.gameState.tableState, minutes);
         // 如果是选择加倍，默认选择不加倍
         if (this.room.gameState.tableState === 'selectMode') {
           await this.room.gameState.onSelectMode(this, 1);
