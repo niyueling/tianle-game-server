@@ -359,9 +359,11 @@ class PlayerState implements Serializable {
       minutes = (this.rule.ro.autoCommit + 1) * 1000
     }
 
+    console.warn("1 tableState %s minutes %s", this.room.gameState.tableState, minutes);
+
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(async () => {
-        console.warn("tableState %s minutes %s", this.room.gameState.tableState, minutes);
+        console.warn("2 tableState %s minutes %s", this.room.gameState.tableState, minutes);
         // 如果是选择加倍，默认选择不加倍
         if (this.room.gameState.tableState === 'selectMode') {
           await this.room.gameState.onSelectMode(this, 1);

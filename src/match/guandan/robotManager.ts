@@ -59,7 +59,7 @@ export class RobotManager extends NewRobotManager {
     // 在线用户都选好模式了
     for (const proxy of Object.values(this.disconnectPlayers)) {
       if (!proxy.playerState || proxy.playerState.isChooseMode) {
-        console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
+        // console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
         continue;
       }
 
