@@ -39,7 +39,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       const prompts = [];
 
       if (groups.length > 2) {
-        console.warn("TriplePlus2Matcher error 1 %s", JSON.stringify(groups));
+        // console.warn("TriplePlus2Matcher error 1 %s", JSON.stringify(groups));
         return null;
       }
 
@@ -128,7 +128,7 @@ export default class TriplePlus2Matcher implements IMatcher {
       }
 
       if (!prompts.length) {
-        console.warn("TriplePlus2Matcher error 2 %s", JSON.stringify(prompts));
+        // console.warn("TriplePlus2Matcher error 2 %s", JSON.stringify(prompts));
         return null;
       }
 
