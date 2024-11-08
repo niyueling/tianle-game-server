@@ -21,15 +21,15 @@ export default class StraightFlushMatcher implements IMatcher {
         level: copyCards.length
       };
 
-      let lastCard = subtractCards[0];
+      let lastCard = subtractCards[0].point;
       let caiShenCount = levelCards.length;
       for (let i = 1; i < subtractCards.length; i++) {
-        const currentCard = subtractCards[i];
-        if (currentCard.point - lastCard.point === 1 && currentCard.type === lastCard.type) {
+        const currentCard = subtractCards[i].point;
+        if (currentCard - lastCard === 1) {
           lastCard = currentCard;
         } else if (caiShenCount > 0) {
           caiShenCount--;
-          lastCard.point++;
+          lastCard++;
         } else {
           result = null;
         }
@@ -43,14 +43,14 @@ export default class StraightFlushMatcher implements IMatcher {
       subtractCards = arraySubtract(copyCardsByValue.slice(), levelCards);
       caiShenCount = levelCards.length;
 
-      let lastCard1 = subtractCards[0];
+      let lastCard1 = subtractCards[0].value;
       for (let i = 1; i < subtractCards.length; i++) {
-        const currentCard = subtractCards[i];
-        if (currentCard.value - lastCard1.value === 1 && currentCard.type === lastCard.type) {
+        const currentCard = subtractCards[i].value;
+        if (currentCard - lastCard1 === 1) {
           lastCard1 = currentCard;
         } else if (caiShenCount > 0) {
           caiShenCount--;
-          lastCard1.point++;
+          lastCard1++;
         } else {
           return null;
         }
@@ -58,7 +58,7 @@ export default class StraightFlushMatcher implements IMatcher {
 
       return {
         name: PatterNames.straightFlush + copyCardsByValue.length,
-        score: copyCardsByValue[0].point,
+        score: copyCardsByValue[0].value,
         cards: copyCardsByValue,
         level: copyCardsByValue.length
       };
