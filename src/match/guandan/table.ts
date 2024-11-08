@@ -431,12 +431,14 @@ abstract class Table implements Serializable {
   autoCommitFunc(playerIsOndeposit = false) {
     let time = 5;
 
-    if (this.rule.autoCommit) {
-      time = this.rule.autoCommit;
-    }
-
     if (this.tableState !== 'selectMode') {
       time = 15;
+    }
+    if (!this.room.isPublic && !this.rule.ro.autoCommit) {
+      return ;
+    }
+    if (!this.room.isPublic && this.rule.ro.autoCommit && this.tableState !== 'selectMode') {
+      time = (this.rule.ro.autoCommit + 1) * 1000;
     }
 
     clearTimeout(this.autoCommitTimer)
