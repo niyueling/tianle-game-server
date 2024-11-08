@@ -11,6 +11,7 @@ export default class StraightFlushMatcher implements IMatcher {
       let subtractCards = arraySubtract(copyCards.slice(), levelCards);
       const startCard = subtractCards[0];
       if (!subtractCards.every(card => card.type === startCard.type)) {
+        console.warn("StraightFlushMatcher error 1 %s", JSON.stringify(subtractCards));
         return null;
       }
 
@@ -31,6 +32,7 @@ export default class StraightFlushMatcher implements IMatcher {
           caiShenCount--;
           lastCard++;
         } else {
+          console.warn("StraightFlushMatcher error 2 %s", JSON.stringify(subtractCards));
           result = null;
         }
       }
@@ -52,6 +54,7 @@ export default class StraightFlushMatcher implements IMatcher {
           caiShenCount--;
           lastCard1++;
         } else {
+          console.warn("StraightFlushMatcher error 3 %s", JSON.stringify(subtractCards));
           return null;
         }
       }
