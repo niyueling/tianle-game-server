@@ -25,7 +25,6 @@ export default class StraightFlushMatcher implements IMatcher {
       let lastCard = copyCards[0];
       for (let i = 1; i < copyCards.length; i++) {
         const currentCard = copyCards[i];
-
         if (currentCard.point - lastCard.point === 1 && currentCard.type === lastCard.type) {
           lastCard = currentCard;
         } else if (currentCard.type === CardType.Heart && currentCard.value === levelCard) {
