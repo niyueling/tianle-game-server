@@ -1,14 +1,17 @@
 import Card, {CardType} from "../card"
-import {groupBy, IMatcher, IPattern, PatterNames} from "./base"
+import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames} from "./base"
 
 export default class StraightFlushMatcher implements IMatcher {
 
   verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length === 5) {
-      const copyCards = cards.slice().sort(Card.compare)
+      const copyCards = cards.slice().sort(Card.compare);
 
-      const startCard = cards[0];
-      if (!cards.every(card => card.type === startCard.type)) {
+
+      const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
+      const subtractCards = arraySubtract(cards, levelCards);
+      const startCard = subtractCards[0];
+      if (!subtractCards.every(card => card.type === startCard.type)) {
         return null;
       }
 
@@ -19,11 +22,14 @@ export default class StraightFlushMatcher implements IMatcher {
         level: copyCards.length
       };
 
-      let lastCard = copyCards[0]
+      let lastCard = copyCards[0];
       for (let i = 1; i < copyCards.length; i++) {
-        const currentCard = copyCards[i]
+        const currentCard = copyCards[i];
+
         if (currentCard.point - lastCard.point === 1 && currentCard.type === lastCard.type) {
-          lastCard = currentCard
+          lastCard = currentCard;
+        } else if (currentCard.type === CardType.Heart && currentCard.value === levelCard) {
+          lastCard.point++;
         } else {
           result = null;
         }
@@ -40,16 +46,18 @@ export default class StraightFlushMatcher implements IMatcher {
         const currentCard = copyCardsByValue[i];
         if (currentCard.value - lastCard1.value === 1 && currentCard.type === lastCard.type) {
           lastCard1 = currentCard;
+        } else if (currentCard.type === CardType.Heart && currentCard.value === levelCard) {
+          lastCard1.point++;
         } else {
           return null;
         }
       }
 
       return {
-        name: PatterNames.straightFlush + copyCards.length,
-        score: copyCards[0].point,
+        name: PatterNames.straightFlush + copyCardsByValue.length,
+        score: copyCardsByValue[0].point,
         cards: copyCardsByValue,
-        level: copyCards.length
+        level: copyCardsByValue.length
       };
     }
 

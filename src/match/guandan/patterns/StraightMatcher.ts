@@ -1,5 +1,5 @@
 import Card, {CardType} from "../card"
-import {groupBy, IMatcher, IPattern, PatterNames} from "./base"
+import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames} from "./base"
 
 export default class StraightMatcher implements IMatcher {
 
@@ -8,8 +8,10 @@ export default class StraightMatcher implements IMatcher {
       const copyCards = cards.slice().sort(Card.compare)
 
       // 如果癞子除外都是同一个花色，则为同花顺，不是顺子
-      const startCard = cards.find(c => c.type !== CardType.Heart || c.value !== levelCard);
-      if (cards.every(card => card.type === startCard.type && (card.type !== CardType.Heart || card.value !== levelCard))) {
+      const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
+      const subtractCards = arraySubtract(cards, levelCards);
+      const startCard = subtractCards[0];
+      if (subtractCards.every(card => card.type === startCard.type)) {
         return null;
       }
 
