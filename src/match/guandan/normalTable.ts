@@ -314,11 +314,7 @@ export default class NormalTable extends Table {
     this.winTeamPlayers = this.players.filter(p => p.team === winTeam);
     this.loseTeamPlayers = this.players.filter(p => p.team !== winTeam);
 
-    console.warn("winTeamPlayers %s loseTeamPlayers %s", JSON.stringify(this.winTeamPlayers.map(p => p.seatIndex)), JSON.stringify(this.loseTeamPlayers.map(p => p.seatIndex)));
-  }
-
-  isHomeTeamWin(): boolean {
-    return this.homeTeamPlayers().some(p => p.cards.length === 0)
+    console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", score, JSON.stringify(this.winTeamPlayers.map(p => p.seatIndex)), JSON.stringify(this.loseTeamPlayers.map(p => p.seatIndex)));
   }
 
   async gameOver() {
@@ -382,32 +378,21 @@ export default class NormalTable extends Table {
     await this.getBigWinner();
   }
   async getBigWinner() {
-    // 将分数 * 倍率
     const conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.room.gameRule.categoryId);
-    let times = 1;
-    if (!conf) {
-      // 配置失败
-      console.error('invalid room level');
-    } else {
-      times = conf.base * conf.Ante;
-    }
+    let times = conf.base * conf.Ante;
     let winRuby = 0;
     let lostRuby = 0;
     let maxBalance = 0;
     let maxLostBalance = 0;
     const winnerList = [];
     const lostList = [];
-    for (let i = 0; i < this.players.length; i ++) {
+    for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       if (p) {
+        const base = this.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
         // 基础倍率
-        p.balance -= p.detailBalance['base'];
-        p.balance *= times;
-        p.detailBalance['base'] *= times;
-        p.balance += p.detailBalance['base'];
-        p.detailBalance['joker'] *= times;
-        p.detailBalance['bomb'] *= times;
-        p.detailBalance['noLoss'] *= times;
+        p.balance = base * times * this.multiple * this.upgradeMultiple;
+
         if (p.balance > 0) {
           const currency = await this.PlayerGoldCurrency(p._id);
           if (p.balance > currency) {
