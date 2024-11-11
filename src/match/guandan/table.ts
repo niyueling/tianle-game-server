@@ -255,7 +255,7 @@ abstract class Table implements Serializable {
   consumeCard(helpCardard) {
     let cardIndex = --this.remainCards;
     if (helpCardard) {
-      const index = this.cards.findIndex(c => c.type === helpCardard.type && c.point === helpCardard.point);
+      const index = this.cards.findIndex(c => c.type === helpCardard.type && c.value === helpCardard.value);
       if (index !== -1) {
         cardIndex = index;
       }
