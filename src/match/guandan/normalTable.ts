@@ -311,10 +311,10 @@ export default class NormalTable extends Table {
 
     this.upgradeMultiple = score;
 
-    this.winTeamPlayers = this.players.filter(p => p.team === winTeam);
-    this.loseTeamPlayers = this.players.filter(p => p.team !== winTeam);
+    this.winTeamPlayers = this.players.filter(p => p.team === winTeam).map(p => p.seatIndex);
+    this.loseTeamPlayers = this.players.filter(p => p.team !== winTeam).map(p => p.seatIndex);
 
-    console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", score, JSON.stringify(this.winTeamPlayers.map(p => p.seatIndex)), JSON.stringify(this.loseTeamPlayers.map(p => p.seatIndex)));
+    console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", score, JSON.stringify(this.winTeamPlayers), JSON.stringify(this.loseTeamPlayers));
   }
 
   async gameOver() {
@@ -390,7 +390,7 @@ export default class NormalTable extends Table {
       const p = this.players[i];
       if (p) {
         const base = this.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
-        console.warn("index %s base %s times %s", p.seatIndex, base, times);
+        console.warn("index %s base %s times %s winTeamPlayers %s", p.seatIndex, base, times);
         // 基础倍率
         p.balance = base * times * this.multiple * this.upgradeMultiple;
 
