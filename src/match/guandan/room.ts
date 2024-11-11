@@ -4,11 +4,9 @@
 import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 // @ts-ignore
-import {pick} from 'lodash'
+import {keys, name, pick} from 'lodash'
 import * as mongoose from 'mongoose'
 import * as logger from 'winston'
-import Club from '../../database/models/club'
-import DissolveRecord from '../../database/models/dissolveRecord'
 import GameRecord from '../../database/models/gameRecord'
 import RoomRecord from '../../database/models/roomRecord'
 import {service} from "../../service/importService";
@@ -249,7 +247,7 @@ class Room extends RoomBase {
     }
   }
 
-  recordGameRecord(states, events) {
+  recordGameRecord(states, events, firstPlayerId = null) {
 
     const room = this.uid
     const players = states.map(state => state.model._id)
@@ -266,6 +264,7 @@ class Room extends RoomBase {
     GameRecord.create({
         room,
         players,
+        winnerId: firstPlayerId,
         juShu: this.game.juIndex,
         playersInfo,
         record: playerArray,
@@ -345,63 +344,6 @@ class Room extends RoomBase {
       logger.error(`${__filename}:261 recordRoomScore`, e)
     }
     return roomRecord
-  }
-
-  async recordDrawGameScore() {
-    DissolveRecord.create({
-        roomNum: this._id,
-        juIndex: this.game.juIndex,
-        category: 'guandan',
-        dissolveReqInfo: this.dissolveReqInfo,
-      },
-      err => {
-        if (err) {
-          logger.error(err)
-        }
-      }
-    )
-    if (this.gameState) {
-      this.gameState.showGameOverPlayerCards()
-      const states = this.gameState.drawGameTableState()
-
-      for (const state of states) {
-        state.model.played += 1;
-        await this.addScore(state.model._id, state.score)
-      }
-      const club = this.clubId && await Club.findOne({_id: this.clubId})
-
-      if (club && this.rule.ro.useClubGold) {
-        for (let i = 0; i < states.length; i++) {
-          const p = states[i];
-          p.model.clubGold += p.score;
-          if (p) {
-            await this.adjustPlayerClubGold(club, p.score, p.model._id, "游戏输赢，房间号：" + this._id)
-          }
-        }
-      }
-
-      const gameOverMsg = {
-        states,
-        juShu: this.restJuShu,
-        isPublic: this.isPublic,
-        ruleType: this.rule.ruleType,
-        juIndex: this.game.juIndex,
-        creator: this.creator.model._id,
-      }
-
-      this.broadcast('game/game-over', {ok: true, data: gameOverMsg})
-
-      this.recordGameRecord(states, this.gameState.recorder.getEvents())
-
-      await this.recordRoomScore('dissolve')
-    } else {
-      if (this.rule.ro.useClubGold) {
-        await this.updatePlayerClubGold();
-      }
-      await RoomRecord.update({room: this.uid}, {roomState: 'dissolve'})
-    }
-    // 更新大赢家
-    await this.updateBigWinner();
   }
 
   async addScore(playerId, v) {
@@ -746,7 +688,7 @@ class Room extends RoomBase {
 
     this.clearReady()
     await this.recordRoomScore()
-    this.recordGameRecord(states, this.gameState.recorder.getEvents())
+    this.recordGameRecord(states, this.gameState.recorder.getEvents(), firstPlayerId)
     await this.charge();
 
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
@@ -771,7 +713,7 @@ class Room extends RoomBase {
 
       // 好友房总结算
       if (this.isRoomAllOver()) {
-        const message = this.allOverMessage()
+        const message = await this.allOverMessage()
         this.broadcast('room/allOver', {ok: true, data: message});
         // this.players.forEach(x => x && this.leave(x));
         this.emit('empty', this.disconnected);
@@ -857,7 +799,7 @@ class Room extends RoomBase {
   }
 
   async dissolveOverMassage() {
-    const message = this.allOverMessage()
+    const message = await this.allOverMessage()
 
     if (this.gameState) {
 
@@ -868,18 +810,39 @@ class Room extends RoomBase {
     return message
   }
 
-  allOverMessage() {
-    const message = {players: [], roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.xmmj}
-    this.snapshot
-      .filter(p => p)
-      .forEach(player => {
-        message.players.push({
-          _id: player._id.toString(),
-          userName: player.model.nickname,
-          avatar: player.model.avatar,
-          shortId: player.model.shortId
-        });
-      })
+  async allOverMessage() {
+    const message = {
+      players: [],
+      roomNum: this._id,
+      juShu: this.game.juIndex,
+      isClubRoom: this.clubMode,
+      gameType: GameType.guandan
+    };
+    const filteredPlayers = this.snapshot.filter(p => p);
+
+    for (const player of filteredPlayers) {
+      const gameRecords = await GameRecord.find({roomId: this._id});
+      let winnerCount = 0;
+
+      for (let i = 0; i < gameRecords.length; i++) {
+        const game = gameRecords[i];
+        // 用户是头游，则累计头游次数
+        if (game.winnerId === player._id.toString()) {
+          winnerCount++;
+        }
+      }
+
+      const playerData = {
+        _id: player._id.toString(),
+        userName: player.model.nickname,
+        avatar: player.model.avatar,
+        shortId: player.model.shortId,
+        winnerCount
+      };
+
+      message.players.push(playerData);
+    }
+
     Object.keys(this.counterMap).forEach(x => {
       this.counterMap[x].forEach(p => {
         const index = message.players.findIndex(p1 => p1._id === p);
@@ -981,6 +944,10 @@ class Room extends RoomBase {
     }
     this.players = playersCopy
     this.playersOrder = newOrders
+  }
+
+  protected recordDrawGameScore(): any {
+
   }
 }
 

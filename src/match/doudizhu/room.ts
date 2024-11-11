@@ -23,7 +23,6 @@ import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
 import Player from "../../database/models/player";
 import {stateGameOver} from "./table";
-import enums from "./enums";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -224,22 +223,7 @@ class Room extends RoomBase {
   }
 
   async recordDrawGameScore() {
-    await this.recordRoomScore('dissolve')
-    DissolveRecord.create({
-        roomNum: this._id,
-        juIndex: this.game.juIndex,
-        category: GameType.ddz,
-        dissolveReqInfo: this.dissolveReqInfo,
-      },
-      err => {
-        if (err) {
-          logger.error(err)
-        }
-      }
-    )
-    // 记录大赢家
-    await this.updateBigWinner();
-    return 1;
+
   }
 
   async updatePosition() {

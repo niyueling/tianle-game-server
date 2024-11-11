@@ -367,60 +367,7 @@ class Room extends RoomBase {
   }
 
   async recordDrawGameScore() {
-    DissolveRecord.create({
-        roomNum: this._id,
-        juIndex: this.game.juIndex,
-        category: 'zhadan',
-        dissolveReqInfo: this.dissolveReqInfo,
-      },
-      err => {
-        if (err) {
-          logger.error(err)
-        }
-      }
-    )
-    if (this.gameState) {
-      this.gameState.showGameOverPlayerCards()
-      const states = this.gameState.drawGameTableState()
 
-      for (const state of states) {
-        state.model.played += 1;
-        await this.addScore(state.model._id, state.score)
-      }
-      const club = this.clubId && await Club.findOne({_id: this.clubId})
-
-      if (club && this.rule.ro.useClubGold) {
-        for (let i = 0; i < states.length; i++) {
-          const p = states[i];
-          p.model.clubGold += p.score;
-          if (p) {
-            await this.adjustPlayerClubGold(club, p.score, p.model._id, "游戏输赢，房间号：" + this._id)
-          }
-        }
-      }
-
-      const gameOverMsg = {
-        states,
-        juShu: this.restJuShu,
-        isPublic: this.isPublic,
-        ruleType: this.rule.ruleType,
-        juIndex: this.game.juIndex,
-        creator: this.creator.model._id,
-      }
-
-      this.broadcast('game/game-over', {ok: true, data: gameOverMsg})
-
-      this.recordGameRecord(states, this.gameState.recorder.getEvents())
-
-      await this.recordRoomScore('dissolve')
-    } else {
-      if (this.rule.ro.useClubGold) {
-        await this.updatePlayerClubGold();
-      }
-      await RoomRecord.update({room: this.uid}, {roomState: 'dissolve'})
-    }
-    // 更新大赢家
-    await this.updateBigWinner();
   }
 
   async addScore(playerId, v) {
