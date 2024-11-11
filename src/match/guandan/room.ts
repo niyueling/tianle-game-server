@@ -477,19 +477,19 @@ class Room extends RoomBase {
   }
 
   getNextLevelCard() {
-    if (this.rule.juShu === 1) {
+    if (this.gameRule.juShu === 1) {
       return 5;
     }
 
-    if (this.rule.juShu === 2) {
+    if (this.gameRule.juShu === 2) {
       return 8;
     }
 
-    if (this.rule.juShu === 3) {
+    if (this.gameRule.juShu === 3) {
       return 10;
     }
 
-    if ([4, 6].includes(this.rule.juShu)) {
+    if ([4, 6].includes(this.gameRule.juShu)) {
       return 5;
     }
 
