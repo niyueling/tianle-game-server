@@ -31,8 +31,9 @@ export default class StraightFlushMatcher implements IMatcher {
         } else if (caiShenCount > 0) {
           caiShenCount--;
           lastCard++;
+          i--;
         } else {
-          console.warn("StraightFlushMatcher error 2 %s", JSON.stringify(subtractCards));
+          console.warn("StraightFlushMatcher error 2 %s caiShenCount %s", JSON.stringify(subtractCards), levelCards.length);
           result = null;
         }
       }
@@ -53,8 +54,9 @@ export default class StraightFlushMatcher implements IMatcher {
         } else if (caiShenCount > 0) {
           caiShenCount--;
           lastCard1++;
+          i--;
         } else {
-          console.warn("StraightFlushMatcher error 3 %s", JSON.stringify(subtractCards));
+          console.warn("StraightFlushMatcher error 3 %s caiShenCount %s", JSON.stringify(subtractCards), levelCards.length);
           return null;
         }
       }
