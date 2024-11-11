@@ -26,8 +26,8 @@ export default class Game implements Serializable {
 
       // 好友房第一局，队友级牌和对手级牌都设置为2
       if (this.juIndex === 1) {
-        room.homeTeamCard = 5;
-        room.awayTeamCard = 5;
+        room.homeTeamCard = 2;
+        room.awayTeamCard = 2;
         room.currentLevelCard = room.homeTeamCard;
         console.warn("本局级牌 %s", room.currentLevelCard);
       }
@@ -35,29 +35,29 @@ export default class Game implements Serializable {
 
     if (room.isPublic) {
       let levelCard = -1;
-
       this.juIndex++;
 
-      // 如果是随机级牌
-      if (this.rule.juShu === 6) {
-        levelCard = getRandomInt(1, 13);
-      }
-      console.warn("room.gameRule", JSON.stringify(room.gameRule));
+      if (this.juIndex === 1) {
+        // 如果是随机级牌
+        if (this.rule.juShu === 6) {
+          levelCard = getRandomInt(1, 13);
+        }
 
-      // 如果是过5或者过A,第一局设置级牌为2，如果是测试工具发牌，级牌固定为2
-      if (([1, 5].includes(this.rule.juShu) && this.juIndex === 1) || room.gameRule.test) {
-        levelCard = 2;
-      }
+        // 如果是过5或者过A,第一局设置级牌为2，如果是测试工具发牌，级牌固定为2
+        if ([1, 5].includes(this.rule.juShu) || room.gameRule.test) {
+          levelCard = 2;
+        }
 
-      if (levelCard !== -1) {
-        room.homeTeamCard = levelCard;
-        room.awayTeamCard = levelCard;
-        room.currentLevelCard = room.homeTeamCard;
-        console.warn("本局级牌 %s", room.currentLevelCard);
+        if (levelCard !== -1) {
+          room.homeTeamCard = levelCard;
+          room.awayTeamCard = levelCard;
+          room.currentLevelCard = room.homeTeamCard;
+          console.warn("本局级牌 %s", room.currentLevelCard);
+        }
       }
     }
 
-    return this.createTable(room)
+    return this.createTable(room);
   }
 
   toJSON() {

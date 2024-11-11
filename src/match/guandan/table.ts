@@ -147,15 +147,6 @@ abstract class Table implements Serializable {
   multiple: number = 1
 
   @autoSerialize
-  upgradeMultiple: number = 1;
-
-  @autoSerialize
-  winTeamPlayers: any = [];
-
-  @autoSerialize
-  loseTeamPlayers: any = [];
-
-  @autoSerialize
   faPaiPayload: object = {}
 
   pattern: Pattern
@@ -554,6 +545,8 @@ abstract class Table implements Serializable {
       for (let i = 0; i < lostPlayers.length; i++) {
         this.room.broadcast("game/showWinOrder", {ok: true, data: {index: lostPlayers[i].seatIndex, winOrder: lostPlayers[i].winOrder}});
       }
+
+      this.room.winOrderLists = this.players.slice().sort((p1, p2) => p1.winOrder - p2.winOrder).map(p => {return {playerId: p._id, winOrder: p.winOrder, team: p.team}});
 
       this.showGameOverPlayerCards()
       this.status.current.seatIndex = -1

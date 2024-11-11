@@ -31,7 +31,6 @@ export default class NormalTable extends Table {
 
   async start(payload) {
     this.faPaiPayload = payload;
-    this.room.broadcast("game/openLevelCard", {ok: true, data: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard}})
 
     const faPaiFunc = async() => {
       if (this.rule.allowDouble) {
@@ -64,6 +63,12 @@ export default class NormalTable extends Table {
       p.onShuffle(0, this.restJushu, p.cards, i, this.room.game.juIndex, this.room.shuffleData.length > 0,
         cardRecorderStatus, {homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard, currentLevelCard: this.room.currentLevelCard});
     }
+
+    const sendLevelCardFunc = async() => {
+      this.room.broadcast("game/openLevelCard", {ok: true, data: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard}})
+    }
+
+    setTimeout(sendLevelCardFunc, 1500);
 
     const shuffleData = this.room.shuffleData.map(x => {
       const p = this.players.find(y => y.model._id === x);
@@ -310,12 +315,12 @@ export default class NormalTable extends Table {
       score = 2;
     }
 
-    this.upgradeMultiple = score;
+    this.room.upgradeMultiple = score;
 
-    this.winTeamPlayers = this.players.filter(p => p.team === winTeam).map(p => p.seatIndex);
-    this.loseTeamPlayers = this.players.filter(p => p.team !== winTeam).map(p => p.seatIndex);
+    this.room.winTeamPlayers = this.players.filter(p => p.team === winTeam).map(p => p.seatIndex);
+    this.room.loseTeamPlayers = this.players.filter(p => p.team !== winTeam).map(p => p.seatIndex);
 
-    console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", score, JSON.stringify(this.winTeamPlayers), JSON.stringify(this.loseTeamPlayers));
+    console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", score, JSON.stringify(this.room.winTeamPlayers), JSON.stringify(this.room.loseTeamPlayers));
   }
 
   async gameOver() {
@@ -377,9 +382,9 @@ export default class NormalTable extends Table {
       for (let i = 0; i < this.players.length; i++) {
         const p = this.players[i];
         if (p) {
-          const base = this.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
+          const base = this.room.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
           // 基础倍率
-          p.balance = base * this.multiple * this.upgradeMultiple;
+          p.balance = base * this.multiple * this.room.upgradeMultiple;
         }
       }
 
@@ -401,10 +406,10 @@ export default class NormalTable extends Table {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       if (p) {
-        const base = this.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
+        const base = this.room.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
         console.warn("index %s base %s times %s winTeamPlayers %s", p.seatIndex, base, times);
         // 基础倍率
-        p.balance = base * times * this.multiple * this.upgradeMultiple;
+        p.balance = base * times * this.multiple * this.room.upgradeMultiple;
 
         if (p.balance > 0) {
           const currency = await this.PlayerGoldCurrency(p._id);

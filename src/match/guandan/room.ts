@@ -471,6 +471,31 @@ class Room extends RoomBase {
       return false;
     }
 
+    // 计算级牌升级
+    const firstWinnerPlayer = this.winOrderLists.find(p => p.winOrder === 1);
+    if (firstWinnerPlayer) {
+      // 判断用户属于哪个阵营
+      const team = firstWinnerPlayer.team;
+      // 判断升级倍数
+      const upgradeMultiple = this.upgradeMultiple;
+
+      // 给赢家队伍升级级牌
+      if (team === 0) {
+        this.oldHomeTeamCard = this.homeTeamCard;
+        this.homeTeamCard += upgradeMultiple;
+        this.currentLevelCard = this.homeTeamCard;
+      }
+      if (team === 1) {
+        this.oldAwayTeamCard = this.awayTeamCard;
+        this.awayTeamCard += upgradeMultiple;
+        this.currentLevelCard = this.awayTeamCard;
+      }
+      console.warn("firstWinnerPlayer %s team %s oldHomeTeamCard %s homeTeamCard %s oldAwayTeamCard %s awayTeamCard %s currentLevelCard %s", firstWinnerPlayer, team, this.oldHomeTeamCard,
+        this.homeTeamCard, this.oldAwayTeamCard, this.awayTeamCard, this.currentLevelCard);
+    }
+
+
+
     await this.announcePlayerJoin(thePlayer);
 
     return true;
