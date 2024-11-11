@@ -493,7 +493,7 @@ class Room extends RoomBase {
       return 5;
     }
 
-    return 1;
+    return 14;
   }
 
   onRequestDissolve(player) {
@@ -731,8 +731,8 @@ class Room extends RoomBase {
         }
       }
 
-      console.warn("firstWinnerPlayer %s team %s oldHomeTeamCard %s homeTeamCard %s oldAwayTeamCard %s awayTeamCard %s currentLevelCard %s", firstWinnerPlayer, team, this.oldHomeTeamCard,
-        this.homeTeamCard, this.oldAwayTeamCard, this.awayTeamCard, this.currentLevelCard);
+      console.warn("firstWinnerPlayer %s team %s oldHomeTeamCard %s homeTeamCard %s oldAwayTeamCard %s awayTeamCard %s currentLevelCard %s nextLevelCard %s", JSON.stringify(firstWinnerPlayer), team, this.oldHomeTeamCard,
+        this.homeTeamCard, this.oldAwayTeamCard, this.awayTeamCard, this.currentLevelCard, nextLevelCard);
     }
   }
 
