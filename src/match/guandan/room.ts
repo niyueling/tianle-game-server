@@ -471,54 +471,6 @@ class Room extends RoomBase {
       return false;
     }
 
-    // 计算级牌升级
-    const firstWinnerPlayer = this.winOrderLists.find(p => p.winOrder === 1);
-    if (firstWinnerPlayer) {
-      // 判断用户属于哪个阵营
-      const team = firstWinnerPlayer.team;
-      // 判断升级倍数
-      const upgradeMultiple = this.upgradeMultiple;
-      this.oldHomeTeamCard = this.homeTeamCard;
-      this.oldAwayTeamCard = this.awayTeamCard;
-
-      const nextLevelCard = this.getNextLevelCard();
-
-      // 给赢家队伍升级级牌
-      if (team === 0) {
-        // 判断当用户级牌已经封顶，判断是否过级牌
-        if (this.homeTeamCard === nextLevelCard) {
-          const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
-
-          // 如果用户头游并且不是末游，则游戏结束
-          if(winOrderList.includes(1) && !winOrderList.includes(4)) {
-            this.isAllOver = true;
-          }
-        } else {
-          this.homeTeamCard = (this.homeTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.homeTeamCard + upgradeMultiple);
-          this.currentLevelCard = this.homeTeamCard;
-        }
-      }
-
-      if (team === 1) {
-        if (this.awayTeamCard === nextLevelCard) {
-          const winOrderList = this.winOrderLists.filter(p => p.team === 1).map(p => p.winOrder);
-
-          // 如果用户头游并且不是末游，则游戏结束
-          if(winOrderList.includes(1) && !winOrderList.includes(4)) {
-            this.isAllOver = true;
-          }
-        } else {
-          this.awayTeamCard = (this.awayTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.awayTeamCard + upgradeMultiple);
-          this.currentLevelCard = this.awayTeamCard;
-        }
-      }
-
-      console.warn("firstWinnerPlayer %s team %s oldHomeTeamCard %s homeTeamCard %s oldAwayTeamCard %s awayTeamCard %s currentLevelCard %s", firstWinnerPlayer, team, this.oldHomeTeamCard,
-        this.homeTeamCard, this.oldAwayTeamCard, this.awayTeamCard, this.currentLevelCard);
-    }
-
-
-
     await this.announcePlayerJoin(thePlayer);
 
     return true;
@@ -538,7 +490,7 @@ class Room extends RoomBase {
     }
 
     if ([4, 6].includes(this.rule.juShu)) {
-      return 14;
+      return 5;
     }
 
     return 1;
@@ -733,7 +685,55 @@ class Room extends RoomBase {
   }
 
   isRoomAllOver(): boolean {
-    return this.game.isAllOver()
+    return this.isAllOver
+  }
+
+  calcLevelCard() {
+    // 计算级牌升级
+    const firstWinnerPlayer = this.winOrderLists.find(p => p.winOrder === 1);
+    if (firstWinnerPlayer) {
+      // 判断用户属于哪个阵营
+      const team = firstWinnerPlayer.team;
+      // 判断升级倍数
+      const upgradeMultiple = this.upgradeMultiple;
+      this.oldHomeTeamCard = this.homeTeamCard;
+      this.oldAwayTeamCard = this.awayTeamCard;
+
+      const nextLevelCard = this.getNextLevelCard();
+
+      // 给赢家队伍升级级牌
+      if (team === 0) {
+        // 判断当用户级牌已经封顶，判断是否过级牌
+        if (this.homeTeamCard === nextLevelCard) {
+          const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
+
+          // 如果用户头游并且不是末游，则游戏结束
+          if(winOrderList.includes(1) && !winOrderList.includes(4)) {
+            this.isAllOver = true;
+          }
+        } else {
+          this.homeTeamCard = (this.homeTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.homeTeamCard + upgradeMultiple);
+          this.currentLevelCard = this.homeTeamCard;
+        }
+      }
+
+      if (team === 1) {
+        if (this.awayTeamCard === nextLevelCard) {
+          const winOrderList = this.winOrderLists.filter(p => p.team === 1).map(p => p.winOrder);
+
+          // 如果用户头游并且不是末游，则游戏结束
+          if(winOrderList.includes(1) && !winOrderList.includes(4)) {
+            this.isAllOver = true;
+          }
+        } else {
+          this.awayTeamCard = (this.awayTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.awayTeamCard + upgradeMultiple);
+          this.currentLevelCard = this.awayTeamCard;
+        }
+      }
+
+      console.warn("firstWinnerPlayer %s team %s oldHomeTeamCard %s homeTeamCard %s oldAwayTeamCard %s awayTeamCard %s currentLevelCard %s", firstWinnerPlayer, team, this.oldHomeTeamCard,
+        this.homeTeamCard, this.oldAwayTeamCard, this.awayTeamCard, this.currentLevelCard);
+    }
   }
 
   async gameOver(states, firstPlayerId) {
@@ -758,6 +758,7 @@ class Room extends RoomBase {
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents(), firstPlayerId)
     await this.charge();
+    this.calcLevelCard();
 
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)

@@ -607,7 +607,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   // 选择房费支付人
   async charge() {
     if (!config.game.useGem) {
-      // 球扣房卡
+      // 不扣房卡
       this.charged = true;
       return;
     }
