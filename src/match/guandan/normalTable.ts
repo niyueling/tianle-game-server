@@ -366,7 +366,7 @@ export default class NormalTable extends Table {
 
   destroy() {
     super.destroy()
-    this.state = 'gameOver'
+    this.state = 'gameOver';
   }
 
   // 记录金豆
