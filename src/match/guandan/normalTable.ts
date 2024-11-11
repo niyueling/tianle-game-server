@@ -246,29 +246,14 @@ export default class NormalTable extends Table {
         } : await p.statusForOther(this));
     }
 
-    const soloPlayer = this.players[this.soloPlayerIndex]
-
-    let redPocketsData = null
-    let validPlayerRedPocket = null
-    if (this.room.isHasRedPocket) {
-      redPocketsData = this.room.redPockets;
-      validPlayerRedPocket = this.room.vaildPlayerRedPocketArray;
-    }
-
     return {
       mode: this.mode,
-      friendCard: this.friendCard,
-      soloPlayerIndex: this.soloPlayerIndex,
-      soloPlayerName: soloPlayer && soloPlayer.model.nickname,
       currentPlayer: this.status.current.seatIndex,
       lastPattern: this.status.lastPattern,
       isGameRunning: this.state === 'gameOver',
       lastIndex: this.status.lastIndex,
-      fen: this.status.fen,
       from: this.status.from,
       foundFriend: this.foundFriend,
-      redPocketsData,
-      validPlayerRedPocket,
       index,
       juIndex,
       stateData,
