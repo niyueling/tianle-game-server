@@ -498,7 +498,7 @@ abstract class Table implements Serializable {
   daPai(player: PlayerState, cards: Card[], pattern: IPattern, onDeposit?) {
 
     player.daPai(cards.slice(), pattern)
-    const remains = player.remains
+    const remains = player.remains;
 
     this.status.from = this.status.current.seatIndex;
     this.status.lastPattern = pattern;

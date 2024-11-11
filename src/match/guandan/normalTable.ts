@@ -49,10 +49,11 @@ export default class NormalTable extends Table {
   }
 
   async startFaPai(payload) {
-    if (this.room.gameRule.isPublic && this.rule.shuffleType === 2) {
-      // 金豆房发牌
+    if (this.rule.shuffleType === 2) {
+      // 不洗牌
       await this.publicRoomFapai();
     } else {
+      // 随机发牌
       await this.fapai(payload);
     }
 
@@ -302,7 +303,7 @@ export default class NormalTable extends Table {
 
     let score = 1;
     if (teamOrder[0] === teamOrder[1]) {
-      score = 4;
+      score = (this.rule.upgrade === 1 ? 3 : 4);
     }
 
     if (teamOrder[0] === teamOrder[2]) {
@@ -358,10 +359,10 @@ export default class NormalTable extends Table {
       awayTeam: this.awayTeamPlayers().map(p => p.index),
       creator: this.room.creator.model._id,
     }
-    this.room.broadcast('game/gameOverReply', {ok: true, data: gameOverMsg})
-    this.stateData.gameOver = gameOverMsg
-    const firstPlayer = this.players.slice().sort((p1, p2) => p1.winOrder - p2.winOrder)[0]
-    await this.roomGameOver(states, firstPlayer._id)
+    this.room.broadcast('game/gameOverReply', {ok: true, data: gameOverMsg});
+    this.stateData.gameOver = gameOverMsg;
+    const firstPlayer = this.players.slice().sort((p1, p2) => p1.winOrder - p2.winOrder)[0];
+    await this.roomGameOver(states, firstPlayer._id);
   }
 
   destroy() {
@@ -372,8 +373,19 @@ export default class NormalTable extends Table {
   // 记录金豆
   async recordRubyReward() {
     if (!this.room.isPublic) {
+      // 计算好友房分数
+      for (let i = 0; i < this.players.length; i++) {
+        const p = this.players[i];
+        if (p) {
+          const base = this.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
+          // 基础倍率
+          p.balance = base * this.multiple * this.upgradeMultiple;
+        }
+      }
+
       return null;
     }
+
     // 金豆房记录奖励
     await this.getBigWinner();
   }

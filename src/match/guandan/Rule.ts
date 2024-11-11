@@ -21,8 +21,7 @@ class Rule {
 
   // 局数, 过5：1，过8：2，过10：3， 过A：4， 3把不过回2：5, 随机级牌：6
   get juShu() {
-    // return this.ro.juShu || 6;
-    return 6;
+    return this.ro.juShu || 6;
   }
 
   // 升级，双下升3级：2，双下升4级:2
