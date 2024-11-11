@@ -478,15 +478,15 @@ class Room extends RoomBase {
       const team = firstWinnerPlayer.team;
       // 判断升级倍数
       const upgradeMultiple = this.upgradeMultiple;
+      this.oldHomeTeamCard = this.homeTeamCard;
+      this.oldAwayTeamCard = this.awayTeamCard;
 
       // 给赢家队伍升级级牌
       if (team === 0) {
-        this.oldHomeTeamCard = this.homeTeamCard;
         this.homeTeamCard += upgradeMultiple;
         this.currentLevelCard = this.homeTeamCard;
       }
       if (team === 1) {
-        this.oldAwayTeamCard = this.awayTeamCard;
         this.awayTeamCard += upgradeMultiple;
         this.currentLevelCard = this.awayTeamCard;
       }
