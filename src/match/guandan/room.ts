@@ -477,6 +477,7 @@ class Room extends RoomBase {
   }
 
   getNextLevelCard() {
+    console.warn("juShu %s", this.gameRule.juShu);
     if (this.gameRule.juShu === 1) {
       return 5;
     }
