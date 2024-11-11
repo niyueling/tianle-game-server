@@ -29,14 +29,15 @@ export default class NormalTable extends Table {
     return "guandan"
   }
 
-  async start() {
+  async start(payload) {
+    this.faPaiPayload = payload;
     this.room.broadcast("game/openLevelCard", {ok: true, data: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard}})
 
     const faPaiFunc = async() => {
       if (this.rule.allowDouble) {
         await this.broadcastModeRequest();
       } else {
-        await this.startFaPai();
+        await this.startFaPai(payload);
         this.nextAction = this.startTeamworkGame;
         this.next();
       }
@@ -47,12 +48,12 @@ export default class NormalTable extends Table {
     setTimeout(faPaiFunc, 1000);
   }
 
-  async startFaPai() {
+  async startFaPai(payload) {
     if (this.room.gameRule.isPublic && this.rule.shuffleType === 2) {
       // 金豆房发牌
       await this.publicRoomFapai();
     } else {
-      await this.fapai();
+      await this.fapai(payload);
     }
 
     for (let i = 0; i < this.players.length; i++) {
@@ -147,7 +148,7 @@ export default class NormalTable extends Table {
       }
     }
 
-    await this.startFaPai();
+    await this.startFaPai(this.faPaiPayload);
     this.nextAction = this.startTeamworkGame;
 
     return true

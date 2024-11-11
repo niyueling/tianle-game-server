@@ -50,6 +50,10 @@ class Rule {
     return this.ro.shuffleType || 1;
   }
 
+  get test() {
+    return this.ro.test || false
+  }
+
   // 人数
   get playerCount() {
     return this.ro.playerCount || 4

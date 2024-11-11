@@ -146,6 +146,9 @@ abstract class Table implements Serializable {
   @autoSerialize
   multiple: number = 1
 
+  @autoSerialize
+  faPaiPayload: object = {}
+
   pattern: Pattern
 
   @autoSerialize
@@ -218,7 +221,7 @@ abstract class Table implements Serializable {
 
   abstract name()
 
-  abstract async start()
+  abstract async start(payload)
 
   async initPlayers() {
     const room = this.room
@@ -249,16 +252,27 @@ abstract class Table implements Serializable {
     this.remainCards = this.cards.length
   }
 
-  consumeCard() {
-    const cardIndex = --this.remainCards
-    return this.cards[cardIndex]
+  consumeCard(card) {
+    let cardIndex = -1;
+    if (card) {
+      cardIndex = this.cards.findIndex(c => c.type === card.type && c.point === card.point);
+    }
+
+    if (cardIndex === -1) {
+      cardIndex = --this.remainCards;
+    }
+
+    this.cards.splice(cardIndex, 1);
+    return this.cards[cardIndex];
   }
 
-  takeQuarterCards(p) {
-    const cards = []
+  takeQuarterCards(p, helpCards) {
+    const cards = [];
+    const helpCardCount = helpCards.length;
     for (let i = p.cards.length; i < this.getQuarterCount(); i++) {
-      cards.push(this.consumeCard());
+      cards.push(this.consumeCard(i < helpCardCount ? helpCards[i] : null));
     }
+
     return cards;
   }
 
@@ -266,12 +280,8 @@ abstract class Table implements Serializable {
     return 27;
   }
 
-  async fapai() {
-    await this._fapai()
-
-    if (this.players.some(p => this.haveFourJokers(p)) && this.rollReshuffle()) {
-      await this._fapai()
-    }
+  async fapai(payload) {
+    await this._fapai(payload)
 
     // 分配队友
     if (this.room.game.juIndex === 1) {
@@ -997,16 +1007,16 @@ abstract class Table implements Serializable {
     }, 0)
   }
 
-  private async _fapai() {
+  private async _fapai(payload) {
     if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
-      this.initCards()
+      this.initCards();
     }
-    this.shuffle()
-    this.stateData = {}
+    this.shuffle();
+    this.stateData = {};
 
     for (let i = 0; i < this.players.length; i++) {
-      const p = this.players[i]
-      p.cards = [...p.cards, ...this.takeQuarterCards(p)];
+      const p = this.players[i];
+      p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards[i] ? payload.cards[i] : [])];
     }
   }
 
