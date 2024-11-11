@@ -42,6 +42,7 @@ export default class Game implements Serializable {
       if (this.rule.juShu === 6) {
         levelCard = getRandomInt(1, 13);
       }
+      console.warn("room.gameRule");
 
       // 如果是过5或者过A,第一局设置级牌为2，如果是测试工具发牌，级牌固定为2
       if (([1, 5].includes(this.rule.juShu) && this.juIndex === 1) || room.gameRule.test) {
