@@ -704,7 +704,7 @@ class Room extends RoomBase {
       // 给赢家队伍升级级牌
       if (team === 0) {
         // 判断当用户级牌已经封顶，判断是否过级牌
-        if (this.homeTeamCard === nextLevelCard) {
+        if (this.homeTeamCard === nextLevelCard || this.homeTeamCard === 1) {
           const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
 
           // 如果用户头游并且不是末游，则游戏结束
@@ -718,7 +718,7 @@ class Room extends RoomBase {
       }
 
       if (team === 1) {
-        if (this.awayTeamCard === nextLevelCard) {
+        if (this.awayTeamCard === nextLevelCard || this.awayTeamCard === 1) {
           const winOrderList = this.winOrderLists.filter(p => p.team === 1).map(p => p.winOrder);
 
           // 如果用户头游并且不是末游，则游戏结束
