@@ -147,6 +147,15 @@ abstract class Table implements Serializable {
   multiple: number = 1
 
   @autoSerialize
+  upgradeMultiple: number = 1;
+
+  @autoSerialize
+  winTeamPlayers: any = [];
+
+  @autoSerialize
+  loseTeamPlayers: any = [];
+
+  @autoSerialize
   faPaiPayload: object = {}
 
   pattern: Pattern
@@ -289,7 +298,7 @@ abstract class Table implements Serializable {
       [],
       []
     ];
-    await this._fapai(payload)
+    await this._fapai(payload);
 
     // 分配队友
     if (this.room.game.juIndex === 1) {

@@ -227,14 +227,6 @@ export default class NormalTable extends Table {
     return Math.pow(2, bombLen - 5);
   }
 
-  calcUnusedJoker() {
-    for (const winner of this.players) {
-      for (const loser of this.players) {
-        winner.winFrom(loser, loser.unusedJokers, 'joker');
-      }
-    }
-  }
-
   async reconnectContent(index, reconnectPlayer: PlayerState) {
     const stateData = this.stateData
     const juIndex = this.room.game.juIndex
@@ -304,41 +296,25 @@ export default class NormalTable extends Table {
   }
 
   teamWorkGameOver() {
-    const playersInWinOrder = this.players.slice().sort((p1, p2) => p1.winOrder - p2.winOrder)
+    const playersInWinOrder = this.players.slice().sort((p1, p2) => p1.winOrder - p2.winOrder);
+    const teamOrder = playersInWinOrder.map(p => p.team);
+    const winTeam = teamOrder[0];
 
-    const teamOrder = playersInWinOrder.map(p => p.team)
-
-    const winTeam = teamOrder[0]
-    const firstWinTeamZhuaFen = this.players.filter(p => p.team === winTeam)
-      .reduce((fen, p) => p.zhuaFen + fen, 0)
-
-    let score;
+    let score = 1;
     if (teamOrder[0] === teamOrder[1]) {
-      score = 2
-    } else {
-      score = 1
-
-      if (playersInWinOrder[1].zhuaFen > 100) {
-        score = -1
-      }
-
-      if (teamOrder[0] === teamOrder[3]) {
-        score = -1
-        if (firstWinTeamZhuaFen >= 100) {
-          score = 1
-        }
-      }
-
+      score = 4;
     }
 
-    const winTeamPlayers = this.players.filter(p => p.team === winTeam)
-    const loseTeamPlayers = this.players.filter(p => p.team !== winTeam)
-
-    for (let i = 0; i < 2; i++) {
-      const winner = winTeamPlayers[i]
-      const loser = loseTeamPlayers[i]
-      winner.winFrom(loser, score)
+    if (teamOrder[0] === teamOrder[2]) {
+      score = 2;
     }
+
+    this.upgradeMultiple = score;
+
+    this.winTeamPlayers = this.players.filter(p => p.team === winTeam);
+    this.loseTeamPlayers = this.players.filter(p => p.team !== winTeam);
+
+    console.warn("winTeamPlayers %s loseTeamPlayers %s", JSON.stringify(this.winTeamPlayers.map(p => p.seatIndex)), JSON.stringify(this.loseTeamPlayers.map(p => p.seatIndex)));
   }
 
   isHomeTeamWin(): boolean {
@@ -346,15 +322,14 @@ export default class NormalTable extends Table {
   }
 
   async gameOver() {
-    console.warn("gameOver state %s", this.state);
     if (this.state === 'gameOver') {
       return
     }
 
-    this.state = 'gameOver'
+    this.state = 'gameOver';
+
     if (this.mode === 'teamwork') {
-      this.calcUnusedJoker()
-      this.teamWorkGameOver()
+      this.teamWorkGameOver();
     }
 
     // 计算金豆
