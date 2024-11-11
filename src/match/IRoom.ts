@@ -175,6 +175,10 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   @autoSerialize
   loseTeamPlayers: any = [];
 
+  // 是狗游戏已结束
+  @autoSerialize
+  isAllOver: boolean = false;
+
   // 记录上一局的结束顺序
   winOrderLists: any = [];
 

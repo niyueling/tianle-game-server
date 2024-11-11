@@ -481,15 +481,38 @@ class Room extends RoomBase {
       this.oldHomeTeamCard = this.homeTeamCard;
       this.oldAwayTeamCard = this.awayTeamCard;
 
+      const nextLevelCard = this.getNextLevelCard();
+
       // 给赢家队伍升级级牌
       if (team === 0) {
-        this.homeTeamCard += upgradeMultiple;
-        this.currentLevelCard = this.homeTeamCard;
+        // 判断当用户级牌已经封顶，判断是否过级牌
+        if (this.homeTeamCard === nextLevelCard) {
+          const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
+
+          // 如果用户头游并且不是末游，则游戏结束
+          if(winOrderList.includes(1) && !winOrderList.includes(4)) {
+            this.isAllOver = true;
+          }
+        } else {
+          this.homeTeamCard = (this.homeTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.homeTeamCard + upgradeMultiple);
+          this.currentLevelCard = this.homeTeamCard;
+        }
       }
+
       if (team === 1) {
-        this.awayTeamCard += upgradeMultiple;
-        this.currentLevelCard = this.awayTeamCard;
+        if (this.awayTeamCard === nextLevelCard) {
+          const winOrderList = this.winOrderLists.filter(p => p.team === 1).map(p => p.winOrder);
+
+          // 如果用户头游并且不是末游，则游戏结束
+          if(winOrderList.includes(1) && !winOrderList.includes(4)) {
+            this.isAllOver = true;
+          }
+        } else {
+          this.awayTeamCard = (this.awayTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.awayTeamCard + upgradeMultiple);
+          this.currentLevelCard = this.awayTeamCard;
+        }
       }
+
       console.warn("firstWinnerPlayer %s team %s oldHomeTeamCard %s homeTeamCard %s oldAwayTeamCard %s awayTeamCard %s currentLevelCard %s", firstWinnerPlayer, team, this.oldHomeTeamCard,
         this.homeTeamCard, this.oldAwayTeamCard, this.awayTeamCard, this.currentLevelCard);
     }
@@ -499,6 +522,26 @@ class Room extends RoomBase {
     await this.announcePlayerJoin(thePlayer);
 
     return true;
+  }
+
+  getNextLevelCard() {
+    if (this.rule.juShu === 1) {
+      return 5;
+    }
+
+    if (this.rule.juShu === 2) {
+      return 8;
+    }
+
+    if (this.rule.juShu === 3) {
+      return 10;
+    }
+
+    if ([4, 6].includes(this.rule.juShu)) {
+      return 14;
+    }
+
+    return 1;
   }
 
   onRequestDissolve(player) {
