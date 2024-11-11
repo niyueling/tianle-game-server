@@ -33,6 +33,7 @@ export default class StraightMatcher implements IMatcher {
         } else if (caiShenCount > 0) {
           caiShenCount--;
           lastCard++;
+          i--;
         } else {
           // console.warn("StraightMatcher error 2 %s", JSON.stringify(subtractCards));
           result = null;
@@ -55,6 +56,7 @@ export default class StraightMatcher implements IMatcher {
         } else if (caiShenCount > 0) {
           caiShenCount--;
           lastCard1++;
+          i--;
         } else {
           // console.warn("StraightMatcher error 3 %s", JSON.stringify(subtractCards));
           return null;
