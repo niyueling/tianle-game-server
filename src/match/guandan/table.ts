@@ -8,7 +8,7 @@ import {eqlModelId} from "../modelId"
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serialize, serializeHelp} from "../serializeDecorator"
 import Card, {CardType} from "./card"
 import {manager} from "./cardManager";
-import {groupBy, IPattern, PatterNames, patternCompare} from "./patterns/base"
+import {arraySubtract, groupBy, IPattern, PatterNames, patternCompare} from "./patterns/base"
 import BombMatcher from './patterns/BombMatcher'
 import PlayerState from './player_state'
 import Room from './room'
@@ -378,6 +378,26 @@ abstract class Table implements Serializable {
       return await this.room.gameState.onSelectMode(player, 1);
     }
 
+    // 如果是进还贡
+    if (this.room.gameState.tableState === 'returnTribute') {
+      const cardSlices = player.cards.slice();
+      const sortCard = cardSlices.sort((grp1, grp2) => {
+        return grp2.point - grp1.point
+      });
+      const caiShen = cardSlices.filter(c => c.type === CardType.Heart && c.value === this.room.currentLevelCard);
+      const subtractCards = arraySubtract(sortCard.slice(), caiShen);
+
+      // 进贡
+      if (player.payTributeState) {
+        return await this.room.gameState.onPayTribute(player, {card: subtractCards[0]});
+      }
+
+      // 还贡
+      if (player.returnTributeState) {
+        return await this.room.gameState.onReturnTribute(player, {card: subtractCards[subtractCards.length - 1]});
+      }
+    }
+
     player.onDeposit = true
     player.sendMessage('game/startDeposit', {ok: true, data: {}});
 
@@ -453,7 +473,6 @@ abstract class Table implements Serializable {
       time = 15;
     }
 
-    // 如果处于进还贡状态，托管后自动选择
     if (!this.room.isPublic && !this.rule.ro.autoCommit) {
       return ;
     }
@@ -461,10 +480,15 @@ abstract class Table implements Serializable {
       time = (this.rule.ro.autoCommit + 1) * 1000;
     }
 
-    clearTimeout(this.autoCommitTimer)
+    // 如果处于进还贡状态，托管后自动选择
+    if (this.tableState === 'returnTribute') {
+      time = 30;
+    }
+
+    clearTimeout(this.autoCommitTimer);
     this.autoCommitStartTime = Date.now();
-    const primaryDelayTime = playerIsOndeposit ? 1000 : time * 1000
-    const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime)
+    const primaryDelayTime = playerIsOndeposit ? 1000 : time * 1000;
+    const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime);
     this.autoCommitTimer = setTimeout(async () => {
       await this.autoCommitForPlayers()
     }, delayTime)
@@ -1102,6 +1126,14 @@ abstract class Table implements Serializable {
   }
 
   async onSelectMode(player: PlayerState, multiple = 1) {
+
+  }
+
+  async onPayTribute(player: PlayerState, msg) {
+
+  }
+
+  async onReturnTribute(player: PlayerState, msg) {
 
   }
 }

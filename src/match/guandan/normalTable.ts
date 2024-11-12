@@ -204,7 +204,6 @@ export default class NormalTable extends Table {
 
   nextToStartGame() {
     // 执行换牌逻辑
-
     const startFunc = async () => {
       this.setTeamMate();
       this.setFirstDa(0);
@@ -309,9 +308,9 @@ export default class NormalTable extends Table {
             this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
           }
         }
-
-        this.autoCommitFunc();
       }
+
+      this.autoCommitFunc();
     } else {
       this.nextToStartGame()
     }

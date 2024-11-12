@@ -3,6 +3,8 @@ import {RobotStep} from "@fm/common/constants";
 import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
 import {RobotGuanDan} from "./robotProxy";
+import {CardType} from "./card";
+import {arraySubtract} from "./patterns/base";
 
 export class RobotManager extends NewRobotManager {
   disconnectPlayers: { [key: string]: RobotGuanDan }
@@ -31,19 +33,25 @@ export class RobotManager extends NewRobotManager {
 
     if (this.model.step === RobotStep.selectMode) {
       // 选择模式
-      isOk = await this.isModeSelect();
+      isOk = this.isModeSelect();
+      if (!isOk) {
+        isOk = this.isHumanPlayerSelectMode();
+        if (isOk) {
+          // 离线用户选择
+          console.log('select offline player mode');
+          await this.selectMode();
+        }
+      }
+    }
+
+    if (this.model.step === RobotStep.returnTribute) {
+      // 进还贡
+      isOk = this.isTributeSelect();
       if (isOk) {
         this.model.step = RobotStep.running;
         await this.save();
       } else {
-        isOk = await this.isHumanPlayerSelectMode();
-        if (isOk) {
-          // 离线用户选择
-          console.log('select offline player mode')
-          await this.selectMode();
-          // this.model.step = RobotStep.running;
-          // await this.save();
-        }
+        await this.payAndReturnTribute();
       }
     }
 
@@ -54,8 +62,6 @@ export class RobotManager extends NewRobotManager {
 
   // 为离线用户选择模式
   async selectMode() {
-
-
     // 在线用户都选好模式了
     for (const proxy of Object.values(this.disconnectPlayers)) {
       if (!proxy.playerState || proxy.playerState.isChooseMode) {
@@ -66,6 +72,39 @@ export class RobotManager extends NewRobotManager {
       const random = Math.random();
       if (random < 0.5) {
         await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
+        return true;
+      }
+    }
+
+    return true;
+  }
+
+  // 机器人选择进还贡
+  async payAndReturnTribute() {
+    for (const proxy of Object.values(this.disconnectPlayers)) {
+      if (!proxy.playerState || (proxy.playerState.payTributeState && !proxy.playerState.payTributeCard) || (proxy.playerState.returnTributeState && !proxy.playerState.returnTributeCard)) {
+        continue;
+      }
+
+      const random = Math.random();
+      if (random < 0.5) {
+        const cardSlices = proxy.playerState.cards.slice();
+        const sortCard = cardSlices.sort((grp1, grp2) => {
+          return grp2.point - grp1.point
+        });
+        const caiShen = cardSlices.filter(c => c.type === CardType.Heart && c.value === this.room.currentLevelCard);
+        const subtractCards = arraySubtract(sortCard.slice(), caiShen);
+
+        // 进贡
+        if (proxy.playerState.payTributeState) {
+          return await this.room.gameState.onPayTribute(proxy.playerState, {card: subtractCards[0]});
+        }
+
+        // 还贡
+        if (proxy.playerState.returnTributeState) {
+          return await this.room.gameState.onReturnTribute(proxy.playerState, {card: subtractCards[subtractCards.length - 1]});
+        }
+
         return true;
       }
     }
@@ -104,6 +143,22 @@ export class RobotManager extends NewRobotManager {
     for (const proxy of this.room.gameState.players) {
       if (!proxy.isChooseMode) {
         // 还有人没选模式
+        return false;
+      }
+    }
+    return true;
+  }
+
+  isTributeSelect() {
+    if (!this.room.gameState) {
+      return false;
+    }
+    if (this.model.step === RobotStep.running) {
+      return true;
+    }
+
+    for (const proxy of this.room.gameState.players) {
+      if ((proxy.payTributeState && !proxy.payTributeCard) || (proxy.returnTributeState && !proxy.returnTributeCard)) {
         return false;
       }
     }

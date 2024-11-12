@@ -492,7 +492,7 @@ class Room extends RoomBase {
     }
 
     if ([4, 6].includes(this.gameRule.juShu)) {
-      return 5;
+      return 14;
     }
 
     return 14;
