@@ -44,7 +44,7 @@ export class RobotManager extends NewRobotManager {
       }
     }
 
-    console.warn("step %s", this.model.step);
+    // console.warn("step %s", this.model.step);
     if (this.model.step === RobotStep.returnTribute) {
       // 进还贡
       isOk = this.isTributeSelect();

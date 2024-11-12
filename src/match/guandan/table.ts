@@ -373,32 +373,6 @@ abstract class Table implements Serializable {
       return;
     }
 
-    // 如果是选择加倍，默认选择不加倍
-    if (this.room.gameState.tableState === 'selectMode') {
-      return await this.room.gameState.onSelectMode(player, 1);
-    }
-
-    // 如果是进还贡
-    console.warn("tableState %s payTributeState %s returnTributeState %s", this.room.gameState.tableState, player.payTributeState, player.returnTributeState);
-    if (this.room.gameState.tableState === 'returnTribute') {
-      const cardSlices = player.cards.slice();
-      const sortCard = cardSlices.sort((grp1, grp2) => {
-        return grp2.point - grp1.point
-      });
-      const caiShen = cardSlices.filter(c => c.type === CardType.Heart && c.value === this.room.currentLevelCard);
-      const subtractCards = arraySubtract(sortCard.slice(), caiShen);
-
-      // 进贡
-      if (player.payTributeState) {
-        return await this.room.gameState.onPayTribute(player, {card: subtractCards[0]});
-      }
-
-      // 还贡
-      if (player.returnTributeState) {
-        return await this.room.gameState.onReturnTribute(player, {card: subtractCards[subtractCards.length - 1]});
-      }
-    }
-
     player.onDeposit = true
     player.sendMessage('game/startDeposit', {ok: true, data: {}});
 
@@ -483,7 +457,7 @@ abstract class Table implements Serializable {
 
     // 如果处于进还贡状态，托管后自动选择
     if (this.tableState === 'returnTribute') {
-      time = 30;
+      time = 10;
     }
 
     clearTimeout(this.autoCommitTimer);
@@ -491,8 +465,56 @@ abstract class Table implements Serializable {
     const primaryDelayTime = playerIsOndeposit ? 1000 : time * 1000;
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime);
     this.autoCommitTimer = setTimeout(async () => {
-      await this.autoCommitForPlayers()
+      if (this.tableState === "selectMode") {
+        return await this.autoCommitForPlayerChooseMode();
+      } else if (this.tableState === "returnTribute") {
+        await this.autoCommitForPlayerPayOrReturn();
+      } else {
+        await this.autoCommitForPlayers();
+      }
     }, delayTime)
+  }
+
+  async autoCommitForPlayerChooseMode() {
+    // 如果是进还贡
+    const notChoosePlayers = this.players.filter(p => !p.isChooseMode);
+    for (const player of notChoosePlayers) {
+      if (!player || player.msgDispatcher.isRobot()) {
+        // 忽略机器人
+        continue;
+      }
+
+      return await this.room.gameState.onSelectMode(player, 1);
+    }
+  }
+
+  async autoCommitForPlayerPayOrReturn() {
+    // 如果是进还贡
+    const payAndReturnPlayers = this.players.filter(p => p.payTributeState || p.returnTributeState);
+    for (const player of payAndReturnPlayers) {
+      if (!player || player.msgDispatcher.isRobot()) {
+        // 忽略机器人
+        continue;
+      }
+
+      console.warn("tableState %s payTributeState %s returnTributeState %s", this.room.gameState.tableState, player.payTributeState, player.returnTributeState);
+      const cardSlices = player.cards.slice();
+      const sortCard = cardSlices.sort((grp1, grp2) => {
+        return grp2.point - grp1.point
+      });
+      const caiShen = cardSlices.filter(c => c.type === CardType.Heart && c.value === this.room.currentLevelCard);
+      const subtractCards = arraySubtract(sortCard.slice(), caiShen);
+
+      // 进贡
+      if (player.payTributeState) {
+        return await this.room.gameState.onPayTribute(player, {card: subtractCards[0]});
+      }
+
+      // 还贡
+      if (player.returnTributeState) {
+        return await this.room.gameState.onReturnTribute(player, {card: subtractCards[subtractCards.length - 1]});
+      }
+    }
   }
 
   onPlayerDa(player, {cards: plainCards}, onDeposit?) {
