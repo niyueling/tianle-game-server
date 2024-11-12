@@ -225,11 +225,55 @@ export default class NormalTable extends Table {
             payTributeCard: player.payTributeCard, returnTributeCard: player.returnTributeCard, cards: player.cards.length}});
       }
     }
+
+    const firstWinOrder = this.room.winOrderLists.find(w => w.winOrder === 1);
+    const firstPlayerIndex = this.players.findIndex(p => p._id.toString() === firstWinOrder.playerId.toString());
+    const firstTeamPlayerId = this.players.find(p => p.team === firstWinOrder.team)._id.toString();
+    const firstTeamPlayerWinOrder = this.room.winOrderLists.find(w => w.playerId.toString() === firstTeamPlayerId).winOrder;
+    const lastWinOrder = this.room.winOrderLists.find(w => w.winOrder === 99);
+    const lastPlayerIndex = this.players.findIndex(p => p._id.toString() === lastWinOrder.playerId.toString());
+
+    // 单下，末游先出牌
+    if (firstTeamPlayerWinOrder > 2) {
+      this.nextSeatIndex = lastPlayerIndex;
+    }
+
+    // 双下
+    if (firstTeamPlayerWinOrder === 2) {
+      // 检测进贡的牌，进贡牌大的先出
+      const payPlayers = this.players.filter(p => p.payTributeState).map(p => {
+        return {
+          index: p.seatIndex,
+          payTributeCard: p.payTributeCard
+        }
+      });
+
+      let nextSeatIndex = -1;
+      if (payPlayers[0].payTributeCard.point > payPlayers[1].payTributeCard.point) {
+        nextSeatIndex = payPlayers[0].index;
+      }
+      if (payPlayers[0].payTributeCard.point < payPlayers[1].payTributeCard.point) {
+        nextSeatIndex = payPlayers[1].index;
+      }
+
+      // 如果进贡的牌相同，则上一局头游的上游先出牌
+      if (payPlayers[0].payTributeCard.point === payPlayers[1].payTributeCard.point) {
+        nextSeatIndex = firstPlayerIndex > 0 ? firstPlayerIndex - 1 : 3;
+      }
+
+      this.nextSeatIndex = nextSeatIndex;
+    }
+
+    // 抗贡，头游先出
+    if (this.kangTribute.length) {
+      this.nextSeatIndex = firstPlayerIndex;
+    }
+
     const startFunc = async () => {
       this.tableState = '';
       this.room.robotManager.model.step = RobotStep.running;
       this.setTeamMate();
-      this.setFirstDa(0);
+      this.setFirstDa(this.nextSeatIndex !== -1 ? this.nextSeatIndex : 0);
       this.mode = 'teamwork';
       this.broadcastFirstDa();
     }
@@ -340,10 +384,13 @@ export default class NormalTable extends Table {
         }
       }
 
+      this.kangTribute = kangTribute;
+
       const payAndReturnState = this.players.findIndex(p => p.payTributeState || p.returnTributeState);
       if (payAndReturnState !== -1) {
         this.tableState = "returnTribute";
         this.room.robotManager.model.step = RobotStep.returnTribute;
+
         return this.autoCommitFunc();
       }
     }

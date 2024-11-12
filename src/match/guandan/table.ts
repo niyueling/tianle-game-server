@@ -149,6 +149,12 @@ abstract class Table implements Serializable {
   @autoSerialize
   faPaiPayload: object = {}
 
+  @autoSerialize
+  kangTribute: any[] = []
+
+  @autoSerialize
+  nextSeatIndex: number = -1
+
   pattern: Pattern
 
   @autoSerialize
