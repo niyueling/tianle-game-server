@@ -162,7 +162,7 @@ export default class NormalTable extends Table {
     }
 
     player.payTributeCard = msg.card;
-    this.players[player.seatIndex > 0 ? player.seatIndex - 1 : 3].payTributeCard = msg.card;
+    // this.players[player.seatIndex > 0 ? player.seatIndex - 1 : 3].payTributeCard = msg.card;
     player.record(`pay-tribute`, [msg.card]);
     this.room.broadcast("game/payTributeReply", {ok: true, data: {seatIndex: player.seatIndex, card: msg.card}});
 
@@ -192,7 +192,7 @@ export default class NormalTable extends Table {
     }
 
     player.returnTributeCard = msg.card;
-    this.players[player.seatIndex < 3 ? player.seatIndex + 1 : 0].returnTributeCard = msg.card;
+    // this.players[player.seatIndex < 3 ? player.seatIndex + 1 : 0].returnTributeCard = msg.card;
     player.record(`return-tribute`, [msg.card]);
     this.room.broadcast("game/returnTributeReply", {ok: true, data: {seatIndex: player.seatIndex, card: msg.card}});
 
@@ -203,6 +203,13 @@ export default class NormalTable extends Table {
   }
 
   nextToStartGame() {
+    // 判断进贡牌给谁，抗贡，双下牌大给头游，单下给头游
+    // 单下，末游给头游进贡
+
+    // 双下，如果有抗贡，则末游给头游进贡
+
+    // 双下无抗贡，则进贡大牌给头游，剩下的牌给二游
+
     // 执行换牌逻辑
     for (const player of this.players) {
       if (player.payTributeState || player.returnTributeState) {
@@ -348,9 +355,9 @@ export default class NormalTable extends Table {
 
       // 判断上一把头游用户
       const team = this.room.winOrderLists.find(w => w.winOrder === 1).team;
-      const winPlayerPlayer = this.room.winOrderLists.filter(p => p.team === team);
+      const winPlayers = this.room.winOrderLists.filter(p => p.team === team);
 
-      if (winPlayerPlayer[1].winOrder === 2) {
+      if (winPlayers[1].winOrder === 2) {
         isAllTribute = true;
       }
 
@@ -368,13 +375,9 @@ export default class NormalTable extends Table {
             player.payTributeState = true;
             this.room.broadcast('game/startPayTribute', {ok: true, data: {index: player.seatIndex}});
 
-            if (isAllTribute) {
-              // 向上游进贡
-              const winPlayer = this.players[player.seatIndex > 0 ? player.seatIndex - 1 : 3];
-              winPlayer.returnTributeState = true;
-              this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
-            } else {
-              // 查询头游玩家
+            // 单下，向头游进贡
+            if (!isAllTribute) {
+              // 查询头游玩家,向头游进贡
               const firstOrderPlayer = this.room.winOrderLists.find(p => p.winOrder === 1);
               const firstPlayer = this.players.find(p => p._id.toString() === firstOrderPlayer.playerId.toString());
               firstPlayer.returnTributeState = true;
@@ -385,6 +388,23 @@ export default class NormalTable extends Table {
       }
 
       this.kangTribute = kangTribute;
+      this.isAllTribute = isAllTribute;
+
+      // 双下，向赢家进贡
+      if (isAllTribute) {
+        // 有人抗贡，则只有头游需要还贡
+        if (kangTribute.length) {
+          winPlayers[0].returnTributeState = true;
+          this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayers[0].seatIndex}});
+        } else {
+          // 无人抗贡，则赢家两人都需要还贡
+          for (const player of winPlayers) {
+            const winPlayer = this.players.find(p => p._id.toString() === player.playerId.toString());
+            winPlayer.returnTributeState = true;
+            this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
+          }
+        }
+      }
 
       const payAndReturnState = this.players.findIndex(p => p.payTributeState || p.returnTributeState);
       if (payAndReturnState !== -1) {

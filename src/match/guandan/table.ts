@@ -60,6 +60,7 @@ class Status {
   fen = 0
 }
 
+
 export function cardChangeDebugger<T extends new (...args: any[]) => {
     room: any
     listenPlayer(p: PlayerState): void
@@ -154,6 +155,9 @@ abstract class Table implements Serializable {
 
   @autoSerialize
   nextSeatIndex: number = -1
+
+  @autoSerialize
+  isAllTribute: boolean = false
 
   pattern: Pattern
 
