@@ -190,7 +190,8 @@ export default class NormalTable extends Table {
       }
 
       for (const player of this.players) {
-        const winOrderPlayer = this.room.winOrderLists.find(p => p.playerId === player._id.toString());
+        const winOrderPlayer = this.room.winOrderLists.find(p => p.playerId.toString() === player._id.toString());
+        console.warn("winOrderLists %s winOrderPlayer %s", JSON.stringify(this.room.winOrderLists), JSON.stringify(winOrderPlayer));
 
         // 双下，两个末游要向两个头游进贡一张，单下，末游向头游进贡一张
         if ((isAllTribute && winOrderPlayer.winOrder > 2) || (!isAllTribute && winOrderPlayer.winOrder === 99)) {
