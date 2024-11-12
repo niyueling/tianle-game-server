@@ -326,6 +326,8 @@ export default class NormalTable extends Table {
         }
       }
 
+      const payAndReturnState = this.players.find(p => p.payTributeState || p.returnTributeState);
+
       this.room.robotManager.model.step = RobotStep.returnTribute;
       this.autoCommitFunc();
     } else {
