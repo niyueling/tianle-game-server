@@ -191,7 +191,6 @@ export default class NormalTable extends Table {
 
       for (const player of this.players) {
         const winOrderPlayer = this.room.winOrderLists.find(p => p.playerId.toString() === player._id.toString());
-        console.warn("winOrderLists %s winOrderPlayer %s", JSON.stringify(this.room.winOrderLists), JSON.stringify(winOrderPlayer));
 
         // 双下，两个末游要向两个头游进贡一张，单下，末游向头游进贡一张
         if ((isAllTribute && winOrderPlayer.winOrder > 2) || (!isAllTribute && winOrderPlayer.winOrder === 99)) {
@@ -207,7 +206,7 @@ export default class NormalTable extends Table {
             // 向上游进贡
             const winPlayer = this.players[player.seatIndex > 0 ? player.seatIndex - 1 : 3];
             winPlayer.returnTributeState = true;
-            winPlayer.sendMessage('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
+            this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
           }
         }
 
