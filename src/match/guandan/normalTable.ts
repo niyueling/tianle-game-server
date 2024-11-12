@@ -204,6 +204,12 @@ export default class NormalTable extends Table {
 
   nextToStartGame() {
     // 执行换牌逻辑
+    for (const player of this.players) {
+      if (player.payTributeState || player.returnTributeState) {
+        console.warn("payTributeState %s returnTributeState %s payTributeCard %s returnTributeCard %s",
+          player.payTributeState, player.returnTributeState, JSON.stringify(player.payTributeCard), JSON.stringify(player.returnTributeCard));
+      }
+    }
     const startFunc = async () => {
       this.tableState = '';
       this.room.robotManager.model.step = RobotStep.running;
