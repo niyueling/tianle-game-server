@@ -68,7 +68,7 @@ export default class NormalTable extends Table {
       this.room.broadcast("game/openLevelCard", {ok: true, data: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard}})
     }
 
-    setTimeout(sendLevelCardFunc, 1500);
+    setTimeout(sendLevelCardFunc, 200);
 
     const shuffleData = this.room.shuffleData.map(x => {
       const p = this.players.find(y => y.model._id === x);
@@ -162,6 +162,7 @@ export default class NormalTable extends Table {
     }
 
     player.payTributeCard = msg.card;
+    this.players[player.seatIndex > 0 ? player.seatIndex - 1 : 3].payTributeCard = msg.card;
     player.record(`pay-tribute`, [msg.card]);
     this.room.broadcast("game/payTributeReply", {ok: true, data: {seatIndex: player.seatIndex, card: msg.card}});
 
@@ -191,6 +192,7 @@ export default class NormalTable extends Table {
     }
 
     player.returnTributeCard = msg.card;
+    this.players[player.seatIndex < 3 ? player.seatIndex + 1 : 0].returnTributeCard = msg.card;
     player.record(`return-tribute`, [msg.card]);
     this.room.broadcast("game/returnTributeReply", {ok: true, data: {seatIndex: player.seatIndex, card: msg.card}});
 
