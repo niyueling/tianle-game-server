@@ -161,7 +161,7 @@ export class BackendProcess {
     // 创建规则(红包规则等)
     const rule = await this.lobby.normalizeRule(messageBody.payload.rule)
     // 局数设为 99
-    rule.juShu = -1;
+    // rule.juShu = -1;
     const room = await this.lobby.getAvailablePublicRoom(messageBody.from, Number(roomId), rule, playerModel);
 
     // 检查金豆
