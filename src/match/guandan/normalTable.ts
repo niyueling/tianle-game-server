@@ -1,7 +1,7 @@
-import {GameType} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 import {service} from "../../service/importService";
 import Card, {CardType} from "./card";
-import {IPattern, PatterNames} from "./patterns/base";
+import {arraySubtract, IPattern, PatterNames} from "./patterns/base";
 import PlayerState from "./player_state";
 import Table from "./table";
 import Enums from "./enums";
@@ -137,13 +137,111 @@ export default class NormalTable extends Table {
     }
   }
 
+  async onPayTribute(player: PlayerState, msg) {
+    // 如果用户不需要进贡
+    if (!player.payTributeState) {
+      return player.sendMessage("game/payTributeReply", {ok: false, info: TianleErrorCode.isNeverPayTribute});
+    }
+
+    // 如果手牌种没有用户进贡的牌
+    const index = player.cards.findIndex(c => c.type === msg.card.type && c.point === msg.card.point);
+    if (index === -1) {
+      return player.sendMessage("game/payTributeReply", {ok: false, info: TianleErrorCode.cardIsNotExists});
+    }
+
+    const cardSlices = player.cards.slice();
+    const sortCard = cardSlices.sort((grp1, grp2) => {
+      return grp2.point - grp1.point
+    });
+    const caiShen = cardSlices.filter(c => c.type === CardType.Heart && c.value === this.room.currentLevelCard);
+    const subtractCards = arraySubtract(sortCard.slice(), caiShen);
+
+    // 如果手牌中去掉癞子，进贡的牌不是剩下的牌最大的牌，则进贡失败
+    if (msg.card.point < subtractCards[0].point) {
+      return player.sendMessage("game/payTributeReply", {ok: false, info: TianleErrorCode.cardIsNotMax});
+    }
+
+    player.payTributeCard = msg.card;
+    player.record(`pay-tribute`, [msg.card]);
+    this.room.broadcast("game/payTributeReply", {ok: true, data: {seatIndex: player.seatIndex, card: msg.card}});
+
+    const isOk = await this.canPayAndReturnTribute();
+    if (isOk) {
+      this.nextToStartGame()
+    }
+  }
+
+  async onReturnTribute(player: PlayerState, msg) {
+    // 如果用户不需要还贡
+    if (!player.returnTributeState) {
+      return player.sendMessage("game/returnTributeReply", {ok: false, info: TianleErrorCode.isNeverReturnTribute});
+    }
+
+    // 如果手牌没有用户进贡的牌
+    const index = player.cards.findIndex(c => c.type === msg.card.type && c.point === msg.card.point);
+    if (index === -1) {
+      return player.sendMessage("game/returnTributeReply", {ok: false, info: TianleErrorCode.cardIsNotExists});
+    }
+
+    const isLevelCard = CardType.Heart === msg.card.type && this.room.currentLevelCard === msg.card.value;
+
+    // 规则设置任意牌可还贡，不能还癞子。设置还贡10以下，不能还贡10以上牌型
+    if ((msg.card.point > 10 && this.rule.resoreTribute === 1) || (isLevelCard && this.rule.resoreTribute === 2)) {
+      return player.sendMessage("game/returnTributeReply", {ok: false, info: TianleErrorCode.cardIsInvaid});
+    }
+
+    player.returnTributeCard = msg.card;
+    player.record(`return-tribute`, [msg.card]);
+    this.room.broadcast("game/returnTributeReply", {ok: true, data: {seatIndex: player.seatIndex, card: msg.card}});
+
+    const isOk = await this.canPayAndReturnTribute();
+    if (isOk) {
+      this.nextToStartGame()
+    }
+  }
+
+  nextToStartGame() {
+    // 执行换牌逻辑
+
+    const startFunc = async () => {
+      this.setTeamMate();
+      this.setFirstDa(0);
+      this.mode = 'teamwork';
+      this.broadcastFirstDa();
+    }
+
+    setTimeout(startFunc, 1500);
+  }
+
+  async canPayAndReturnTribute(): Promise<boolean> {
+    for (const player of this.players) {
+      if ((player.payTributeState && !player.payTributeCard) || (player.returnTributeState && !player.returnTributeCard)) {
+        return false;
+      }
+    }
+
+    return true
+  }
+
   listenPlayer(player) {
     super.listenPlayer(player);
     this.listenerOn.push('game/chooseMultiple');
+    this.listenerOn.push('game/payTribute');
+    this.listenerOn.push('game/returnTribute');
 
     player.msgDispatcher.on('game/chooseMultiple', async ({double}) => {
       await this.onSelectMode(player, double);
       this.room.emit('selectMode', {});
+    })
+
+    player.msgDispatcher.on('game/payTribute', async (msg) => {
+      await this.onPayTribute(player, msg);
+      this.room.emit('payTribute', {});
+    })
+
+    player.msgDispatcher.on('game/returnTribute', async (msg) => {
+      await this.onReturnTribute(player, msg);
+      this.room.emit('returnTribute', {});
     })
   }
 
@@ -212,15 +310,9 @@ export default class NormalTable extends Table {
 
         this.autoCommitFunc();
       }
+    } else {
+      this.nextToStartGame()
     }
-    const startFunc = async () => {
-      this.setTeamMate();
-      this.setFirstDa(0);
-      this.mode = 'teamwork';
-      this.broadcastFirstDa();
-    }
-
-    setTimeout(startFunc, 1500);
   }
 
   isGameOver(): boolean {
