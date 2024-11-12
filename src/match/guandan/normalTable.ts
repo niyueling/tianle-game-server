@@ -1,4 +1,4 @@
-import {GameType, TianleErrorCode} from "@fm/common/constants";
+import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {service} from "../../service/importService";
 import Card, {CardType} from "./card";
 import {arraySubtract, IPattern, PatterNames} from "./patterns/base";
@@ -205,6 +205,7 @@ export default class NormalTable extends Table {
   nextToStartGame() {
     // 执行换牌逻辑
     const startFunc = async () => {
+      this.room.robotManager.model.step = RobotStep.running;
       this.setTeamMate();
       this.setFirstDa(0);
       this.mode = 'teamwork';
