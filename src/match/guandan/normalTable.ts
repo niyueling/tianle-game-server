@@ -284,7 +284,6 @@ export default class NormalTable extends Table {
   startTeamworkGame() {
     // 如果非第一局，需要处理进还贡
     if (this.room.game.juIndex > 1) {
-      this.tableState = "returnTribute";
       let isAllTribute = false;
       let kangTribute = [];
 
@@ -326,13 +325,15 @@ export default class NormalTable extends Table {
         }
       }
 
-      const payAndReturnState = this.players.find(p => p.payTributeState || p.returnTributeState);
-
-      this.room.robotManager.model.step = RobotStep.returnTribute;
-      this.autoCommitFunc();
-    } else {
-      this.nextToStartGame()
+      const payAndReturnState = this.players.findIndex(p => p.payTributeState || p.returnTributeState);
+      if (payAndReturnState !== -1) {
+        this.tableState = "returnTribute";
+        this.room.robotManager.model.step = RobotStep.returnTribute;
+        return this.autoCommitFunc();
+      }
     }
+
+    this.nextToStartGame()
   }
 
   isGameOver(): boolean {

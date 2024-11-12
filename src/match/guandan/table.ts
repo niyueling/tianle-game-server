@@ -379,6 +379,7 @@ abstract class Table implements Serializable {
     }
 
     // 如果是进还贡
+    console.warn("tableState %s payTributeState %s returnTributeState %s", this.room.gameState.tableState, player.payTributeState, player.returnTributeState);
     if (this.room.gameState.tableState === 'returnTribute') {
       const cardSlices = player.cards.slice();
       const sortCard = cardSlices.sort((grp1, grp2) => {
