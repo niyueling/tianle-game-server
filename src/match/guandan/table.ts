@@ -452,6 +452,8 @@ abstract class Table implements Serializable {
     if (this.tableState !== 'selectMode') {
       time = 15;
     }
+
+    // 如果处于进还贡状态，托管后自动选择
     if (!this.room.isPublic && !this.rule.ro.autoCommit) {
       return ;
     }

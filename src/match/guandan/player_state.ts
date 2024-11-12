@@ -119,6 +119,12 @@ class PlayerState implements Serializable {
   @autoSerialize
   foundFriend: boolean = false
 
+  @autoSerialize
+  payTributeState: boolean = false
+
+  @autoSerialize
+  returnTributeState: boolean = false
+
   // 已经出掉的牌
   @autoSerialize
   dropped: any[]

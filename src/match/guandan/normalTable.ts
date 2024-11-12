@@ -1,7 +1,7 @@
 import {GameType} from "@fm/common/constants";
 import {service} from "../../service/importService";
 import Card, {CardType} from "./card";
-import {groupBy, IPattern, PatterNames} from "./patterns/base";
+import {IPattern, PatterNames} from "./patterns/base";
 import PlayerState from "./player_state";
 import Table from "./table";
 import Enums from "./enums";
@@ -175,6 +175,44 @@ export default class NormalTable extends Table {
   }
 
   startTeamworkGame() {
+    // 如果非第一局，需要处理进还贡
+    if (this.room.game.juIndex > 1) {
+      this.tableState = "returnTribute";
+      let isAllTribute = false;
+      let kangTribute = [];
+
+      // 判断上一把头游用户
+      const team = this.room.winOrderLists.find(w => w.winOrder === 1).team;
+      const winPlayerPlayer = this.room.winOrderLists.filter(p => p.team === team);
+
+      if (winPlayerPlayer[1].winOrder === 2) {
+        isAllTribute = true;
+      }
+
+      for (const player of this.players) {
+        const winOrderPlayer = this.room.winOrderLists.find(p => p.playerId === player._id.toString());
+
+        // 双下，两个末游要向两个头游进贡一张，单下，末游向头游进贡一张
+        if ((isAllTribute && winOrderPlayer.winOrder > 2) || (!isAllTribute && winOrderPlayer.winOrder === 99)) {
+          // 如果用户有两个大王可抗贡
+          const maxJokerCount = player.cards.filter(c => c.type === CardType.Joker && c.point === 17).length;
+          if (maxJokerCount === 2) {
+            kangTribute.push(player._id);
+            this.room.broadcast('game/conflicteTribute', {ok: true, data: {index: player.seatIndex}});
+          } else {
+            player.payTributeState = true;
+            this.room.broadcast('game/startPayTribute', {ok: true, data: {index: player.seatIndex}});
+
+            // 向上游进贡
+            const winPlayer = this.players[player.seatIndex > 0 ? player.seatIndex - 1 : 3];
+            winPlayer.returnTributeState = true;
+            winPlayer.sendMessage('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
+          }
+        }
+
+        this.autoCommitFunc();
+      }
+    }
     const startFunc = async () => {
       this.setTeamMate();
       this.setFirstDa(0);
