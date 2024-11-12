@@ -312,6 +312,7 @@ export default class NormalTable extends Table {
         }
       }
 
+      this.room.robotManager.model.step = RobotStep.returnTribute;
       this.autoCommitFunc();
     } else {
       this.nextToStartGame()
