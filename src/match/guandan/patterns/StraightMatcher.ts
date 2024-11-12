@@ -5,7 +5,7 @@ export default class StraightMatcher implements IMatcher {
 
   verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length === 5) {
-      const copyCards = cards.slice().sort(Card.compare)
+      const copyCards = cards.slice().sort(Card.compare);
 
       // 如果癞子除外都是同一个花色，则为同花顺，不是顺子
       const levelCards = copyCards.filter(card => card.type === CardType.Heart && card.value === levelCard);

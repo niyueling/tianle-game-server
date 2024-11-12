@@ -208,6 +208,21 @@ export default class NormalTable extends Table {
       if (player.payTributeState || player.returnTributeState) {
         console.warn("payTributeState %s returnTributeState %s payTributeCard %s returnTributeCard %s",
           player.payTributeState, player.returnTributeState, JSON.stringify(player.payTributeCard), JSON.stringify(player.returnTributeCard));
+
+        if (player.payTributeState) {
+          const payTributeCardIndex = player.cards.findIndex(c => c.type === player.payTributeCard.type && c.point === player.payTributeCard.point);
+          player.cards.splice(payTributeCardIndex, 1);
+          player.cards.push(player.returnTributeCard);
+        }
+
+        if (player.returnTributeState) {
+          const returnTributeCardIndex = player.cards.findIndex(c => c.type === player.returnTributeCard.type && c.point === player.returnTributeCard.point);
+          player.cards.splice(returnTributeCardIndex, 1);
+          player.cards.push(player.payTributeCard);
+        }
+
+        this.room.broadcast("game/payAndReturnCards", {ok: true, data: {type: player.payTributeState ? "pay" : "return",
+            payTributeCard: player.payTributeCard, returnTributeCard: player.returnTributeCard, cards: player.cards.length}});
       }
     }
     const startFunc = async () => {
