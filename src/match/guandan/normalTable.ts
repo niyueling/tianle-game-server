@@ -221,7 +221,7 @@ export default class NormalTable extends Table {
           player.cards.push(player.payTributeCard);
         }
 
-        this.room.broadcast("game/payAndReturnCards", {ok: true, data: {type: player.payTributeState ? "pay" : "return",
+        this.room.broadcast("game/payAndReturnCards", {ok: true, data: {player: player.seatIndex, type: player.payTributeState ? "pay" : "return",
             payTributeCard: player.payTributeCard, returnTributeCard: player.returnTributeCard, cards: player.cards.length}});
       }
     }
