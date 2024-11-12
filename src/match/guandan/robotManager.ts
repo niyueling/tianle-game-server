@@ -44,9 +44,11 @@ export class RobotManager extends NewRobotManager {
       }
     }
 
+    console.warn("step %s", this.model.step);
     if (this.model.step === RobotStep.returnTribute) {
       // 进还贡
       isOk = this.isTributeSelect();
+      console.warn("isOk %s", isOk);
       if (isOk) {
         this.model.step = RobotStep.running;
         await this.save();
@@ -82,30 +84,32 @@ export class RobotManager extends NewRobotManager {
   // 机器人选择进还贡
   async payAndReturnTribute() {
     for (const proxy of Object.values(this.disconnectPlayers)) {
-      if (!proxy.playerState || (proxy.playerState.payTributeState && !proxy.playerState.payTributeCard) || (proxy.playerState.returnTributeState && !proxy.playerState.returnTributeCard)) {
+      if (!proxy.playerState) {
         continue;
       }
 
-      const random = Math.random();
-      if (random < 0.5) {
-        const cardSlices = proxy.playerState.cards.slice();
-        const sortCard = cardSlices.sort((grp1, grp2) => {
-          return grp2.point - grp1.point
-        });
-        const caiShen = cardSlices.filter(c => c.type === CardType.Heart && c.value === this.room.currentLevelCard);
-        const subtractCards = arraySubtract(sortCard.slice(), caiShen);
+      if ((proxy.playerState.payTributeState && !proxy.playerState.payTributeCard) || (proxy.playerState.returnTributeState && !proxy.playerState.returnTributeCard)) {
+        const random = Math.random();
+        if (random < 0.5) {
+          const cardSlices = proxy.playerState.cards.slice();
+          const sortCard = cardSlices.sort((grp1, grp2) => {
+            return grp2.point - grp1.point
+          });
+          const caiShen = cardSlices.filter(c => c.type === CardType.Heart && c.value === this.room.currentLevelCard);
+          const subtractCards = arraySubtract(sortCard.slice(), caiShen);
 
-        // 进贡
-        if (proxy.playerState.payTributeState) {
-          return await this.room.gameState.onPayTribute(proxy.playerState, {card: subtractCards[0]});
+          // 进贡
+          if (proxy.playerState.payTributeState) {
+            return await this.room.gameState.onPayTribute(proxy.playerState, {card: subtractCards[0]});
+          }
+
+          // 还贡
+          if (proxy.playerState.returnTributeState) {
+            return await this.room.gameState.onReturnTribute(proxy.playerState, {card: subtractCards[subtractCards.length - 1]});
+          }
+
+          return true;
         }
-
-        // 还贡
-        if (proxy.playerState.returnTributeState) {
-          return await this.room.gameState.onReturnTribute(proxy.playerState, {card: subtractCards[subtractCards.length - 1]});
-        }
-
-        return true;
       }
     }
 

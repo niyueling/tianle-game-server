@@ -205,6 +205,7 @@ export default class NormalTable extends Table {
   nextToStartGame() {
     // 执行换牌逻辑
     const startFunc = async () => {
+      this.tableState = '';
       this.room.robotManager.model.step = RobotStep.running;
       this.setTeamMate();
       this.setFirstDa(0);
