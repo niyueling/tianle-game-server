@@ -310,10 +310,18 @@ export default class NormalTable extends Table {
             player.payTributeState = true;
             this.room.broadcast('game/startPayTribute', {ok: true, data: {index: player.seatIndex}});
 
-            // 向上游进贡
-            const winPlayer = this.players[player.seatIndex > 0 ? player.seatIndex - 1 : 3];
-            winPlayer.returnTributeState = true;
-            this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
+            if (isAllTribute) {
+              // 向上游进贡
+              const winPlayer = this.players[player.seatIndex > 0 ? player.seatIndex - 1 : 3];
+              winPlayer.returnTributeState = true;
+              this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
+            } else {
+              // 查询头游玩家
+              const firstOrderPlayer = this.room.winOrderLists.find(p => p.winOrder === 1);
+              const firstPlayer = this.players.find(p => p._id.toString() === firstOrderPlayer.playerId.toString());
+              firstPlayer.returnTributeState = true;
+              this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: firstPlayer.seatIndex}});
+            }
           }
         }
       }
