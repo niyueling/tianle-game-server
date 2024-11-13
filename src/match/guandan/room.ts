@@ -698,13 +698,13 @@ class Room extends RoomBase {
 
       // 给赢家队伍升级级牌
       if (team === 0) {
-        // 判断当用户级牌已经封顶，判断是否过级牌
+        // 判断我方级牌已经封顶，判断是否过级牌
         if (this.homeTeamCard === nextLevelCard || this.homeTeamCard === 1) {
           const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
 
           // 如果用户头游并且不是末游，则游戏结束
           if(winOrderList.includes(1) && !winOrderList.includes(4)) {
-            this.isAllOver = true;
+            return this.isAllOver = true;
           }
 
           // 如果用户过牌失败，记录过牌失败次数
@@ -721,6 +721,16 @@ class Room extends RoomBase {
           this.homeTeamCard = (this.homeTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.homeTeamCard + upgradeMultiple);
           this.currentLevelCard = this.homeTeamCard;
         }
+
+        // 如果对手级牌已经封顶，则过牌失败次数
+        if (this.awayTeamCard === nextLevelCard || this.awayTeamCard === 1) {
+          this.awayFailCount++;
+
+          if (this.awayFailCount === 3) {
+            this.awayFailCount = 0;
+            this.awayTeamCard = 2;
+          }
+        }
       }
 
       if (team === 1) {
@@ -729,7 +739,7 @@ class Room extends RoomBase {
 
           // 如果用户头游并且不是末游，则游戏结束
           if(winOrderList.includes(1) && !winOrderList.includes(4)) {
-            this.isAllOver = true;
+            return this.isAllOver = true;
           }
 
           // 如果用户过牌失败，记录过牌失败次数
@@ -745,6 +755,16 @@ class Room extends RoomBase {
         } else {
           this.awayTeamCard = (this.awayTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.awayTeamCard + upgradeMultiple);
           this.currentLevelCard = this.awayTeamCard;
+        }
+
+        // 如果对手级牌已经封顶，则过牌失败次数
+        if (this.homeTeamCard === nextLevelCard || this.homeTeamCard === 1) {
+          this.homeFailCount++;
+
+          if (this.homeFailCount === 3) {
+            this.homeFailCount = 0;
+            this.homeTeamCard = 2;
+          }
         }
       }
 
