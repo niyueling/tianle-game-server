@@ -477,7 +477,7 @@ abstract class Table implements Serializable {
     const primaryDelayTime = playerIsOndeposit ? 1500 : time * 1000;
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime);
     this.autoCommitTimer = setTimeout(async () => {
-      console.warn("tableState %s  currentSearIndex %s", this.tableState, this.currentPlayerStep);
+      console.warn("tableState %s step %s currentSearIndex %s", this.tableState, this.room.robotManager.model.step, this.currentPlayerStep);
       if (this.tableState === "selectMode") {
         return await this.autoCommitForPlayerChooseMode();
       } else if (this.tableState === "returnTribute") {
