@@ -23,6 +23,7 @@ import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
 import Player from "../../database/models/player";
 import {stateGameOver} from "./table";
+import RoomTimeRecord from "../../database/models/roomTimeRecord";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -369,6 +370,20 @@ class Room extends RoomBase {
     await this.redisClient.hdelAsync("canJoinRooms", this._id);
 
     const startGame = async() => {
+      let m = await RoomTimeRecord.findOne({ roomId: this._id });
+      if (m) {
+        m.juIndex = this.game.juIndex;
+        m.createAt = new Date();
+        await m.save();
+      } else {
+        await RoomTimeRecord.create({
+          roomId: this._id,
+          rule: this.gameRule,
+          category: this.gameRule.type,
+          juIndex: this.game.juIndex
+        })
+      }
+
       this.broadcast('room/startGame', {ok: true, data: {
           juIndex: this.game.juIndex,
           playersPosition: this.players.filter(x => x).map(x => x.model),

@@ -17,6 +17,8 @@ import {autoSerialize, Serializable, serialize, serializeHelp} from "./serialize
 import {eqlModelId} from "./pcmajiang/modelId";
 import createClient from "../utils/redis";
 import {stateGameOver} from "./xmmajiang/table_state";
+import {RoomInfoModel} from "../database/models/roomInfo";
+import RoomTimeRecord from "../database/models/roomTimeRecord";
 
 export const playerInClub = async (clubShortId: string, playerId: string) => {
   if (!clubShortId) {
@@ -318,11 +320,11 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   async startNewGame(payload) {
-    this.destroyOldGame()
-    const gameState = this.game.startGame(this)
-    this.gameState = gameState
-    await gameState.start(payload)
-    await this.broadcastStartGame(payload)
+    this.destroyOldGame();
+    const gameState = this.game.startGame(this);
+    this.gameState = gameState;
+    await gameState.start(payload);
+    await this.broadcastStartGame(payload);
   }
 
   async broadcastStartGame(payload) {
@@ -332,6 +334,20 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     await this.redisClient.hdelAsync("canJoinRooms", this._id);
 
     const startGame = async() => {
+      let m = await RoomTimeRecord.findOne({ roomId: this._id });
+      if (m) {
+        m.juIndex = this.game.juIndex;
+        m.createAt = new Date();
+        await m.save();
+      } else {
+        await RoomTimeRecord.create({
+          roomId: this._id,
+          rule: this.gameRule,
+          category: this.gameRule.type,
+          juIndex: this.game.juIndex
+        })
+      }
+
       this.broadcast('room/startGame', {ok: true, data: {
           juIndex: this.game.juIndex,
           playersPosition: this.players.filter(x => x).map(x => x.model),

@@ -14,6 +14,7 @@ import createClient from "./utils/redis";
 import {GameType, TianleErrorCode} from "@fm/common/constants";
 import GameCategory from "./database/models/gameCategory";
 import PlayerCardTable from "./database/models/PlayerCardTable";
+import RoomTimeRecord from "./database/models/roomTimeRecord";
 
 const alwaysOk = () => true
 
