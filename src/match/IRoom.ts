@@ -340,7 +340,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
         m.createAt = new Date();
         await m.save();
       } else {
-        console.log(this.gameRule)
         await RoomTimeRecord.create({
           roomId: this._id,
           rule: this.gameRule,
