@@ -719,6 +719,7 @@ class Room extends RoomBase {
             this.homeFailCount++;
 
             if (this.homeFailCount === 3) {
+              this.homeFailCount = 0;
               this.homeTeamCard = 2;
               this.currentLevelCard = this.homeTeamCard;
             }
@@ -743,6 +744,7 @@ class Room extends RoomBase {
             this.awayFailCount++;
 
             if (this.awayFailCount === 3) {
+              this.awayFailCount = 0;
               this.awayTeamCard = 2;
               this.currentLevelCard = this.awayTeamCard;
             }
