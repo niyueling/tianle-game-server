@@ -305,8 +305,8 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.playersOrder = this.players.slice();
     this.snapshot = this.players.slice();
     this.isPlayAgain = false;
-    this.destroyOldGame()
-    await this.startNewGame(payload)
+    this.destroyOldGame();
+    await this.startNewGame(payload);
     this.isHasRedPocket = false;
     // 保存游戏开始信息
     return service.roomRegister.saveRoomInfoToRedis(this)
@@ -340,6 +340,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
         m.createAt = new Date();
         await m.save();
       } else {
+        console.log(this.gameRule)
         await RoomTimeRecord.create({
           roomId: this._id,
           rule: this.gameRule,
