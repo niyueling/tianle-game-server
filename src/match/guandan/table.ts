@@ -557,10 +557,22 @@ abstract class Table implements Serializable {
     this.status.lastCards = cards;
     this.status.fen += this.fenInCards(cards);
 
-    if (pattern.name === PatterNames.bomb) {
+    if (pattern.name === PatterNames.bomb || pattern.name === PatterNames.straightFlush) {
       player.recordBomb(pattern);
       const usedJoker = pattern.cards.filter(c => c.type === CardType.Joker).length;
       player.unusedJokers -= usedJoker;
+
+      // 如果炸弹需要翻倍
+      if (this.rule.allowBombDouble) {
+        const firstWinPlayer = this.players.find(p => p.winOrder === 1);
+        const multiple = this.calcBombCardsMultiple(pattern.cards);
+
+        // 如果没人头游，或者是头游的队友，计算翻倍
+        if (!firstWinPlayer || (firstWinPlayer && firstWinPlayer.team === player.team)) {
+          this.multiple = this.multiple * multiple;
+          this.room.broadcast("game/gameMultipleChange", {ok: true, data: {multiple: this.multiple, changeMultiple: multiple}});
+        }
+      }
     }
 
     let teamMateCards = [];
@@ -613,6 +625,24 @@ abstract class Table implements Serializable {
       this.status.current.seatIndex = -1
       console.log('game over set seatIndex -1');
       this.gameOver()
+    }
+  }
+
+  calcBombCardsMultiple(cards) {
+    const cardCount = cards.length;
+    const jokerCardCount = cards.filter(c => c.type === CardType.Joker).length;
+
+    // 8星以下炸弹和同花顺，翻2倍
+    if (cardCount < 8 && jokerCardCount !== 4) {
+      return 2;
+    }
+
+    if (cardCount >= 8) {
+      return 3;
+    }
+
+    if (jokerCardCount === 4) {
+      return 5;
     }
   }
 
