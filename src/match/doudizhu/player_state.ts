@@ -386,7 +386,7 @@ class PlayerState implements Serializable {
       this.timeoutTask = setTimeout(() => {
         callback()
         this.timeoutTask = null
-      }, isRobot ? random(500, 1500) : 1000)
+      }, isRobot ? random(1500, 2000) : 1500)
     }
   }
 

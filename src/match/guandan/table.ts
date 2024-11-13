@@ -474,7 +474,7 @@ abstract class Table implements Serializable {
 
     clearTimeout(this.autoCommitTimer);
     this.autoCommitStartTime = Date.now();
-    const primaryDelayTime = playerIsOndeposit ? 1000 : time * 1000;
+    const primaryDelayTime = playerIsOndeposit ? 1500 : time * 1000;
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime);
     this.autoCommitTimer = setTimeout(async () => {
       if (this.tableState === "selectMode") {

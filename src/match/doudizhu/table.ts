@@ -367,11 +367,11 @@ abstract class Table implements Serializable {
         p.sendMessage("game/multipleChange", {ok: true, data: {seatIndex: p.index, multiple: p.multiple, changeMultiple: 2}});
       });
       const usedJoker = pattern.cards.filter(c => c.type === CardType.Joker).length
-      player.unusedJokers -= usedJoker
+      player.unusedJokers -= usedJoker;
     }
-    let teamMateCards = []
+    let teamMateCards = [];
     if (remains === 0) {
-      player.winOrder = this.status.winOrder++
+      player.winOrder = this.status.winOrder++;
       teamMateCards = this.teamMateCards(player)
     }
     this.moveToNext(true)
