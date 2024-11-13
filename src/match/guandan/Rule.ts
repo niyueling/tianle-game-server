@@ -41,13 +41,12 @@ class Rule {
 
   // 是否允许加倍
   get allowDouble() {
-    // return this.ro.allowDouble || false;
-    return false;
+    return this.ro.allowDouble || false;
   }
 
   // 炸弹允许翻倍
   get allowBombDouble() {
-    return this.ro.allowDouble || false;
+    return this.ro.allowBombDouble || false;
   }
 
   // 发牌，随即发牌：1， 不洗牌：2
