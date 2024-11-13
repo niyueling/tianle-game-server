@@ -294,7 +294,7 @@ export default class NormalTable extends Table {
 
       const firstWinOrder = this.room.winOrderLists.find(w => w.winOrder === 1);
       const firstPlayerIndex = this.players.findIndex(p => p._id.toString() === firstWinOrder.playerId.toString());
-      const firstTeamPlayerId = this.players.find(p => p.team === firstWinOrder.team)._id.toString();
+      const firstTeamPlayerId = this.players.find(p => p.team === firstWinOrder.team && p._id.toString() !== firstWinOrder.playerId.toString())._id.toString();
       const firstTeamPlayerWinOrder = this.room.winOrderLists.find(w => w.playerId.toString() === firstTeamPlayerId).winOrder;
       const lastWinOrder = this.room.winOrderLists.find(w => w.winOrder === 99);
       const lastPlayerIndex = this.players.findIndex(p => p._id.toString() === lastWinOrder.playerId.toString());
