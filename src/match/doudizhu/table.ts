@@ -17,6 +17,7 @@ import enums from "./enums";
 import GameCategory from "../../database/models/gameCategory";
 import GoodsProp from "../../database/models/GoodsProp";
 import PlayerProp from "../../database/models/PlayerProp";
+import RoomTimeRecord from "../../database/models/roomTimeRecord";
 
 const stateWaitMultiple = 2 // 翻倍
 const stateWaitDa = 3 // 对局中
@@ -1261,15 +1262,27 @@ abstract class Table implements Serializable {
 
   listenRoom(room) {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
-      const player = this.players[index]
-      this.replaceSocketAndListen(player, playerMsgDispatcher)
-      const content = await this.reconnectContent(index, player)
-      player.sendMessage('game/reconnect', {ok: true, data: content})
+      let m = await RoomTimeRecord.findOne({ roomId: this.room._id });
+      if (m) {
+        const currentTime = new Date().getTime();
+        const startTime = Date.parse(m.createAt);
+
+        console.warn("startTime %s currentTime %s", startTime, currentTime);
+
+        if (currentTime - startTime > 1000 * 30) {
+          return await this.room.forceDissolve();
+        }
+      }
+
+      const player = this.players[index];
+      this.replaceSocketAndListen(player, playerMsgDispatcher);
+      const content = await this.reconnectContent(index, player);
+      player.sendMessage('game/reconnect', {ok: true, data: content});
     })
 
     room.once('empty',
-      this.onRoomEmpty = () => {
-        console.log('empty room')
+      this.onRoomEmpty = async () => {
+        await this.room.forceDissolve();
       })
   }
 
