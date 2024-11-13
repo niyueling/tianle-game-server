@@ -379,7 +379,7 @@ class Room extends RoomBase {
         await RoomTimeRecord.create({
           roomId: this._id,
           rule: this.gameRule,
-          category: this.gameRule.type,
+          category: this.gameRule.gameType,
           juIndex: this.game.juIndex
         })
       }
