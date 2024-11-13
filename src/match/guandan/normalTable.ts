@@ -211,6 +211,8 @@ export default class NormalTable extends Table {
 
       // 查询还贡用户
       const returnTributePlayer = this.players.find(p => p.returnTributeState);
+      console.warn("isAllTribute %s kangTribute %s payTributePlayerId %s returnTributePlayerId %s", this.isAllTribute,
+        JSON.stringify(this.kangTribute), payTributePlayer && payTributePlayer._id, returnTributePlayer && returnTributePlayer._id);
 
       payTributePlayer.returnTributeCard = returnTributePlayer.returnTributeCard;
       returnTributePlayer.payTributeCard = payTributePlayer.payTributeCard;
