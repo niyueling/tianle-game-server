@@ -344,7 +344,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
         await RoomTimeRecord.create({
           roomId: this._id,
           rule: this.gameRule,
-          category: this.gameRule.type,
+          category: this.gameRule.gameType,
           juIndex: this.game.juIndex
         })
       }
@@ -357,7 +357,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
         }})
     }
 
-    setTimeout(startGame, this.gameRule.type === GameType.xmmj ? 2000 : 500)
+    setTimeout(startGame, this.gameRule.gameType === GameType.xmmj ? 2000 : 500)
   }
 
   async join(newJoinPlayer) {
