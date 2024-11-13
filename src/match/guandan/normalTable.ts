@@ -168,7 +168,7 @@ export default class NormalTable extends Table {
 
     const isOk = await this.canPayAndReturnTribute();
     if (isOk) {
-      this.nextToStartGame()
+      await this.nextToStartGame()
     }
   }
 
@@ -198,14 +198,15 @@ export default class NormalTable extends Table {
 
     const isOk = await this.canPayAndReturnTribute();
     if (isOk) {
-      this.nextToStartGame()
+      await this.nextToStartGame()
     }
   }
 
-  nextToStartGame() {
-    this.calcPayAndReturnTribute();
+  async nextToStartGame() {
+    await this.calcPayAndReturnTribute();
 
     const startFunc = async () => {
+      console.warn("nextSeatIndex %s", this.nextSeatIndex);
       this.tableState = '';
       this.room.robotManager.model.step = RobotStep.running;
       this.setTeamMate();
@@ -227,7 +228,7 @@ export default class NormalTable extends Table {
     return true
   }
 
-  calcPayAndReturnTribute() {
+  async calcPayAndReturnTribute() {
     const payAndReturnIndex = this.players.findIndex(p => p.payTributeState || p.returnTributeState);
     if (payAndReturnIndex !== -1) {
       // 单下，末游给头游进贡,双下，如果有抗贡，则末游给头游进贡
@@ -297,6 +298,8 @@ export default class NormalTable extends Table {
       const firstTeamPlayerWinOrder = this.room.winOrderLists.find(w => w.playerId.toString() === firstTeamPlayerId).winOrder;
       const lastWinOrder = this.room.winOrderLists.find(w => w.winOrder === 99);
       const lastPlayerIndex = this.players.findIndex(p => p._id.toString() === lastWinOrder.playerId.toString());
+
+      console.warn("firstTeamPlayerWinOrder %s, lastPlayerIndex %s", firstTeamPlayerWinOrder, lastPlayerIndex);
 
       // 单下，末游先出牌
       if (firstTeamPlayerWinOrder > 2) {
