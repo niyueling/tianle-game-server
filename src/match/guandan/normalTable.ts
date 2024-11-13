@@ -525,6 +525,7 @@ export default class NormalTable extends Table {
       lastIndex: this.status.lastIndex,
       from: this.status.from,
       foundFriend: this.foundFriend,
+      tribute: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard},
       index,
       juIndex,
       stateData,

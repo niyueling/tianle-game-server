@@ -316,6 +316,10 @@ class PlayerState implements Serializable {
       lastAction: this.lastAction,
       mode: this.mode,
       team: this.team,
+      payTributeState: this.payTributeState,
+      payTributeCard: this.payTributeCard,
+      returnTributeState: this.returnTributeState,
+      returnTributeCard: this.returnTributeCard,
       bombScore: this.bombScore(table.bombScorer)
     }
   }
