@@ -226,7 +226,7 @@ export default class NormalTable extends Table {
       // 查询还贡用户
       const team = this.room.winOrderLists.find(w => w.winOrder === 1).team;
       const winPlayers = this.room.winOrderLists.filter(p => p.team === team).sort((grp1, grp2) => {
-        return grp1.winOrder - grp1.winOrder
+        return grp1.winOrder - grp2.winOrder
       });
       const firstPlayer = this.players.find(p => p._id.toString() === winPlayers[0].playerId.toString());
       const secondPlayer = this.players.find(p => p._id.toString() === winPlayers[1].playerId.toString());
