@@ -117,7 +117,7 @@ class PlayerState implements Serializable {
   rateLevel: object = {}
 
   @autoSerialize
-  foundFriend: boolean = false
+  foundFriend: boolean = true
 
   @autoSerialize
   payTributeState: boolean = false
