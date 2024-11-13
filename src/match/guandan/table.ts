@@ -489,7 +489,6 @@ abstract class Table implements Serializable {
   }
 
   async autoCommitForPlayerChooseMode() {
-    // 如果是进还贡
     const notChoosePlayers = this.players.filter(p => !p.isChooseMode);
     for (const player of notChoosePlayers) {
       if (!player || player.msgDispatcher.isRobot()) {

@@ -213,6 +213,7 @@ export default class NormalTable extends Table {
       this.setFirstDa(this.nextSeatIndex !== -1 ? this.nextSeatIndex : 0);
       this.mode = 'teamwork';
       this.broadcastFirstDa();
+      this.autoCommitFunc();
     }
 
     setTimeout(startFunc, 1500);
