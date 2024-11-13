@@ -491,9 +491,9 @@ class Room extends RoomBase {
       return 10;
     }
 
-    if ([4, 6].includes(this.gameRule.juShu)) {
-      return 14;
-    }
+    // if ([4, 5, 6].includes(this.gameRule.juShu)) {
+    //   return 14;
+    // }
 
     return 14;
   }
@@ -713,6 +713,16 @@ class Room extends RoomBase {
           if(winOrderList.includes(1) && !winOrderList.includes(4)) {
             this.isAllOver = true;
           }
+
+          // 如果用户过牌失败，记录过牌失败次数
+          if (!this.isAllOver) {
+            this.homeFailCount++;
+
+            if (this.homeFailCount === 3) {
+              this.homeTeamCard = 2;
+              this.currentLevelCard = this.homeTeamCard;
+            }
+          }
         } else {
           this.homeTeamCard = (this.homeTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.homeTeamCard + upgradeMultiple);
           this.currentLevelCard = this.homeTeamCard;
@@ -726,6 +736,16 @@ class Room extends RoomBase {
           // 如果用户头游并且不是末游，则游戏结束
           if(winOrderList.includes(1) && !winOrderList.includes(4)) {
             this.isAllOver = true;
+          }
+
+          // 如果用户过牌失败，记录过牌失败次数
+          if (!this.isAllOver) {
+            this.awayFailCount++;
+
+            if (this.awayFailCount === 3) {
+              this.awayTeamCard = 2;
+              this.currentLevelCard = this.awayTeamCard;
+            }
           }
         } else {
           this.awayTeamCard = (this.awayTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.awayTeamCard + upgradeMultiple);

@@ -151,15 +151,19 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   awayTeam: any = [];
 
   // 队友级牌
+  @autoSerialize
   homeTeamCard: number = -1
 
   // 对手级牌
+  @autoSerialize
   awayTeamCard: number = -1
 
   // 队友上一局级牌
+  @autoSerialize
   oldHomeTeamCard: number = -1
 
   // 对手上一局级牌
+  @autoSerialize
   oldAwayTeamCard: number = -1
 
   // 本局级牌
@@ -183,6 +187,14 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   // 记录上一局的结束顺序
   winOrderLists: any = [];
+
+  // 我方三把不过次数
+  @autoSerialize
+  homeFailCount: number = 0;
+
+  // 对手三把不过次数
+  @autoSerialize
+  awayFailCount: number = 0;
 
   abstract initScore(player)
 
