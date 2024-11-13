@@ -73,7 +73,7 @@ module.exports = {
     message: true
   },
   game: {
-    dissolveTime: 1000 * 60 * 15,
+    dissolveTime: 1000 * 60 * 30,
     helpCount: 5,
     initModelGoldCount: 0,
     luckyDrawNeedGold: 500,
