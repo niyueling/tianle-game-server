@@ -203,110 +203,7 @@ export default class NormalTable extends Table {
   }
 
   nextToStartGame() {
-    // 判断进贡牌给谁，抗贡，双下牌大给头游，单下给头游
-    // 单下，末游给头游进贡,双下，如果有抗贡，则末游给头游进贡
-    if (!this.isAllTribute || (this.isAllTribute && this.kangTribute.length)) {
-      // 查询进贡用户
-      const payTributePlayer = this.players.find(p => p.payTributeState);
-
-      // 查询还贡用户
-      const returnTributePlayer = this.players.find(p => p.returnTributeState);
-      console.warn("isAllTribute %s kangTribute %s payTributePlayerId %s returnTributePlayerId %s", this.isAllTribute,
-        JSON.stringify(this.kangTribute), payTributePlayer && payTributePlayer._id, returnTributePlayer && returnTributePlayer._id);
-
-      payTributePlayer.returnTributeCard = returnTributePlayer.returnTributeCard;
-      returnTributePlayer.payTributeCard = payTributePlayer.payTributeCard;
-    }
-
-    // 双下无抗贡，则进贡大牌给头游，剩下的牌给二游
-    if (this.isAllTribute && !this.kangTribute.length) {
-      // 查询进贡用户
-      const payTributePlayer = this.players.filter(p => p.payTributeState).sort((grp1, grp2) => {
-        return grp2.payTributeCard.point - grp1.payTributeCard.point
-      });
-
-      // 查询还贡用户
-      const team = this.room.winOrderLists.find(w => w.winOrder === 1).team;
-      const winPlayers = this.room.winOrderLists.filter(p => p.team === team).sort((grp1, grp2) => {
-        return grp1.winOrder - grp2.winOrder
-      });
-      const firstPlayer = this.players.find(p => p._id.toString() === winPlayers[0].playerId.toString());
-      const secondPlayer = this.players.find(p => p._id.toString() === winPlayers[1].playerId.toString());
-
-      // 进贡牌面较小的给二游
-      payTributePlayer[0].returnTributeCard = secondPlayer.returnTributeCard;
-      secondPlayer.payTributeCard = payTributePlayer[0].payTributeCard;
-
-      // 进贡牌面较大的给二游
-      payTributePlayer[1].returnTributeCard = firstPlayer.returnTributeCard;
-      firstPlayer.payTributeCard = payTributePlayer[1].payTributeCard;
-    }
-
-    // 执行换牌逻辑
-    for (const player of this.players) {
-      if (player.payTributeState || player.returnTributeState) {
-        console.warn("payTributeState %s returnTributeState %s payTributeCard %s returnTributeCard %s",
-          player.payTributeState, player.returnTributeState, JSON.stringify(player.payTributeCard), JSON.stringify(player.returnTributeCard));
-
-        if (player.payTributeState) {
-          const payTributeCardIndex = player.cards.findIndex(c => c.type === player.payTributeCard.type && c.point === player.payTributeCard.point);
-          player.cards.splice(payTributeCardIndex, 1);
-          player.cards.push(player.returnTributeCard);
-        }
-
-        if (player.returnTributeState) {
-          const returnTributeCardIndex = player.cards.findIndex(c => c.type === player.returnTributeCard.type && c.point === player.returnTributeCard.point);
-          player.cards.splice(returnTributeCardIndex, 1);
-          player.cards.push(player.payTributeCard);
-        }
-
-        this.room.broadcast("game/payAndReturnCards", {ok: true, data: {player: player.seatIndex, type: player.payTributeState ? "pay" : "return",
-            payTributeCard: player.payTributeCard, returnTributeCard: player.returnTributeCard, cards: player.cards.length}});
-      }
-    }
-
-    const firstWinOrder = this.room.winOrderLists.find(w => w.winOrder === 1);
-    const firstPlayerIndex = this.players.findIndex(p => p._id.toString() === firstWinOrder.playerId.toString());
-    const firstTeamPlayerId = this.players.find(p => p.team === firstWinOrder.team)._id.toString();
-    const firstTeamPlayerWinOrder = this.room.winOrderLists.find(w => w.playerId.toString() === firstTeamPlayerId).winOrder;
-    const lastWinOrder = this.room.winOrderLists.find(w => w.winOrder === 99);
-    const lastPlayerIndex = this.players.findIndex(p => p._id.toString() === lastWinOrder.playerId.toString());
-
-    // 单下，末游先出牌
-    if (firstTeamPlayerWinOrder > 2) {
-      this.nextSeatIndex = lastPlayerIndex;
-    }
-
-    // 双下
-    if (firstTeamPlayerWinOrder === 2) {
-      // 检测进贡的牌，进贡牌大的先出
-      const payPlayers = this.players.filter(p => p.payTributeState).map(p => {
-        return {
-          index: p.seatIndex,
-          payTributeCard: p.payTributeCard
-        }
-      });
-
-      let nextSeatIndex = -1;
-      if (payPlayers[0].payTributeCard.point > payPlayers[1].payTributeCard.point) {
-        nextSeatIndex = payPlayers[0].index;
-      }
-      if (payPlayers[0].payTributeCard.point < payPlayers[1].payTributeCard.point) {
-        nextSeatIndex = payPlayers[1].index;
-      }
-
-      // 如果进贡的牌相同，则上一局头游的上游先出牌
-      if (payPlayers[0].payTributeCard.point === payPlayers[1].payTributeCard.point) {
-        nextSeatIndex = firstPlayerIndex > 0 ? firstPlayerIndex - 1 : 3;
-      }
-
-      this.nextSeatIndex = nextSeatIndex;
-    }
-
-    // 抗贡，头游先出
-    if (this.kangTribute.length) {
-      this.nextSeatIndex = firstPlayerIndex;
-    }
+    this.calcPayAndReturnTribute();
 
     const startFunc = async () => {
       this.tableState = '';
@@ -328,6 +225,115 @@ export default class NormalTable extends Table {
     }
 
     return true
+  }
+
+  calcPayAndReturnTribute() {
+    const payAndReturnIndex = this.players.findIndex(p => p.payTributeState || p.returnTributeState);
+    if (payAndReturnIndex !== -1) {
+      // 单下，末游给头游进贡,双下，如果有抗贡，则末游给头游进贡
+      if (!this.isAllTribute || (this.isAllTribute && this.kangTribute.length)) {
+        // 查询进贡用户
+        const payTributePlayer = this.players.find(p => p.payTributeState);
+
+        // 查询还贡用户
+        const returnTributePlayer = this.players.find(p => p.returnTributeState);
+        console.warn("isAllTribute %s kangTribute %s payTributePlayerId %s returnTributePlayerId %s", this.isAllTribute,
+          JSON.stringify(this.kangTribute), payTributePlayer && payTributePlayer._id, returnTributePlayer && returnTributePlayer._id);
+
+        payTributePlayer.returnTributeCard = returnTributePlayer.returnTributeCard;
+        returnTributePlayer.payTributeCard = payTributePlayer.payTributeCard;
+      }
+
+      // 双下无抗贡，则进贡大牌给头游，剩下的牌给二游
+      if (this.isAllTribute && !this.kangTribute.length) {
+        // 查询进贡用户
+        const payTributePlayer = this.players.filter(p => p.payTributeState).sort((grp1, grp2) => {
+          return grp2.payTributeCard.point - grp1.payTributeCard.point
+        });
+
+        // 查询还贡用户
+        const team = this.room.winOrderLists.find(w => w.winOrder === 1).team;
+        const winPlayers = this.room.winOrderLists.filter(p => p.team === team).sort((grp1, grp2) => {
+          return grp1.winOrder - grp2.winOrder
+        });
+        const firstPlayer = this.players.find(p => p._id.toString() === winPlayers[0].playerId.toString());
+        const secondPlayer = this.players.find(p => p._id.toString() === winPlayers[1].playerId.toString());
+
+        // 进贡牌面较小的给二游
+        payTributePlayer[0].returnTributeCard = secondPlayer.returnTributeCard;
+        secondPlayer.payTributeCard = payTributePlayer[0].payTributeCard;
+
+        // 进贡牌面较大的给二游
+        payTributePlayer[1].returnTributeCard = firstPlayer.returnTributeCard;
+        firstPlayer.payTributeCard = payTributePlayer[1].payTributeCard;
+      }
+
+      // 执行换牌逻辑
+      for (const player of this.players) {
+        if (player.payTributeState || player.returnTributeState) {
+          console.warn("payTributeState %s returnTributeState %s payTributeCard %s returnTributeCard %s",
+            player.payTributeState, player.returnTributeState, JSON.stringify(player.payTributeCard), JSON.stringify(player.returnTributeCard));
+
+          if (player.payTributeState) {
+            const payTributeCardIndex = player.cards.findIndex(c => c.type === player.payTributeCard.type && c.point === player.payTributeCard.point);
+            player.cards.splice(payTributeCardIndex, 1);
+            player.cards.push(player.returnTributeCard);
+          }
+
+          if (player.returnTributeState) {
+            const returnTributeCardIndex = player.cards.findIndex(c => c.type === player.returnTributeCard.type && c.point === player.returnTributeCard.point);
+            player.cards.splice(returnTributeCardIndex, 1);
+            player.cards.push(player.payTributeCard);
+          }
+
+          this.room.broadcast("game/payAndReturnCards", {ok: true, data: {player: player.seatIndex, type: player.payTributeState ? "pay" : "return",
+              payTributeCard: player.payTributeCard, returnTributeCard: player.returnTributeCard, cards: player.cards.length}});
+        }
+      }
+
+      const firstWinOrder = this.room.winOrderLists.find(w => w.winOrder === 1);
+      const firstPlayerIndex = this.players.findIndex(p => p._id.toString() === firstWinOrder.playerId.toString());
+      const firstTeamPlayerId = this.players.find(p => p.team === firstWinOrder.team)._id.toString();
+      const firstTeamPlayerWinOrder = this.room.winOrderLists.find(w => w.playerId.toString() === firstTeamPlayerId).winOrder;
+      const lastWinOrder = this.room.winOrderLists.find(w => w.winOrder === 99);
+      const lastPlayerIndex = this.players.findIndex(p => p._id.toString() === lastWinOrder.playerId.toString());
+
+      // 单下，末游先出牌
+      if (firstTeamPlayerWinOrder > 2) {
+        this.nextSeatIndex = lastPlayerIndex;
+      }
+
+      // 双下
+      if (firstTeamPlayerWinOrder === 2) {
+        // 检测进贡的牌，进贡牌大的先出
+        const payPlayers = this.players.filter(p => p.payTributeState).map(p => {
+          return {
+            index: p.seatIndex,
+            payTributeCard: p.payTributeCard
+          }
+        });
+
+        let nextSeatIndex = -1;
+        if (payPlayers[0].payTributeCard.point > payPlayers[1].payTributeCard.point) {
+          nextSeatIndex = payPlayers[0].index;
+        }
+        if (payPlayers[0].payTributeCard.point < payPlayers[1].payTributeCard.point) {
+          nextSeatIndex = payPlayers[1].index;
+        }
+
+        // 如果进贡的牌相同，则上一局头游的上游先出牌
+        if (payPlayers[0].payTributeCard.point === payPlayers[1].payTributeCard.point) {
+          nextSeatIndex = firstPlayerIndex > 0 ? firstPlayerIndex - 1 : 3;
+        }
+
+        this.nextSeatIndex = nextSeatIndex;
+      }
+
+      // 抗贡，头游先出
+      if (this.kangTribute.length) {
+        this.nextSeatIndex = firstPlayerIndex;
+      }
+    }
   }
 
   listenPlayer(player) {
