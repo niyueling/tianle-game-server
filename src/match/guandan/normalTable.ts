@@ -40,8 +40,6 @@ export default class NormalTable extends Table {
         this.nextAction = this.startTeamworkGame;
         this.next();
       }
-
-      await this.room.robotManager.setCardReady(this.rule.allowDouble);
     }
 
     setTimeout(faPaiFunc, 1000);
@@ -212,6 +210,7 @@ export default class NormalTable extends Table {
       this.setTeamMate();
       this.setFirstDa(this.nextSeatIndex !== -1 ? this.nextSeatIndex : 0);
       this.mode = 'teamwork';
+      await this.room.robotManager.setCardReady(this.rule.allowDouble);
       this.broadcastFirstDa();
       this.autoCommitFunc();
     }
