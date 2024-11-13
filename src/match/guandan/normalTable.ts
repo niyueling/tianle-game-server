@@ -204,11 +204,41 @@ export default class NormalTable extends Table {
 
   nextToStartGame() {
     // 判断进贡牌给谁，抗贡，双下牌大给头游，单下给头游
-    // 单下，末游给头游进贡
+    // 单下，末游给头游进贡,双下，如果有抗贡，则末游给头游进贡
+    if (!this.isAllTribute || (this.isAllTribute && this.kangTribute.length)) {
+      // 查询进贡用户
+      const payTributePlayer = this.players.find(p => p.payTributeState);
 
-    // 双下，如果有抗贡，则末游给头游进贡
+      // 查询还贡用户
+      const returnTributePlayer = this.players.find(p => p.returnTributeState);
+
+      payTributePlayer.returnTributeCard = returnTributePlayer.returnTributeCard;
+      returnTributePlayer.payTributeCard = payTributePlayer.payTributeCard;
+    }
 
     // 双下无抗贡，则进贡大牌给头游，剩下的牌给二游
+    if (this.isAllTribute && !this.kangTribute.length) {
+      // 查询进贡用户
+      const payTributePlayer = this.players.filter(p => p.payTributeState).sort((grp1, grp2) => {
+        return grp2.payTributeCard.point - grp1.payTributeCard.point
+      });
+
+      // 查询还贡用户
+      const team = this.room.winOrderLists.find(w => w.winOrder === 1).team;
+      const winPlayers = this.room.winOrderLists.filter(p => p.team === team).sort((grp1, grp2) => {
+        return grp1.winOrder - grp1.winOrder
+      });
+      const firstPlayer = this.players.find(p => p._id.toString() === winPlayers[0].playerId.toString());
+      const secondPlayer = this.players.find(p => p._id.toString() === winPlayers[1].playerId.toString());
+
+      // 进贡牌面较小的给二游
+      payTributePlayer[0].returnTributeCard = secondPlayer.returnTributeCard;
+      secondPlayer.payTributeCard = payTributePlayer[0].payTributeCard;
+
+      // 进贡牌面较大的给二游
+      payTributePlayer[1].returnTributeCard = firstPlayer.returnTributeCard;
+      firstPlayer.payTributeCard = payTributePlayer[1].payTributeCard;
+    }
 
     // 执行换牌逻辑
     for (const player of this.players) {
