@@ -47,7 +47,7 @@ class Rule {
 
   // 炸弹允许翻倍
   get allowBombDouble() {
-    return this.ro.allowBombDouble || false;
+    return this.ro.allowDouble || false;
   }
 
   // 发牌，随即发牌：1， 不洗牌：2
