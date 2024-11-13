@@ -17,6 +17,8 @@ import {shopPropType, TianleErrorCode} from "@fm/common/constants";
 import GoodsProp from "../../database/models/GoodsProp";
 import PlayerProp from "../../database/models/PlayerProp";
 import Pattern from "./patterns";
+import * as config from "../../config"
+import RoomTimeRecord from "../../database/models/roomTimeRecord";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -890,6 +892,18 @@ abstract class Table implements Serializable {
 
   listenRoom(room) {
     room.on('reconnect', this.onReconnect = async (playerMsgDispatcher, index) => {
+      let m = await RoomTimeRecord.findOne({ roomId: this.room._id });
+      if (m) {
+        const currentTime = new Date().getTime();
+        const startTime = Date.parse(m.createAt);
+
+        console.warn("startTime %s currentTime %s", startTime, currentTime);
+
+        if (currentTime - startTime > config.game.dissolveTime) {
+          return await this.room.forceDissolve();
+        }
+      }
+
       const player = this.players[index]
       this.replaceSocketAndListen(player, playerMsgDispatcher)
       const content = await this.reconnectContent(index, player)

@@ -18,6 +18,7 @@ import GameCategory from "../../database/models/gameCategory";
 import GoodsProp from "../../database/models/GoodsProp";
 import PlayerProp from "../../database/models/PlayerProp";
 import RoomTimeRecord from "../../database/models/roomTimeRecord";
+import * as config from "../../config"
 
 const stateWaitMultiple = 2 // 翻倍
 const stateWaitDa = 3 // 对局中
@@ -1269,7 +1270,7 @@ abstract class Table implements Serializable {
 
         console.warn("startTime %s currentTime %s", startTime, currentTime);
 
-        if (currentTime - startTime > 1000 * 30) {
+        if (currentTime - startTime > config.game.dissolveTime) {
           return await this.room.forceDissolve();
         }
       }
