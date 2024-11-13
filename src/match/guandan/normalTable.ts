@@ -449,6 +449,7 @@ export default class NormalTable extends Table {
       }
 
       const payAndReturnState = this.players.findIndex(p => p.payTributeState || p.returnTributeState);
+      console.warn("payAndReturnState %s", payAndReturnState);
       if (payAndReturnState !== -1) {
         this.tableState = "returnTribute";
         this.room.robotManager.model.step = RobotStep.returnTribute;
