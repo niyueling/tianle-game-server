@@ -381,9 +381,10 @@ abstract class Table implements Serializable {
         this.status.lastCards = []
 
         if (playerState.cards.length === 0 && playerState.foundFriend) {
-          nextSeatIndex = playerState.teamMate
-          this.cleanCards(playerState)
-          findNext = true
+          nextSeatIndex = playerState.teamMate;
+          this.cleanCards(playerState);
+          this.room.broadcast("game/jieFeng", {ok: true, data: {index: nextSeatIndex}});
+          findNext = true;
         }
       }
 
