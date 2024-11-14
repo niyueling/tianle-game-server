@@ -385,8 +385,10 @@ abstract class Table implements Serializable {
       return;
     }
 
-    player.onDeposit = true
-    player.sendMessage('game/startDeposit', {ok: true, data: {}});
+    if (!player.onDeposit) {
+      player.sendMessage('game/startDeposit', {ok: true, data: {onDeposit: player.onDeposit}});
+      player.onDeposit = true;
+    }
 
     if (!this.canGuo()) {
       const cards = this.promptWithFirstPlay(player);
