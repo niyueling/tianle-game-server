@@ -1,7 +1,7 @@
 import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {service} from "../../service/importService";
-import Card, {CardType} from "./card";
-import {arraySubtract, IPattern, PatterNames} from "./patterns/base";
+import {CardType} from "./card";
+import {arraySubtract} from "./patterns/base";
 import PlayerState from "./player_state";
 import Table from "./table";
 import Enums from "./enums";
@@ -465,50 +465,6 @@ export default class NormalTable extends Table {
     return super.isGameOver();
   }
 
-  bombScorer = (bomb: IPattern) => {
-    if (this.room.gameRule.isPublic) {
-      return this.rubyRoomBoomScorer(bomb);
-    }
-    if (!bomb) return 0;
-
-    if (bomb.name !== PatterNames.bomb) return 0;
-    let bombLen = bomb.cards.length;
-
-    if (bomb.cards.every(c => c.type === CardType.Joker)) {
-      const jokerBombScore = Math.pow(2, bombLen);
-      if (this.rule.ro.maxJokerBomb > 16) {
-        return Math.min(this.rule.ro.maxJokerBomb, jokerBombScore);
-      }
-      return 16;
-    }
-
-    if (bombLen < 5) return 0;
-
-    if (this && this.rule.ro.maxBombLevel && bombLen > this.rule.ro.maxBombLevel) {
-      bombLen = this.rule.ro.maxBombLevel;
-    }
-    if (bombLen > 13) {
-      bombLen = 13;
-    }
-
-    return Math.pow(2, bombLen - 5);
-  }
-
-  // 金豆房炸弹计分
-  rubyRoomBoomScorer(bomb: IPattern) {
-    if (!bomb) return 0;
-
-    if (bomb.name !== PatterNames.bomb) return 0;
-    let bombLen = bomb.cards.length;
-
-    if (bomb.cards.every(c => c.type === CardType.Joker)) {
-      return Math.pow(2, bombLen);
-    }
-
-    if (bombLen < 5) return 0;
-    return Math.pow(2, bombLen - 5);
-  }
-
   async reconnectContent(index, reconnectPlayer: PlayerState) {
     const stateData = this.stateData
     const juIndex = this.room.game.juIndex
@@ -536,31 +492,6 @@ export default class NormalTable extends Table {
       stateData,
       status,
     }
-  }
-
-  @once
-  showFriend() {
-    if (this.mode === 'solo') return
-
-    this.foundFriend = true
-
-    this.players.forEach(ps => {
-      ps.foundFriend = true
-    })
-    this.room.broadcast('game/showFriend', {ok: true, data: {
-        homeTeam: this.homeTeamPlayers().map(p => p.index),
-        awayTeam: this.awayTeamPlayers().map(p => p.index)
-      }})
-  }
-
-  daPai(player: PlayerState, cards: Card[], pattern: IPattern, onDeposit?) {
-    if (this.friendCard && player.index !== 0) {
-      if (cards.find(c => Card.compare(c, this.friendCard) === 0)) {
-        this.showFriend()
-      }
-    }
-
-    return super.daPai(player, cards, pattern, onDeposit)
   }
 
   teamWorkGameOver() {
@@ -609,18 +540,11 @@ export default class NormalTable extends Table {
         index: p.index,
         score: p.balance,
         winOrder: p.winOrder,
-        detail: p.detailBalance,
         mode: p.mode,
-        // 是否破产
-        isBroke: p.isBroke,
-        // mvp 次数
-        mvpTimes: 0,
       })
     }
     const gameOverMsg = {
       states,
-      // 金豆奖池
-      rubyReward: 0,
       juShu: this.restJushu,
       isPublic: this.room.isPublic,
       juIndex: this.room.game.juIndex,
@@ -744,14 +668,5 @@ export default class NormalTable extends Table {
     }
 
     return model.tlGold;
-  }
-
-  getPlayerByShortId(shortId) {
-    for (const p of this.players) {
-      if (p && p.model.shortId === shortId) {
-        return p;
-      }
-    }
-    return null;
   }
 };

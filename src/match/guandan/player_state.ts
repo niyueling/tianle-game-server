@@ -294,12 +294,6 @@ class PlayerState implements Serializable {
     this.usedBombs.push(pattern)
   }
 
-  bombScore(scorer: (bomb: IPattern) => number) {
-    return this.usedBombs.reduce((score, bomb) => {
-      return score + scorer(bomb)
-    }, 0)
-  }
-
   private async baseStatus(table: Table) {
     // 判断是否使用记牌器
     const cardRecorderStatus = await this.room.gameState.getCardRecorder(this);
@@ -320,7 +314,6 @@ class PlayerState implements Serializable {
       payTributeCard: this.payTributeCard,
       returnTributeState: this.returnTributeState,
       returnTributeCard: this.returnTributeCard,
-      bombScore: this.bombScore(table.bombScorer)
     }
   }
 
@@ -431,10 +424,6 @@ class PlayerState implements Serializable {
     }
 
     return bombs.map(cs => this.room.gameState.pattern.findFullMatchedPattern(cs))
-  }
-
-  unusedBombsScore(bombScorer: (bomb: IPattern) => number) {
-    return this.unusedBombs().reduce((score, bomb) => bombScorer(bomb) + score, 0)
   }
 }
 

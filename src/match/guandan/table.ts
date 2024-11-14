@@ -35,8 +35,8 @@ export enum Team {
 }
 
 export const genFullyCards = (useJoker: boolean = true, room) => {
-  const types = [CardType.Club, CardType.Diamond, CardType.Heart, CardType.Spades]
-  const cards = []
+  const types = [CardType.Club, CardType.Diamond, CardType.Heart, CardType.Spades];
+  const cards = [];
 
   types.forEach((type: CardType) => {
     for (let v = 1; v <= 13; v += 1) {
@@ -59,36 +59,6 @@ class Status {
   lastIndex: number = -1
   from: number
   winOrder = 0
-  fen = 0
-}
-
-
-export function cardChangeDebugger<T extends new (...args: any[]) => {
-    room: any
-    listenPlayer(p: PlayerState): void
-    listenerOn: string[]
-  }>(constructor: T) {
-
-  return class TableWithDebugger extends constructor {
-
-    constructor(...args) {
-      super(...args)
-    }
-
-    listenPlayer(player: PlayerState) {
-      super.listenPlayer(player)
-      this.listenerOn.push('game/changePlayerCards')
-
-      player.msgDispatcher.on('game/changePlayerCards', msg => this.changePlayerCards(player, msg.cards))
-    }
-
-    changePlayerCards(player, cards) {
-      const tempCards = cards.map(card => Card.from(card))
-      player.cards = tempCards
-      this.room.broadcast('game/changeCards', {ok: true, data: {index: player.seatIndex, cards: tempCards}})
-      player.sendMessage('game/changePlayerCardsReply', {ok: true, data: {}})
-    }
-  }
 }
 
 abstract class Table implements Serializable {
@@ -132,7 +102,7 @@ abstract class Table implements Serializable {
   isHelp: boolean = false
 
   @autoSerialize
-  mode: 'solo' | 'teamwork' | 'unknown' = 'unknown'
+  mode: 'teamwork'
 
   @autoSerialize
   foundFriend: boolean = true
@@ -165,7 +135,6 @@ abstract class Table implements Serializable {
 
   @autoSerialize
   shuffleDelayTime: number = Date.now()
-  bombScorer: (bomb: IPattern) => number
   private autoCommitTimer: NodeJS.Timer
 
   constructor(room, rule, restJushu) {
@@ -194,10 +163,6 @@ abstract class Table implements Serializable {
 
   get currentPlayerStep() {
     return this.status.current.seatIndex
-  }
-
-  get isLastMatch() {
-    return this.restJushu === 0
   }
 
   toJSON() {
@@ -368,7 +333,7 @@ abstract class Table implements Serializable {
     player.msgDispatcher.on('game/cancelDeposit', msg => this.onCancelDeposit(player))
     // 手动刷新
     player.msgDispatcher.on('game/refresh', async () => {
-      player.sendMessage('room/refresh', {ok: true, data: await this.restoreMessageForPlayer(player)});
+      player.sendMessage('room/refresh', {ok: true, data: this.reconnectContent(player.seatIndex, player)});
     })
   }
 
@@ -557,7 +522,6 @@ abstract class Table implements Serializable {
     this.status.from = this.status.current.seatIndex;
     this.status.lastPattern = pattern;
     this.status.lastCards = cards;
-    this.status.fen += this.fenInCards(cards);
 
     if (pattern.name === PatterNames.bomb || pattern.name === PatterNames.straightFlush) {
       player.recordBomb(pattern);
@@ -593,11 +557,6 @@ abstract class Table implements Serializable {
       }
     })
 
-    // if (player.cards.length === 0 && player.onDeposit) {
-    //   player.onDeposit = false;
-    //   player.sendMessage('game/cancelDepositReply', {ok: true, data: {cards: player.cards}})
-    // }
-
     const isGameOver = this.isGameOver()
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
 
@@ -606,10 +565,7 @@ abstract class Table implements Serializable {
         remains,
         index: player.seatIndex,
         next: nextPlayer,
-        pattern: this.status.lastPattern,
-        fen: this.status.fen,
-        bomb: this.bombScorer(pattern),
-        newBombScore: player.bombScore(this.bombScorer.bind(this))
+        pattern: this.status.lastPattern
       }})
     this.notifyTeamMateWhenTeamMateWin(player, cards)
     if (this.players[nextPlayer]) {
@@ -649,48 +605,6 @@ abstract class Table implements Serializable {
     }
   }
 
-  async restoreMessageForPlayer(player: PlayerState) {
-    const index = this.atIndex(player)
-    const soloPlayer = this.players[this.soloPlayerIndex]
-    const lastRecord = await service.rubyReward.getLastRubyRecord(this.room.uid);
-    let roomRubyReward = 0;
-    if (lastRecord) {
-      // 奖池
-      roomRubyReward = lastRecord.balance;
-    }
-    const pushMsg = {
-      index, status: [],
-      mode: this.mode,
-      currentPlayer: this.status.current.seatIndex,
-      soloPlayerIndex: this.soloPlayerIndex,
-      soloPlayerName: soloPlayer && soloPlayer.model.nickname,
-      lastPattern: this.status.lastPattern,
-      lastIndex: this.status.lastIndex,
-      friendCard: this.friendCard,
-      fen: this.status.fen,
-      from: this.status.from,
-      juIndex: this.room.game.juIndex,
-      juShu: this.restJushu,
-      foundFriend: this.foundFriend,
-    }
-    for (let i = 0; i < this.players.length; i++) {
-      if (i === index) {
-        pushMsg.status.push({
-          ...this.players[i].statusForSelf(this),
-          roomRubyReward,
-          teamMateCards: this.teamMateCards(this.players[i])
-        })
-      } else {
-        pushMsg.status.push({
-          ...this.players[i].statusForOther(this),
-          roomRubyReward,
-        })
-      }
-    }
-
-    return pushMsg
-  }
-
   showGameOverPlayerCards() {
     const playersCard = []
     this.players.forEach(p => {
@@ -710,19 +624,6 @@ abstract class Table implements Serializable {
   awayTeamPlayers(): PlayerState[] {
     return this.players.filter(p => p.team === Team.AwayTeam)
   }
-
-  // depositForPlayer(nextPlayerState: PlayerState) {
-  //   nextPlayerState.deposit(() => {
-  //     const prompts = findMatchedPatternByPattern(this.status.lastPattern, nextPlayerState.cards)
-  //
-  //     if (prompts.length > 0) {
-  //       this.onPlayerDa(nextPlayerState, {cards: prompts[0]})
-  //     } else {
-  //       this.onPlayerGuo(nextPlayerState)
-  //     }
-  //
-  //   })
-  // }
 
   isGameOver(): boolean {
     const homeTeamCards = this.homeTeamPlayers().reduce((cards, p) => {
@@ -773,7 +674,6 @@ abstract class Table implements Serializable {
         index: player.seatIndex,
         next: this.currentPlayerStep,
         pattern: this.status.lastPattern,
-        fen: this.status.fen
       }})
 
     const isGameOver = this.isGameOver()
@@ -789,135 +689,8 @@ abstract class Table implements Serializable {
     return this.players.findIndex(p => p._id === player._id)
   }
 
-  getPlayerUnUsedBombs(player: PlayerState) {
-
-    const jokers = player.cards.filter(c => c.type === CardType.Joker)
-
-    const unUsedBombs = groupBy(player.cards.filter(c => c.type !== CardType.Joker), c => c.value)
-      .filter(g => g.length >= 4)
-      .sort((g1, g2) => new BombMatcher().verify(g2, this.room.currentLevelCard).score - new BombMatcher().verify(g1, this.room.currentLevelCard).score)
-
-    if (unUsedBombs.length > 0 && jokers.length < 4) {
-      unUsedBombs[0] = [...jokers, ...unUsedBombs[0]]
-    } else if (jokers.length >= 4) {
-      if (unUsedBombs.length > 0) {
-        if (this.bombScorer(this.pattern.findFullMatchedPattern(
-          [...jokers, ...unUsedBombs[0]])) > this.bombScorer(this.pattern.findFullMatchedPattern(jokers))
-        ) {
-          unUsedBombs[0] = [...jokers, ...unUsedBombs[0]]
-        } else {
-          unUsedBombs.push(jokers)
-        }
-      } else {
-        unUsedBombs.push(jokers)
-      }
-    }
-
-    return unUsedBombs
-  }
-
-  getPlayerUnUsedJokers(player: PlayerState) {
-    const jokersInHand = player.cards.filter(c => c.type === CardType.Joker).length
-
-    const unusedJokers = player.unusedJokers
-    if (jokersInHand >= 4) {
-      return 0
-    }
-
-    const unUsedBombs = groupBy(player.cards, c => c.value)
-      .filter(g => g.length >= 4)
-
-    if (unUsedBombs.length > 0) {
-      return unusedJokers - jokersInHand
-    }
-    return unusedJokers
-  }
-
-  drawGameTableState() {
-    if (this.rule.ro.jieSanSuanFen) {
-      for (const winner of this.players) {
-        for (const loser of this.players) {
-          winner.winFrom(loser, 0)
-          winner.winFrom(loser, this.drawGameBombScore(winner), 'bomb')
-        }
-      }
-
-      for (const winner of this.players) {
-        for (const loser of this.players) {
-          winner.winFrom(loser, this.getPlayerUnUsedJokers(loser), 'joker')
-        }
-      }
-    }
-
-    return this.players.map(p => {
-      return {
-        model: p.model,
-        index: p.index,
-        score: p.balance,
-        detail: p.detailBalance
-      }
-    })
-  }
-
   async gameOver() {
-    // clearTimeout(this.autoCommitTimer)
-    // const playersInWinOrder = this.players.slice().sort((p1, p2) => p1.winOrder - p2.winOrder)
-    //
-    // const teamOrder = playersInWinOrder.map(p => p.team)
-    //
-    // const winTeam = teamOrder[0]
-    // let score = 0
-    // if (teamOrder[0] === teamOrder[1]) {
-    //   score = 2
-    //   if (playersInWinOrder.slice(2).some(loser => loser.zhuaFen > 100)) {
-    //     score = 1
-    //   }
-    // } else {
-    //   const firstTeamZhuaFen = this.players.filter(p => p.team === winTeam)
-    //     .reduce((fen, p) => p.zhuaFen + fen, 0)
-    //
-    //   if (firstTeamZhuaFen > 100) {
-    //     score = 1
-    //   } else {
-    //     score = -1
-    //   }
-    //
-    // }
-    //
-    // const winTeamPlayers = this.players.filter(p => p.team === winTeam)
-    // const loseTeamPlayers = this.players.filter(p => p.team !== winTeam)
-    //
-    // for (let i = 0; i < 2; i++) {
-    //   const winner = winTeamPlayers[i]
-    //   const loser = loseTeamPlayers[i]
-    //   winner.winFrom(loser, score)
-    // }
-    //
-    // const states = this.players.map(p => {
-    //   return {
-    //     model: p.model,
-    //     index: p.index,
-    //     score: p.balance,
-    //     detail: p.detailBalance
-    //   }
-    // })
-    //
-    // const gameOverMsg = {
-    //   states,
-    //   juShu: this.restJushu,
-    //   isPublic: this.room.isPublic,
-    //   ruleType: this.rule.ruleType,
-    //   juIndex: this.room.game.juIndex,
-    //   creator: this.room.creator.model._id,
-    // }
-    //
-    // this.room.broadcast('game/game-over', gameOverMsg)
-    // this.stateData.gameOver = gameOverMsg
-    // this.roomGameOver(states, '')
-  }
 
-  getScoreBy(playerId) {
-    return this.room.getScoreBy(playerId)
   }
 
   async roomGameOver(states, nextStarterIndex: string) {
@@ -977,10 +750,6 @@ abstract class Table implements Serializable {
     for (const p of this.players) {
       p.setGameRecorder(recorder)
     }
-  }
-
-  removeListeners(player) {
-    player.removeListenersByNames(this.listenerOn)
   }
 
   removeAllPlayerListeners() {
@@ -1118,12 +887,6 @@ abstract class Table implements Serializable {
     return [];
   }
 
-  protected fenInCards(cards: Card[]): number {
-    return cards.reduce((fen, card) => {
-      return fen + card.fen()
-    }, 0)
-  }
-
   private async _fapai(payload) {
     if (this.room.currentLevelCard && this.room.currentLevelCard !== -1) {
       this.initCards();
@@ -1158,25 +921,6 @@ abstract class Table implements Serializable {
     return {status: !!(isHave && times), day: times}
   };
 
-  private haveFourJokers(p: PlayerState) {
-    return p.cards.filter(c => c.type === CardType.Joker).length >= 4
-  }
-
-  private rollReshuffle() {
-    return Math.random() < 0.83
-  }
-
-  private drawGameBombScore(player: PlayerState): number {
-    const unUsedBombs = this.getPlayerUnUsedBombs(player);
-
-    const usedBombScore = player.usedBombs.reduce((score, b) => this.bombScorer(b) + score, 0)
-
-    const unUsedBombScore = unUsedBombs.map(cards => this.pattern.findFullMatchedPattern(cards))
-      .reduce((score, bomb) => this.bombScorer(bomb) + score, 0)
-
-    return usedBombScore + unUsedBombScore
-  }
-
   private notifyTeamMateWhenTeamMateWin(player: PlayerState, daCards: Card[]) {
     const teamMate = this.players[player.teamMate]
     if (teamMate && teamMate.cards.length === 0) {
@@ -1186,19 +930,6 @@ abstract class Table implements Serializable {
 
   private getProbability() {
     return Math.random() < 0.5;
-  }
-
-  // 查找队友
-  getFriendPlayer(playerId, team) {
-    for (const p of this.players) {
-      if (p && p.team === team) {
-        if (p.model._id !== playerId) {
-          return p;
-        }
-      }
-    }
-    // 没找到队友
-    return null;
   }
 
   // 查找对手

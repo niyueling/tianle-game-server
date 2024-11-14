@@ -4,7 +4,7 @@
 import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 // @ts-ignore
-import {keys, name, pick} from 'lodash'
+import {pick} from 'lodash'
 import * as mongoose from 'mongoose'
 import * as logger from 'winston'
 import GameRecord from '../../database/models/gameRecord'
@@ -111,9 +111,6 @@ class Room extends RoomBase {
   @autoSerialize
   clubOwner: any
 
-  // @autoSerialize
-  // shuffleData: any = []
-
   autoDissolveTimer: NodeJS.Timer
   robotManager: RobotManager
 
@@ -156,7 +153,7 @@ class Room extends RoomBase {
       if (playerId) {
         const playerRmq = await getPlayerRmqProxy(playerId, repository.channel, GameType.guandan);
         if (json.players[index]) {
-          room.players[index] = playerRmq
+          room.players[index] = playerRmq;
         }
         room.playersOrder[index] = playerRmq;
       }
@@ -314,9 +311,6 @@ class Room extends RoomBase {
       roomState = 'zero_ju'
     }
     const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
-    if (this.gameRule.useClubGold && (this.game.juIndex === this.gameRule.juShu || roomState === "dissolve")) {
-      await this.updatePlayerClubGold();
-    }
 
     const roomRecord = {
       players,
@@ -490,10 +484,6 @@ class Room extends RoomBase {
     if (this.gameRule.juShu === 3) {
       return 10;
     }
-
-    // if ([4, 5, 6].includes(this.gameRule.juShu)) {
-    //   return 14;
-    // }
 
     return 14;
   }
