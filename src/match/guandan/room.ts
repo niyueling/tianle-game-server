@@ -721,16 +721,6 @@ class Room extends RoomBase {
           this.homeTeamCard = (this.homeTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.homeTeamCard + upgradeMultiple);
           this.currentLevelCard = this.homeTeamCard;
         }
-
-        // 如果对手级牌已经封顶，则过牌失败次数
-        if (this.awayTeamCard === nextLevelCard || this.awayTeamCard === 1) {
-          this.awayFailCount++;
-
-          if (this.awayFailCount === 3) {
-            this.awayFailCount = 0;
-            this.awayTeamCard = 2;
-          }
-        }
       }
 
       if (team === 1) {
@@ -755,16 +745,6 @@ class Room extends RoomBase {
         } else {
           this.awayTeamCard = (this.awayTeamCard + upgradeMultiple >= nextLevelCard ? (nextLevelCard !== 14 ? nextLevelCard : nextLevelCard - 13) : this.awayTeamCard + upgradeMultiple);
           this.currentLevelCard = this.awayTeamCard;
-        }
-
-        // 如果对手级牌已经封顶，则过牌失败次数
-        if (this.homeTeamCard === nextLevelCard || this.homeTeamCard === 1) {
-          this.homeFailCount++;
-
-          if (this.homeFailCount === 3) {
-            this.homeFailCount = 0;
-            this.homeTeamCard = 2;
-          }
         }
       }
 
