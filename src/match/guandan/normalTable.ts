@@ -539,8 +539,7 @@ export default class NormalTable extends Table {
         model: p.model,
         index: p.index,
         score: p.balance,
-        winOrder: p.winOrder,
-        mode: p.mode,
+        winOrder: p.winOrder
       })
     }
     const gameOverMsg = {
