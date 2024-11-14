@@ -231,8 +231,8 @@ export default class NormalTable extends Table {
   async calcPayAndReturnTribute() {
     const payAndReturnIndex = this.players.findIndex(p => p.payTributeState || p.returnTributeState);
     if (payAndReturnIndex !== -1) {
-      // 单下，末游给头游进贡,双下，如果有抗贡，则末游给头游进贡
-      if (!this.isAllTribute || (this.isAllTribute && this.kangTribute.length)) {
+      // 单下，末游给头游进贡
+      if (!this.isAllTribute) {
         // 查询进贡用户
         const payTributePlayer = this.players.find(p => p.payTributeState);
 
@@ -402,28 +402,36 @@ export default class NormalTable extends Table {
         isAllTribute = true;
       }
 
+      // 用户有双大王
+      const doubleMaxJokerPlayer = this.players.filter(p => p.cards.filter(c => c.type === CardType.Joker && c.point === 17).length === 2);
+      if (doubleMaxJokerPlayer.length) {
+        const doubleWinOrderPlayer = this.room.winOrderLists.find(p => p.playerId.toString() === doubleMaxJokerPlayer[0]._id.toString());
+
+        // 双下用户是末游，或者单下用户是末游,扛贡成功
+        if (doubleWinOrderPlayer.winOrder === 99) {
+          kangTribute.push(doubleMaxJokerPlayer[0]._id);
+          this.room.broadcast('game/conflicteTribute', {ok: true, data: {index: doubleMaxJokerPlayer[0].seatIndex}});
+
+          return this.nextToStartGame();
+        }
+      }
+
+      // 无人抗贡，则判断进还贡
       for (const player of this.players) {
         const winOrderPlayer = this.room.winOrderLists.find(p => p.playerId.toString() === player._id.toString());
 
         // 双下，两个末游要向两个头游进贡一张，单下，末游向头游进贡一张
         if ((isAllTribute && winOrderPlayer.winOrder > 2) || (!isAllTribute && winOrderPlayer.winOrder === 99)) {
-          // 如果用户有两个大王可抗贡
-          const maxJokerCount = player.cards.filter(c => c.type === CardType.Joker && c.point === 17).length;
-          if (maxJokerCount === 2) {
-            kangTribute.push(player._id);
-            this.room.broadcast('game/conflicteTribute', {ok: true, data: {index: player.seatIndex}});
-          } else {
-            player.payTributeState = true;
-            this.room.broadcast('game/startPayTribute', {ok: true, data: {index: player.seatIndex}});
+          player.payTributeState = true;
+          this.room.broadcast('game/startPayTribute', {ok: true, data: {index: player.seatIndex}});
 
-            // 单下，向头游进贡
-            if (!isAllTribute) {
-              // 查询头游玩家,向头游进贡
-              const firstOrderPlayer = this.room.winOrderLists.find(p => p.winOrder === 1);
-              const firstPlayer = this.players.find(p => p._id.toString() === firstOrderPlayer.playerId.toString());
-              firstPlayer.returnTributeState = true;
-              this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: firstPlayer.seatIndex}});
-            }
+          // 单下，向头游进贡
+          if (!isAllTribute) {
+            // 查询头游玩家,向头游进贡
+            const firstOrderPlayer = this.room.winOrderLists.find(p => p.winOrder === 1);
+            const firstPlayer = this.players.find(p => p._id.toString() === firstOrderPlayer.playerId.toString());
+            firstPlayer.returnTributeState = true;
+            this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: firstPlayer.seatIndex}});
           }
         }
       }
@@ -433,17 +441,10 @@ export default class NormalTable extends Table {
 
       // 双下，向赢家进贡
       if (isAllTribute) {
-        // 有人抗贡，则只有头游需要还贡
-        if (kangTribute.length) {
-          winPlayers[0].returnTributeState = true;
-          this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayers[0].seatIndex}});
-        } else {
-          // 无人抗贡，则赢家两人都需要还贡
-          for (const player of winPlayers) {
-            const winPlayer = this.players.find(p => p._id.toString() === player.playerId.toString());
-            winPlayer.returnTributeState = true;
-            this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
-          }
+        for (const player of winPlayers) {
+          const winPlayer = this.players.find(p => p._id.toString() === player.playerId.toString());
+          winPlayer.returnTributeState = true;
+          this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: winPlayer.seatIndex}});
         }
       }
 
