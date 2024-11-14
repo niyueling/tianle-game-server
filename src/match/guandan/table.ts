@@ -478,7 +478,7 @@ abstract class Table implements Serializable {
     this.autoCommitStartTime = Date.now();
     const primaryDelayTime = playerIsOndeposit ? 1500 : time * 1000;
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime);
-    console.warn("currentPlayerStep %s playerIsOndeposit %s delayTime %s tableState %s", this.currentPlayerStep, playerIsOndeposit, delayTime, this.tableState);
+    // console.warn("currentPlayerStep %s playerIsOndeposit %s delayTime %s tableState %s", this.currentPlayerStep, playerIsOndeposit, delayTime, this.tableState);
     this.autoCommitTimer = setTimeout(async () => {
       if (this.tableState === "selectMode") {
         return await this.autoCommitForPlayerChooseMode();
@@ -511,7 +511,7 @@ abstract class Table implements Serializable {
         continue;
       }
 
-      console.warn("tableState %s payTributeState %s returnTributeState %s", this.room.gameState.tableState, player.payTributeState, player.returnTributeState);
+      // console.warn("tableState %s payTributeState %s returnTributeState %s", this.room.gameState.tableState, player.payTributeState, player.returnTributeState);
       const cardSlices = player.cards.slice();
       const sortCard = cardSlices.sort((grp1, grp2) => {
         return grp2.point - grp1.point
@@ -544,7 +544,7 @@ abstract class Table implements Serializable {
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
       this.daPai(player, cards, currentPattern, onDeposit)
     } else {
-      console.warn("cards %s currentPattern %s lastPattern %s patternCompare %s", JSON.stringify(cards), JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
+      // console.warn("cards %s currentPattern %s lastPattern %s patternCompare %s", JSON.stringify(cards), JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
       this.cannotDaPai(player, cards, currentPattern)
     }
   }
@@ -613,7 +613,7 @@ abstract class Table implements Serializable {
       }})
     this.notifyTeamMateWhenTeamMateWin(player, cards)
     if (this.players[nextPlayer]) {
-      console.warn("daPai index %s _id %s onDeposit %s", this.players[nextPlayer].seatIndex, this.players[nextPlayer]._id, this.players[nextPlayer].onDeposit);
+      // console.warn("daPai index %s _id %s onDeposit %s", this.players[nextPlayer].seatIndex, this.players[nextPlayer]._id, this.players[nextPlayer].onDeposit);
       this.autoCommitFunc(this.players[nextPlayer].onDeposit)
     }
     if (isGameOver) {
@@ -780,7 +780,7 @@ abstract class Table implements Serializable {
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
 
     if (this.players[nextPlayer]) {
-      console.warn("guoPai index %s _id %s onDeposit %s", this.players[nextPlayer].seatIndex, this.players[nextPlayer]._id, this.players[nextPlayer].onDeposit);
+      // console.warn("guoPai index %s _id %s onDeposit %s", this.players[nextPlayer].seatIndex, this.players[nextPlayer]._id, this.players[nextPlayer].onDeposit);
       this.autoCommitFunc(this.players[nextPlayer].onDeposit)
     }
   }
@@ -931,7 +931,7 @@ abstract class Table implements Serializable {
         const currentTime = new Date().getTime();
         const startTime = Date.parse(m.createAt);
 
-        console.warn("startTime %s currentTime %s", startTime, currentTime);
+        // console.warn("startTime %s currentTime %s", startTime, currentTime);
 
         if (currentTime - startTime > config.game.dissolveTime) {
           return await this.room.forceDissolve();
