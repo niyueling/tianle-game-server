@@ -35,6 +35,7 @@ export default class NormalTable extends Table {
     const faPaiFunc = async() => {
       if (this.rule.allowDouble) {
         await this.broadcastModeRequest();
+        await this.room.robotManager.setCardReady(this.rule.allowDouble);
       } else {
         await this.startFaPai(payload);
         this.nextAction = this.startTeamworkGame;
@@ -210,7 +211,6 @@ export default class NormalTable extends Table {
       this.setTeamMate();
       this.setFirstDa(this.nextSeatIndex !== -1 ? this.nextSeatIndex : 0);
       this.mode = 'teamwork';
-      await this.room.robotManager.setCardReady(this.rule.allowDouble);
       this.broadcastFirstDa();
       this.autoCommitFunc();
     }
