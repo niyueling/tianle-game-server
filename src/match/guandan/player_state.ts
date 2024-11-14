@@ -36,7 +36,6 @@ class DetailBalance {
 
 class PlayerState implements Serializable {
   timeoutTask: Timer
-  canDeposit: boolean = false
 
   @autoSerialize
   lastAction: 'da' | 'guo' = null
@@ -63,7 +62,6 @@ class PlayerState implements Serializable {
   score: number
   msgDispatcher: any
   onDeposit: boolean = false
-  msgHook: any
   isOperated: boolean
 
   @autoSerialize
@@ -300,7 +298,6 @@ class PlayerState implements Serializable {
     return {
       model: this.model,
       index: this.index,
-      zhuaFen: this.zhuaFen,
       ip: this.ip,
       cardRecorderStatus,
       droppedCards: this.dropped,
@@ -399,31 +396,6 @@ class PlayerState implements Serializable {
     const cards = this.cards
     this.clearDepositTask()
     this.sendMessage('game/cancelDepositReply', {ok: true, data: {cards}})
-  }
-
-  unusedBombs(): IPattern[] {
-
-    const cardsExcludeJoker = this.cards.filter(c => c.type !== CardType.Joker)
-    const jokers = this.cards.filter(c => c.type === CardType.Joker)
-    const bombs = this.room.gameState.pattern.findMatchedPatternByPattern({name: PatterNames.bomb, score: 1, cards: []}, cardsExcludeJoker)
-
-    const maxLengthGroup = bombs[bombs.length - 1] || []
-
-    const groupOf2 = bombs.find( cards => cards[0].value === 2) || []
-
-    const maxLength = Math.max(maxLengthGroup.length, groupOf2.length + 1)
-
-    if (jokers.length === 4 && maxLength < 6) {
-      bombs.push(jokers)
-    } else {
-      if (maxLengthGroup.length > groupOf2.length + 1) {
-        maxLengthGroup.push(...jokers)
-      } else {
-        groupOf2.push(...jokers)
-      }
-    }
-
-    return bombs.map(cs => this.room.gameState.pattern.findFullMatchedPattern(cs))
   }
 }
 
