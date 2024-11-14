@@ -476,6 +476,7 @@ abstract class Table implements Serializable {
     this.autoCommitStartTime = Date.now();
     const primaryDelayTime = playerIsOndeposit ? 1500 : time * 1000;
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime);
+    console.warn("playerIsOndeposit %s", playerIsOndeposit);
     this.autoCommitTimer = setTimeout(async () => {
       console.warn("tableState %s step %s currentSearIndex %s", this.tableState, this.room.robotManager.model.step, this.currentPlayerStep);
       if (this.tableState === "selectMode") {
@@ -611,6 +612,7 @@ abstract class Table implements Serializable {
       }})
     this.notifyTeamMateWhenTeamMateWin(player, cards)
     if (this.players[nextPlayer]) {
+      console.warn("daPai index %s _id %s onDeposit %s", this.players[nextPlayer].seatIndex, this.players[nextPlayer]._id, this.players[nextPlayer].onDeposit);
       this.autoCommitFunc(this.players[nextPlayer].onDeposit)
     }
     if (isGameOver) {
@@ -777,6 +779,7 @@ abstract class Table implements Serializable {
     const nextPlayer = isGameOver ? -1 : this.currentPlayerStep
 
     if (this.players[nextPlayer]) {
+      console.warn("guoPai index %s _id %s onDeposit %s", this.players[nextPlayer].seatIndex, this.players[nextPlayer]._id, this.players[nextPlayer].onDeposit);
       this.autoCommitFunc(this.players[nextPlayer].onDeposit)
     }
   }
