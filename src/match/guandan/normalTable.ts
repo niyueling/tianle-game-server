@@ -568,21 +568,25 @@ export default class NormalTable extends Table {
     const teamOrder = playersInWinOrder.map(p => p.team);
     const winTeam = teamOrder[0];
 
-    let score = 1;
+    let upgradeMultiple = 1;
+    let upgradeScore = 1;
     if (teamOrder[0] === teamOrder[1]) {
-      score = (this.rule.upgrade === 1 ? 3 : 4);
+      upgradeMultiple = (this.rule.upgrade === 1 ? 3 : 4);
+      upgradeScore = 4;
     }
 
     if (teamOrder[0] === teamOrder[2]) {
-      score = 2;
+      upgradeMultiple = 2;
+      upgradeScore = 2;
     }
 
-    this.room.upgradeMultiple = score;
+    this.room.upgradeMultiple = upgradeMultiple;
+    this.room.upgradeScore = upgradeScore;
 
     this.room.winTeamPlayers = this.players.filter(p => p.team === winTeam).map(p => p.seatIndex);
     this.room.loseTeamPlayers = this.players.filter(p => p.team !== winTeam).map(p => p.seatIndex);
 
-    console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", score, JSON.stringify(this.room.winTeamPlayers), JSON.stringify(this.room.loseTeamPlayers));
+    console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", upgradeMultiple, JSON.stringify(this.room.winTeamPlayers), JSON.stringify(this.room.loseTeamPlayers));
   }
 
   async gameOver() {
@@ -646,7 +650,7 @@ export default class NormalTable extends Table {
         if (p) {
           const base = this.room.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
           // 基础倍率
-          p.balance = base * this.multiple * this.room.upgradeMultiple;
+          p.balance = base * this.multiple * this.room.upgradeScore;
         }
       }
 
@@ -671,7 +675,7 @@ export default class NormalTable extends Table {
         const base = this.room.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
         console.warn("index %s base %s times %s winTeamPlayers %s", p.seatIndex, base, times);
         // 基础倍率
-        p.balance = base * times * this.multiple * this.room.upgradeMultiple;
+        p.balance = base * times * this.multiple * this.room.upgradeScore;
 
         if (p.balance > 0) {
           const currency = await this.PlayerGoldCurrency(p._id);

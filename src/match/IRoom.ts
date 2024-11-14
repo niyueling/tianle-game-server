@@ -173,6 +173,10 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   @autoSerialize
   upgradeMultiple: number = 1;
 
+  // 本局升级积分
+  @autoSerialize
+  upgradeScore: number = 1;
+
   // 赢家队伍
   @autoSerialize
   winTeamPlayers: any = [];
