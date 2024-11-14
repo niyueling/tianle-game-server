@@ -403,14 +403,13 @@ class Room extends RoomBase {
       model: await service.playerService.getPlayerPlainModel(newJoinPlayer.model._id),
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
+
       owner: this.ownerId,
       startIndex: index,
       gameState: this.gameState ? this.gameState.state : null,
       isGameRunning: !!this.gameState,
       _id: this._id,
       score: this.getScore(newJoinPlayer),
-      base: this.currentBase,
-      zhuangCounter: this.zhuangCounter,
       juIndex: this.game.juIndex,
       readyPlayers: this.readyPlayers.map(playerId => {
         const readyPlayer = this.inRoomPlayers.find(p => p._id === playerId)

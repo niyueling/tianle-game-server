@@ -1,5 +1,4 @@
 import {GameType, TianleErrorCode} from "@fm/common/constants";
-import {Errors, getCodeByError} from "@fm/common/errors";
 import {Channel} from "amqplib";
 // @ts-ignore
 import {pick} from "lodash";
@@ -138,19 +137,7 @@ export class PublicRoom extends Room {
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
-    const message = await super.joinMessageFor(newJoinPlayer);
-    // const lastRecord = await service.rubyReward.getLastRubyRecord(this.uid);
-    // if (lastRecord) {
-    //   // 奖池
-    //   message.roomRubyReward = lastRecord.balance;
-    //   message.mvpTimes = lastRecord.mvpTimes[newJoinPlayer.model.shortId] || 0;
-    // } else {
-    //   message.roomRubyReward = 0;
-    //   message.mvpTimes = 0;
-    // }
-    message.roomRubyReward = 0;
-    message.mvpTimes = 0;
-    return message;
+    return await super.joinMessageFor(newJoinPlayer);
   }
 
   // 检查房间是否升级
