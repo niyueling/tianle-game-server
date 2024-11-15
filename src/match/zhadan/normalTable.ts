@@ -469,7 +469,7 @@ export default class NormalTable extends Table {
   }
 
   async gameOver() {
-    console.warn("gameOver state %s", this.state);
+    // console.warn("gameOver state %s", this.state);
     if (this.state === 'gameOver') {
       return
     }
@@ -558,6 +558,7 @@ export default class NormalTable extends Table {
       const p = this.players[i];
       if (p) {
         // 基础倍率
+        console.warn("balance %s base %s bomb %s", p.balance, p.detailBalance['base'], p.detailBalance['joker']);
         p.balance -= p.detailBalance['base'];
         p.balance *= times;
         p.detailBalance['base'] *= times;
