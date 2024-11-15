@@ -2967,7 +2967,7 @@ class TableState implements Serializable {
 
                 const huTakeCard = async () => {
                   if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-                    return player.emitter.emit(Enums.huTakeCard, {from, type: 1});
+                    return player.emitter.emit(Enums.huTakeCard, {from: player.seatIndex, type: 1});
                   }
 
                   // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
@@ -3265,29 +3265,14 @@ class TableState implements Serializable {
     let xiajia = null;
 
     // 接炮的情况胡牌的下家摸牌
-    if (!this.players[message.from].isBroke && huType === "jiepao") {
-      // xiajia = this.players[message.from];
+    let startIndex = (message.from + 1) % this.players.length;
 
-      let startIndex = (message.index + 1) % this.players.length;
-
-      // 从 startIndex 开始查找未破产的玩家
-      for (let i = startIndex; i < startIndex + this.players.length; i++) {
-        let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-        if (!this.players[index].isBroke) {
-          xiajia = this.players[index];
-          break;
-        }
-      }
-    } else {
-      let startIndex = (message.from + 1) % this.players.length;
-
-      // 从 startIndex 开始查找未破产的玩家
-      for (let i = startIndex; i < startIndex + this.players.length; i++) {
-        let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
-        if (!this.players[index].isBroke) {
-          xiajia = this.players[index];
-          break;
-        }
+    // 从 startIndex 开始查找未破产的玩家
+    for (let i = startIndex; i < startIndex + this.players.length; i++) {
+      let index = i % this.players.length; // 处理边界情况，确保索引在数组范围内
+      if (!this.players[index].isBroke) {
+        xiajia = this.players[index];
+        break;
       }
     }
 
