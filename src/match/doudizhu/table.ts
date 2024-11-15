@@ -929,7 +929,7 @@ abstract class Table implements Serializable {
       return true;
     }
 
-    return false;
+    return true;
   }
 
   // 托管选择地主
