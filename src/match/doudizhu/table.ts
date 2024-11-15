@@ -149,15 +149,13 @@ abstract class Table implements Serializable {
   }
 
   abstract name()
-
   abstract start(payload)
-
   abstract startStateUpdate()
 
   initPlayers() {
-    const room = this.room
-    const rule = this.rule
-    const players = room.playersOrder.map(playerSocket => new PlayerState(playerSocket, room, rule))
+    const room = this.room;
+    const rule = this.rule;
+    const players = room.playersOrder.map(playerSocket => new PlayerState(playerSocket, room, rule));
 
     players[0].zhuang = true;
     this.zhuang = players[0];
@@ -166,8 +164,8 @@ abstract class Table implements Serializable {
   }
 
   shuffle() {
-    alg.shuffle(this.cards)
-    this.turn = 1
+    alg.shuffle(this.cards);
+    this.turn = 1;
   }
 
   // 发牌
@@ -195,7 +193,7 @@ abstract class Table implements Serializable {
       });
       // 判断是否使用记牌器
       const cardRecorderStatus = await this.getCardRecorder(p);
-      p.onShuffle(this.restJushu, initCards, i, this.room.game.juIndex, needShuffle, allPlayerCards, cardRecorderStatus)
+      p.onShuffle(this.restJushu, initCards, i, this.room.game.juIndex, needShuffle, allPlayerCards, cardRecorderStatus);
     }
 
     // 金豆房扣除开局金豆
@@ -323,8 +321,6 @@ abstract class Table implements Serializable {
 
   async onPlayerDa(player: PlayerState, {cards: plainCards}) {
     if (!this.isCurrentStep(player)) {
-      // console.warn("index-%s, currentIndex-%s", player.index, this.currentPlayerStep);
-      // this.daPaiFail(player, TianleErrorCode.notDaRound);
       return;
     }
     // 转换成 Card 类型
@@ -333,9 +329,6 @@ abstract class Table implements Serializable {
     this.status.lastIndex = this.currentPlayerStep
     this.status.lastPlayerMode = player.mode;
     // 检查最后几张
-    // if (player.cards.length === cards.length && !currentPattern) {
-    //   currentPattern = triplePlusXMatcher.verify(cards) || straightTriplesPlusXMatcher.verify(cards)
-    // }
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
       await this.daPai(player, cards, currentPattern)
     } else {

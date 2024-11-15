@@ -544,6 +544,7 @@ export class NewRobotManager {
       await this.room.forceDissolve();
       return true;
     }
+
     return false;
   }
 

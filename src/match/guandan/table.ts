@@ -442,7 +442,7 @@ abstract class Table implements Serializable {
 
     clearTimeout(this.autoCommitTimer);
     this.autoCommitStartTime = Date.now();
-    const primaryDelayTime = playerIsOndeposit ? 1500 : time * 1000;
+    const primaryDelayTime = playerIsOndeposit ? 2000 : time * 1000;
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime);
     // console.warn("currentPlayerStep %s playerIsOndeposit %s delayTime %s tableState %s", this.currentPlayerStep, playerIsOndeposit, delayTime, this.tableState);
     this.autoCommitTimer = setTimeout(async () => {
@@ -502,16 +502,16 @@ abstract class Table implements Serializable {
       this.daPaiFail(player, TianleErrorCode.notDaRound, plainCards);
       return;
     }
-    // console.warn("onPlayerDa index %s cards %s", player.seatIndex, JSON.stringify(plainCards));
+
     const cards = plainCards.map(Card.from);
     this.status.lastIndex = this.currentPlayerStep;
     const currentPattern = this.pattern.isGreaterThanPatternForPlainCards(plainCards, this.status.lastPattern, player.cards.length);
 
     if (player.tryDaPai(cards.slice()) && patternCompare(currentPattern, this.status.lastPattern) > 0) {
-      this.daPai(player, cards, currentPattern, onDeposit)
+      this.daPai(player, cards, currentPattern, onDeposit);
     } else {
       // console.warn("cards %s currentPattern %s lastPattern %s patternCompare %s", JSON.stringify(cards), JSON.stringify(currentPattern), JSON.stringify(this.status.lastPattern), patternCompare(currentPattern, this.status.lastPattern));
-      this.cannotDaPai(player, cards, currentPattern)
+      this.cannotDaPai(player, cards, currentPattern);
     }
   }
 
@@ -568,10 +568,10 @@ abstract class Table implements Serializable {
         next: nextPlayer,
         pattern: this.status.lastPattern
       }})
-    this.notifyTeamMateWhenTeamMateWin(player, cards)
+    this.notifyTeamMateWhenTeamMateWin(player, cards);
     if (this.players[nextPlayer]) {
       // console.warn("daPai index %s _id %s onDeposit %s", this.players[nextPlayer].seatIndex, this.players[nextPlayer]._id, this.players[nextPlayer].onDeposit);
-      this.autoCommitFunc(this.players[nextPlayer].onDeposit)
+      this.autoCommitFunc(this.players[nextPlayer].onDeposit);
     }
     if (isGameOver) {
       const lostPlayers = this.players.filter(p => p.winOrder === 99);
