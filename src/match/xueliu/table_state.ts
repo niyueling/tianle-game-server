@@ -2973,7 +2973,7 @@ class TableState implements Serializable {
                   // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
                   this.gameMoStatus = {
                     state: true,
-                    from,
+                    from: player.seatIndex,
                     type: 1,
                     index: this.atIndex(player)
                   }
