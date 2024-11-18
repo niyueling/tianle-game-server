@@ -418,33 +418,33 @@ abstract class Table implements Serializable {
   }
 
   moveToNext() {
-    let nextSeatIndex = this.currentPlayerStep
+    let nextSeatIndex = this.currentPlayerStep;
 
-    let findNext = false
+    let findNext = false;
     while (!findNext) {
-      nextSeatIndex = (nextSeatIndex + 1) % this.playerCount
-      const playerState = this.players[nextSeatIndex]
+      nextSeatIndex = (nextSeatIndex + 1) % this.playerCount;
+      const playerState = this.players[nextSeatIndex];
 
       if (nextSeatIndex === this.status.from) {
-        this.status.lastPattern = null
-        this.status.lastCards = []
+        this.status.lastPattern = null;
+        this.status.lastCards = [];
 
         if (playerState.cards.length === 0 && playerState.foundFriend) {
-          nextSeatIndex = playerState.teamMate
-          this.cleanCards(playerState)
-          findNext = true
+          nextSeatIndex = playerState.teamMate;
+          this.cleanCards(playerState);
+          findNext = true;
         }
       }
 
       if (playerState.cards.length > 0) {
-        findNext = true
+        findNext = true;
       } else {
-        this.cleanCards(playerState)
+        this.cleanCards(playerState);
       }
     }
 
-    this.status.current.seatIndex = nextSeatIndex
-    this.status.current.step += 1
+    this.status.current.seatIndex = nextSeatIndex;
+    this.status.current.step += 1;
   }
 
   cleanCards(player: PlayerState) {
@@ -598,11 +598,13 @@ abstract class Table implements Serializable {
 
     this.notifyTeamMateWhenTeamMateWin(player, cards)
     if (this.players[nextPlayer]) {
-      if (this.players[nextPlayer].broke) {
-        this.onPlayerGuo(this.players[nextPlayer]);
-      } else {
-        this.autoCommitFunc(this.players[nextPlayer].onDeposit)
-      }
+      // if (this.players[nextPlayer].broke) {
+      //   this.onPlayerGuo(this.players[nextPlayer]);
+      // } else {
+      //   this.autoCommitFunc(this.players[nextPlayer].onDeposit)
+      // }
+
+      this.autoCommitFunc(this.players[nextPlayer].onDeposit);
     }
     if (isGameOver) {
       const lostPlayers = this.players.filter(p => p.winOrder === 99);
@@ -845,6 +847,7 @@ abstract class Table implements Serializable {
 
       this.status.fen = 0
     }
+
     this.room.broadcast("game/otherGuo", {ok: true, data: {
         index: player.seatIndex,
         next: this.currentPlayerStep,
