@@ -333,7 +333,7 @@ abstract class Table implements Serializable {
     player.msgDispatcher.on('game/cancelDeposit', msg => this.onCancelDeposit(player))
     // 手动刷新
     player.msgDispatcher.on('game/refresh', async () => {
-      player.sendMessage('room/refresh', {ok: true, data: this.reconnectContent(player.seatIndex, player)});
+      player.sendMessage('room/refresh', {ok: true, data: await this.reconnectContent(player.seatIndex, player)});
     })
   }
 
@@ -728,7 +728,7 @@ abstract class Table implements Serializable {
     this.listenPlayer(player)
   }
 
-  reconnectContent(index, reconnectPlayer: PlayerState): any {
+  async reconnectContent(index, reconnectPlayer: PlayerState): Promise<any> {
     const state = this.state
     const stateData = this.stateData
     const juIndex = this.room.game.juIndex
