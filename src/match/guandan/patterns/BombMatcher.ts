@@ -66,7 +66,7 @@ export default class BombMatcher implements IMatcher {
       })
 
     for (let i = 0; i < normalBomb.length; i++) {
-      if (caiShen.length && normalBomb[i].length < 4) {
+      if (caiShen.length && normalBomb[i].length < 4 && normalBomb[i][0].value !== levelCard) {
         normalBomb[i] = [...normalBomb[i], ...caiShen];
       }
     }
