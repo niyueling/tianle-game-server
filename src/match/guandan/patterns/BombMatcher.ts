@@ -41,7 +41,7 @@ export default class BombMatcher implements IMatcher {
     const minScore = target.name === PatterNames.bomb ? target.score : 0;
     const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
     const haveLevelFilter = function (g: Card[]) {
-      return g.length >= 4 - caiShen.length
+      return g.length >= 4 - caiShen.length && (g.length < 4 && g[0].value !== levelCard)
     }
     const noLevelFilter = function (g: Card[]) {
       return g.length >= 4
