@@ -64,7 +64,11 @@ export default class BombMatcher implements IMatcher {
           group = [...group, ...caiShen];
         }
 
-        return this.verify(group, levelCard).score > minScore;
+        const status = this.verify(group, levelCard).score > minScore;
+
+        console.warn("group %s status %s", JSON.stringify(group), status);
+
+        return status;
       })
 
     const jockerCount = cards.filter(c => c.type === CardType.Joker).length;
