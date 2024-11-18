@@ -824,7 +824,7 @@ class Room extends RoomBase {
       room: this.uid,
       juIndex: this.game.juIndex,
       playerId: player._id,
-      gameName: "浦城炸弹",
+      gameName: "掼蛋",
       caregoryName: category.title,
       currency: this.rule.currency,
       time: new Date(),

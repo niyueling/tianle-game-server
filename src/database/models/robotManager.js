@@ -10,6 +10,9 @@ const RobotMangerSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  gameType: {
+    type: String,
+  },
   // 玩家托管数, 子文档使用 markModified 保存
   depositPlayer: {
     type: Object,
@@ -32,6 +35,7 @@ const RobotMangerSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  createAt: {type: Date, default: Date.now},
 });
 RobotMangerSchema.index({roomId: 1});
 const RobotMangerModel = mongoose.model('RobotManager', RobotMangerSchema);

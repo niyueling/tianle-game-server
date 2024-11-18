@@ -62,6 +62,7 @@ export class NewRobotManager {
       this.model = await RobotMangerModel.create({
         roomId: this.room._id,
         depositCount: this.depositCount || 0,
+        gameType: this.room.gameRule.gameType,
         depositPlayer: {},
         offlineTimes: {},
         publicRoomRobot: [],
@@ -83,7 +84,7 @@ export class NewRobotManager {
 
   // 每秒开始监控
   startMonit() {
-    console.log('monit start ', this.room._id);
+    console.log('monit start %s model %s', this.room._id, JSON.stringify(this.model));
     this.watchTimer = setInterval(async () => {
       if (this.isWatching) {
         // 上次还没处理完
@@ -468,6 +469,7 @@ export class NewRobotManager {
       this.waitPublicRobotSecond = Math.floor(Math.random() * config.game.waitRubyPlayer + 1);
     }
     if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState) {
+      console.warn("addRobotForPublicRoom fail waitPublicRobot %s waitPublicRobotSecond %s gameState %s", this.waitPublicRobot, this.waitPublicRobotSecond, !!this.room.gameState);
       // 时间未到，或者已经有机器人
       return;
     }
