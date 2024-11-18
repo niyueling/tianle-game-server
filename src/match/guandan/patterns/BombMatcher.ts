@@ -38,10 +38,18 @@ export default class BombMatcher implements IMatcher {
 
   promptWithPattern(target, cards: Card[], levelCard?: Number): Card[][] {
 
-    const minScore = target.name === PatterNames.bomb ? target.score : 0
+    const minScore = target.name === PatterNames.bomb ? target.score : 0;
+    const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
+    const haveLevelFilter = function (g: Card[]) {
+      return g.length >= 4 - caiShen.length
+    }
+    const noLevelFilter = function (g: Card[]) {
+      return g.length >= 4
+    }
+    const filterFun = caiShen.length ? haveLevelFilter : noLevelFilter;
 
     const normalBomb = groupBy(cards, c => c.point)
-      .filter(grp => grp.length >= 4)
+      .filter(filterFun)
       .sort((grp1, grp2) => {
         if (grp1.length !== grp2.length) {
           return grp1.length - grp2.length
@@ -49,7 +57,13 @@ export default class BombMatcher implements IMatcher {
 
         return grp1[0].point - grp2[0].point
       })
-      .filter(group => this.verify(group, levelCard).score > minScore)
+      .filter(group => {
+        if (group.length < 4) {
+          group = [...group, ...caiShen];
+        }
+
+        return this.verify(group, levelCard).score > minScore;
+      })
 
     const jockerCount = cards.filter(c => c.type === CardType.Joker).length;
 
