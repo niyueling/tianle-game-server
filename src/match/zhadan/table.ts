@@ -300,7 +300,7 @@ abstract class Table implements Serializable {
   }
 
   getQuarterCount() {
-    return this.rule.useJoker ? 27 : 26;
+    return this.rule.jokerCount ? 27 : 26;
   }
 
   async fourJokersReward() {
