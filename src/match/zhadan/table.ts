@@ -335,8 +335,10 @@ abstract class Table implements Serializable {
   async fapai(payload) {
     payload.cards = [
       [{type: 0, point: 16, value: 16}, {type: 0, point: 16, value: 16}, {type: 0, point: 16, value: 16}, {type: 0, point: 17, value: 17}, {type: 0, point: 17, value: 17}, {type: 0, point: 17, value: 17},
-        {type: 1, point: 15, value: 2}, {type: 1, point: 15, value: 2}, {type: 2, point: 15, value: 2}, {type: 2, point: 15, value: 2},
-        {type: 3, point: 15, value: 2}, {type: 3, point: 15, value: 2}, {type: 4, point: 15, value: 2}, {type: 4, point: 15, value: 2}],
+        {type: 1, point: 15, value: 2}, {type: 1, point: 15, value: 2}, {type: 2, point: 15, value: 2}, {type: 2, point: 15, value: 2}, {type: 3, point: 15, value: 2}, {type: 3, point: 15, value: 2}, {type: 4, point: 15, value: 2},
+        {type: 4, point: 15, value: 2}, {type: 1, point: 14, value: 1}, {type: 1, point: 14, value: 1}, {type: 2, point: 14, value: 1}, {type: 2, point: 14, value: 1}, {type: 3, point: 14, value: 1},
+        {type: 3, point: 14, value: 1}, {type: 4, point: 14, value: 1}, {type: 1, point: 13, value: 13}, {type: 1, point: 13, value: 13}, {type: 2, point: 13, value: 13}, {type: 2, point: 13, value: 13},
+        {type: 3, point: 13, value: 13}, {type: 3, point: 13, value: 13}],
       [],
       [],
       []
