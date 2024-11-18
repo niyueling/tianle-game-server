@@ -129,6 +129,12 @@ class PlayerState implements Serializable {
   @autoSerialize
   returnTributeCard: Card
 
+  @autoSerialize
+  payTributeIndex: number = -1
+
+  @autoSerialize
+  returnTributeIndex: number = -1
+
   // 已经出掉的牌
   @autoSerialize
   dropped: any[]
@@ -309,8 +315,10 @@ class PlayerState implements Serializable {
       team: this.team,
       payTributeState: this.payTributeState,
       payTributeCard: this.payTributeCard,
+      payTributeIndex: this.payTributeIndex,
       returnTributeState: this.returnTributeState,
       returnTributeCard: this.returnTributeCard,
+      returnTributeIndex: this.returnTributeIndex,
     }
   }
 

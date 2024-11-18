@@ -242,7 +242,9 @@ export default class NormalTable extends Table {
           JSON.stringify(this.kangTribute), payTributePlayer && payTributePlayer._id, returnTributePlayer && returnTributePlayer._id);
 
         payTributePlayer.returnTributeCard = returnTributePlayer.returnTributeCard;
+        payTributePlayer.returnTributeIndex = returnTributePlayer.seatIndex;
         returnTributePlayer.payTributeCard = payTributePlayer.payTributeCard;
+        returnTributePlayer.payTributeIndex = payTributePlayer.seatIndex;
       }
 
       // 双下无抗贡，则进贡大牌给头游，剩下的牌给二游
@@ -262,11 +264,15 @@ export default class NormalTable extends Table {
 
         // 进贡牌面较小的给二游
         payTributePlayer[0].returnTributeCard = secondPlayer.returnTributeCard;
+        payTributePlayer[0].returnTributeIndex = secondPlayer.seatIndex;
         secondPlayer.payTributeCard = payTributePlayer[0].payTributeCard;
+        secondPlayer[0].payTributeIndex = payTributePlayer[0].seatIndex;
 
         // 进贡牌面较大的给二游
         payTributePlayer[1].returnTributeCard = firstPlayer.returnTributeCard;
+        payTributePlayer[1].returnTributeIndex = firstPlayer.seatIndex;
         firstPlayer.payTributeCard = payTributePlayer[1].payTributeCard;
+        firstPlayer.payTributeIndex = payTributePlayer[1].seatIndex;
       }
 
       // 执行换牌逻辑
@@ -288,7 +294,7 @@ export default class NormalTable extends Table {
           }
 
           this.room.broadcast("game/payAndReturnCards", {ok: true, data: {player: player.seatIndex, type: player.payTributeState ? "pay" : "return",
-              payTributeCard: player.payTributeCard, returnTributeCard: player.returnTributeCard, cards: player.cards.length}});
+              payTributeCard: player.payTributeCard, returnTributeCard: player.returnTributeCard, cards: player.cards.length, payTributeIndex: player.payTributeIndex, returnTributeIndex: player.returnTributeIndex}});
         }
       }
 
