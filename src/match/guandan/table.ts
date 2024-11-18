@@ -437,7 +437,7 @@ abstract class Table implements Serializable {
 
     // 如果处于进还贡状态，托管后自动选择
     if (this.tableState === 'returnTribute') {
-      time = 10;
+      time = 30;
     }
 
     clearTimeout(this.autoCommitTimer);
