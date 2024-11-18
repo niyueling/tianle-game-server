@@ -48,8 +48,6 @@ export default class BombMatcher implements IMatcher {
     }
     const filterFun = caiShen.length ? haveLevelFilter : noLevelFilter;
 
-    console.warn(filterFun);
-
     const normalBomb = groupBy(cards, c => c.point)
       .filter(filterFun)
       .sort((grp1, grp2) => {
@@ -60,15 +58,11 @@ export default class BombMatcher implements IMatcher {
         return grp1[0].point - grp2[0].point
       })
       .filter(group => {
-        if (group.length < 4 && caiShen.length) {
+        if (caiShen.length) {
           group = [...group, ...caiShen];
         }
 
-        const status = this.verify(group, levelCard).score > minScore;
-
-        console.warn("group %s status %s", JSON.stringify(group), status);
-
-        return status;
+        return this.verify(group, levelCard).score > minScore;
       })
 
     const jockerCount = cards.filter(c => c.type === CardType.Joker).length;
