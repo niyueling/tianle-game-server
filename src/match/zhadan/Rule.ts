@@ -62,6 +62,10 @@ class Rule {
     return maPaiArr.map(maPai => new Card(CardType.Heart, maPai))
   }
 
+  get test() {
+    return this.ro.test || false
+  }
+
   // 币种
   get currency(): string {
     if (!this.ro.currency) {

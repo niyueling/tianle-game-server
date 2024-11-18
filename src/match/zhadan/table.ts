@@ -226,7 +226,7 @@ abstract class Table implements Serializable {
 
   abstract name()
 
-  abstract async start()
+  abstract async start(payload)
 
   abstract autoModeTimeFunc()
 
@@ -275,15 +275,26 @@ abstract class Table implements Serializable {
     this.remainCards = this.cards.length
   }
 
-  consumeCard() {
-    const cardIndex = --this.remainCards
-    return this.cards[cardIndex]
+  consumeCard(helpCard) {
+    let cardIndex = --this.remainCards;
+    if (helpCard) {
+      const index = this.cards.findIndex(c => c.type === helpCard.type && c.value === helpCard.value);
+      if (index !== -1) {
+        cardIndex = index;
+      }
+    }
+
+    const card = this.cards[cardIndex];
+    this.cards.splice(cardIndex, 1);
+    // console.warn("cardCount %s remainCard %s card %s", this.cards.length, cardIndex, JSON.stringify(card));
+    return card;
   }
 
-  takeQuarterCards(p) {
-    const cards = []
+  takeQuarterCards(p, helpCards) {
+    const cards = [];
+    const helpCardCount = helpCards.length;
     for (let i = p.cards.length; i < this.getQuarterCount(); i++) {
-      cards.push(this.consumeCard());
+      cards.push(this.consumeCard(i < helpCardCount ? helpCards[i] : null));
     }
     return cards;
   }
@@ -321,12 +332,12 @@ abstract class Table implements Serializable {
     }
   }
 
-  async fapai() {
+  async fapai(payload) {
 
-    await this._fapai()
+    await this._fapai(payload)
 
     if (this.players.some(p => this.haveFourJokers(p)) && this.rollReshuffle()) {
-      this._fapai()
+      this._fapai(payload)
     }
 
     // 金豆房扣除开局金豆
@@ -1221,14 +1232,14 @@ abstract class Table implements Serializable {
     }, 0)
   }
 
-  private async _fapai() {
+  private async _fapai(payload) {
     this.initCards()
     this.shuffle()
     this.stateData = {}
 
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i]
-      p.cards = [...p.cards, ...this.takeQuarterCards(p)];
+      p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : [])];
     }
   }
 

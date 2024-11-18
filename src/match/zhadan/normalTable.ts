@@ -30,12 +30,12 @@ export default class NormalTable extends Table {
     return "zhadan"
   }
 
-  async start() {
-    if (this.room.gameRule.isPublic) {
+  async start(payload) {
+    if (this.room.gameRule.isPublic && !this.room.gameRule.test) {
       // 金豆房发牌
       await this.publicRoomFapai();
     } else {
-      await this.fapai();
+      await this.fapai(payload);
     }
     // await this.publicRoomFapai();
     if (!this.selectFriendCard(this.players[0].cards)) {
