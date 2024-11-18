@@ -138,7 +138,7 @@ export class NewRobotManager {
       }
 
       if (!this.room.gameState) {
-        // console.warn("room %s waitUpdateRubyTime %s random %s", this.room._id, this.waitUpdateRubyTime, this.waitUpdateRandomTime);
+        console.warn("room %s waitUpdateRubyTime %s random %s", this.room._id, this.waitUpdateRubyTime, this.waitUpdateRandomTime);
       }
 
       if (this.waitUpdateRubyTime < this.waitUpdateRandomTime || this.room.gameState) {
@@ -469,7 +469,7 @@ export class NewRobotManager {
       this.waitPublicRobotSecond = Math.floor(Math.random() * config.game.waitRubyPlayer + 1);
     }
     if (this.waitPublicRobot < this.waitPublicRobotSecond || this.room.gameState) {
-      console.warn("addRobotForPublicRoom fail waitPublicRobot %s waitPublicRobotSecond %s gameState %s", this.waitPublicRobot, this.waitPublicRobotSecond, !!this.room.gameState);
+      // console.warn("addRobotForPublicRoom fail waitPublicRobot %s waitPublicRobotSecond %s gameState %s", this.waitPublicRobot, this.waitPublicRobotSecond, !!this.room.gameState);
       // 时间未到，或者已经有机器人
       return;
     }
