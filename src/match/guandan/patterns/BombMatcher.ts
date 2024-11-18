@@ -48,6 +48,8 @@ export default class BombMatcher implements IMatcher {
     }
     const filterFun = caiShen.length ? haveLevelFilter : noLevelFilter;
 
+    console.warn(filterFun);
+
     const normalBomb = groupBy(cards, c => c.point)
       .filter(filterFun)
       .sort((grp1, grp2) => {
@@ -58,7 +60,7 @@ export default class BombMatcher implements IMatcher {
         return grp1[0].point - grp2[0].point
       })
       .filter(group => {
-        if (group.length < 4) {
+        if (group.length < 4 && caiShen.length) {
           group = [...group, ...caiShen];
         }
 
