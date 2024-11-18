@@ -65,6 +65,12 @@ export default class BombMatcher implements IMatcher {
         return this.verify(group, levelCard).score > minScore;
       })
 
+    for (let i = 0; i < normalBomb.length; i++) {
+      if (caiShen.length && normalBomb[i].length < 4) {
+        normalBomb[i] = [...normalBomb[i], ...caiShen];
+      }
+    }
+
     const jockerCount = cards.filter(c => c.type === CardType.Joker).length;
 
     if (jockerCount === 4) {
