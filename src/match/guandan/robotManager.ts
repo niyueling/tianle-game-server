@@ -38,7 +38,7 @@ export class RobotManager extends NewRobotManager {
         isOk = this.isHumanPlayerSelectMode();
         if (isOk) {
           // 离线用户选择
-          console.log('select offline player mode');
+          console.log('select offline player mode ', this.room._id);
           await this.selectMode();
         }
       }
