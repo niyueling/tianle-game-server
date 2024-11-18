@@ -1,5 +1,5 @@
 import Card, {CardType} from "../card"
-import {arraySubtract, groupBy, IMatcher, IPattern, PatterNames} from "./base"
+import {arraySubtract, groupBy, IMatcher, IPattern, last, PatterNames} from "./base"
 
 export default class StraightFlushMatcher implements IMatcher {
 
@@ -21,6 +21,11 @@ export default class StraightFlushMatcher implements IMatcher {
         cards: copyCards,
         level: copyCards.length
       };
+
+      if (last(subtractCards).point > 14) {
+        console.warn("StraightMatcher error 2 %s", JSON.stringify(subtractCards));
+        return null;
+      }
 
       let lastCard = subtractCards[0].point;
       let caiShenCount = levelCards.length;
