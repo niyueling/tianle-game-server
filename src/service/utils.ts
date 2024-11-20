@@ -203,6 +203,7 @@ export default class UtilsService extends BaseService {
 
   // 根据总和生成数组
   generateRandomNumber(sum, count, maxNumber?) {
+    console.warn("jokerCount %s playerCardCount %s maxNumber %s", sum, count, maxNumber);
     const numbers = []
     const originRum = sum;
     let cmp = 0;
