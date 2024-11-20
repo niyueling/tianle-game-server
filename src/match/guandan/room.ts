@@ -18,10 +18,12 @@ import Game from './game'
 import {eqlModelId} from "./modelId"
 import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
-import Table from "./table"
+import Table, {genFullyCards} from "./table"
 import Player from "../../database/models/player";
 import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
+import alg from "../../utils/algorithm";
+import Card, {CardType} from "./card";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -216,6 +218,24 @@ class Room extends RoomBase {
     this.emit('empty', this.disconnected.map(x => x[0]))
     this.players.fill(null)
     return true
+  }
+
+  async testFaPai(player) {
+    const types = [CardType.Club, CardType.Diamond, CardType.Heart, CardType.Spades];
+    const cards = [];
+
+    types.forEach((type: CardType) => {
+      for (let v = 1; v <= 13; v += 1) {
+        cards.push(new Card(type, v, 2), new Card(type, v, 2));
+      }
+    })
+
+    cards.push(new Card(CardType.Joker, 16, 2), new Card(CardType.Joker, 16, 2));
+    cards.push(new Card(CardType.Joker, 17, 2), new Card(CardType.Joker, 17, 2));
+
+    alg.shuffleForZhadan(cards);
+
+    player.sendMessage('game/testFaPaiReply', {ok: true, data: {cards: cards.slice(0, 27)}});
   }
 
   initPlayers() {

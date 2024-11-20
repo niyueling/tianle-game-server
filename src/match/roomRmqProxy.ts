@@ -205,6 +205,11 @@ export default class RoomProxy {
           return
         }
 
+        if (messageBody.name === 'game/testFaPai') {
+          await room.testFaPai(thePlayer);
+          return
+        }
+
         if (messageBody.name === 'room/shuffleDataApply') {
           await room.shuffleDataApply(messageBody.payload)
           return
