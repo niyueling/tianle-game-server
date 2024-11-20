@@ -266,7 +266,7 @@ export default class NormalTable extends Table {
         payTributePlayer[0].returnTributeCard = secondPlayer.returnTributeCard;
         payTributePlayer[0].returnTributeIndex = secondPlayer.seatIndex;
         secondPlayer.payTributeCard = payTributePlayer[0].payTributeCard;
-        secondPlayer[0].payTributeIndex = payTributePlayer[0].seatIndex;
+        secondPlayer.payTributeIndex = payTributePlayer[0].seatIndex;
 
         // 进贡牌面较大的给二游
         payTributePlayer[1].returnTributeCard = firstPlayer.returnTributeCard;
