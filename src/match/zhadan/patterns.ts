@@ -15,13 +15,12 @@ import TripleMatcher from "./patterns/TripleMatcher";
 
 const matchers: IMatcher[] = [
   new BombMatcher(),
-
   new StraightMatcher(),
   new StraightDoublesMatcher(),
-
   new StraightTriplePlus2Matcher(),
-
   new TriplePlus2Matcher(),
+  new TriplePlusXMatcher(),
+  new TripleMatcher(),
   new DoubleMatcher(),
   new SingleMatcher(),
 ]
@@ -87,6 +86,7 @@ function patternNameToPatternMatcher(name: string): IMatcher {
   if (name === PatterNames.bomb) return new BombMatcher()
   if (name === PatterNames.double) return new DoubleMatcher()
   if (name === PatterNames.triplePlus2) return new TriplePlus2MatcherExtra()
+  if (name === PatterNames.triple) return new TripleMatcher()
 
   if (name.startsWith(PatterNames.straight)) return new StraightMatcher()
   if (name.startsWith(PatterNames.doubles)) return new StraightDoublesMatcher()
