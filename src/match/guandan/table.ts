@@ -338,7 +338,7 @@ abstract class Table implements Serializable {
 
     // 测试发一副手牌
     player.msgDispatcher.on('game/testFaPai', async () => {
-      player.sendMessage('game/testFaPaiReply', {ok: true, data: await this.testFaPai()});
+      player.sendMessage('game/testFaPaiReply', {ok: true, data: {cards: await this.testFaPai()}});
     })
   }
 
