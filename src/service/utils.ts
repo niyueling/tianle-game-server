@@ -203,6 +203,7 @@ export default class UtilsService extends BaseService {
 
   // 根据总和生成数组
   generateRandomNumber(sum, count, maxNumber?) {
+    console.warn("jokerCount %s playerCardCount %s maxNumber %s", sum, count, maxNumber);
     const numbers = []
     const originRum = sum;
     let cmp = 0;
@@ -222,7 +223,7 @@ export default class UtilsService extends BaseService {
       // 生成的最大的数大于 maxNumber，重新生成 or 没有总和不对
       return this.generateRandomNumber(originRum, count, maxNumber);
     }
-    console.warn("jokerCount %s playerCardCount %s maxNumber %s numbers %s", sum, count, maxNumber, JSON.stringify(numbers));
+    console.warn("generateRandomNumber numbers %s", JSON.stringify(numbers));
     return numbers;
   }
 

@@ -280,7 +280,7 @@ class CardManager {
         cardMap[card.value] = [{ card, index: i } ];
       }
     }
-    console.warn("cardMap %s", JSON.stringify(cardMap));
+    // console.warn("cardMap %s", JSON.stringify(cardMap));
     return new CardMap(cardMap);
   }
 
@@ -321,9 +321,9 @@ class CardManager {
     for (let i = 0; i < playerCards.length; i++) {
       cards = playerCards[i];
       if (jokerList[i].length > 0) {
-        // const jokerCard = cardMap.selectJoker(jokerCount[i]);
         cards.push(...jokerList[i]);
       }
+
       // 检查剩下的凑成 27 张
       if (cards.length !== 27) {
         // 不要再抽鬼牌
@@ -331,6 +331,8 @@ class CardManager {
         if (resultCards.length !== 27 - cards.length) {
           throw new Error('invalid card')
         }
+
+        console.warn("resultCards %s", JSON.stringify(resultCards));
         cards.push(...resultCards);
       }
     }
