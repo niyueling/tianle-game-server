@@ -261,6 +261,7 @@ class CardManager {
       // 偶数加小王，奇数加大王
       cards[replace.shift()] = new Card(CardType.Joker, 16 + i % 2);
     }
+    console.warn(cards);
     return cards;
   }
 
