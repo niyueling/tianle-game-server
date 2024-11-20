@@ -261,7 +261,7 @@ abstract class Table implements Serializable {
         allIndex++;
       })
 
-      alg.shuffleForZhadan(canReplaceIndex)
+      alg.shuffleForZhadan(canReplaceIndex);
       this.cards[canReplaceIndex.shift()] = new Card(CardType.Joker, 16);
       this.cards[canReplaceIndex.shift()] = new Card(CardType.Joker, 17);
     }
@@ -293,7 +293,7 @@ abstract class Table implements Serializable {
   takeQuarterCards(p, helpCards) {
     const cards = [];
     const helpCardCount = helpCards.length;
-    for (let i = p.cards.length; i < this.getQuarterCount(); i++) {
+    for (let i = 0; i < this.getQuarterCount(); i++) {
       cards.push(this.consumeCard(i < helpCardCount ? helpCards[i] : null));
     }
     return cards;
@@ -344,10 +344,10 @@ abstract class Table implements Serializable {
     //   []
     // ];
 
-    await this._fapai(payload)
+    await this._fapai(payload);
 
     if (this.players.some(p => this.haveFourJokers(p)) && this.rollReshuffle()) {
-      this._fapai(payload)
+      this._fapai(payload);
     }
 
     // 金豆房扣除开局金豆
@@ -1248,7 +1248,7 @@ abstract class Table implements Serializable {
     this.stateData = {}
 
     for (let i = 0; i < this.players.length; i++) {
-      const p = this.players[i]
+      const p = this.players[i];
       p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : [])];
     }
   }
