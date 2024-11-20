@@ -11,6 +11,7 @@ import StraightTriplePlusXMatcher, {default as StraightTriplesPlusXMatcher} from
 import StraightTriplesMatcher from './patterns/StraightTriplesMatcher'
 import TriplePlus2Matcher from './patterns/TriplePlus2Matcher'
 import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher"
+import TripleMatcher from "./patterns/TripleMatcher";
 
 const matchers: IMatcher[] = [
   new BombMatcher(),
@@ -269,15 +270,24 @@ const firstPattern = [
       cards: Array.from({ length: 7 }),
     },
   },
-  // {
-  //   // 最后3张
-  //   matcher: new TripleMatcher(),
-  //   pattern: {
-  //     name: PatterNames.triple,
-  //     score: 0,
-  //   },
-  //   cards: Array.from({ length: 3 }),
-  // },
+  {
+    // 最后3带1
+    matcher: new TriplePlusXMatcher(),
+    pattern: {
+      name: PatterNames.triplePlus2,
+      score: 0,
+    },
+    cards: Array.from({ length: 4 }),
+  },
+  {
+    // 最后3张
+    matcher: new TripleMatcher(),
+    pattern: {
+      name: PatterNames.triple,
+      score: 0,
+    },
+    cards: Array.from({ length: 3 }),
+  },
   {
     // 对子
     matcher: new DoubleMatcher(),

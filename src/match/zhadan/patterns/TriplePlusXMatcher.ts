@@ -30,7 +30,7 @@ export default class TriplePlusXMatcher implements IMatcher {
       return []
     }
 
-    const pattern = this.verify(cards)
+    const pattern = this.verify(cards);
 
     if (patternCompare(pattern, target) > 0) {
       return [cards]
