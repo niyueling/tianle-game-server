@@ -286,7 +286,7 @@ abstract class Table implements Serializable {
 
     const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
-    console.warn("cardCount %s remainCard %s card %s", this.cards.length, cardIndex, JSON.stringify(card));
+    // console.warn("cardCount %s remainCard %s card %s", this.cards.length, cardIndex, JSON.stringify(card));
     return card;
   }
 
