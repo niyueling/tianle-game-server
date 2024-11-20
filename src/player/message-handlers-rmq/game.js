@@ -84,6 +84,10 @@ const exportObj = {
   'game/cancelDeposit': (player) => {
     player.emit('game/cancelDeposit');
   },
+
+  'game/testFaPai': (player) => {
+    player.emit('game/testFaPai');
+  },
 };
 
 function addMsg(msgName) {

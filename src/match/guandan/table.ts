@@ -326,7 +326,7 @@ abstract class Table implements Serializable {
   }
 
   listenPlayer(player: PlayerState) {
-    this.listenerOn = ['game/da', 'game/guo', 'game/cancelDeposit', 'game/refresh']
+    this.listenerOn = ['game/da', 'game/guo', 'game/cancelDeposit', 'game/refresh', 'game/testFaPai']
 
     player.msgDispatcher.on('game/da', msg => this.onPlayerDa(player, msg))
     player.msgDispatcher.on('game/guo', msg => this.onPlayerGuo(player))
@@ -334,6 +334,11 @@ abstract class Table implements Serializable {
     // 手动刷新
     player.msgDispatcher.on('game/refresh', async () => {
       player.sendMessage('room/refresh', {ok: true, data: await this.reconnectContent(player.seatIndex, player)});
+    })
+
+    // 测试发一副手牌
+    player.msgDispatcher.on('game/testFaPai', async () => {
+      player.sendMessage('game/testFaPaiReply', {ok: true, data: await this.testFaPai()});
     })
   }
 
@@ -466,6 +471,13 @@ abstract class Table implements Serializable {
 
       return await this.room.gameState.onSelectMode(player, 1);
     }
+  }
+
+  async testFaPai() {
+    const cards = genFullyCards(this.rule.useJoker, this.room);
+    alg.shuffleForZhadan(cards);
+
+    return cards.slice(0, 27);
   }
 
   async autoCommitForPlayerPayOrReturn() {
