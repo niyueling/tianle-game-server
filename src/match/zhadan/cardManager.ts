@@ -101,8 +101,8 @@ export class CardMap {
     const result = [];
     for (const count of countList) {
       if (count > 0) {
-        result.push(jokerList[0]);
-        jokerList.splice(0, 1);
+        result.push(jokerList.slice(0, count));
+        jokerList.splice(0, count);
         // this.delCard(jokerList.slice(0, count));
       } else {
         result.push([]);
