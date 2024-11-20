@@ -280,6 +280,7 @@ class CardManager {
         cardMap[card.value] = [{ card, index: i } ];
       }
     }
+    console.warn("cardMap %s", JSON.stringify(cardMap));
     return new CardMap(cardMap);
   }
 
