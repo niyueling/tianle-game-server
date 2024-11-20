@@ -49,8 +49,6 @@ export default class NormalTable extends Table {
       player1.cards.push(card0)
     }
 
-    await this.fourJokersReward();
-
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       // 判断是否使用记牌器

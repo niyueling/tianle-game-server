@@ -249,7 +249,7 @@ abstract class Table implements Serializable {
   }
 
   initCards() {
-    this.cards = genFullyCards(this.rule.useJoker)
+    this.cards = genFullyCards(this.rule.useJoker);
     if (this.rule.jokerCount === 6) {
       const canReplaceIndex = [];
       let allIndex = 0;
@@ -266,13 +266,13 @@ abstract class Table implements Serializable {
       this.cards[canReplaceIndex.shift()] = new Card(CardType.Joker, 17);
     }
 
-    this.remainCards = this.cards.length
+    this.remainCards = this.cards.length;
   }
 
   shuffle() {
-    alg.shuffleForZhadan(this.cards)
-    this.turn = 1
-    this.remainCards = this.cards.length
+    alg.shuffleForZhadan(this.cards);
+    this.turn = 1;
+    this.remainCards = this.cards.length;
   }
 
   consumeCard(helpCard) {
@@ -286,7 +286,7 @@ abstract class Table implements Serializable {
 
     const card = this.cards[cardIndex];
     this.cards.splice(cardIndex, 1);
-    // console.warn("cardCount %s remainCard %s card %s", this.cards.length, cardIndex, JSON.stringify(card));
+    console.warn("cardCount %s remainCard %s card %s", this.cards.length, cardIndex, JSON.stringify(card));
     return card;
   }
 
@@ -301,35 +301,6 @@ abstract class Table implements Serializable {
 
   getQuarterCount() {
     return this.rule.jokerCount ? 27 : 26;
-  }
-
-  async fourJokersReward() {
-
-    const fourJokerReward = this.rule.specialReward
-    if (!fourJokerReward || fourJokerReward <= 0) {
-      return
-    }
-    if (this.room.game.juIndex > 1) {
-      this.players.forEach(async p => {
-        if (this.haveFourJokers(p)) {
-          await PlayerModel.findByIdAndUpdate(p._id,
-            {$inc: {redPocket: fourJokerReward}},
-            {new: true})
-
-          await RedPocketRecordModel.create({
-            player: p._id, amountInFen: fourJokerReward,
-            createAt: new Date(), from: `四王奖励 room:${this.room._id}`
-          })
-          const playerIndex = this.atIndex(p)
-          this.room.broadcast('room/fourJokersReward', {ok: true, data: {
-              playerId: p._id,
-              playerName: p.model.nickname,
-              index: playerIndex,
-              amountInFen: fourJokerReward
-            }})
-        }
-      })
-    }
   }
 
   async fapai(payload) {
@@ -1249,7 +1220,7 @@ abstract class Table implements Serializable {
 
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
-      p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : [])];
+      p.cards = this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : []);
     }
   }
 
