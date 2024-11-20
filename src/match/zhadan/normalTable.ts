@@ -31,13 +31,13 @@ export default class NormalTable extends Table {
   }
 
   async start(payload) {
-    if (this.room.gameRule.isPublic && !this.room.gameRule.test) {
-      // 金豆房发牌
-      await this.publicRoomFapai();
-    } else {
-      await this.fapai(payload);
-    }
-    // await this.publicRoomFapai();
+    // if (this.room.gameRule.isPublic && !this.room.gameRule.test) {
+    //   // 金豆房发牌
+    //   await this.publicRoomFapai();
+    // } else {
+    //   await this.fapai(payload);
+    // }
+    await this.fapai(payload);
     if (!this.selectFriendCard(this.players[0].cards)) {
       const player0 = this.players[0]
       const player1 = this.players[1]
@@ -248,7 +248,9 @@ export default class NormalTable extends Table {
       return singleCarsGroup[0][0]
     }
 
-    return singleCarsGroup.filter(grp => grp[0].type !== CardType.Joker)[0][0];
+    const singleCards = singleCarsGroup.filter(grp => grp[0].type !== CardType.Joker);
+
+    return singleCards.length ? singleCards[0][0] : null;
   }
 
   isGameOver(): boolean {

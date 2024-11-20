@@ -302,6 +302,8 @@ class CardManager {
       // 一半概率发炸弹
       return Math.random() < 0.5;
     }
+
+    // 每个人先分配1-2个炸弹
     for (let j = 0; j < 2; j++) {
       for (let i = 0; i < playerCards.length; i++) {
         cards = playerCards[i];
