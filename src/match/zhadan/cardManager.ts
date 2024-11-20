@@ -101,15 +101,15 @@ export class CardMap {
     const result = [];
     for (const count of countList) {
       if (count > 0) {
-        result.push(jokerList.slice(0, count));
-        this.delCard(jokerList.slice(0, count));
+        result.push(jokerList[0]);
+        jokerList.splice(0, 1);
+        // this.delCard(jokerList.slice(0, count));
       } else {
         result.push([]);
       }
     }
 
     console.warn("jokerList %s result %s", JSON.stringify(jokerList), JSON.stringify(result));
-
     return result;
   }
 
