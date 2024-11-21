@@ -484,6 +484,14 @@ export default class NormalTable extends Table {
         } : await p.statusForOther(this));
     }
 
+    let tribute = {};
+    if (reconnectPlayer.team === 0) {
+      tribute = {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard};
+    }
+    if (reconnectPlayer.team === 1) {
+      tribute = {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.awayTeamCard, awayTeamCard: this.room.homeTeamCard};
+    }
+
     return {
       mode: this.mode,
       currentPlayer: this.status.current.seatIndex,
@@ -492,7 +500,7 @@ export default class NormalTable extends Table {
       lastIndex: this.status.lastIndex,
       from: this.status.from,
       foundFriend: this.foundFriend,
-      tribute: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard},
+      tribute,
       index,
       juIndex,
       stateData,
