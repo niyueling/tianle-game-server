@@ -5,7 +5,7 @@ import {DummyRecorder, IGameRecorder} from '../GameRecorder'
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serializeHelp} from "../serializeDecorator"
 import Card, {CardType} from './card'
 import Timer = NodeJS.Timer;
-import {IPattern} from "./patterns/base"
+import {arraySubtract, IPattern} from "./patterns/base"
 import Room from './room'
 import Rule from './Rule'
 import {default as Table, Team} from "./table"
@@ -218,7 +218,7 @@ class PlayerState implements Serializable {
     const cardCopy = this.cards.slice()
     const originLength = cardCopy.length
 
-    const afterRemoveCards = removeCard(cardCopy, daCards)
+    const afterRemoveCards = arraySubtract(cardCopy, daCards);
 
     return originLength - afterRemoveCards.length === daCards.length
   }
