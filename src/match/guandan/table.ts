@@ -409,6 +409,47 @@ abstract class Table implements Serializable {
 
   }
 
+  async restoreMessageForPlayer(player: PlayerState) {
+    const index = this.atIndex(player)
+    const soloPlayer = this.players[this.soloPlayerIndex]
+    const lastRecord = await service.rubyReward.getLastRubyRecord(this.room.uid);
+    let roomRubyReward = 0;
+    if (lastRecord) {
+      // 奖池
+      roomRubyReward = lastRecord.balance;
+    }
+    const pushMsg = {
+      index, status: [],
+      mode: this.mode,
+      currentPlayer: this.status.current.seatIndex,
+      soloPlayerIndex: this.soloPlayerIndex,
+      soloPlayerName: soloPlayer && soloPlayer.model.nickname,
+      lastPattern: this.status.lastPattern,
+      lastIndex: this.status.lastIndex,
+      friendCard: this.friendCard,
+      from: this.status.from,
+      juIndex: this.room.game.juIndex,
+      juShu: this.restJushu,
+      foundFriend: this.foundFriend,
+    }
+    for (let i = 0; i < this.players.length; i++) {
+      if (i === index) {
+        pushMsg.status.push({
+          ...this.players[i].statusForSelf(this),
+          roomRubyReward,
+          teamMateCards: this.teamMateCards(this.players[i])
+        })
+      } else {
+        pushMsg.status.push({
+          ...this.players[i].statusForOther(this),
+          roomRubyReward,
+        })
+      }
+    }
+
+    return pushMsg
+  }
+
   isCurrentStep(player) {
     return this.currentPlayerStep === player.seatIndex
   }
