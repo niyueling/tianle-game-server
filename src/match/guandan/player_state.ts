@@ -224,7 +224,7 @@ class PlayerState implements Serializable {
   }
 
   daPai(daCards: Card[], pattern: IPattern) {
-    this.cards = removeCard(this.cards, daCards)
+    this.cards = arraySubtract(this.cards, daCards)
     this.lastPattern = pattern
     this.lastAction = 'da'
     this.dropped.push(daCards)
