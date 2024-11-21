@@ -97,7 +97,7 @@ module.exports = {
     // 掉线以后推迟出牌的时间(秒)
     offlineDelayTime: 180,
     // 出牌等待时间(秒)
-    waitDelayTime: 5,
+    waitDelayTime: 2,
     // 等待用户加入金豆房的时间
     waitRubyPlayer: 3,
     // 结算不准备踢出时间

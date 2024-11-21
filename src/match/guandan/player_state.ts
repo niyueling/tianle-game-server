@@ -15,11 +15,11 @@ const removeCard = (src, odst) => {
   return src
     .filter(c =>
       !dst.some((daCard, idx) => {
-        const equal = c.equal(daCard)
+        const equal = c.equal(daCard);
         if (equal) {
-          dst.splice(idx, 1)
+          dst.splice(idx, 1);
         }
-        return equal
+        return equal;
       }))
 }
 
