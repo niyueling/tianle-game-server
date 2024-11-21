@@ -789,6 +789,8 @@ class Room extends RoomBase {
     this.recordGameRecord(states, this.gameState.recorder.getEvents(), firstPlayerId)
     await this.charge();
     this.calcLevelCard();
+    const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
+    console.warn("winOrderList %s", JSON.stringify(winOrderList));
 
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)
