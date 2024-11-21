@@ -47,7 +47,6 @@ export class RobotManager extends NewRobotManager {
     if (this.model.step === RobotStep.returnTribute) {
       // 进还贡
       isOk = this.isTributeSelect();
-      console.warn("isOk %s", isOk);
       if (isOk) {
         this.model.step = RobotStep.running;
         await this.save();

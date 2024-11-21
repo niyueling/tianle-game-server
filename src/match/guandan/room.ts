@@ -719,8 +719,9 @@ class Room extends RoomBase {
           // 如果用户过牌失败，记录过牌失败次数
           if (!this.isAllOver) {
             this.homeFailCount++;
+            this.broadcast("game/passThroughCard", {ok: true, data: {card: this.homeTeamCard, team : 0}});
 
-            if (this.homeFailCount === 3) {
+            if (this.homeFailCount === 3 && this.gameRule.juShu === 5) {
               this.homeFailCount = 0;
               this.homeTeamCard = 2;
               this.currentLevelCard = this.homeTeamCard;
@@ -744,8 +745,9 @@ class Room extends RoomBase {
           // 如果用户过牌失败，记录过牌失败次数
           if (!this.isAllOver) {
             this.awayFailCount++;
+            this.broadcast("game/passThroughCard", {ok: true, data: {card: this.awayTeamCard, team : 1}});
 
-            if (this.awayFailCount === 3) {
+            if (this.awayFailCount === 3 && this.gameRule.juShu === 5) {
               this.awayFailCount = 0;
               this.awayTeamCard = 2;
               this.currentLevelCard = this.awayTeamCard;
