@@ -712,6 +712,7 @@ class Room extends RoomBase {
           const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
 
           // 如果用户头游并且不是末游，则游戏结束
+          console.warn("winOrderList %s", JSON.stringify(winOrderList));
           if(winOrderList.includes(1) && !winOrderList.includes(4)) {
             return this.isAllOver = true;
           }
@@ -736,6 +737,7 @@ class Room extends RoomBase {
       if (team === 1) {
         if (this.awayTeamCard === nextLevelCard || this.awayTeamCard === 1) {
           const winOrderList = this.winOrderLists.filter(p => p.team === 1).map(p => p.winOrder);
+          console.warn("winOrderList %s", JSON.stringify(winOrderList));
 
           // 如果用户头游并且不是末游，则游戏结束
           if(winOrderList.includes(1) && !winOrderList.includes(4)) {
