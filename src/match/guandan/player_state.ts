@@ -5,22 +5,27 @@ import {DummyRecorder, IGameRecorder} from '../GameRecorder'
 import {autoSerialize, autoSerializePropertyKeys, Serializable, serializeHelp} from "../serializeDecorator"
 import Card, {CardType} from './card'
 import Timer = NodeJS.Timer;
-import {IPattern, PatterNames} from "./patterns/base"
+import {IPattern} from "./patterns/base"
 import Room from './room'
 import Rule from './Rule'
 import {default as Table, Team} from "./table"
 
 const removeCard = (src, odst) => {
-  const dst = odst.slice()
-  return src
-    .filter(c =>
-      !dst.some((daCard, idx) => {
-        const equal = c.equal(daCard);
-        if (equal) {
-          dst.splice(idx, 1);
-        }
-        return equal;
-      }))
+  try {
+    const dst = odst.slice()
+    return src
+      .filter(c =>
+        !dst.some((daCard, idx) => {
+          const equal = c.equal(daCard);
+          if (equal) {
+            dst.splice(idx, 1);
+          }
+          return equal;
+        }))
+  } catch (e) {
+    console.warn("src %s odst %s", JSON.stringify(src), JSON.stringify(odst));
+  }
+
 }
 
 class DetailBalance {
