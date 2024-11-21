@@ -713,8 +713,8 @@ class Room extends RoomBase {
 
           // 如果用户头游并且不是末游，则游戏结束
           console.warn("winOrderList %s", JSON.stringify(winOrderList));
-          if(winOrderList.includes(1) && !winOrderList.includes(4)) {
-            return this.isAllOver = true;
+          if(winOrderList.includes(1) && !winOrderList.includes(99)) {
+            this.isAllOver = true;
           }
 
           // 如果用户过牌失败，记录过牌失败次数
@@ -740,8 +740,8 @@ class Room extends RoomBase {
           console.warn("winOrderList %s", JSON.stringify(winOrderList));
 
           // 如果用户头游并且不是末游，则游戏结束
-          if(winOrderList.includes(1) && !winOrderList.includes(4)) {
-            return this.isAllOver = true;
+          if(winOrderList.includes(1) && !winOrderList.includes(99)) {
+            this.isAllOver = true;
           }
 
           // 如果用户过牌失败，记录过牌失败次数
