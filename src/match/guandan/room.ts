@@ -790,7 +790,7 @@ class Room extends RoomBase {
     await this.charge();
     await this.calcLevelCard();
 
-    console.warn("isAllOver %s", this.isAllOver);
+    // console.warn("isAllOver %s", this.isAllOver);
 
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)

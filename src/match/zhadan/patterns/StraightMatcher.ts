@@ -51,27 +51,25 @@ export default class StraightMatcher implements IMatcher {
 
       let j = i + 1
       for (; j < groups.length; j++) {
-        const nextCard = groups[j][0]
+        const nextCard = groups[j][0];
         if (nextCard.point - prevCard.point === 1) {
-          prevCard = nextCard
-          prompt.push(nextCard)
-          if (prompt.length === len) {
-            break
+          if (prompt.length < len || (prompt.length >= len && groups[j].length === 1)) {
+            prevCard = nextCard;
+            prompt.push(nextCard);
           }
         } else {
           break
         }
       }
 
-      if (prompt.length === len) {
-        i++
-        prompts.push(prompt)
+      if (prompt.length >= len) {
+        i++;
+        prompts.push(prompt);
       } else {
-        i = j
+        i = j;
       }
     }
 
-    return prompts
+    return prompts;
   }
-
 }
