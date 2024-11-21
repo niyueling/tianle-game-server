@@ -692,7 +692,7 @@ class Room extends RoomBase {
     return this.isAllOver
   }
 
-  calcLevelCard() {
+  async calcLevelCard() {
     // 计算级牌升级
     const firstWinnerPlayer = this.winOrderLists.find(p => p.winOrder === 1);
     if (firstWinnerPlayer) {
@@ -788,9 +788,9 @@ class Room extends RoomBase {
     await this.recordRoomScore()
     this.recordGameRecord(states, this.gameState.recorder.getEvents(), firstPlayerId)
     await this.charge();
-    this.calcLevelCard();
-    const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
-    console.warn("winOrderList %s", JSON.stringify(winOrderList));
+    await this.calcLevelCard();
+
+    console.warn("isAllOver %s", this.isAllOver);
 
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     this.sortPlayer(this.nextStarterIndex)
