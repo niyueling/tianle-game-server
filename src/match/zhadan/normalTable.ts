@@ -211,6 +211,7 @@ export default class NormalTable extends Table {
   private beTeamMate(team: PlayerState[]) {
     team[0].teamMate = team[1].index
     team[1].teamMate = team[0].index
+    this.room.broadcast("game/matchFriends", {ok: true, data: {teamMate: [team[1].index, team[0].index], team: team[0].team}})
   }
 
   setTeamMate() {
