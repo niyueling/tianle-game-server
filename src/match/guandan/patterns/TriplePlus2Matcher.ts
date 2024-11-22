@@ -3,7 +3,8 @@ import {
   arraySubtract,
   groupBy,
   IMatcher,
-  IPattern, lengthFirstThenPointGroupAscComparator,
+  IPattern,
+  lengthFirstThenPointGroupAscComparator,
   lengthFirstThenPointGroupDescComparator,
   lengthFirstThenPointXXGroupComparator,
   PatterNames,
@@ -165,11 +166,13 @@ export default class TriplePlus2Matcher implements IMatcher {
     }
     const filterFun = caiShen.length ? haveLevelFilter : noLevelFilter;
 
-    const prompts = groupBy(cards.filter(c => c.point > target.score), c => c.point)
+    // console.warn("triplePlus2 promptWithPattern prompts %s", JSON.stringify(prompts));
+
+    return groupBy(cards.filter(c => c.point > target.score), c => c.point)
       .filter(filterFun)
       .sort(lengthFirstThenPointGroupAscComparator)
       .map(group => {
-        const triple = (group.length >= 3 ? group.slice(0, 3): group);
+        const triple = (group.length >= 3 ? group.slice(0, 3) : group);
         const addCount = 3 - triple.length;
         const caiShenSlice = caiShen.slice();
 
@@ -192,9 +195,5 @@ export default class TriplePlus2Matcher implements IMatcher {
 
         return [...triple, leftCards[0], leftCards[1]];
       }).filter(result => result.length > 0);
-
-    // console.warn("triplePlus2 promptWithPattern prompts %s", JSON.stringify(prompts));
-
-    return prompts;
   }
 }
