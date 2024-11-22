@@ -39,14 +39,14 @@ export default class NormalTable extends Table {
     // }
     await this.fapai(payload);
     if (!this.selectFriendCard(this.players[0].cards)) {
-      const player0 = this.players[0]
-      const player1 = this.players[1]
+      const player0 = this.players[0];
+      const player1 = this.players[1];
 
-      const card0 = player0.cards.pop()
-      const card1 = player1.cards.pop()
+      const card0 = player0.cards.pop();
+      const card1 = player1.cards.pop();
 
-      player0.cards.push(card1)
-      player1.cards.push(card0)
+      player0.cards.push(card1);
+      player1.cards.push(card0);
     }
 
     for (let i = 0; i < this.players.length; i++) {

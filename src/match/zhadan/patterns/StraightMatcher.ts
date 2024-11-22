@@ -56,9 +56,11 @@ export default class StraightMatcher implements IMatcher {
           if (prompt.length < len || (prompt.length >= len && groups[j].length === 1)) {
             prevCard = nextCard;
             prompt.push(nextCard);
+          } else {
+            break;
           }
         } else {
-          break
+          break;
         }
       }
 
