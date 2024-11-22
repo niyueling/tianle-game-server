@@ -51,7 +51,11 @@ export class RobotManager extends NewRobotManager {
         this.model.step = RobotStep.running;
         await this.save();
       } else {
-        await this.payAndReturnTribute();
+        const payAndReturnFunc = async () => {
+          await this.payAndReturnTribute();
+        }
+
+        setTimeout(payAndReturnFunc, 1500);
       }
     }
 
