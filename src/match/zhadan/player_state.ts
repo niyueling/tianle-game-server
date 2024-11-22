@@ -304,6 +304,7 @@ class PlayerState implements Serializable {
       remains: this.cards.length,
       lastPattern: this.lastPattern,
       lastAction: this.lastAction,
+      teamMate: [this.index, this.teamMate],
       mode: this.mode,
       team: this.team,
       bombScore: this.bombScore(table.bombScorer)

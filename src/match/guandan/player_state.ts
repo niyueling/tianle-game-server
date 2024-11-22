@@ -318,6 +318,7 @@ class PlayerState implements Serializable {
       lastAction: this.lastAction,
       mode: this.mode,
       team: this.team,
+      teamMate: [this.index, this.teamMate],
       payTributeState: this.payTributeState,
       payTributeCard: this.payTributeCard,
       payTributeIndex: this.payTributeIndex,
