@@ -59,9 +59,8 @@ export default class NormalTable extends Table {
       const p = this.players[i];
       // 判断是否使用记牌器
       const cardRecorderStatus = await this.getCardRecorder(p);
-      const teamMate = this.players.filter(pp => pp.team === p.team && pp.seatIndex !== p.seatIndex);
       p.onShuffle(0, this.restJushu, p.cards, i, this.room.game.juIndex, this.room.shuffleData.length > 0,
-        cardRecorderStatus, {homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard, currentLevelCard: this.room.currentLevelCard}, teamMate[0].seatIndex);
+        cardRecorderStatus, {homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard, currentLevelCard: this.room.currentLevelCard});
     }
 
     const sendLevelCardFunc = async() => {
@@ -388,6 +387,8 @@ export default class NormalTable extends Table {
   private beTeamMate(team: PlayerState[]) {
     team[0].teamMate = team[1].index;
     team[1].teamMate = team[0].index;
+
+    this.room.broadcast("game/matchFriends", {ok: true, data: {teamMate: [team[1].index, team[0].index], team: team[0].team}})
   }
 
   setTeamMate() {
