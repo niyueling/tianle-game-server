@@ -135,13 +135,6 @@ export default class StraightDoublesMatcher implements IMatcher {
             }
           }
         }
-        for (let i = 0; i < subtractCards.length; i++) {
-          const straightCard = subtractCards[i];
-
-          if (straightCard.value === levelCard && straightCard.point !== 15) {
-            straightCard.point = 15;
-          }
-        }
 
         if (resultCaiShen) {
           return resultCaiShen;
