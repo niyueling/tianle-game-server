@@ -39,7 +39,7 @@ export default class NormalTable extends Table {
       } else {
         await this.startFaPai(payload);
         this.nextAction = this.startTeamworkGame;
-        await this.next();
+        this.next();
       }
     }
 
@@ -49,33 +49,37 @@ export default class NormalTable extends Table {
   async startFaPai(payload) {
     this.room.broadcast("game/openLevelCard", {ok: true, data: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard}});
 
-    if (this.rule.shuffleType === 2) {
-      // 不洗牌
-      await this.publicRoomFapai();
-    } else {
-      // 随机发牌
-      await this.fapai(payload);
+    const sendLevelCardFunc = async() => {
+      if (this.rule.shuffleType === 2) {
+        // 不洗牌
+        await this.publicRoomFapai();
+      } else {
+        // 随机发牌
+        await this.fapai(payload);
+      }
+
+      for (let i = 0; i < this.players.length; i++) {
+        const p = this.players[i];
+        // 判断是否使用记牌器
+        const cardRecorderStatus = await this.getCardRecorder(p);
+        p.onShuffle(0, this.restJushu, p.cards, i, this.room.game.juIndex, this.room.shuffleData.length > 0,
+          cardRecorderStatus, {homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard, currentLevelCard: this.room.currentLevelCard});
+      }
+
+      const shuffleData = this.room.shuffleData.map(x => {
+        const p = this.players.find(y => y.model._id === x);
+        return p.index;
+      })
+      this.shuffleDelayTime = Date.now() + this.room.shuffleData.length * 5000;
+      this.room.broadcast('game/shuffleData', {ok: true, data: {shuffleData}});
+      this.status.current.seatIndex = -1;
+      // 金豆房扣除开局金豆
+      if (this.room.gameRule.isPublic) {
+        await this.room.payRubyForStart();
+      }
     }
 
-    for (let i = 0; i < this.players.length; i++) {
-      const p = this.players[i];
-      // 判断是否使用记牌器
-      const cardRecorderStatus = await this.getCardRecorder(p);
-      p.onShuffle(0, this.restJushu, p.cards, i, this.room.game.juIndex, this.room.shuffleData.length > 0,
-        cardRecorderStatus, {homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard, currentLevelCard: this.room.currentLevelCard});
-    }
-
-    const shuffleData = this.room.shuffleData.map(x => {
-      const p = this.players.find(y => y.model._id === x);
-      return p.index;
-    })
-    this.shuffleDelayTime = Date.now() + this.room.shuffleData.length * 5000;
-    this.room.broadcast('game/shuffleData', {ok: true, data: {shuffleData}});
-    this.status.current.seatIndex = -1;
-    // 金豆房扣除开局金豆
-    if (this.room.gameRule.isPublic) {
-      await this.room.payRubyForStart();
-    }
+    setTimeout(sendLevelCardFunc, 200);
   }
 
   resume(json) {
@@ -104,7 +108,7 @@ export default class NormalTable extends Table {
   }
 
   @once
-  private async next() {
+  private next() {
 
     clearTimeout(this.selectModeTimeout)
     for (const p of this.players) {
@@ -113,9 +117,7 @@ export default class NormalTable extends Table {
 
     this.tableState = '';
     this.room.emit('selectMode', {});
-    // await this.nextAction();
-
-    setTimeout(this.nextAction, 500);
+    this.nextAction();
 
     this.autoCommitFunc()
   }
@@ -130,7 +132,7 @@ export default class NormalTable extends Table {
     // console.warn("index %s multiple %s isChooseMode %s", index, player.multiple, player.isChooseMode);
     const isOk = await this.canStartGame();
     if (isOk) {
-      await this.next()
+      this.next()
     }
   }
 
@@ -427,24 +429,23 @@ export default class NormalTable extends Table {
         const winOrderPlayer = this.room.winOrderLists.find(p => p.playerId.toString() === player._id.toString());
 
         // 双下，两个末游要向两个头游进贡一张，单下，末游向头游进贡一张
-        if (winOrderPlayer.winOrder === 99) {
+        if ((isAllTribute && winOrderPlayer.winOrder > 2) || (!isAllTribute && winOrderPlayer.winOrder === 99)) {
           player.payTributeState = true;
-          console.warn("roomId %s playerId %s seatIndex %s winOrder %s", this.room._id, player._id, player.seatIndex, winOrderPlayer.winOrder);
           this.room.broadcast('game/startPayTribute', {ok: true, data: {index: player.seatIndex}});
+
+          // 单下，向头游进贡
+          if (!isAllTribute) {
+            // 查询头游玩家,向头游进贡
+            const firstOrderPlayer = this.room.winOrderLists.find(p => p.winOrder === 1);
+            const firstPlayer = this.players.find(p => p._id.toString() === firstOrderPlayer.playerId.toString());
+            firstPlayer.returnTributeState = true;
+            this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: firstPlayer.seatIndex}});
+          }
         }
       }
 
       this.kangTribute = kangTribute;
       this.isAllTribute = isAllTribute;
-
-      // 单下，向头游进贡
-      if (!isAllTribute) {
-        // 查询头游玩家,向头游进贡
-        const firstOrderPlayer = this.room.winOrderLists.find(p => p.winOrder === 1);
-        const firstPlayer = this.players.find(p => p._id.toString() === firstOrderPlayer.playerId.toString());
-        firstPlayer.returnTributeState = true;
-        this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: firstPlayer.seatIndex}});
-      }
 
       // 双下，向赢家进贡
       if (isAllTribute) {
@@ -480,9 +481,9 @@ export default class NormalTable extends Table {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       status.push(p._id.toString() === reconnectPlayer._id.toString() ? {
-          ...await p.statusForSelf(this),
-          teamMateCards: this.teamMateCards(p)
-        } : await p.statusForOther(this));
+        ...await p.statusForSelf(this),
+        teamMateCards: this.teamMateCards(p)
+      } : await p.statusForOther(this));
     }
 
     let tribute = {};
