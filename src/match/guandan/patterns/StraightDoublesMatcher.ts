@@ -40,6 +40,8 @@ export default class StraightDoublesMatcher implements IMatcher {
           }
         }
 
+        console.warn("restore pointWithCaishen sortedGroups %s", JSON.stringify(sortedGroups));
+
         let resultCaiShen = {
           name: PatterNames.doubles + 3,
           score: subtractGroups[0][0].point,
@@ -169,6 +171,8 @@ export default class StraightDoublesMatcher implements IMatcher {
           }
         }
       }
+
+      console.warn("restore pointNotCaishen sortedGroups %s", JSON.stringify(sortedGroups));
 
       const lastCard = last(sortedGroups)[0];
       if (lastCard.point >= 15) {
