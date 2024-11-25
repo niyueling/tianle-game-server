@@ -429,23 +429,24 @@ export default class NormalTable extends Table {
         const winOrderPlayer = this.room.winOrderLists.find(p => p.playerId.toString() === player._id.toString());
 
         // 双下，两个末游要向两个头游进贡一张，单下，末游向头游进贡一张
-        if ((isAllTribute && winOrderPlayer.winOrder > 2) || (!isAllTribute && winOrderPlayer.winOrder === 99)) {
+        if (winOrderPlayer.winOrder === 99) {
           player.payTributeState = true;
+          console.warn("roomId %s playerId %s seatIndex %s winOrder %s", this.room._id, player._id, player.seatIndex, winOrderPlayer.winOrder);
           this.room.broadcast('game/startPayTribute', {ok: true, data: {index: player.seatIndex}});
-
-          // 单下，向头游进贡
-          if (!isAllTribute) {
-            // 查询头游玩家,向头游进贡
-            const firstOrderPlayer = this.room.winOrderLists.find(p => p.winOrder === 1);
-            const firstPlayer = this.players.find(p => p._id.toString() === firstOrderPlayer.playerId.toString());
-            firstPlayer.returnTributeState = true;
-            this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: firstPlayer.seatIndex}});
-          }
         }
       }
 
       this.kangTribute = kangTribute;
       this.isAllTribute = isAllTribute;
+
+      // 单下，向头游进贡
+      if (!isAllTribute) {
+        // 查询头游玩家,向头游进贡
+        const firstOrderPlayer = this.room.winOrderLists.find(p => p.winOrder === 1);
+        const firstPlayer = this.players.find(p => p._id.toString() === firstOrderPlayer.playerId.toString());
+        firstPlayer.returnTributeState = true;
+        this.room.broadcast('game/startReturnTribute', {ok: true, data: {index: firstPlayer.seatIndex}});
+      }
 
       // 双下，向赢家进贡
       if (isAllTribute) {
