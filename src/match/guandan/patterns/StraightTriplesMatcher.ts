@@ -27,7 +27,7 @@ export default class StraightTriplesMatcher implements IMatcher {
           const straightCards = subtractGroups[i];
 
           for (let j = 0; j < straightCards.length; j++) {
-            const straightCard = straightCards[i];
+            const straightCard = straightCards[j];
 
             if (straightCard.point === 15) {
               if (straightCard.value === 1) {
@@ -119,7 +119,7 @@ export default class StraightTriplesMatcher implements IMatcher {
           const straightCards = subtractGroups[i];
 
           for (let j = 0; j < straightCards.length; j++) {
-            const straightCard = straightCards[i];
+            const straightCard = straightCards[j];
 
             if (straightCard.value === levelCard && straightCard.point !== 15) {
               straightCard.point = 15;
@@ -149,7 +149,7 @@ export default class StraightTriplesMatcher implements IMatcher {
         const straightCards = sortedGroups[i];
 
         for (let j = 0; j < straightCards.length; j++) {
-          const straightCard = straightCards[i];
+          const straightCard = straightCards[j];
 
           if (straightCard.point === 15) {
             if (straightCard.value === 1) {
@@ -187,7 +187,7 @@ export default class StraightTriplesMatcher implements IMatcher {
         const straightCards = sortedGroups[i];
 
         for (let j = 0; j < straightCards.length; j++) {
-          const straightCard = straightCards[i];
+          const straightCard = straightCards[j];
 
           if (straightCard.value === levelCard && straightCard.point !== 15) {
             straightCard.point = 15;
