@@ -15,6 +15,19 @@ export default class StraightFlushMatcher implements IMatcher {
         return null;
       }
 
+      // 将级牌的point恢复成原有数值
+      for (let i = 0; i < subtractCards.length; i++) {
+        const straightCard = subtractCards[i];
+
+        if (straightCard.point === 15) {
+          if (straightCard.value === 1) {
+            straightCard.point = 14;
+          } else {
+            straightCard.point = straightCard.value;
+          }
+        }
+      }
+
       let result = {
         name: PatterNames.straightFlush + copyCards.length,
         score: copyCards[0].point,
@@ -40,6 +53,15 @@ export default class StraightFlushMatcher implements IMatcher {
         } else {
           console.warn("StraightFlushMatcher error 2 %s caiShenCount %s", JSON.stringify(subtractCards), levelCards.length);
           result = null;
+        }
+      }
+
+      // 将级牌的point恢复
+      for (let i = 0; i < subtractCards.length; i++) {
+        const straightCard = subtractCards[i];
+
+        if (straightCard.value === levelCard && straightCard.point !== 15) {
+          straightCard.point = 15;
         }
       }
 
