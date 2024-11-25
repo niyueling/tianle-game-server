@@ -39,7 +39,7 @@ export default class NormalTable extends Table {
       } else {
         await this.startFaPai(payload);
         this.nextAction = this.startTeamworkGame;
-        this.next();
+        await this.next();
       }
     }
 
@@ -108,7 +108,7 @@ export default class NormalTable extends Table {
   }
 
   @once
-  private next() {
+  private async next() {
 
     clearTimeout(this.selectModeTimeout)
     for (const p of this.players) {
@@ -117,7 +117,9 @@ export default class NormalTable extends Table {
 
     this.tableState = '';
     this.room.emit('selectMode', {});
-    this.nextAction();
+    // await this.nextAction();
+
+    setTimeout(this.nextAction, 500);
 
     this.autoCommitFunc()
   }
@@ -132,7 +134,7 @@ export default class NormalTable extends Table {
     // console.warn("index %s multiple %s isChooseMode %s", index, player.multiple, player.isChooseMode);
     const isOk = await this.canStartGame();
     if (isOk) {
-      this.next()
+      await this.next()
     }
   }
 
@@ -396,7 +398,7 @@ export default class NormalTable extends Table {
     this.beTeamMate(this.awayTeamPlayers());
   }
 
-  startTeamworkGame() {
+  async startTeamworkGame() {
     // 如果非第一局，需要处理进还贡
     if (this.room.game.juIndex > 1) {
       let isAllTribute = false;
@@ -467,7 +469,7 @@ export default class NormalTable extends Table {
       }
     }
 
-    this.nextToStartGame()
+    await this.nextToStartGame()
   }
 
   isGameOver(): boolean {
