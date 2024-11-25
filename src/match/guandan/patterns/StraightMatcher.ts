@@ -9,7 +9,7 @@ export default class StraightMatcher implements IMatcher {
 
       // 如果癞子除外都是同一个花色，则为同花顺，不是顺子
       const levelCards = copyCards.filter(card => card.type === CardType.Heart && card.value === levelCard);
-      let subtractCards = arraySubtract(copyCards.slice(), levelCards);
+      let subtractCards = arraySubtract(copyCards.slice(), levelCards).slice();
       const startCard = subtractCards[0];
       if (subtractCards.every(card => card.type === startCard.type)) {
         console.warn("StraightMatcher error 1 %s", JSON.stringify(subtractCards));
