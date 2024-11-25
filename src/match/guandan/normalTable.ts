@@ -38,8 +38,6 @@ export default class NormalTable extends Table {
         await this.room.robotManager.setCardReady(this.rule.allowDouble);
       } else {
         await this.startFaPai(payload);
-        this.nextAction = this.startTeamworkGame;
-        this.next();
       }
     }
 
@@ -77,6 +75,8 @@ export default class NormalTable extends Table {
       if (this.room.gameRule.isPublic) {
         await this.room.payRubyForStart();
       }
+      this.nextAction = this.startTeamworkGame;
+      this.next();
     }
 
     setTimeout(sendLevelCardFunc, 200);
