@@ -29,6 +29,8 @@ export default class StraightMatcher implements IMatcher {
         }
       }
 
+      subtractCards = subtractCards.slice().sort(Card.compare);
+
       let result = {
         name: PatterNames.straight + copyCards.length,
         score: copyCards[0].point,

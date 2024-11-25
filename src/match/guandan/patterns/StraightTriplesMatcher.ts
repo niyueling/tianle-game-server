@@ -5,7 +5,7 @@ import {arraySubtract, groupBy, IMatcher, IPattern, last, PatterNames} from "./b
 export default class StraightTriplesMatcher implements IMatcher {
   verify(cards: Card[], levelCard?: Number): IPattern | null {
     if (cards.length === 6 && cards.length % 3 === 0) {
-      const sortedGroups = groupBy(cards.slice(), card => card.point)
+      let sortedGroups = groupBy(cards.slice(), card => card.point)
         .sort((grp1, grp2) => {
           return grp1[0].point - grp2[0].point
         });
@@ -17,27 +17,23 @@ export default class StraightTriplesMatcher implements IMatcher {
         // 去除红心级牌
         const subtractCards = arraySubtract(cards.slice(), caiShen);
 
+        // 将级牌的point恢复成原有数值
+        for (let i = 0; i < subtractCards.length; i++) {
+          const straightCard = subtractCards[i];
+
+          if (straightCard.point === 15) {
+            if (straightCard.value === 1) {
+              straightCard.point = 14;
+            } else {
+              straightCard.point = straightCard.value;
+            }
+          }
+        }
+
         // 根据新的数组分组
         const subtractGroups = groupBy(subtractCards, card => card.point).sort((grp1, grp2) => {
           return grp1[0].point - grp2[0].point
         })
-
-        // 将级牌的point恢复成原有数值
-        for (let i = 0; i < subtractGroups.length; i++) {
-          const straightCards = subtractGroups[i];
-
-          for (let j = 0; j < straightCards.length; j++) {
-            const straightCard = straightCards[j];
-
-            if (straightCard.point === 15) {
-              if (straightCard.value === 1) {
-                straightCard.point = 14;
-              } else {
-                straightCard.point = straightCard.value;
-              }
-            }
-          }
-        }
 
         let resultCaiShen = {
           name: PatterNames.triples + 2,
@@ -115,15 +111,11 @@ export default class StraightTriplesMatcher implements IMatcher {
         }
 
         // 将级牌的point恢复
-        for (let i = 0; i < subtractGroups.length; i++) {
-          const straightCards = subtractGroups[i];
+        for (let i = 0; i < subtractCards.length; i++) {
+          const straightCard = subtractCards[i];
 
-          for (let j = 0; j < straightCards.length; j++) {
-            const straightCard = straightCards[j];
-
-            if (straightCard.value === levelCard && straightCard.point !== 15) {
-              straightCard.point = 15;
-            }
+          if (straightCard.value === levelCard && straightCard.point !== 15) {
+            straightCard.point = 15;
           }
         }
 
@@ -145,21 +137,22 @@ export default class StraightTriplesMatcher implements IMatcher {
       }
 
       // 将级牌的point恢复成原有数值
-      for (let i = 0; i < sortedGroups.length; i++) {
-        const straightCards = sortedGroups[i];
+      for (let i = 0; i < cards.length; i++) {
+        const straightCard = cards[i];
 
-        for (let j = 0; j < straightCards.length; j++) {
-          const straightCard = straightCards[j];
-
-          if (straightCard.point === 15) {
-            if (straightCard.value === 1) {
-              straightCard.point = 14;
-            } else {
-              straightCard.point = straightCard.value;
-            }
+        if (straightCard.point === 15) {
+          if (straightCard.value === 1) {
+            straightCard.point = 14;
+          } else {
+            straightCard.point = straightCard.value;
           }
         }
       }
+
+      sortedGroups = groupBy(cards.slice(), card => card.point)
+        .sort((grp1, grp2) => {
+          return grp1[0].point - grp2[0].point
+        })
 
       const lastCard = last(sortedGroups)[0];
       if (lastCard.point >= 15) {
@@ -183,15 +176,11 @@ export default class StraightTriplesMatcher implements IMatcher {
       }
 
       // 将级牌的point恢复
-      for (let i = 0; i < sortedGroups.length; i++) {
-        const straightCards = sortedGroups[i];
+      for (let i = 0; i < cards.length; i++) {
+        const straightCard = cards[i];
 
-        for (let j = 0; j < straightCards.length; j++) {
-          const straightCard = straightCards[j];
-
-          if (straightCard.value === levelCard && straightCard.point !== 15) {
-            straightCard.point = 15;
-          }
+        if (straightCard.value === levelCard && straightCard.point !== 15) {
+          straightCard.point = 15;
         }
       }
 

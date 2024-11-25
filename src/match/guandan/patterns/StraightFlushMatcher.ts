@@ -28,6 +28,8 @@ export default class StraightFlushMatcher implements IMatcher {
         }
       }
 
+      subtractCards = subtractCards.slice().sort(Card.compare);
+
       let result = {
         name: PatterNames.straightFlush + copyCards.length,
         score: copyCards[0].point,
