@@ -375,7 +375,7 @@ export default class NormalTable extends Table {
     }
 
     await this.startFaPai(this.faPaiPayload);
-    this.nextAction = this.startTeamworkGame;
+    // this.nextAction = this.startTeamworkGame;
 
     return true
   }
