@@ -16,6 +16,19 @@ export default class StraightMatcher implements IMatcher {
         return null;
       }
 
+      // 将级牌的point恢复成原有数值
+      for (let i = 0; i < subtractCards.length; i++) {
+        const straightCard = subtractCards[i];
+
+        if (straightCard.point === 15) {
+          if (straightCard.value === 1) {
+            straightCard.point = 14;
+          } else {
+            straightCard.point = straightCard.value;
+          }
+        }
+      }
+
       let result = {
         name: PatterNames.straight + copyCards.length,
         score: copyCards[0].point,
