@@ -23,6 +23,23 @@ export default class StraightDoublesMatcher implements IMatcher {
           return grp1[0].point - grp2[0].point
         })
 
+        // 将级牌的point恢复成原有数值
+        for (let i = 0; i < subtractGroups.length; i++) {
+          const straightCards = subtractGroups[i];
+
+          for (let j = 0; j < straightCards.length; j++) {
+            const straightCard = straightCards[i];
+
+            if (straightCard.point === 15) {
+              if (straightCard.value === 1) {
+                straightCard.point = 14;
+              } else {
+                straightCard.point = straightCard.value;
+              }
+            }
+          }
+        }
+
         let resultCaiShen = {
           name: PatterNames.doubles + 3,
           score: subtractGroups[0][0].point,
@@ -82,8 +99,6 @@ export default class StraightDoublesMatcher implements IMatcher {
           resultCaiShen = null;
         }
 
-
-
         // 原始牌无法直接组成连对，判断红心癞子做级牌是否能组成连对
         let prevGroupByLevelPoint = subtractGroups[0][0].point;
         const addGroupCards = [];
@@ -108,6 +123,26 @@ export default class StraightDoublesMatcher implements IMatcher {
           }
         }
 
+        // 将级牌的point恢复
+        for (let i = 0; i < subtractGroups.length; i++) {
+          const straightCards = subtractGroups[i];
+
+          for (let j = 0; j < straightCards.length; j++) {
+            const straightCard = straightCards[i];
+
+            if (straightCard.value === levelCard && straightCard.point !== 15) {
+              straightCard.point = 15;
+            }
+          }
+        }
+        for (let i = 0; i < subtractCards.length; i++) {
+          const straightCard = subtractCards[i];
+
+          if (straightCard.value === levelCard && straightCard.point !== 15) {
+            straightCard.point = 15;
+          }
+        }
+
         if (resultCaiShen) {
           return resultCaiShen;
         }
@@ -123,6 +158,23 @@ export default class StraightDoublesMatcher implements IMatcher {
 
       if (!sortedGroups.every(grp => grp.length <= 2)) {
         result = null;
+      }
+
+      // 将级牌的point恢复成原有数值
+      for (let i = 0; i < sortedGroups.length; i++) {
+        const straightCards = sortedGroups[i];
+
+        for (let j = 0; j < straightCards.length; j++) {
+          const straightCard = straightCards[i];
+
+          if (straightCard.point === 15) {
+            if (straightCard.value === 1) {
+              straightCard.point = 14;
+            } else {
+              straightCard.point = straightCard.value;
+            }
+          }
+        }
       }
 
       const lastCard = last(sortedGroups)[0];
@@ -143,6 +195,19 @@ export default class StraightDoublesMatcher implements IMatcher {
         } else {
           console.warn("error-8");
           result = null;
+        }
+      }
+
+      // 将级牌的point恢复
+      for (let i = 0; i < sortedGroups.length; i++) {
+        const straightCards = sortedGroups[i];
+
+        for (let j = 0; j < straightCards.length; j++) {
+          const straightCard = straightCards[i];
+
+          if (straightCard.value === levelCard && straightCard.point !== 15) {
+            straightCard.point = 15;
+          }
         }
       }
 
