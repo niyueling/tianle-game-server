@@ -394,7 +394,7 @@ export default class NormalTable extends Table {
     this.beTeamMate(this.awayTeamPlayers());
   }
 
-  async startTeamworkGame() {
+  startTeamworkGame() {
     // 如果非第一局，需要处理进还贡
     if (this.room.game.juIndex > 1) {
       let isAllTribute = false;
@@ -465,7 +465,7 @@ export default class NormalTable extends Table {
       }
     }
 
-    await this.nextToStartGame()
+    this.nextToStartGame()
   }
 
   isGameOver(): boolean {
