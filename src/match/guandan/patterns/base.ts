@@ -231,7 +231,7 @@ export function patternCompare(pattern1: IPattern, pattern2: IPattern): number {
     return pattern1.score - pattern2.score
   }
 
-  if (pattern1.name === PatterNames.bomb) {
+  if (pattern1.name === PatterNames.bomb || pattern1.name === PatterNames.straightFlush + 5) {
     return 1
   }
 
