@@ -162,8 +162,8 @@ class Pattern {
         return foundPattern;
       }
 
-      console.warn("foundPattern %s", JSON.stringify(foundPattern));
-      if ((pattern.name !== PatterNames.bomb || pattern.level < 6) && foundPattern.name === PatterNames.straightFlush) {
+      console.warn("pattern %s foundPattern %s", JSON.stringify(pattern), JSON.stringify(foundPattern));
+      if ((pattern.name !== PatterNames.bomb || pattern.level < 6) && foundPattern.name === PatterNames.straightFlush + 5) {
         return foundPattern;
       }
     }
