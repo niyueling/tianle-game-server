@@ -28,7 +28,8 @@ export default class BombMatcher implements IMatcher {
         return {
           name: PatterNames.bomb,
           score: 1000,
-          cards
+          cards,
+          level: 99
         }
       }
     }
