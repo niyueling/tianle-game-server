@@ -133,7 +133,7 @@ class Pattern {
       const pattern = matcher.verify(cards, this.room.currentLevelCard);
       if (pattern) {
         if (pattern.name.startsWith(PatterNames.straightTriplePlus2)) {
-          console.warn("foundPattern %s", JSON.stringify(pattern));
+          // console.warn("foundPattern %s", JSON.stringify(pattern));
         }
 
         return pattern;
@@ -174,17 +174,14 @@ class Pattern {
     if (!pattern) {
       if (cards.length === 2) {
         // 最后2张，先出大的
-        cards.sort((c1, c2) => c2.point - c1.point)
-        return [[cards[0]]]
+        cards.sort((c1, c2) => c2.point - c1.point);
+        return [[cards[0]]];
       }
-      cards.sort((c1, c2) => c1.point - c2.point)
-      return [[cards[0]]]
-    }
-    if ([PatterNames.straightFlush + "5", PatterNames.doubles + "2"].includes(pattern.name)) {
-      console.warn("pattern %s", JSON.stringify(pattern));
+      cards.sort((c1, c2) => c1.point - c2.point);
+      return [[cards[0]]];
     }
 
-    const matcher = this.patternNameToPatternMatcher(pattern.name)
+    const matcher = this.patternNameToPatternMatcher(pattern.name);
     let prompts = matcher.promptWithPattern(pattern, cards, this.room.currentLevelCard);
 
     // 计算同花顺
@@ -195,7 +192,7 @@ class Pattern {
       prompts = [...prompts, ...straightFlushPrompts];
     }
 
-    let bombPrompts = []
+    let bombPrompts = [];
     if (pattern.name !== PatterNames.bomb && flag) {
       bombPrompts = new BombMatcher().promptWithPattern(pattern, cards, this.room.currentLevelCard);
 
