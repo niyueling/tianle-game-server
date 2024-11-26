@@ -100,7 +100,7 @@ export default class StraightMatcher implements IMatcher {
       };
     }
 
-    // console.warn("StraightMatcher error 4");
+    console.warn("StraightMatcher error 4");
 
     return null;
   }

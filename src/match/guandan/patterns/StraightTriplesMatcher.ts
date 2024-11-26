@@ -43,7 +43,7 @@ export default class StraightTriplesMatcher implements IMatcher {
           sortKey: "pointWithCaishen"
         }
 
-        if (!subtractGroups.every(grp => grp.length <= 3)) {
+        if (!subtractGroups.every(grp => grp.length <= 3) || subtractGroups.length > 2) {
           console.warn("StraightTriplesMatcher error-1");
           resultCaiShen = null;
         }
@@ -132,7 +132,7 @@ export default class StraightTriplesMatcher implements IMatcher {
         sortKey: "pointNotCaishen"
       }
 
-      if (!sortedGroups.every(grp => grp.length <= 3)) {
+      if (!sortedGroups.every(grp => grp.length <= 3) || sortedGroups.length > 2) {
         result = null;
       }
 
