@@ -344,27 +344,71 @@ export default class StraightDoublesMatcher implements IMatcher {
       return []
     }
 
+    const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
+    let caiShenCount =levelCards.length;
+    let subtractCards = arraySubtract(cards.slice(), levelCards).slice();
+
+    // 将级牌的point恢复成原有数值
+    for (let i = 0; i < subtractCards.length; i++) {
+      const straightCard = subtractCards[i];
+
+      if (straightCard.point === 15) {
+        if (straightCard.value === 1) {
+          straightCard.point = 14;
+        } else {
+          straightCard.point = straightCard.value;
+        }
+      }
+    }
+
     const groups = groupBy(
-      cards.filter(c => c.point > target.score && c.point < Enums.c2.point),
+      subtractCards.filter(c => c.point > target.score && c.point < 15),
       card => card.point)
-      .filter(g => g.length >= 2 && g.length < 4)
+      .filter(g => g.length >= 1 && g.length < 4)
       .sort((grp1, grp2) => {
         return grp1[0].point - grp2[0].point
-      })
+      });
 
-    const prompts = []
+    const prompts = [];
     for (let i = 0; i < groups.length;) {
-      let prevCard = groups[i][0]
-      const prompt = [...groups[i].slice(0, 2)]
+      let prevCard = groups[i][0].point;
+      const prompt = [];
+      if (groups[i].length >= 2) {
+        prompt.push(...groups[i].slice(0, 2));
+      } else {
+        prompt.push(groups[i][0]);
+        prompt.push(levelCards[0]);
+        caiShenCount--;
+      }
 
-      let j = i + 1
+      let j = i + 1;
       for (; j < groups.length; j++) {
-        const nextCard = groups[j][0]
-        if (nextCard.point - prevCard.point === 1) {
-          prevCard = nextCard
-          prompt.push(...groups[j].slice(0, 2))
+        const nextCard = groups[j][0].point;
+        if (nextCard - prevCard === 1) {
+          prevCard = nextCard;
+
+          if (groups[j].length >= 2) {
+            prompt.push(...groups[j].slice(0, 2));
+          } else {
+            if (caiShenCount > 0) {
+              prompt.push(groups[j][0]);
+              prompt.push(levelCards[0]);
+              caiShenCount--;
+            } else {
+              break;
+            }
+          }
+
           if (prompt.length === len) {
             break
+          }
+        } else if (caiShenCount === 2) {
+          prevCard = prevCard + 1;
+          prompt.push(levelCards[0]);
+          prompt.push(levelCards[0]);
+          caiShenCount -= 2;
+          if (prompt.length === len) {
+            break;
           }
         } else {
           break
@@ -372,10 +416,19 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
 
       if (prompt.length === len) {
-        i++
-        prompts.push(prompt)
+        i++;
+        prompts.push(prompt);
       } else {
-        i = j
+        i = j;
+      }
+    }
+
+    // 将级牌的point恢复
+    for (let i = 0; i < subtractCards.length; i++) {
+      const straightCard = subtractCards[i];
+
+      if (straightCard.value === levelCard && straightCard.point !== 15) {
+        straightCard.point = 15;
       }
     }
 
@@ -384,25 +437,53 @@ export default class StraightDoublesMatcher implements IMatcher {
     }
 
     const groupsByValue = groupBy(
-      cards.filter(c => c.value > target.score && c.value <= Enums.c13.value),
+      subtractCards.filter(c => c.value > target.score),
       card => card.value)
-      .filter(g => g.length >= 2 && g.length < 4)
+      .filter(g => g.length >= 1 && g.length < 4)
       .sort((grp1, grp2) => {
         return grp1[0].value - grp2[0].value
-      })
+      });
 
     for (let i = 0; i < groupsByValue.length;) {
-      let prevCard = groupsByValue[i][0]
-      const prompt = [...groupsByValue[i].slice(0, 2)]
+      let prevCard = groupsByValue[i][0].value;
+      const prompt = [];
+      if (groupsByValue[i].length >= 2) {
+        prompt.push(...groupsByValue[i].slice(0, 2));
+      } else {
+        prompt.push(groupsByValue[i][0]);
+        prompt.push(levelCards[0]);
+        caiShenCount--;
+      }
 
-      let j = i + 1
+      let j = i + 1;
       for (; j < groupsByValue.length; j++) {
-        const nextCard = groupsByValue[j][0]
-        if (nextCard.value - prevCard.value === 1) {
-          prevCard = nextCard
-          prompt.push(...groupsByValue[j].slice(0, 2))
+        const nextCard = groupsByValue[j][0].value;
+        if (nextCard - prevCard === 1) {
+          prevCard = nextCard;
+
+          if (groupsByValue[j].length >= 2) {
+            prompt.push(...groupsByValue[j].slice(0, 2));
+          } else {
+            if (caiShenCount > 0) {
+              prompt.push(groupsByValue[j][0]);
+              prompt.push(levelCards[0]);
+              caiShenCount--;
+            } else {
+              break;
+            }
+          }
+
           if (prompt.length === len) {
             break
+          }
+        } else if (caiShenCount === 2) {
+          prevCard = prevCard + 1;
+          prompt.push(levelCards[0]);
+          prompt.push(levelCards[0]);
+          caiShenCount -= 2;
+
+          if (prompt.length === len) {
+            break;
           }
         } else {
           break
@@ -410,10 +491,10 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
 
       if (prompt.length === len) {
-        i++
-        prompts.push(prompt)
+        i++;
+        prompts.push(prompt);
       } else {
-        i = j
+        i = j;
       }
     }
 

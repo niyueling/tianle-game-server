@@ -150,7 +150,7 @@ export default class StraightMatcher implements IMatcher {
             break;
           }
         } else if (caiShenCount > 0) {
-          prevCard = nextCard + 1;
+          prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
           if (prompt.length === len) {
@@ -206,7 +206,7 @@ export default class StraightMatcher implements IMatcher {
             break;
           }
         } else if (caiShenCount > 0) {
-          prevCard = nextCard + 1;
+          prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
           if (prompt.length === len) {
