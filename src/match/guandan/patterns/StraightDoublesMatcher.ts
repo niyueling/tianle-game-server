@@ -373,7 +373,7 @@ export default class StraightDoublesMatcher implements IMatcher {
     for (let i = 0; i < groups.length;) {
       let prevCard = groups[i][0].point;
       const prompt = [];
-      caiShenCount =levelCards.length;
+      caiShenCount = levelCards.length;
 
       if (groups[i].length >= 2) {
         prompt.push(...groups[i].slice(0, 2));
@@ -414,6 +414,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           prompt.push(levelCards[0]);
           prompt.push(levelCards[0]);
           caiShenCount -= 2;
+          j--;
           if (prompt.length === len) {
             break;
           }
@@ -497,6 +498,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           prompt.push(levelCards[0]);
           prompt.push(levelCards[0]);
           caiShenCount -= 2;
+          j--;
 
           if (prompt.length === len) {
             break;
