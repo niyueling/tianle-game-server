@@ -351,6 +351,7 @@ export default class StraightTriplesMatcher implements IMatcher {
     for (let i = 0; i < groups.length;) {
       let prevCard = groups[i][0].point;
       const prompt = [];
+      caiShenCount =levelCards.length;
       if (groups[i].length === 3) {
         prompt.push(...groups[i].slice(0, 3));
       } else {
@@ -434,6 +435,8 @@ export default class StraightTriplesMatcher implements IMatcher {
     for (let i = 0; i < groupsByValue.length;) {
       let prevCard = groupsByValue[i][0].point;
       const prompt = [];
+      caiShenCount =levelCards.length;
+
       if (groupsByValue[i].length === 3) {
         prompt.push(...groupsByValue[i].slice(0, 3));
       } else {

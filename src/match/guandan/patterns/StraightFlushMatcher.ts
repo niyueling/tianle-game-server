@@ -136,6 +136,7 @@ export default class StraightFlushMatcher implements IMatcher {
       let prevCard = groups[i][0].point;
       let prevCardType = groups[i][0].type;
       const prompt = [groups[i][0]];
+      caiShenCount =levelCards.length;
 
       let j = i + 1;
       for (; j < groups.length; j++) {
@@ -188,6 +189,7 @@ export default class StraightFlushMatcher implements IMatcher {
       let prevCard = groupsByValue[i][0].value;
       let prevCardType = groupsByValue[i][0].type;
       const prompt = [groupsByValue[i][0]];
+      caiShenCount =levelCards.length;
 
       let j = i + 1;
       for (; j < groupsByValue.length; j++) {

@@ -139,10 +139,12 @@ export default class StraightMatcher implements IMatcher {
     for (let i = 0; i < groups.length;) {
       let prevCard = groups[i][0].point;
       const prompt = [groups[i][0]];
+      caiShenCount = levelCards.length;
 
       let j = i + 1;
       for (; j < groups.length; j++) {
         const nextCard = groups[j][0].point;
+
         if (nextCard - prevCard === 1 && nextCard < 15) {
           prevCard = nextCard;
           prompt.push(groups[j][0]);
@@ -195,6 +197,7 @@ export default class StraightMatcher implements IMatcher {
     for (let i = 0; i < groupsByValue.length;) {
       let prevCard = groupsByValue[i][0].value;
       const prompt = [groupsByValue[i][0]];
+      caiShenCount = levelCards.length;
 
       let j = i + 1;
       for (; j < groupsByValue.length; j++) {
