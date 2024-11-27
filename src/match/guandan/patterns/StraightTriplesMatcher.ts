@@ -257,7 +257,7 @@ export default class StraightTriplesMatcher implements IMatcher {
         }
 
         // 如果红心级牌补完的不符合都是三张，则一定无法组成钢板
-        if (!subtractGroupsByValue.every(grp => grp.length === 3)) {
+        if (!subtractGroupsByValue.every(grp => grp.length === 3) || subtractGroupsByValue.length > 2) {
           console.warn("StraightTriplesMatcher error-13");
           resultCaiShenByValue = null;
         }

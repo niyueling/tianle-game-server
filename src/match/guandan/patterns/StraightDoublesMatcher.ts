@@ -307,7 +307,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         return null;
       }
 
-      if (!sortedGroupsByValue.every(grp => grp.length <= 2)) {
+      if (!sortedGroupsByValue.every(grp => grp.length <= 2) || sortedGroupsByValue.length > 3) {
         console.warn("error-16");
         return null;
       }
