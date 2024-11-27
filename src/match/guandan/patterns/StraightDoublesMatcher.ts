@@ -376,9 +376,13 @@ export default class StraightDoublesMatcher implements IMatcher {
       if (groups[i].length >= 2) {
         prompt.push(...groups[i].slice(0, 2));
       } else {
-        prompt.push(groups[i][0]);
-        prompt.push(levelCards[0]);
-        caiShenCount--;
+        if (caiShenCount > 0) {
+          prompt.push(groups[i][0]);
+          prompt.push(levelCards[0]);
+          caiShenCount--;
+        } else {
+          continue;
+        }
       }
 
       let j = i + 1;
@@ -436,6 +440,8 @@ export default class StraightDoublesMatcher implements IMatcher {
       return prompts;
     }
 
+    caiShenCount = levelCards.length;
+
     const groupsByValue = groupBy(
       subtractCards.filter(c => c.value > target.score),
       card => card.value)
@@ -450,9 +456,13 @@ export default class StraightDoublesMatcher implements IMatcher {
       if (groupsByValue[i].length >= 2) {
         prompt.push(...groupsByValue[i].slice(0, 2));
       } else {
-        prompt.push(groupsByValue[i][0]);
-        prompt.push(levelCards[0]);
-        caiShenCount--;
+        if (caiShenCount > 0) {
+          prompt.push(groups[i][0]);
+          prompt.push(levelCards[0]);
+          caiShenCount--;
+        } else {
+          continue;
+        }
       }
 
       let j = i + 1;
