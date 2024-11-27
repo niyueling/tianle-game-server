@@ -226,7 +226,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           sortKey: "valueWithCaishen"
         }
 
-        if (!subtractGroupsByValue.every(grp => grp.length <= 2)) {
+        if (!subtractGroupsByValue.every(grp => grp.length <= 2) || subtractGroupsByValue.length > 3) {
           console.warn("error-9");
           resultCaiShenByValue = null;
         }
@@ -269,7 +269,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         }
 
         // 如果红心级牌补完的不符合都是对子，则一定无法组成连对
-        if (!subtractGroupsByValue.every(grp => grp.length === 2)) {
+        if (!subtractGroupsByValue.every(grp => grp.length === 2) || subtractGroupsByValue.length > 3) {
           console.warn("error-13");
           resultCaiShenByValue = null;
         }

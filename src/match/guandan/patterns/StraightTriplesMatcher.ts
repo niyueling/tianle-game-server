@@ -214,7 +214,7 @@ export default class StraightTriplesMatcher implements IMatcher {
           sortKey: "valueWithCaishen"
         }
 
-        if (!subtractGroupsByValue.every(grp => grp.length <= 3)) {
+        if (!subtractGroupsByValue.every(grp => grp.length <= 3) || subtractGroupsByValue.length > 2) {
           console.warn("StraightTriplesMatcher error-9");
           resultCaiShenByValue = null;
         }
@@ -287,7 +287,7 @@ export default class StraightTriplesMatcher implements IMatcher {
         return null;
       }
 
-      if (!sortedGroupsByValue.every(grp => grp.length <= 3)) {
+      if (!sortedGroupsByValue.every(grp => grp.length <= 3) || sortedGroupsByValue.length > 2) {
         console.warn("StraightTriplesMatcher error-16");
         return null;
       }
