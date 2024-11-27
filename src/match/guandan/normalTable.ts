@@ -608,7 +608,7 @@ export default class NormalTable extends Table {
       const p = this.players[i];
       if (p) {
         const base = this.room.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
-        console.warn("index %s base %s times %s winTeamPlayers %s", p.seatIndex, base, times);
+        console.warn("index %s base %s times %s", p.seatIndex, base, times);
         // 基础倍率
         p.balance = base * times * this.multiple * this.room.upgradeScore;
 

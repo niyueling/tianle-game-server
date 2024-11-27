@@ -712,7 +712,6 @@ class Room extends RoomBase {
           const winOrderList = this.winOrderLists.filter(p => p.team === 0).map(p => p.winOrder);
 
           // 如果用户头游并且不是末游，则游戏结束
-          console.warn("winOrderList %s", JSON.stringify(winOrderList));
           if(winOrderList.includes(1) && !winOrderList.includes(99)) {
             this.isAllOver = true;
           }
@@ -720,7 +719,7 @@ class Room extends RoomBase {
           // 如果用户过牌失败，记录过牌失败次数
           if (!this.isAllOver) {
             this.homeFailCount++;
-            this.broadcast("game/passThroughCard", {ok: true, data: {card: this.homeTeamCard, team : 0}});
+            this.broadcast("game/passThroughCard", {ok: true, data: {card: this.homeTeamCard, team : 0, failCount: this.homeFailCount}});
 
             if (this.homeFailCount === 3 && this.gameRule.juShu === 5) {
               this.homeFailCount = 0;
@@ -737,7 +736,6 @@ class Room extends RoomBase {
       if (team === 1) {
         if (this.awayTeamCard === nextLevelCard || this.awayTeamCard === 1) {
           const winOrderList = this.winOrderLists.filter(p => p.team === 1).map(p => p.winOrder);
-          console.warn("winOrderList %s", JSON.stringify(winOrderList));
 
           // 如果用户头游并且不是末游，则游戏结束
           if(winOrderList.includes(1) && !winOrderList.includes(99)) {
@@ -747,7 +745,7 @@ class Room extends RoomBase {
           // 如果用户过牌失败，记录过牌失败次数
           if (!this.isAllOver) {
             this.awayFailCount++;
-            this.broadcast("game/passThroughCard", {ok: true, data: {card: this.awayTeamCard, team : 1}});
+            this.broadcast("game/passThroughCard", {ok: true, data: {card: this.awayTeamCard, team : 1, failCount: this.awayFailCount}});
 
             if (this.awayFailCount === 3 && this.gameRule.juShu === 5) {
               this.awayFailCount = 0;
