@@ -102,9 +102,7 @@ export default class StraightFlushMatcher implements IMatcher {
   }
 
   promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
-    const len = target.cards.length
-
-    if (cards.length < len) {
+    if (cards.length < 5) {
       return []
     }
 
@@ -144,14 +142,14 @@ export default class StraightFlushMatcher implements IMatcher {
         if (nextCard - prevCard === 1 && nextCard < 15 && groups[j][0].type === prevCardType) {
           prevCard = nextCard;
           prompt.push(groups[j][0]);
-          if (prompt.length === len) {
+          if (prompt.length === 5) {
             break;
           }
         } else if (caiShenCount > 0) {
           prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
-          if (prompt.length === len) {
+          if (prompt.length === 5) {
             break;
           }
         } else {
@@ -159,7 +157,7 @@ export default class StraightFlushMatcher implements IMatcher {
         }
       }
 
-      if (prompt.length === len) {
+      if (prompt.length === 5) {
         i++
         prompts.push(prompt);
       } else {
@@ -197,14 +195,14 @@ export default class StraightFlushMatcher implements IMatcher {
         if (nextCard - prevCard === 1 && groupsByValue[j][0].type === prevCardType) {
           prevCard = nextCard;
           prompt.push(groupsByValue[j][0]);
-          if (prompt.length === len) {
+          if (prompt.length === 5) {
             break;
           }
         } else if (caiShenCount > 0) {
           prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
-          if (prompt.length === len) {
+          if (prompt.length === 5) {
             break;
           }
         } else {
@@ -212,7 +210,7 @@ export default class StraightFlushMatcher implements IMatcher {
         }
       }
 
-      if (prompt.length === len) {
+      if (prompt.length === 5) {
         i++
         prompts.push(prompt);
       } else {
