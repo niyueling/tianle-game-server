@@ -186,6 +186,7 @@ class Pattern {
     let straightFlushPrompts = [];
     if (![PatterNames.bomb, PatterNames.straightFlush + "5"].includes(pattern.name) && flag) {
       straightFlushPrompts = new StraightFlushMatcher().promptWithPattern(pattern, cards, this.room.currentLevelCard);
+      console.warn("pattern-%s straightFlushPrompts-%s", JSON.stringify(pattern), JSON.stringify(straightFlushPrompts));
 
       prompts = [...prompts, ...straightFlushPrompts];
     }
