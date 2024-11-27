@@ -322,28 +322,78 @@ export default class StraightTriplesMatcher implements IMatcher {
       return [];
     }
 
+    const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
+    let caiShenCount =levelCards.length;
+    let subtractCards = arraySubtract(cards.slice(), levelCards).slice();
+
+    // 将级牌的point恢复成原有数值
+    for (let i = 0; i < subtractCards.length; i++) {
+      const straightCard = subtractCards[i];
+
+      if (straightCard.point === 15) {
+        if (straightCard.value === 1) {
+          straightCard.point = 14;
+        } else {
+          straightCard.point = straightCard.value;
+        }
+      }
+    }
+
     // 查找正常的钢板
     const groups = groupBy(
-      cards.filter(c => c.point > target.score && c.point < Enums.c2.point),
-      card => card.point)
-      .filter(g => g.length === 3)
+      subtractCards.filter(c => c.point > target.score && c.point < 15), card => card.point)
+      .filter(g => g.length >= 1 && g.length < 4)
       .sort((grp1, grp2) => {
         return grp1[0].point - grp2[0].point
       })
 
-    const prompts = []
+    const prompts = [];
     for (let i = 0; i < groups.length;) {
-      let prevCard = groups[i][0]
-      const prompt = [...groups[i].slice(0, 3)]
+      let prevCard = groups[i][0].point;
+      const prompt = [];
+      if (groups[i].length === 3) {
+        prompt.push(...groups[i].slice(0, 3));
+      } else {
+        const supplementCaiShenCount = 3 - groups[i].length;
+        if (caiShenCount >= supplementCaiShenCount) {
+          prompt.push(...groups[i]);
 
-      let j = i + 1
+          for (let k = 0; k < supplementCaiShenCount; k++) {
+            prompt.push(levelCards[0]);
+          }
+
+          caiShenCount -= supplementCaiShenCount;
+        } else {
+          i++;
+          continue;
+        }
+      }
+
+      let j = i + 1;
       for (; j < groups.length; j++) {
-        const nextCard = groups[j][0]
-        if (nextCard.point - prevCard.point === 1) {
-          prevCard = nextCard
-          prompt.push(...groups[j].slice(0, 3))
+        const nextCard = groups[j][0].point;
+        if (nextCard - prevCard === 1) {
+          prevCard = nextCard;
+
+          if (groups[j].length >= 3) {
+            prompt.push(...groups[j].slice(0, 3));
+          } else {
+            const supplementCaiShenCount = 3 - groups[j].length;
+            if (caiShenCount >= supplementCaiShenCount) {
+              prompt.push(...groups[j]);
+
+              for (let k = 0; k < supplementCaiShenCount; k++) {
+                prompt.push(levelCards[0]);
+              }
+
+              caiShenCount -= supplementCaiShenCount;
+            } else {
+              break;
+            }
+          }
+
           if (prompt.length === len) {
-            break
+            break;
           }
         } else {
           break
@@ -358,31 +408,75 @@ export default class StraightTriplesMatcher implements IMatcher {
       }
     }
 
+    // 将级牌的point恢复
+    for (let i = 0; i < subtractCards.length; i++) {
+      const straightCard = subtractCards[i];
+
+      if (straightCard.value === levelCard && straightCard.point !== 15) {
+        straightCard.point = 15;
+      }
+    }
+
     if (prompts.length) {
       return prompts;
     }
 
+    caiShenCount = levelCards.length;
+
     // A最小的钢板
     const groupsByValue = groupBy(
-      cards.filter(c => c.value > target.score && c.value <= Enums.c13.value),
-      card => card.value)
-      .filter(g => g.length === 3)
+      cards.filter(c => c.value > target.score), card => card.value)
+      .filter(g => g.length >= 1 && g.length < 4)
       .sort((grp1, grp2) => {
         return grp1[0].value - grp2[0].value
       })
 
     for (let i = 0; i < groupsByValue.length;) {
-      let prevCard = groupsByValue[i][0]
-      const prompt = [...groupsByValue[i].slice(0, 3)]
+      let prevCard = groupsByValue[i][0].point;
+      const prompt = [];
+      if (groupsByValue[i].length === 3) {
+        prompt.push(...groupsByValue[i].slice(0, 3));
+      } else {
+        const supplementCaiShenCount = 3 - groupsByValue[i].length;
+        if (caiShenCount >= supplementCaiShenCount) {
+          prompt.push(...groupsByValue[i]);
 
-      let j = i + 1
+          for (let k = 0; k < supplementCaiShenCount; k++) {
+            prompt.push(levelCards[0]);
+          }
+
+          caiShenCount -= supplementCaiShenCount;
+        } else {
+          i++;
+          continue;
+        }
+      }
+
+      let j = i + 1;
       for (; j < groupsByValue.length; j++) {
-        const nextCard = groupsByValue[j][0]
-        if (nextCard.value - prevCard.value === 1) {
-          prevCard = nextCard
-          prompt.push(...groupsByValue[j].slice(0, 3))
+        const nextCard = groupsByValue[j][0].point;
+        if (nextCard - prevCard === 1) {
+          prevCard = nextCard;
+
+          if (groupsByValue[j].length >= 3) {
+            prompt.push(...groupsByValue[j].slice(0, 3));
+          } else {
+            const supplementCaiShenCount = 3 - groupsByValue[j].length;
+            if (caiShenCount >= supplementCaiShenCount) {
+              prompt.push(...groupsByValue[j]);
+
+              for (let k = 0; k < supplementCaiShenCount; k++) {
+                prompt.push(levelCards[0]);
+              }
+
+              caiShenCount -= supplementCaiShenCount;
+            } else {
+              break;
+            }
+          }
+
           if (prompt.length === len) {
-            break
+            break;
           }
         } else {
           break
