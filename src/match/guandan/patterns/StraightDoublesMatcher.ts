@@ -35,7 +35,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           return grp1[0].point - grp2[0].point
         })
 
-        console.warn("restore pointWithCaishen sortedGroups %s", JSON.stringify(sortedGroups));
+        console.warn("restore pointWithCaishen sortedGroups %s", JSON.stringify(subtractGroups));
 
         let resultCaiShen = {
           name: PatterNames.doubles + 3,
