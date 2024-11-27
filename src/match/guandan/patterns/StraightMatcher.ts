@@ -106,9 +106,7 @@ export default class StraightMatcher implements IMatcher {
   }
 
   promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
-    const len = target.cards.length
-
-    if (cards.length < len) {
+    if (cards.length < 5) {
       return []
     }
 
@@ -148,14 +146,14 @@ export default class StraightMatcher implements IMatcher {
         if (nextCard - prevCard === 1 && nextCard < 15) {
           prevCard = nextCard;
           prompt.push(groups[j][0]);
-          if (prompt.length === len) {
+          if (prompt.length === 5) {
             break;
           }
         } else if (caiShenCount > 0) {
           prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
-          if (prompt.length === len) {
+          if (prompt.length === 5) {
             break;
           }
         } else {
@@ -163,7 +161,7 @@ export default class StraightMatcher implements IMatcher {
         }
       }
 
-      if (prompt.length === len) {
+      if (prompt.length === 5) {
         const startCard = prompt[0];
         if (prompt.every(card => card.type === startCard.type)) {
           i = j;
@@ -205,14 +203,14 @@ export default class StraightMatcher implements IMatcher {
         if (nextCard - prevCard === 1) {
           prevCard = nextCard;
           prompt.push(groupsByValue[j][0]);
-          if (prompt.length === len) {
+          if (prompt.length === 5) {
             break;
           }
         } else if (caiShenCount > 0) {
           prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
-          if (prompt.length === len) {
+          if (prompt.length === 5) {
             break;
           }
         } else {
@@ -220,7 +218,7 @@ export default class StraightMatcher implements IMatcher {
         }
       }
 
-      if (prompt.length === len) {
+      if (prompt.length === 5) {
         const startCard = prompt[0];
         if (prompt.every(card => card.type === startCard.type)) {
           i = j;
