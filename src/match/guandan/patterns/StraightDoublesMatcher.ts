@@ -463,7 +463,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         prompt.push(...groupsByValue[i].slice(0, 2));
       } else {
         if (caiShenCount > 0) {
-          prompt.push(groups[i][0]);
+          prompt.push(groupsByValue[i][0]);
           prompt.push(levelCards[0]);
           caiShenCount--;
         } else {
