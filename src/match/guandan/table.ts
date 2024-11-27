@@ -941,13 +941,13 @@ abstract class Table implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : [])];
-      const prompts = new StraightDoublesMatcher().promptWithPattern({
-        name: PatterNames.doubles + '3',
-        score: 0,
-        cards: Array.from({ length: 6 }),
-      }, p.cards, this.room.currentLevelCard);
-
-      console.warn("index %s prompts %s", i, JSON.stringify(prompts));
+      // const prompts = new StraightDoublesMatcher().promptWithPattern({
+      //   name: PatterNames.doubles + '3',
+      //   score: 0,
+      //   cards: Array.from({ length: 6 }),
+      // }, p.cards, this.room.currentLevelCard);
+      //
+      // console.warn("index %s prompts %s", i, JSON.stringify(prompts));
     }
   }
 

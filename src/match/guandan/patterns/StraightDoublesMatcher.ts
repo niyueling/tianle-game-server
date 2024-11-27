@@ -381,6 +381,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           prompt.push(levelCards[0]);
           caiShenCount--;
         } else {
+          i++;
           continue;
         }
       }
@@ -461,6 +462,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           prompt.push(levelCards[0]);
           caiShenCount--;
         } else {
+          i++;
           continue;
         }
       }
