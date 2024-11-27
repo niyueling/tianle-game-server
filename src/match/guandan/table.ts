@@ -19,8 +19,6 @@ import PlayerProp from "../../database/models/PlayerProp";
 import Pattern from "./patterns";
 import * as config from "../../config"
 import RoomTimeRecord from "../../database/models/roomTimeRecord";
-import StraightFlushMatcher from "./patterns/StraightFlushMatcher";
-import StraightDoublesMatcher from "./patterns/StraightDoublesMatcher";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -949,6 +947,8 @@ abstract class Table implements Serializable {
       //
       // console.warn("index %s prompts %s", i, JSON.stringify(prompts));
     }
+
+    console.warn("fapai finished");
   }
 
   async getCardRecorder(player) {

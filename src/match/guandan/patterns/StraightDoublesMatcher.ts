@@ -1,5 +1,4 @@
 import Card, {CardType} from "../card"
-import Enums from "../enums"
 import {arraySubtract, groupBy, IMatcher, IPattern, last, PatterNames} from "./base"
 
 export default class StraightDoublesMatcher implements IMatcher {
