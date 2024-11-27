@@ -51,6 +51,7 @@ export default class StraightDoublesMatcher implements IMatcher {
         }
 
         const lastCard = last(subtractGroups)[0];
+        console.warn("lastCard %s", JSON.stringify(lastCard));
         if (lastCard.point >= 15) {
           if (lastCard.value !== levelCard || lastCard.type !== CardType.Heart) {
             console.warn("error-2");

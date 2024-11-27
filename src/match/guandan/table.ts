@@ -941,14 +941,19 @@ abstract class Table implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : [])];
-      const prompts = new StraightTriplesMatcher().promptWithPattern({
-        name: PatterNames.straightTriplePlus2 + '0',
-        score: 0,
-        cards: Array.from({ length: 6 }),
-      }, p.cards, this.room.currentLevelCard);
-
-      console.warn("index %s prompts %s", i, JSON.stringify(prompts));
     }
+
+    const cards = [
+      {type:1,value:1,levelCard:2,point:14},
+      {type:2,value:1,levelCard:2,point:14},
+      {type:2,value:2,levelCard:2,point:15},
+      {type:1,value:2,levelCard:2,point:15},
+      {type:2,value:2,levelCard:2,point:15},
+      {type:4,value:2,levelCard:2,point:15}
+    ];
+    const prompts = new StraightDoublesMatcher().verify(cards, 2);
+
+    console.warn("prompts %s", JSON.stringify(prompts));
 
     console.warn("fapai finished");
   }
