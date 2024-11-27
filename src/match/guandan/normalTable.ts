@@ -247,7 +247,7 @@ export default class NormalTable extends Table {
       if (this.isAllTribute && !this.kangTribute.length) {
         // 查询进贡用户
         const payTributePlayer = this.players.filter(p => p.payTributeState).sort((grp1, grp2) => {
-          return grp2.payTributeCard.point - grp1.payTributeCard.point
+          return grp1.payTributeCard.point - grp2.payTributeCard.point
         });
 
         // 查询还贡用户
@@ -264,7 +264,7 @@ export default class NormalTable extends Table {
         secondPlayer.payTributeCard = payTributePlayer[0].payTributeCard;
         secondPlayer.payTributeIndex = payTributePlayer[0].seatIndex;
 
-        // 进贡牌面较大的给二游
+        // 进贡牌面较大的给头游
         payTributePlayer[1].returnTributeCard = firstPlayer.returnTributeCard;
         payTributePlayer[1].returnTributeIndex = firstPlayer.seatIndex;
         firstPlayer.payTributeCard = payTributePlayer[1].payTributeCard;

@@ -55,7 +55,6 @@ function arraysEqual() {
   const sortedObject = Object.keys(object)
     .sort((a, b) => b - a)
     .reduce((result, key) => {
-      console.warn(key, result)
       result[key] = object[key];
       return result;
     }, {});

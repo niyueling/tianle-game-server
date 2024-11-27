@@ -97,7 +97,7 @@ export class CardMap {
     for (let i = 0; i < this.cardMap[16].length; i++) {
       jokerList.push(this.cardMap[16][i], this.cardMap[17][i]);
     }
-    console.warn("jokerList-%s", JSON.stringify(jokerList));
+    // console.warn("jokerList-%s", JSON.stringify(jokerList));
     const result = [];
     for (const count of countList) {
       if (count > 0) {

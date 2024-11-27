@@ -99,8 +99,6 @@ export default class StraightTriplesMatcher implements IMatcher {
         for (let i = 1; i < subtractGroups.length; i++) {
           const currentGroup = subtractGroups[i][0].point;
 
-          console.warn("i %s prevGroupByLevelPoint %s currentGroup %s", i, prevGroupByLevelPoint, currentGroup);
-
           // 如果符合连对特征，进行下一轮比较
           if (currentGroup - prevGroupByLevelPoint === 1) {
             prevGroupByLevelPoint = currentGroup;
