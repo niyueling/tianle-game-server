@@ -404,7 +404,7 @@ export default class StraightDoublesMatcher implements IMatcher {
           }
 
           if (prompt.length === len) {
-            break
+            break;
           }
         } else if (caiShenCount === 2) {
           prevCard = prevCard + 1;
@@ -415,7 +415,7 @@ export default class StraightDoublesMatcher implements IMatcher {
             break;
           }
         } else {
-          break
+          break;
         }
       }
 
