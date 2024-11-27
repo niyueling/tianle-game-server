@@ -112,6 +112,7 @@ export default class StraightDoublesMatcher implements IMatcher {
               addGroupCards.push(caiShen[0]);
               prevGroupByLevelPoint = prevGroupByLevelPoint + 1;
               caiShenCount = 0;
+              i--;
             } else {
               console.warn("error-6 %s", JSON.stringify(subtractGroups));
               resultCaiShen = null;
@@ -287,6 +288,7 @@ export default class StraightDoublesMatcher implements IMatcher {
               addGroupCards.push(caiShen[0]);
               prevGroupByLevelPoint = prevGroupByLevelPoint + 1;
               caiShenCount = 0;
+              i--;
             } else {
               console.warn("error-14");
               resultCaiShenByValue = null;
