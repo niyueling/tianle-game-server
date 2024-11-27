@@ -112,23 +112,103 @@ export default class StraightMatcher implements IMatcher {
       return []
     }
 
+    const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
+    let caiShenCount =levelCards.length;
+    let subtractCards = arraySubtract(cards.slice(), levelCards).slice();
+
+    // 将级牌的point恢复成原有数值
+    for (let i = 0; i < subtractCards.length; i++) {
+      const straightCard = subtractCards[i];
+
+      if (straightCard.point === 15) {
+        if (straightCard.value === 1) {
+          straightCard.point = 14;
+        } else {
+          straightCard.point = straightCard.value;
+        }
+      }
+    }
+
     const groups = groupBy(
-      cards.filter(
+      subtractCards.filter(
         c => c.point > target.score && c.type !== CardType.Joker), c => c.point)
       .filter(g => g.length < 4)
-      .sort((grp1, grp2) => grp1[0].point - grp2[0].point)
+      .sort((grp1, grp2) => grp1[0].point - grp2[0].point);
 
     const prompts = []
     for (let i = 0; i < groups.length;) {
-      let prevCard = groups[i][0];
-      const prompt = [prevCard];
+      let prevCard = groups[i][0].point;
+      const prompt = [groups[i][0]];
 
       let j = i + 1;
       for (; j < groups.length; j++) {
-        const nextCard = groups[j][0];
-        if ((nextCard.point - prevCard.point === 1 && nextCard.point < 15) || nextCard.value - prevCard.value === 1) {
+        const nextCard = groups[j][0].point;
+        if (nextCard - prevCard === 1 && nextCard < 15) {
           prevCard = nextCard;
-          prompt.push(nextCard);
+          prompt.push(groups[j][0]);
+          if (prompt.length === len) {
+            break;
+          }
+        } else if (caiShenCount > 0) {
+          prevCard = nextCard + 1;
+          prompt.push(levelCards[0]);
+          caiShenCount--;
+          if (prompt.length === len) {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+
+      if (prompt.length === len) {
+        const startCard = prompt[0];
+        if (prompt.every(card => card.type === startCard.type)) {
+          i = j;
+        } else {
+          i++;
+          prompts.push(prompt);
+        }
+      } else {
+        i = j
+      }
+    }
+
+    // 将级牌的point恢复
+    for (let i = 0; i < subtractCards.length; i++) {
+      const straightCard = subtractCards[i];
+
+      if (straightCard.value === levelCard && straightCard.point !== 15) {
+        straightCard.point = 15;
+      }
+    }
+
+    // 重新设置癞子数量
+    caiShenCount = levelCards.length;
+
+    const groupsByValue = groupBy(
+      subtractCards.filter(
+        c => c.value > target.score && c.type !== CardType.Joker), c => c.value)
+      .filter(g => g.length < 4)
+      .sort((grp1, grp2) => grp1[0].value - grp2[0].value);
+
+    for (let i = 0; i < groupsByValue.length;) {
+      let prevCard = groupsByValue[i][0].value;
+      const prompt = [groupsByValue[i][0]];
+
+      let j = i + 1;
+      for (; j < groupsByValue.length; j++) {
+        const nextCard = groupsByValue[j][0].value;
+        if (nextCard - prevCard === 1) {
+          prevCard = nextCard;
+          prompt.push(groupsByValue[j][0]);
+          if (prompt.length === len) {
+            break;
+          }
+        } else if (caiShenCount > 0) {
+          prevCard = nextCard + 1;
+          prompt.push(levelCards[0]);
+          caiShenCount--;
           if (prompt.length === len) {
             break;
           }
