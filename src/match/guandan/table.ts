@@ -944,14 +944,26 @@ abstract class Table implements Serializable {
     }
 
     const cards = [
-      {type:1,value:1,levelCard:2,point:14},
-      {type:2,value:1,levelCard:2,point:14},
-      {type:2,value:2,levelCard:2,point:15},
+      {type:3,value:11,levelCard:2,point:11},
+      {type:1,value:5,levelCard:2,point:5},
+      {type:2,value:3,levelCard:2,point:3},
+      {type:4,value:7,levelCard:2,point:7},
       {type:1,value:2,levelCard:2,point:15},
-      {type:2,value:2,levelCard:2,point:15},
-      {type:4,value:2,levelCard:2,point:15}
+      {type:2,value:9,levelCard:2,point:9},
+      {type:2,value:2,levelCard: 2,point:15},
+      {type:1,value:1,levelCard:2,point:14},
+      {type:4,value:6,levelCard:2,point:6},
+      {type:0,value:16,levelCard:2,point:16},
+      {type:4,value:2,levelCard:2,point:15},
+      {type:2,value:1,levelCard:2,point:14},
+      {type:3,value:5,levelCard:2,point:5},
+      {type:2,value:10,levelCard:2,point:10}
     ];
-    const prompts = new StraightDoublesMatcher().verify(cards, 2);
+    const prompts = new StraightDoublesMatcher().promptWithPattern({
+      name: PatterNames.doubles + '3',
+      score: 0,
+      cards: Array.from({ length: 6 }),
+    }, cards, 2);
 
     console.warn("prompts %s", JSON.stringify(prompts));
 
