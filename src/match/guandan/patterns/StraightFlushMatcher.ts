@@ -103,7 +103,8 @@ export default class StraightFlushMatcher implements IMatcher {
 
   promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
     if (cards.length < 5) {
-      return []
+      console.warn("cardCount is < 5");
+      return [];
     }
 
     const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
@@ -123,13 +124,20 @@ export default class StraightFlushMatcher implements IMatcher {
       }
     }
 
+    const groupByTypes = groupBy(
+      subtractCards.filter(
+        c => c.type !== CardType.Joker), c => c.type)
+      .sort((grp1, grp2) => grp1[0].type - grp2[0].type);
+
+    console.warn("groupByTypes-%s", JSON.stringify(groupByTypes));
+
     const groups = groupBy(
       subtractCards.filter(
         c => c.point > target.score && c.type !== CardType.Joker), c => c.point)
       .filter(g => g.length < 4)
       .sort((grp1, grp2) => grp1[0].point - grp2[0].point);
 
-    const prompts = []
+    const prompts = [];
     for (let i = 0; i < groups.length;) {
       let prevCard = groups[i][0].point;
       let prevCardType = groups[i][0].type;
