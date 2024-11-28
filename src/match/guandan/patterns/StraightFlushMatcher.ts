@@ -131,104 +131,106 @@ export default class StraightFlushMatcher implements IMatcher {
 
     console.warn("groupByTypes-%s", JSON.stringify(groupByTypes));
 
-    const groups = groupBy(
-      subtractCards.filter(
-        c => c.point > target.score && c.type !== CardType.Joker), c => c.point)
-      .filter(g => g.length < 4)
-      .sort((grp1, grp2) => grp1[0].point - grp2[0].point);
-
     const prompts = [];
-    for (let i = 0; i < groups.length;) {
-      let prevCard = groups[i][0].point;
-      let prevCardType = groups[i][0].type;
-      const prompt = [groups[i][0]];
-      caiShenCount =levelCards.length;
 
-      let j = i + 1;
-      for (; j < groups.length; j++) {
-        const nextCard = groups[j][0].point;
-        if (nextCard - prevCard === 1 && nextCard < 15 && groups[j][0].type === prevCardType) {
-          prevCard = nextCard;
-          prompt.push(groups[j][0]);
-          if (prompt.length === 5) {
+    for (let h = 0; h < groupByTypes.length; h++) {
+      const groupByType = groupByTypes[h];
+      const groups = groupBy(
+        groupByType.filter(
+          c => c.type !== CardType.Joker), c => c.point)
+        .sort((grp1, grp2) => grp1[0].point - grp2[0].point);
+
+
+      for (let i = 0; i < groups.length;) {
+        let prevCard = groups[i][0].point;
+        let prevCardType = groups[i][0].type;
+        const prompt = [groups[i][0]];
+        caiShenCount =levelCards.length;
+
+        let j = i + 1;
+        for (; j < groups.length; j++) {
+          const nextCard = groups[j][0].point;
+          if (nextCard - prevCard === 1 && nextCard < 15 && groups[j][0].type === prevCardType) {
+            prevCard = nextCard;
+            prompt.push(groups[j][0]);
+            if (prompt.length === 5) {
+              break;
+            }
+          } else if (caiShenCount > 0) {
+            prevCard = prevCard + 1;
+            prompt.push(levelCards[0]);
+            caiShenCount--;
+            j--;
+            if (prompt.length === 5) {
+              break;
+            }
+          } else {
             break;
           }
-        } else if (caiShenCount > 0) {
-          prevCard = prevCard + 1;
-          prompt.push(levelCards[0]);
-          caiShenCount--;
-          j--;
-          if (prompt.length === 5) {
-            break;
-          }
+        }
+
+        if (prompt.length === 5) {
+          i++
+          prompts.push(prompt);
         } else {
-          break;
+          i = j
         }
       }
 
-      if (prompt.length === 5) {
-        i++
-        prompts.push(prompt);
-      } else {
-        i = j
-      }
-    }
+      // 将级牌的point恢复
+      for (let i = 0; i < subtractCards.length; i++) {
+        const straightCard = subtractCards[i];
 
-    // 将级牌的point恢复
-    for (let i = 0; i < subtractCards.length; i++) {
-      const straightCard = subtractCards[i];
-
-      if (straightCard.value === levelCard && straightCard.point !== 15) {
-        straightCard.point = 15;
-      }
-    }
-
-    // 重新设置癞子数量
-    caiShenCount = levelCards.length;
-
-    const groupsByValue = groupBy(
-      subtractCards.filter(
-        c => c.value > target.score && c.type !== CardType.Joker), c => c.value)
-      .filter(g => g.length < 4)
-      .sort((grp1, grp2) => grp1[0].value - grp2[0].value);
-
-    for (let i = 0; i < groupsByValue.length;) {
-      let prevCard = groupsByValue[i][0].value;
-      let prevCardType = groupsByValue[i][0].type;
-      const prompt = [groupsByValue[i][0]];
-      caiShenCount =levelCards.length;
-
-      let j = i + 1;
-      for (; j < groupsByValue.length; j++) {
-        const nextCard = groupsByValue[j][0].value;
-        if (nextCard - prevCard === 1 && groupsByValue[j][0].type === prevCardType) {
-          prevCard = nextCard;
-          prompt.push(groupsByValue[j][0]);
-          if (prompt.length === 5) {
-            break;
-          }
-        } else if (caiShenCount > 0) {
-          prevCard = prevCard + 1;
-          prompt.push(levelCards[0]);
-          caiShenCount--;
-          j--;
-          if (prompt.length === 5) {
-            break;
-          }
-        } else {
-          break;
+        if (straightCard.value === levelCard && straightCard.point !== 15) {
+          straightCard.point = 15;
         }
       }
 
-      if (prompt.length === 5) {
-        i++
-        prompts.push(prompt);
-      } else {
-        i = j;
+      // 重新设置癞子数量
+      caiShenCount = levelCards.length;
+
+      const groupsByValue = groupBy(
+        groupByType.filter(
+          c => c.type !== CardType.Joker), c => c.value)
+        .sort((grp1, grp2) => grp1[0].value - grp2[0].value);
+
+      for (let i = 0; i < groupsByValue.length;) {
+        let prevCard = groupsByValue[i][0].value;
+        let prevCardType = groupsByValue[i][0].type;
+        const prompt = [groupsByValue[i][0]];
+        caiShenCount =levelCards.length;
+
+        let j = i + 1;
+        for (; j < groupsByValue.length; j++) {
+          const nextCard = groupsByValue[j][0].value;
+          if (nextCard - prevCard === 1 && groupsByValue[j][0].type === prevCardType) {
+            prevCard = nextCard;
+            prompt.push(groupsByValue[j][0]);
+            if (prompt.length === 5) {
+              break;
+            }
+          } else if (caiShenCount > 0) {
+            prevCard = prevCard + 1;
+            prompt.push(levelCards[0]);
+            caiShenCount--;
+            j--;
+            if (prompt.length === 5) {
+              break;
+            }
+          } else {
+            break;
+          }
+        }
+
+        if (prompt.length === 5) {
+          i++
+          prompts.push(prompt);
+        } else {
+          i = j;
+        }
       }
     }
 
     return prompts;
   }
-
 }
