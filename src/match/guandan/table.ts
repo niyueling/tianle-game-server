@@ -262,12 +262,6 @@ abstract class Table implements Serializable {
   }
 
   async fapai(payload) {
-    // payload.cards = [
-    //   [{type: 2, point: 2, value: 2}, {type: 2, point: 2, value: 2}],
-    //   [],
-    //   [],
-    //   []
-    // ];
     await this._fapai(payload);
 
     // 分配队友

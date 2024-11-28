@@ -32,6 +32,9 @@ export default class NormalTable extends Table {
   async start(payload) {
     this.faPaiPayload = payload;
 
+    const levelCard = this.cards.find(c => c.type === 1 && c.value === this.room.currentLevelCard);
+    this.players[0].record("openLevelCard", [levelCard]);
+
     const faPaiFunc = async() => {
       if (this.rule.allowDouble) {
         await this.broadcastModeRequest();

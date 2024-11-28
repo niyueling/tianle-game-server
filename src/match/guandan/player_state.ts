@@ -176,7 +176,7 @@ class PlayerState implements Serializable {
   }
 
   getCardsArray(): Card[] {
-    return this.cards
+    return this.cards.sort((a, b) => a.point - b.point);
   }
 
   listenDispatcher(socket?) {
