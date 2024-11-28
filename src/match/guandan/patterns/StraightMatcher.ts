@@ -153,6 +153,7 @@ export default class StraightMatcher implements IMatcher {
           prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
+          j--;
           if (prompt.length === 5) {
             break;
           }
@@ -210,6 +211,7 @@ export default class StraightMatcher implements IMatcher {
           prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
+          j--;
           if (prompt.length === 5) {
             break;
           }

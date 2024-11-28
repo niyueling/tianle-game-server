@@ -149,6 +149,7 @@ export default class StraightFlushMatcher implements IMatcher {
           prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
+          j--;
           if (prompt.length === 5) {
             break;
           }
@@ -202,6 +203,7 @@ export default class StraightFlushMatcher implements IMatcher {
           prevCard = prevCard + 1;
           prompt.push(levelCards[0]);
           caiShenCount--;
+          j--;
           if (prompt.length === 5) {
             break;
           }
