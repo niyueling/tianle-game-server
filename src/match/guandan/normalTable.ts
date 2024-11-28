@@ -32,9 +32,6 @@ export default class NormalTable extends Table {
   async start(payload) {
     this.faPaiPayload = payload;
 
-    const levelCard = this.cards.find(c => c.type === 1 && c.value === this.room.currentLevelCard);
-    this.players[0].record("openLevelCard", [levelCard]);
-
     const faPaiFunc = async() => {
       if (this.rule.allowDouble) {
         await this.broadcastModeRequest();
@@ -48,6 +45,8 @@ export default class NormalTable extends Table {
   }
 
   async startFaPai(payload) {
+    const levelCard = this.cards.find(c => c.type === 1 && c.value === this.room.currentLevelCard);
+    this.players[0].record("openLevelCard", [levelCard]);
     this.room.broadcast("game/openLevelCard", {ok: true, data: {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard}});
 
     if (this.rule.shuffleType === 2) {
