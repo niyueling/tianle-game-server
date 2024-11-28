@@ -129,7 +129,7 @@ export default class StraightFlushMatcher implements IMatcher {
         c => c.type !== CardType.Joker), c => c.type)
       .sort((grp1, grp2) => grp1[0].type - grp2[0].type);
 
-    console.warn("groupByTypes-%s", JSON.stringify(groupByTypes));
+    // console.warn("groupByTypes-%s", JSON.stringify(groupByTypes));
 
     const prompts = [];
 
