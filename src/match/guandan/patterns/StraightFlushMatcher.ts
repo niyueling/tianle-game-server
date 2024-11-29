@@ -177,15 +177,6 @@ export default class StraightFlushMatcher implements IMatcher {
         }
       }
 
-      // 将级牌的point恢复
-      for (let i = 0; i < subtractCards.length; i++) {
-        const straightCard = subtractCards[i];
-
-        if (straightCard.value === levelCard && straightCard.point !== 15) {
-          straightCard.point = 15;
-        }
-      }
-
       // 重新设置癞子数量
       caiShenCount = levelCards.length;
 
@@ -228,6 +219,15 @@ export default class StraightFlushMatcher implements IMatcher {
         } else {
           i = j;
         }
+      }
+    }
+
+    // 将级牌的point恢复
+    for (let i = 0; i < subtractCards.length; i++) {
+      const straightCard = subtractCards[i];
+
+      if (straightCard.value === levelCard && straightCard.point !== 15) {
+        straightCard.point = 15;
       }
     }
 
