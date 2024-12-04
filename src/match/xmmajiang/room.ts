@@ -25,6 +25,8 @@ import {RobotManager} from "./robotManager";
 import TableState, {stateGameOver} from "./table_state"
 import {service} from "../../service/importService";
 import Enums from "../majiang/enums";
+import PlayerMedal from "../../database/models/PlayerMedal";
+import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 
 const ObjectId = mongoose.Types.ObjectId
 const gameType = GameType.xmmj;
@@ -148,6 +150,7 @@ class Room extends RoomBase {
 
   @autoSerialize
   isWaitRecharge: boolean = false;
+  @autoSerialize
   waitRechargeLists: any[] = [];
 
   constructor(rule: any, roomNum: number) {
@@ -585,11 +588,26 @@ class Room extends RoomBase {
   }
 
   async joinMessageFor(newJoinPlayer): Promise<any> {
+    let medalId = null;
+    let headerBorderId = null;
+    // 获取用户称号
+    const playerMedal = await PlayerMedal.findOne({playerId: newJoinPlayer._id, isUse: true});
+    if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
+      medalId = playerMedal.propId;
+    }
+
+    // 获取用户头像框
+    const playerHeadBorder = await PlayerHeadBorder.findOne({playerId: newJoinPlayer._id, isUse: true});
+    if (playerHeadBorder && (playerHeadBorder.times === -1 || playerHeadBorder.times > new Date().getTime())) {
+      headerBorderId = playerHeadBorder.propId;
+    }
+
+    const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
     const index = this.players.findIndex(p => p && !p.isRobot());
     return {
       _id: this._id,
       index: this.indexOf(newJoinPlayer),
-      model: newJoinPlayer.model,
+      model: newModel,
       ip: newJoinPlayer.getIpAddress(),
       startIndex: index,
       isWaitRecharge: this.waitRechargeLists.includes(newJoinPlayer._id.toString()),

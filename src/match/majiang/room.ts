@@ -147,6 +147,11 @@ class Room extends RoomBase {
 
   robotManager: RobotManager
 
+  @autoSerialize
+  isWaitRecharge: boolean = false;
+  @autoSerialize
+  waitRechargeLists: any[] = [];
+
   constructor(rule: any) {
     super()
     this.game = new Game(rule)
@@ -586,6 +591,8 @@ class Room extends RoomBase {
       model: newModel,
       medalId,
       headerBorderId,
+      isWaitRecharge: this.waitRechargeLists.includes(newJoinPlayer._id.toString()),
+      gameWaitRecharge: this.isWaitRecharge,
       isGameRunning: !!this.gameState,
       isZhuang: newJoinPlayer.zhuang,
       ip: newJoinPlayer.getIpAddress(),
@@ -1023,6 +1030,10 @@ class Room extends RoomBase {
       this.readyPlayers = [];
       this.robotManager.model.step = RobotStep.waitRuby;
 
+      if (!this.isWaitRecharge) {
+        this.robotManager.model.step = RobotStep.start;
+      }
+
       if (this.isRoomAllOver() && !this.isPublic) {
         const message = this.allOverMessage()
         this.broadcast('room/allOver', message)
@@ -1043,6 +1054,8 @@ class Room extends RoomBase {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
+        this.isWaitRecharge = true;
+        this.waitRechargeLists.push(p._id.toString());
         this.broadcast('resource/robotIsNoRuby', {ok: true, data: {index: i, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
       }
     }
