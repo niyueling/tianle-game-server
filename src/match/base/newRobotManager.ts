@@ -137,6 +137,8 @@ export class NewRobotManager {
         this.waitUpdateRandomTime = Math.floor(Math.random() * 12 + 4);
       }
 
+      console.warn("room %s updateNoRuby start waitUpdateRubyTime %s!", this.room._id, this.waitUpdateRubyTime);
+
       if (!this.room.gameState) {
         console.warn("room %s waitUpdateRubyTime %s random %s", this.room._id, this.waitUpdateRubyTime, this.waitUpdateRandomTime);
       }
@@ -194,9 +196,9 @@ export class NewRobotManager {
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
         // 如果场次最高无限制，则最高携带金豆为门槛*10
-        if (resp.conf.maxAmount === -1) {
-          resp.conf.maxAmount = resp.conf.minAmount * 10;
-        }
+        // if (resp.conf.maxAmount === -1) {
+        //   resp.conf.maxAmount = resp.conf.minAmount * 10;
+        // }
         // 最高为随机下限的 20% - 30%
         // const rand = service.utils.randomIntBetweenNumber(10, 100) / 100;
         // const max = resp.conf.minAmount + Math.floor(rand * (resp.conf.maxAmount - resp.conf.minAmount));
@@ -220,6 +222,7 @@ export class NewRobotManager {
 
         // 金豆过多或者金豆不足，则离开房间
         console.warn("index %s isNeedRuby %s isUpgrade %s can leave", i, resp.isNeedRuby, resp.isUpgrade);
+        delete this.disconnectPlayers[p._id.toString()];
         await this.room.leave(p);
       }
     }
@@ -376,8 +379,6 @@ export class NewRobotManager {
   async gameOver() {
     clearInterval(this.watchTimer);
     if (this.disconnectPlayers) {
-      console.log('destroy robot %s disconnectPlayers %s', this.room._id, JSON.stringify(this.disconnectPlayers));
-
       // 扣除房间数
       this.disconnectPlayers = null;
       await service.roomRegister.decrPublicRoomCount(this.room.gameRule.gameType, this.room.gameRule.categoryId);
