@@ -146,6 +146,9 @@ class Room extends RoomBase {
   robotManager: RobotManager
   auditManager: AuditManager
 
+  @autoSerialize
+  isWaitRecharge: boolean = false;
+
   constructor(rule: any, roomNum: number) {
     super()
     this.game = new Game(rule)
@@ -179,6 +182,8 @@ class Room extends RoomBase {
 
     this.dissolveReqInfo = []
     this.autoDissolve();
+
+    this.isWaitRecharge = false;
   }
 
   get base() {
@@ -586,6 +591,8 @@ class Room extends RoomBase {
       model: newJoinPlayer.model,
       ip: newJoinPlayer.getIpAddress(),
       startIndex: index,
+      isWaitRecharge: newJoinPlayer.isWaitRecharge,
+      gameWaitRecharge: this.isWaitRecharge,
       isGameRunning: !!this.gameState && this.gameState.state !== stateGameOver,
       location: newJoinPlayer.location,
       owner: this.ownerId,
@@ -1094,6 +1101,8 @@ class Room extends RoomBase {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
+        this.isWaitRecharge = true;
+        p.isWaitRecharge = true;
         this.broadcast('resource/robotIsNoRuby', {ok: true, data: {index: i, isUpgrade: resp.isUpgrade, isNeedRuby: resp.isNeedRuby, conf: resp.conf}})
       }
     }

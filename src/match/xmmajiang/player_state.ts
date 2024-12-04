@@ -255,6 +255,9 @@ class PlayerState implements Serializable {
   // 是否第一次升级场次
   isUpgrade: boolean = false;
 
+  // 是否需要补充金豆
+  isWaitRecharge: boolean = false;
+
   constructor(userSocket, room, rule) {
     this.room = room;
     this.zhuang = false;
@@ -299,6 +302,7 @@ class PlayerState implements Serializable {
     this.fanShu = room.getFanShu(userSocket)
     this.isYouJin = false;
     this.isUpgrade = false;
+    this.isWaitRecharge = false;
   }
 
   get youJinTimes() {
