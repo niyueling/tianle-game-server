@@ -134,14 +134,10 @@ export class NewRobotManager {
     if (this.model.step === RobotStep.waitRuby && !this.room.gameState) {
       this.waitUpdateRubyTime++;
       if (!this.waitUpdateRandomTime) {
-        this.waitUpdateRandomTime = Math.floor(Math.random() * 12 + 4);
+        this.waitUpdateRandomTime = Math.floor(Math.random() * 4 + 1);
       }
 
-      console.warn("room %s updateNoRuby start waitUpdateRubyTime %s!", this.room._id, this.waitUpdateRubyTime);
-
-      if (!this.room.gameState) {
-        console.warn("room %s waitUpdateRubyTime %s random %s", this.room._id, this.waitUpdateRubyTime, this.waitUpdateRandomTime);
-      }
+      console.warn("room %s updateNoRuby start waitUpdateRubyTime %s random %s!", this.room._id, this.waitUpdateRubyTime, this.waitUpdateRandomTime);
 
       if (this.waitUpdateRubyTime < this.waitUpdateRandomTime || this.room.gameState) {
         return;
