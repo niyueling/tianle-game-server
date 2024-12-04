@@ -149,6 +149,8 @@ export class NewRobotManager {
 
       await this.updateNoRuby();
       await this.save();
+      this.room.waitRechargeLists = [];
+      this.room.isWaitRecharge = false;
       this.model.step = RobotStep.start;
       this.waitUpdateRubyTime = 0;
       this.waitUpdateRandomTime = 0;
