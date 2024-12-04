@@ -1099,10 +1099,6 @@ class Room extends RoomBase {
       this.readyPlayers = [];
       this.robotManager.model.step = RobotStep.waitRuby;
 
-      if (!this.isWaitRecharge) {
-        this.robotManager.model.step = RobotStep.start;
-      }
-
       if (this.isRoomAllOver(states) && !this.isPublic) {
         const message = this.allOverMessage();
         this.broadcast('room/allOver', {ok: true, data: message});
