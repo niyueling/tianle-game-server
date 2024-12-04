@@ -198,25 +198,29 @@ export class NewRobotManager {
           resp.conf.maxAmount = resp.conf.minAmount * 10;
         }
         // 最高为随机下限的 20% - 30%
-        const rand = service.utils.randomIntBetweenNumber(10, 100) / 100;
-        const max = resp.conf.minAmount + Math.floor(rand * (resp.conf.maxAmount - resp.conf.minAmount));
-        const gold = service.utils.randomIntBetweenNumber(resp.conf.minAmount, max);
-        const randomPlayer = await service.playerService.getPlayerModel(p._id);
-        // 重新随机设置 ruby
-        if (this.room.gameRule.currency === Enums.goldCurrency) {
-          randomPlayer.gold = gold;
-        }
-        if (this.room.gameRule.currency === Enums.tlGoldCurrency) {
-          randomPlayer.tlGold = gold;
-        }
+        // const rand = service.utils.randomIntBetweenNumber(10, 100) / 100;
+        // const max = resp.conf.minAmount + Math.floor(rand * (resp.conf.maxAmount - resp.conf.minAmount));
+        // const gold = service.utils.randomIntBetweenNumber(resp.conf.minAmount, max);
+        // const randomPlayer = await service.playerService.getPlayerModel(p._id);
+        // // 重新随机设置 ruby
+        // if (this.room.gameRule.currency === Enums.goldCurrency) {
+        //   randomPlayer.gold = gold;
+        // }
+        // if (this.room.gameRule.currency === Enums.tlGoldCurrency) {
+        //   randomPlayer.tlGold = gold;
+        // }
+        //
+        // this.room.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(randomPlayer, ['gold', 'diamond', 'tlGold'])}})
+        //
+        // // 记录金豆日志
+        // await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
+        //   randomPlayer.gold, `机器人开局设置游戏豆:${this.room._id}`);
+        //
+        // await randomPlayer.save();
 
-        this.room.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(randomPlayer, ['gold', 'diamond', 'tlGold'])}})
-
-        // 记录金豆日志
-        await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
-          randomPlayer.gold, `机器人开局设置游戏豆:${this.room._id}`);
-
-        await randomPlayer.save();
+        // 金豆过多或者金豆不足，则离开房间
+        console.warn("index %s isNeedRuby %s isUpgrade %s can leave", i, resp.isNeedRuby, resp.isUpgrade);
+        await this.room.leave(p);
       }
     }
 
