@@ -3009,6 +3009,8 @@ class TableState implements Serializable {
         // 抢金
         if (this.state === stateQiangJin) {
           const qiangDatas = this.qiangJinData.filter(p => !p.isRobot);
+          console.warn("qiangDatas-%s", JSON.stringify(qiangDatas));
+
           let flag = true;
           for (let i = 0; i < qiangDatas.length; i++) {
             flag = !this.qiangJinPlayer.includes(this.players[qiangDatas[i].index]._id.toString());
@@ -3019,7 +3021,7 @@ class TableState implements Serializable {
           }
           // 抢金，如果庄家未操作，则机器人禁止操作
           if (qiangDatas.length > 0 && !flag) {
-            // console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
+            console.warn("player index-%s not choice card-%s", this.atIndex(this.zhuang), this.stateData.card);
             return;
           }
 
