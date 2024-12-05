@@ -137,7 +137,7 @@ export default class StraightFlushMatcher implements IMatcher {
       const groupByType = groupByTypes[h];
       const groups = groupBy(
         groupByType.filter(
-          c => c.type !== CardType.Joker), c => c.point)
+          c => c.point > target.score && c.type !== CardType.Joker), c => c.point)
         .sort((grp1, grp2) => grp1[0].point - grp2[0].point);
 
 
@@ -182,7 +182,7 @@ export default class StraightFlushMatcher implements IMatcher {
 
       const groupsByValue = groupBy(
         groupByType.filter(
-          c => c.type !== CardType.Joker), c => c.value)
+          c => c.value > target.score && c.type !== CardType.Joker), c => c.value)
         .sort((grp1, grp2) => grp1[0].value - grp2[0].value);
 
       for (let i = 0; i < groupsByValue.length;) {
