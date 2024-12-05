@@ -1612,6 +1612,7 @@ class TableState implements Serializable {
     player.on(Enums.hu, async (turn, card) => {
       if (this.state === stateGameOver) {
         console.warn("roomId %s juIndex %s is gameOver", this.room._id, this.room.game.juIndex);
+        return ;
       }
       const recordCard = this.stateData.card;
       const players = this.players;
@@ -1619,8 +1620,8 @@ class TableState implements Serializable {
       const huResult = player.checkZiMo();
       const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && huResult.hu && huResult.huType !== Enums.qiShouSanCai;
       const isQiangJin = this.state === stateQiangJin || (huResult.hu && huResult.huType === Enums.qiShouSanCai);
-      console.warn("room-%s, jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s, caishen-%s, cards-%s， stateData-%s",
-        this.room._id, isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult), this.caishen, JSON.stringify(this.getCardArray(player.cards)), JSON.stringify(this.stateData));
+      console.warn("room-%s, state %s, jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s, caishen-%s, cards-%s， stateData-%s",
+        this.room._id, this.state, isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult), this.caishen, JSON.stringify(this.getCardArray(player.cards)), JSON.stringify(this.stateData));
 
       // if (!this.stateData[Enums.hu] || this.stateData[Enums.hu]._id.toString() !== player._id.toString()) {
       //   return ;
