@@ -2896,7 +2896,7 @@ class TableState implements Serializable {
     // }
 
     const huReply = async () => {
-      this.state = stateWaitDa;
+      // this.state = stateWaitDa;
       this.room.broadcast("game/qiangJinHuReply", {ok: true, data: {qiangJinData: this.qiangJinData, msg: msgs}});
     }
 
