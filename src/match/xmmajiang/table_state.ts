@@ -3037,7 +3037,7 @@ class TableState implements Serializable {
             this.setQiangJinAction(player, Enums.qiangJin);
           }
 
-          if (this.qiangJinPlayer.length >= this.qiangJinData.length && !this.isRunQiangJin) {
+          if ((this.qiangJinPlayer.length >= this.qiangJinData.length || this.qiangJinData.findIndex(p => !p.isRobot) === -1) && !this.isRunQiangJin) {
             this.isRunQiangJin = true;
             player.emitter.emit(Enums.qiangJinHu);
             // console.warn("qiangJinPlayer-%s qiangJinData-%s isRunQiangJin-%s can many hu", JSON.stringify(this.qiangJinPlayer), JSON.stringify(this.qiangJinData), this.isRunQiangJin);
