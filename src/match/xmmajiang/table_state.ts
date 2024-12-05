@@ -3019,7 +3019,7 @@ class TableState implements Serializable {
 
           let flag = true;
           for (let i = 0; i < qiangDatas.length; i++) {
-            flag = !this.qiangJinPlayer.includes(this.players[qiangDatas[i].index]._id.toString());
+            flag = this.qiangJinPlayer.includes(this.players[qiangDatas[i].index]._id.toString());
 
             if (!flag) {
               break;
