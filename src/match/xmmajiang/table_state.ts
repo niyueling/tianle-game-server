@@ -3047,7 +3047,7 @@ class TableState implements Serializable {
 
           console.warn("qiangJinPlayer-%s, qiangJinData-%s, qiangDatasLength-%s", JSON.stringify(this.qiangJinPlayer), JSON.stringify(this.qiangJinData), qiangDatas.length);
 
-          if ((this.qiangJinPlayer.length >= this.qiangJinData.length || qiangDatas.length === 0) && !this.isRunQiangJin) {
+          if ((this.qiangJinPlayer.length >= this.qiangJinData.length) && !this.isRunQiangJin) {
             this.isRunQiangJin = true;
             player.emitter.emit(Enums.qiangJinHu);
             // console.warn("qiangJinPlayer-%s qiangJinData-%s isRunQiangJin-%s can many hu", JSON.stringify(this.qiangJinPlayer), JSON.stringify(this.qiangJinData), this.isRunQiangJin);
