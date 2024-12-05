@@ -397,7 +397,7 @@ class TableState implements Serializable {
       if (playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && isHelp && category.title === Enums.noviceProtection) {
         // 判断是否听牌
         const isTing = player.isTing();
-        console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
+        // console.warn("index-%s, tingPai-%s", player.seatIndex, isTing)
         // 需要辅助出牌，优先辅助出牌
         if (player.disperseCards.length > 0 && !isTing) {
           const disperseCard = this.hasTripleStraight(player.disperseCards);
@@ -411,7 +411,7 @@ class TableState implements Serializable {
 
           // 首先对杂牌数组进行排序
           player.disperseCards.sort((a, b) => a - b);
-          console.warn("room %s consumeCard disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
+          // console.warn("room %s consumeCard disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
         } else {
           // 如果听牌，摸取胡牌的牌
           let c1 = await this.getHuCard(player);
@@ -420,7 +420,7 @@ class TableState implements Serializable {
 
             const moIndex = this.cards.findIndex(c => c === c1);
             if (moIndex !== -1) {
-              console.warn("get card %s index %s can hu", c1, moIndex);
+              // console.warn("get card %s index %s can hu", c1, moIndex);
               cardIndex = moIndex;
             }
           } else {
@@ -649,7 +649,7 @@ class TableState implements Serializable {
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
     if (this.room.isPublic && playerModel.gameJuShu[GameType.xmmj] < config.game.noviceProtection && !playerModel.robot && category.title === Enums.noviceProtection) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
-      console.warn("noviceProtection room %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
+      // console.warn("noviceProtection room %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
         cards = [...cards, ...result];
         residueCount -= result.length;
@@ -668,7 +668,7 @@ class TableState implements Serializable {
     // 本局有新手进阶,并且不是进阶用户
     if (this.room.isPublic && ((isUpgrade && !player.isUpgrade) || (category.maxAmount === -1 && playerModel.robot))) {
       const result = await this.getNoviceProtectionCards(residueCount, player);
-      console.warn("room upgrade %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
+      // console.warn("room upgrade %s result-%s, disperseCards-%s", this.room._id, JSON.stringify(result), JSON.stringify(player.disperseCards));
       if (result.length > 0) {
         cards = [...cards, ...result];
         residueCount -= result.length;
@@ -1046,7 +1046,7 @@ class TableState implements Serializable {
     const playerModel = await service.playerService.getPlayerModel(this.zhuang._id);
     this.stateData = {msg, [Enums.da]: this.zhuang, card: nextCard};
     this.zhuangResetCount++;
-    console.warn("nextCard-%s", nextCard);
+    // console.warn("nextCard-%s", nextCard);
 
     // 庄家摸到牌，判断是否可以抢金
     this.qiangJinData = await this.checkPlayerQiangJin();
@@ -1345,7 +1345,7 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.chi, async (turn, card, shunZiList) => {
-      console.warn("index %s chi card %s", player.seatIndex, card);
+      // console.warn("index %s chi card %s", player.seatIndex, card);
       const cardList = shunZiList.filter(value => value !== card);
       const otherCard1 = cardList[0]
       const otherCard2 = cardList[1]
@@ -1373,7 +1373,7 @@ class TableState implements Serializable {
               }
             }
 
-            console.warn("peng room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
+            // console.warn("peng room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
           }
 
           const daCard = await this.promptWithPattern(player, null);
@@ -1430,7 +1430,7 @@ class TableState implements Serializable {
               }
             }
 
-            console.warn("peng room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
+            // console.warn("peng room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
           }
           this.state = stateWaitDa
           this.stateData = {};
@@ -1486,7 +1486,7 @@ class TableState implements Serializable {
       await this.actionResolver.tryResolve()
     })
     player.on(Enums.gangByOtherDa, async (turn, card) => {
-      console.warn("index %s gangByOtherDa card %s", player.seatIndex, card);
+      // console.warn("index %s gangByOtherDa card %s", player.seatIndex, card);
       if (this.state !== stateWaitAction) {
         player.emitter.emit(Enums.guo, turn, card);
         return;
@@ -1510,7 +1510,7 @@ class TableState implements Serializable {
                 }
               }
 
-              console.warn("gangByOtherDa room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
+              // console.warn("gangByOtherDa room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
             }
             const from = this.atIndex(this.lastDa)
             const me = this.atIndex(player)
@@ -1583,7 +1583,7 @@ class TableState implements Serializable {
             }
           }
 
-          console.warn("gangBySelf room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
+          // console.warn("gangBySelf room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
         }
         player.sendMessage('game/gangReply', {
           ok: true,
@@ -1611,7 +1611,7 @@ class TableState implements Serializable {
 
     player.on(Enums.hu, async (turn, card) => {
       if (this.state === stateGameOver) {
-        console.warn("roomId %s juIndex %s is gameOver", this.room._id, this.room.game.juIndex);
+        // console.warn("roomId %s juIndex %s is gameOver", this.room._id, this.room.game.juIndex);
         return ;
       }
       const recordCard = this.stateData.card;
@@ -1620,8 +1620,8 @@ class TableState implements Serializable {
       const huResult = player.checkZiMo();
       const isZiMo = [stateWaitDa, stateQiangJin].includes(this.state) && recordCard === card && huResult.hu && huResult.huType !== Enums.qiShouSanCai;
       const isQiangJin = this.state === stateQiangJin || (huResult.hu && huResult.huType === Enums.qiShouSanCai);
-      console.warn("room-%s, state %s, jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s, caishen-%s, cards-%s， stateData-%s",
-        this.room._id, this.state, isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult), this.caishen, JSON.stringify(this.getCardArray(player.cards)), JSON.stringify(this.stateData));
+      // console.warn("room-%s, state %s, jiePao-%s, ziMo-%s, qiangJin-%s, huResult-%s, caishen-%s, cards-%s， stateData-%s",
+      //   this.room._id, this.state, isJiePao, isZiMo, isQiangJin, JSON.stringify(huResult), this.caishen, JSON.stringify(this.getCardArray(player.cards)), JSON.stringify(this.stateData));
 
       // if (!this.stateData[Enums.hu] || this.stateData[Enums.hu]._id.toString() !== player._id.toString()) {
       //   return ;
@@ -1809,7 +1809,7 @@ class TableState implements Serializable {
         }
       } else if (isQiangJin) {
         // 抢金(金豆房)
-        console.warn("qiangJinData-%s, seatIndex-%s, playerId-%s, isRobot-%s", JSON.stringify(this.qiangJinData), player.seatIndex, player._id, player.isRobot);
+        // console.warn("qiangJinData-%s, seatIndex-%s, playerId-%s, isRobot-%s", JSON.stringify(this.qiangJinData), player.seatIndex, player._id, player.isRobot);
         if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
           this.setQiangJinAction(player, huResult.hu && huResult.huType === Enums.qiShouSanCai ? Enums.sanJinDao : Enums.qiangJin);
@@ -2423,7 +2423,7 @@ class TableState implements Serializable {
         const currentTime = new Date().getTime();
         const startTime = Date.parse(m.createAt);
 
-        console.warn("startTime %s currentTime %s", startTime, currentTime);
+        // console.warn("startTime %s currentTime %s", startTime, currentTime);
 
         if (currentTime - startTime > config.game.dissolveTime) {
           return await this.room.forceDissolve();
@@ -2530,7 +2530,7 @@ class TableState implements Serializable {
         for (let i = 0; i < this.players.length; i++) {
           const pp = this.players[i];
           const actions = this.actionResolver && this.actionResolver.allOptions && this.actionResolver.allOptions(pp);
-          console.warn("state-%s, actions-%s, cards-%s", this.state, JSON.stringify(actions), JSON.stringify(this.getCardArray(pp.cards)));
+          // console.warn("state-%s, actions-%s, cards-%s", this.state, JSON.stringify(actions), JSON.stringify(this.getCardArray(pp.cards)));
           if (actions) {
             actionList.push(actions);
             // player.emitter.emit(Enums.guo);
@@ -2586,7 +2586,7 @@ class TableState implements Serializable {
     if (this.state === stateQiangJin) {
       const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
       // 如果用户无法天胡，三金倒，抢金，或者闲家可以抢金，三金倒，则不能打牌
-      console.warn("qiangDataIndex %s qiangJinData %s daPlayer %s", qiangDataIndex, JSON.stringify(this.qiangJinData), JSON.stringify(this.stateData[Enums.da]));
+      // console.warn("qiangDataIndex %s qiangJinData %s daPlayer %s", qiangDataIndex, JSON.stringify(this.qiangJinData), JSON.stringify(this.stateData[Enums.da]));
       if (qiangDataIndex === -1 || this.qiangJinData.length > 1) {
         player.sendMessage('game/daReply', {
           ok: false,
@@ -2659,7 +2659,7 @@ class TableState implements Serializable {
       if (player.disperseCards.includes(card)) {
         const disperseIndex = player.disperseCards.findIndex(c => c === card);
         player.disperseCards.splice(disperseIndex, 1);
-        console.warn("daPai room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
+        // console.warn("daPai room %s disperseCards-%s", this.room._id, JSON.stringify(player.disperseCards));
       }
       await player.sendMessage('game/daReply', {ok: true, data: card});
       this.room.broadcast('game/oppoDa', {ok: true, data: {index, card}}, player.msgDispatcher);
@@ -2775,7 +2775,7 @@ class TableState implements Serializable {
     if (this.state === stateQiangJin) {
       // 天胡(金豆房)
       const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
-      console.warn("qiangJinData-%s, qiangDataIndex-%s, seatIndex-%s, playerId-%s, isRobot-%s", JSON.stringify(this.qiangJinData), qiangDataIndex, player.seatIndex, player._id, player.isRobot);
+      // console.warn("qiangJinData-%s, qiangDataIndex-%s, seatIndex-%s, playerId-%s, isRobot-%s", JSON.stringify(this.qiangJinData), qiangDataIndex, player.seatIndex, player._id, player.isRobot);
       if (qiangDataIndex !== -1) {
         if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
@@ -2873,7 +2873,7 @@ class TableState implements Serializable {
 
       // 如果是庄家，移除一张牌换成金牌
 
-      console.warn("data %s zhuang %s", JSON.stringify(data), this.players[data.index].zhuang);
+      // console.warn("data %s zhuang %s", JSON.stringify(data), this.players[data.index].zhuang);
       if (this.players[data.index].zhuang) {
         this.players[data.index].cards[data.delCard]--;
       }
@@ -3017,7 +3017,7 @@ class TableState implements Serializable {
         // 抢金
         if (this.state === stateQiangJin) {
           const qiangDatas = this.qiangJinData.filter(p => !p.isRobot);
-          console.warn("qiangDatas-%s", JSON.stringify(qiangDatas));
+          // console.warn("qiangDatas-%s", JSON.stringify(qiangDatas));
 
           let flag = true;
           for (let i = 0; i < qiangDatas.length; i++) {
@@ -3029,14 +3029,14 @@ class TableState implements Serializable {
           }
           // 抢金，如果庄家未操作，则机器人禁止操作
           if (qiangDatas.length > 0 && !flag) {
-            console.warn("player index-%s not choice card-%s qiangJinPlayer-%s", this.atIndex(this.zhuang), this.stateData.card, JSON.stringify(this.qiangJinPlayer));
+            // console.warn("player index-%s not choice card-%s qiangJinPlayer-%s", this.atIndex(this.zhuang), this.stateData.card, JSON.stringify(this.qiangJinPlayer));
             return;
           }
 
           // 如果机器人没有操作，则push到数组
           const xianQiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
           // 闲家可以三金倒
-          console.warn("includes-%s xianQiangDataIndex-%s qiangJinData-%s", this.qiangJinPlayer.includes(player._id.toString()), xianQiangDataIndex, JSON.stringify(this.qiangJinData[xianQiangDataIndex]));
+          // console.warn("includes-%s xianQiangDataIndex-%s qiangJinData-%s", this.qiangJinPlayer.includes(player._id.toString()), xianQiangDataIndex, JSON.stringify(this.qiangJinData[xianQiangDataIndex]));
           if (!this.qiangJinPlayer.includes(player._id.toString()) && xianQiangDataIndex !== -1 && this.qiangJinData[xianQiangDataIndex].sanJinDao) {
             this.qiangJinPlayer.push(player._id.toString());
             this.setQiangJinAction(player, Enums.sanJinDao);
@@ -3045,7 +3045,7 @@ class TableState implements Serializable {
             this.setQiangJinAction(player, Enums.qiangJin);
           }
 
-          console.warn("qiangJinPlayer-%s, qiangJinData-%s, qiangDatasLength-%s", JSON.stringify(this.qiangJinPlayer), JSON.stringify(this.qiangJinData), qiangDatas.length);
+          // console.warn("qiangJinPlayer-%s, qiangJinData-%s, qiangDatasLength-%s", JSON.stringify(this.qiangJinPlayer), JSON.stringify(this.qiangJinData), qiangDatas.length);
 
           if ((this.qiangJinPlayer.length >= this.qiangJinData.length) && !this.isRunQiangJin) {
             this.isRunQiangJin = true;
