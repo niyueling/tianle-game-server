@@ -2865,7 +2865,7 @@ class TableState implements Serializable {
       // 抢金
       const qiangJinData = this.qiangJinData.filter(value => value.action === Enums.qiangJin);
       let data = qiangJinData[0];
-      const zhuangFlag = this.qiangJinData.filter(value => value.zhuang).length > 0;
+      const zhuangFlag = this.qiangJinData.filter(value => value.zhuang && value.action === Enums.qiangJin).length > 0;
 
       if (zhuangFlag && qiangJinPlayer > 1) {
         data = qiangJinData[1];
