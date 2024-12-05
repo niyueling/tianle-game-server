@@ -1809,6 +1809,7 @@ class TableState implements Serializable {
         }
       } else if (isQiangJin) {
         // 抢金(金豆房)
+        console.warn("qiangJinData-%s, seatIndex-%s, playerId-%s, isRobot-%s", JSON.stringify(this.qiangJinData), player.seatIndex, player._id, player.isRobot);
         if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
           this.setQiangJinAction(player, huResult.hu && huResult.huType === Enums.qiShouSanCai ? Enums.sanJinDao : Enums.qiangJin);
@@ -2774,6 +2775,7 @@ class TableState implements Serializable {
     if (this.state === stateQiangJin) {
       // 天胡(金豆房)
       const qiangDataIndex = this.qiangJinData.findIndex(pp => pp.index === player.seatIndex);
+      console.warn("qiangJinData-%s, qiangDataIndex-%s, seatIndex-%s, playerId-%s, isRobot-%s", JSON.stringify(this.qiangJinData), qiangDataIndex, player.seatIndex, player._id, player.isRobot);
       if (qiangDataIndex !== -1) {
         if (!this.qiangJinPlayer.includes(player._id.toString()) && !player.isRobot && this.room.isPublic) {
           this.qiangJinPlayer.push(player._id.toString());
