@@ -2866,6 +2866,8 @@ class TableState implements Serializable {
       }
 
       // 如果是庄家，移除一张牌换成金牌
+
+      console.warn("data %s zhuang %s", JSON.stringify(data), this.players[data.index].zhuang);
       if (this.players[data.index].zhuang) {
         this.players[data.index].cards[data.delCard]--;
       }
