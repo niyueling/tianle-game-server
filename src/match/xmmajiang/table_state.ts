@@ -2581,6 +2581,7 @@ class TableState implements Serializable {
     if (this.state === stateQiangJin) {
       const qiangDataIndex = this.qiangJinData.findIndex(p => p.index === player.seatIndex);
       // 如果用户无法天胡，三金倒，抢金，或者闲家可以抢金，三金倒，则不能打牌
+      console.warn("qiangDataIndex %s qiangJinData %s daPlayer %s", qiangDataIndex, JSON.stringify(this.qiangJinData), JSON.stringify(this.stateData[Enums.da]));
       if (qiangDataIndex === -1 || this.qiangJinData.length > 1) {
         player.sendMessage('game/daReply', {
           ok: false,
