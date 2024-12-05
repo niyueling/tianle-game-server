@@ -1610,6 +1610,9 @@ class TableState implements Serializable {
     })
 
     player.on(Enums.hu, async (turn, card) => {
+      if (this.state === stateGameOver) {
+        console.warn("roomId %s juIndex %s is gameOver", this.room._id, this.room.game.juIndex);
+      }
       const recordCard = this.stateData.card;
       const players = this.players;
       const isJiePao = this.state === stateWaitAction && recordCard === card && this.stateData[Enums.hu] && this.stateData[Enums.hu].findIndex(p => p._id.toString() === player._id.toString()) !== -1;
