@@ -1117,7 +1117,7 @@ class TableState implements Serializable {
             p.cards[i]++;
 
             if (tingPai) {
-              playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, delCard: i, qiangJin: true, calc: false});
+              playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, delCard: i, qiangJin: true, calc: false, isRobot: p.isRobot});
               break;
             }
           }
@@ -1126,7 +1126,7 @@ class TableState implements Serializable {
         // 非庄家直接判断是否听牌(抢金)
         const tingPai = p.isTing();
         if (tingPai) {
-          playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, qiangJin: true, calc: false});
+          playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, qiangJin: true, calc: false, isRobot: p.isRobot});
         }
       }
 
@@ -1137,7 +1137,7 @@ class TableState implements Serializable {
         if (index !== -1) {
           playerIndexs[index].sanJinDao = true;
         } else {
-          playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, sanJinDao: true, calc: false});
+          playerIndexs.push({index: p.seatIndex, zhuang: p.zhuang, card: this.caishen, sanJinDao: true, calc: false, isRobot: p.isRobot});
         }
       }
     }
