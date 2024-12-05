@@ -1,4 +1,4 @@
-import Card, {CardType} from './card'
+import Card from './card'
 import {IMatcher, IPattern, NullCheck, PatterNames} from './patterns/base'
 
 import BombMatcher from './patterns/BombMatcher'
@@ -11,16 +11,16 @@ import StraightTriplePlusXMatcher, {default as StraightTriplesPlusXMatcher} from
 import StraightTriplesMatcher from './patterns/StraightTriplesMatcher'
 import TriplePlus2Matcher from './patterns/TriplePlus2Matcher'
 import TriplePlusXMatcher from "./patterns/TriplePlusXMatcher"
-import TripleMatcher from "./patterns/TripleMatcher";
 
 const matchers: IMatcher[] = [
   new BombMatcher(),
+
   new StraightMatcher(),
   new StraightDoublesMatcher(),
+
   new StraightTriplePlus2Matcher(),
+
   new TriplePlus2Matcher(),
-  new TriplePlusXMatcher(),
-  new TripleMatcher(),
   new DoubleMatcher(),
   new SingleMatcher(),
 ]
@@ -86,7 +86,6 @@ function patternNameToPatternMatcher(name: string): IMatcher {
   if (name === PatterNames.bomb) return new BombMatcher()
   if (name === PatterNames.double) return new DoubleMatcher()
   if (name === PatterNames.triplePlus2) return new TriplePlus2MatcherExtra()
-  if (name === PatterNames.triple) return new TripleMatcher()
 
   if (name.startsWith(PatterNames.straight)) return new StraightMatcher()
   if (name.startsWith(PatterNames.doubles)) return new StraightDoublesMatcher()
@@ -109,9 +108,9 @@ export function findFullMatchedPattern(cards: Card[]): IPattern | null {
 const triplePlusX = new TriplePlusXMatcher()
 
 export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount: number = 0): IPattern | null {
-    let foundPattern = findFullMatchedPattern(cards)
+  let foundPattern = findFullMatchedPattern(cards)
 
-    if (!foundPattern && cards.length === cardCount) {
+  if (!foundPattern && cards.length === cardCount) {
     foundPattern = triplePlusX.verify(cards)
 
     if (pattern) {
@@ -125,7 +124,7 @@ export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount
     }
   }
 
-    if (foundPattern) {
+  if (foundPattern) {
     if (!pattern) return foundPattern
 
     if (foundPattern.name === pattern.name) {
@@ -150,16 +149,12 @@ export function isGreaterThanPattern(cards: Card[], pattern: IPattern, cardCount
       }
     }
   }
-    return null
+
+  return null
 }
 
-export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], flag = true): Card[][] {
+export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[]): Card[][] {
   if (!pattern) {
-    if (cards.length === 2) {
-      // 最后2张，先出大的
-      cards.sort((c1, c2) => c2.point - c1.point)
-      return [[cards[0]]]
-    }
     cards.sort((c1, c2) => c1.point - c2.point)
     return [[cards[0]]]
   }
@@ -168,7 +163,7 @@ export function findMatchedPatternByPattern(pattern: IPattern, cards: Card[], fl
   const prompts = matcher.promptWithPattern(pattern, cards)
 
   let bombPrompts = []
-  if (pattern.name !== PatterNames.bomb && flag) {
+  if (pattern.name !== PatterNames.bomb) {
     bombPrompts = new BombMatcher().promptWithPattern(pattern, cards)
   }
 
@@ -271,24 +266,6 @@ const firstPattern = [
     },
   },
   {
-    // 最后3带1
-    matcher: new TriplePlusXMatcher(),
-    pattern: {
-      name: PatterNames.triplePlus2,
-      score: 0,
-    },
-    cards: Array.from({ length: 4 }),
-  },
-  {
-    // 最后3张
-    matcher: new TripleMatcher(),
-    pattern: {
-      name: PatterNames.triple,
-      score: 0,
-    },
-    cards: Array.from({ length: 3 }),
-  },
-  {
     // 对子
     matcher: new DoubleMatcher(),
     pattern: {
@@ -315,87 +292,12 @@ const firstPattern = [
   },
 ]
 // 第一次出牌的卡
-export function firstPlayCard(cards: Card[], excludePattern: string[]) {
-  const bombMatcher = new BombMatcher();
-  const bombPattern = {
-    name: PatterNames.bomb,
-    score: 0,
-    cards: Array.from({ length: 4 }),
-  };
-  const bombCard = bombMatcher.promptWithPattern( bombPattern as IPattern, cards);
-  // 没有炸弹卡
-  const noBomb = bombCard.length === 0;
-  let nextResult;
+export function firstPlayCard(cards: Card[]) {
   for (const { matcher, pattern } of firstPattern) {
-    if (excludePattern && excludePattern.includes(pattern.name)) {
-      continue;
-    }
-    nextResult = false;
     const result = matcher.promptWithPattern(pattern as IPattern, cards);
-    for (const cardList of result) {
-      if (!noBomb) {
-        // 有炸弹，普通牌不能带鬼牌
-        const jokerCount = cardList.filter(value => value.type === CardType.Joker).length;
-        const patternResult = bombMatcher.verify(cardList);
-        if (jokerCount > 0 && !patternResult) {
-          // 非炸弹，带鬼牌，跳过
-          nextResult = true;
-        } else {
-          // 没有鬼牌
-          return cardList;
-        }
-      }
-    }
-    if (nextResult) {
-      continue;
-    }
-    if (pattern.name === PatterNames.single && cards.length === 2) {
-      if (result.length >= 2) {
-        return result[1];
-      }
-    }
     if (result.length > 0) {
       return result[0];
     }
-    // 试试单张
   }
   throw new Error('no card to play for cards' + JSON.stringify(cards))
-}
-
-export function publicRoomFirstPlayCard(cards: Card[]) {
-  const patternList =   [
-    {
-      // 顺子
-      matcher: new StraightMatcher(),
-      pattern: {
-        name: PatterNames.straight + '7',
-        score: 0,
-        cards: Array.from({ length: 7 }),
-      },
-    },
-    {
-      // 顺子
-      matcher: new StraightMatcher(),
-      pattern: {
-        name: PatterNames.straight + '6',
-        score: 0,
-        cards: Array.from({ length: 6 }),
-      },
-    },
-    {
-      // 顺子
-      matcher: new StraightMatcher(),
-      pattern: {
-        name: PatterNames.straight + '5',
-        score: 0,
-        cards: Array.from({ length: 5 }),
-      },
-    }];
-  for (const p of patternList) {
-    const result = p.matcher.promptWithPattern(p.pattern as IPattern, cards);
-    if (result.length > 0) {
-      return result[0];
-    }
-  }
-  return null;
 }
