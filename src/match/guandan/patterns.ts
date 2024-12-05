@@ -132,9 +132,6 @@ class Pattern {
       const matcher = this.matchers[i];
       const pattern = matcher.verify(cards, this.room.currentLevelCard);
       if (pattern) {
-        if (pattern.name.startsWith(PatterNames.straightTriplePlus2)) {
-          // console.warn("foundPattern %s", JSON.stringify(pattern));
-        }
 
         return pattern;
       }
@@ -184,13 +181,23 @@ class Pattern {
 
     // 计算同花顺
     let straightFlushPrompts = [];
-    if (![PatterNames.bomb, PatterNames.straightFlush + "5"].includes(pattern.name) && flag) {
-      straightFlushPrompts = new StraightFlushMatcher().promptWithPattern(pattern, cards, this.room.currentLevelCard);
-      if (straightFlushPrompts.length) {
-        console.warn("pattern-%s straightFlushPrompts-%s", JSON.stringify(pattern), JSON.stringify(straightFlushPrompts));
+    if (flag) {
+      const currentPattern = {
+        name: PatterNames.straightFlush + '5',
+        score: 0,
+        cards: Array.from({ length: 5 })
       }
+      if (pattern.name === PatterNames.straightFlush + "5") {
+        currentPattern.score = pattern.score;
+      }
+      if (pattern.name !== PatterNames.bomb || pattern.name === PatterNames.bomb && pattern.level < 6) {
+        straightFlushPrompts = new StraightFlushMatcher().promptWithPattern(<IPattern>currentPattern, cards, this.room.currentLevelCard);
+        if (straightFlushPrompts.length) {
+          console.warn("pattern-%s straightFlushPrompts-%s", JSON.stringify(pattern), JSON.stringify(straightFlushPrompts));
+        }
 
-      prompts = [...prompts, ...straightFlushPrompts];
+        prompts = [...prompts, ...straightFlushPrompts];
+      }
     }
 
     let bombPrompts = [];
@@ -202,7 +209,7 @@ class Pattern {
         return [...prompts, ...bombPrompts];
       }
 
-      // 将王炸和6星以下炸弹排除掉
+      // 将6星以下炸弹排除掉
       const filterPrompts = [];
       for (let i = 0; i < bombPrompts.length; i++) {
         const prompt = bombPrompts[i];
