@@ -31,7 +31,7 @@
   "homepage": "https://gitlab.com/friend-mahjong/nodejs-server#README",
   "description": "friend mahjong",
   "dependencies": {
-    "@fm/common": "1.2.89",
+    "@fm/common": "1.2.90",
     "@fm/model": "1.3.22",
     "@types/bluebird": "3.5.20",
     "@types/mongoose": "^5.0.15",

@@ -146,6 +146,10 @@ export default class NormalTable extends Table {
       return player.sendMessage("game/payTributeReply", {ok: false, info: TianleErrorCode.cardIsNotExists});
     }
 
+    if (msg.card.type === CardType.Heart && msg.card.value === this.room.currentLevelCard) {
+      return player.sendMessage("game/payTributeReply", {ok: false, info: TianleErrorCode.neverPayTributeCaiShen});
+    }
+
     const cardSlices = player.cards.slice();
     const sortCard = cardSlices.sort((grp1, grp2) => {
       return grp2.point - grp1.point
@@ -179,6 +183,10 @@ export default class NormalTable extends Table {
     const index = player.cards.findIndex(c => c.type === msg.card.type && c.point === msg.card.point);
     if (index === -1) {
       return player.sendMessage("game/returnTributeReply", {ok: false, info: TianleErrorCode.cardIsNotExists});
+    }
+
+    if (msg.card.type === CardType.Heart && msg.card.value === this.room.currentLevelCard) {
+      return player.sendMessage("game/returnTributeReply", {ok: false, info: TianleErrorCode.neverReturnTributeCaiShen});
     }
 
     const isLevelCard = CardType.Heart === msg.card.type && this.room.currentLevelCard === msg.card.value;
