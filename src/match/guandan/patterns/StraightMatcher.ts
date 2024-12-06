@@ -76,6 +76,8 @@ export default class StraightMatcher implements IMatcher {
       const copyCardsByValue = cards.slice().sort(Card.compareByValue);
       subtractCards = arraySubtract(copyCardsByValue.slice(), levelCards);
 
+      console.warn("atraightMatcher subtractCards %s caiShenCount %s", JSON.stringify(subtractCards), caiShenCount);
+
       let lastCard1 = subtractCards[0].value;
       for (let i = 1; i < subtractCards.length; i++) {
         const currentCard = subtractCards[i].value;
@@ -107,7 +109,7 @@ export default class StraightMatcher implements IMatcher {
 
   promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
     if (cards.length < 5) {
-      return []
+      return [];
     }
 
     const levelCards = cards.filter(card => card.type === CardType.Heart && card.value === levelCard);
