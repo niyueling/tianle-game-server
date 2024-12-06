@@ -346,20 +346,18 @@ export default {
     if (user.helpCount > 0) {
       const start = moment(new Date()).startOf('day').toDate();
       const end = moment(new Date()).endOf('day').toDate();
-      const helpCount = await PlayerBenefitRecord.count({
-        playerId: p._id,
-        createAt: {$gte: start, $lt: end}
-      });
-
-      let gold = 30000;
+      const helpCount = await PlayerBenefitRecord.count({playerId: this.player.model._id, createAt: {$gte: start, $lt: end}});
+      const gold = 30000;
+      const giftGold = 200000;
+      let isVip = false;
 
       if (user.giftExpireTime && user.giftExpireTime > new Date().getTime()) {
-        gold += 170000;
+        isVip = true;
       }
 
       return p.sendMessage("account/benefitDataReply", {
         ok: true,
-        data: {gold: gold, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount}
+        data: {gold, giftGold, vip: isVip, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount}
       });
     }
 
