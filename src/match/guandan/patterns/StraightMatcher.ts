@@ -75,6 +75,7 @@ export default class StraightMatcher implements IMatcher {
 
       const copyCardsByValue = cards.slice().sort(Card.compareByValue);
       subtractCards = arraySubtract(copyCardsByValue.slice(), levelCards);
+      caiShenCount = levelCards.length;
 
       console.warn("atraightMatcher subtractCards %s caiShenCount %s", JSON.stringify(subtractCards), caiShenCount);
 
