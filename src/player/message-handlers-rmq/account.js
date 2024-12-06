@@ -351,10 +351,10 @@ export default {
         createAt: {$gte: start, $lt: end}
       });
 
-      let gold = 100000;
+      let gold = 30000;
 
       if (user.giftExpireTime && user.giftExpireTime > new Date().getTime()) {
-        gold += gold * 0.5;
+        gold += 170000;
       }
 
       return p.sendMessage("account/benefitDataReply", {
@@ -373,10 +373,10 @@ export default {
       return p.sendMessage("account/benefitDataReply", {ok: false, info: TianleErrorCode.userNotFound});
     }
 
-    let gold = 100000;
+    let gold = 30000;
 
     if (user.giftExpireTime && user.giftExpireTime > new Date().getTime()) {
-      gold += gold * 0.5;
+      gold += 170000;
     }
 
     if (user.helpCount > 0) {

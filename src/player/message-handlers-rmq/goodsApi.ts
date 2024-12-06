@@ -13,6 +13,7 @@ import UserRechargeOrder from "../../database/models/userRechargeOrder";
 import crypto = require('crypto');
 import Player from "../../database/models/player";
 import Enums from "../../match/majiang/enums";
+import GoodsReviveTlGold from "../../database/models/goodsReviveTlGold";
 
 // 商品
 export class GoodsApi extends BaseApi {
@@ -435,5 +436,40 @@ export class GoodsApi extends BaseApi {
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold, currency: message.currency});
     await this.player.updateResource2Client();
+  }
+
+  // 兑换天乐币列表
+  @addApi()
+  async getReviveTlGoldList(message) {
+    const reviveList = await GoodsReviveTlGold.find({ category: message.category, gameType: message.gameType }).sort({gold: 1});
+
+    this.replySuccess(reviveList);
+  }
+
+  // 兑换天乐币
+  @addApi()
+  async exchangeReviveTlGold(message) {
+    const exchangeConf = await GoodsReviveTlGold.findById(message._id);
+    if (!exchangeConf) {
+      return this.replyFail(TianleErrorCode.configNotFound);
+    }
+
+    const model = await service.playerService.getPlayerModel(this.player.model._id);
+    if (exchangeConf.gold > model.gold) {
+      return this.replyFail(TianleErrorCode.diamondInsufficient);
+    }
+
+    model.gold = model.gold - exchangeConf.gold;
+    model.tlGold = model.tlGold + exchangeConf.tlGold;
+    this.player.model.gold = model.gold;
+    this.player.model.tlGold = model.tlGold;
+
+    await PlayerModel.update({_id: model._id}, {$inc: {gold: -exchangeConf.gold, tlGold: exchangeConf.tlGold}});
+
+    // 增加日志
+    await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveTlGold, exchangeConf.gold, model.gold, `兑换天乐币`);
+
+    this.replySuccess({tlGold: exchangeConf.tlGold, gold: exchangeConf.gold});
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: model.gold, diamond: model.diamond, tlGold: model.tlGold}})
   }
 }
