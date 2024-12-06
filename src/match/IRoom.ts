@@ -16,8 +16,6 @@ import {once} from "./onceDecorator"
 import {autoSerialize, Serializable, serialize, serializeHelp} from "./serializeDecorator"
 import {eqlModelId} from "./pcmajiang/modelId";
 import createClient from "../utils/redis";
-import {stateGameOver} from "./xmmajiang/table_state";
-import {RoomInfoModel} from "../database/models/roomInfo";
 import RoomTimeRecord from "../database/models/roomTimeRecord";
 
 export const playerInClub = async (clubShortId: string, playerId: string) => {
@@ -199,6 +197,11 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   // 对手三把不过次数
   @autoSerialize
   awayFailCount: number = 0;
+
+  @autoSerialize
+  isWaitRecharge: boolean = false;
+  @autoSerialize
+  waitRechargeLists: any[] = [];
 
   abstract initScore(player)
 

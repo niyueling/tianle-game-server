@@ -24,6 +24,8 @@ import CombatGain from "../../database/models/combatGain";
 import Player from "../../database/models/player";
 import {stateGameOver} from "./table";
 import RoomTimeRecord from "../../database/models/roomTimeRecord";
+import PlayerMedal from "../../database/models/PlayerMedal";
+import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -69,6 +71,11 @@ class Room extends RoomBase {
 
   // 房间是否已经解散
   dissolveState: string
+
+  @autoSerialize
+  isWaitRecharge: boolean = false;
+  @autoSerialize
+  waitRechargeLists: any[] = [];
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
 
@@ -437,15 +444,32 @@ class Room extends RoomBase {
     return this.players.indexOf(socket) > -1
   }
 
-  joinMessageFor(newJoinPlayer): any {
+  async joinMessageFor(newJoinPlayer): Promise<any> {
+    let medalId = null;
+    let headerBorderId = null;
+    // 获取用户称号
+    const playerMedal = await PlayerMedal.findOne({playerId: newJoinPlayer._id, isUse: true});
+    if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
+      medalId = playerMedal.propId;
+    }
+
+    // 获取用户头像框
+    const playerHeadBorder = await PlayerHeadBorder.findOne({playerId: newJoinPlayer._id, isUse: true});
+    if (playerHeadBorder && (playerHeadBorder.times === -1 || playerHeadBorder.times > new Date().getTime())) {
+      headerBorderId = playerHeadBorder.propId;
+    }
+
+    const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
     const index = this.players.findIndex(p => p && !p.isRobot());
     return {
       index: this.indexOf(newJoinPlayer),
-      model: newJoinPlayer.model,
+      model: newModel,
       _id: this._id,
       startIndex: index,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
+      isWaitRecharge: this.waitRechargeLists.includes(newJoinPlayer._id.toString()),
+      gameWaitRecharge: this.isWaitRecharge,
       isGameRunning: !!this.gameState && this.gameState.state !== stateGameOver,
       owner: this.ownerId,
       score: this.getScore(newJoinPlayer),
@@ -692,6 +716,8 @@ class Room extends RoomBase {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.gameRule);
       if (resp.isNeedRuby) {
+        this.isWaitRecharge = true;
+        this.waitRechargeLists.push(p._id.toString());
         this.broadcast('resource/robotIsNoRuby', {
           ok: true, data: {
             index: i,
