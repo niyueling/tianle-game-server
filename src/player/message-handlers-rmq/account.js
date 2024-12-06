@@ -346,7 +346,10 @@ export default {
     if (user.helpCount > 0) {
       const start = moment(new Date()).startOf('day').toDate();
       const end = moment(new Date()).endOf('day').toDate();
-      const helpCount = await PlayerBenefitRecord.count({playerId: this.player.model._id, createAt: {$gte: start, $lt: end}});
+      const helpCount = await PlayerBenefitRecord.count({
+        playerId: this.player.model._id,
+        createAt: {$gte: start, $lt: end}
+      });
       const gold = 30000;
       const giftGold = 200000;
       let isVip = false;
@@ -371,9 +374,13 @@ export default {
       return p.sendMessage("account/benefitDataReply", {ok: false, info: TianleErrorCode.userNotFound});
     }
 
+    if (!message.type) {
+      message.type = 1;
+    }
+
     let gold = 30000;
 
-    if (user.giftExpireTime && user.giftExpireTime > new Date().getTime()) {
+    if (user.giftExpireTime && user.giftExpireTime > new Date().getTime() && message.type === 2) {
       gold += 170000;
     }
 
