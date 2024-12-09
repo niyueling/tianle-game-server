@@ -26,6 +26,12 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+
+  // 级别
+  level: {
+    type: Number,
+    required: true
+  },
 })
 
 const GoodsReviveTlGold = mongoose.model('GoodsReviveTlGold', schema);
