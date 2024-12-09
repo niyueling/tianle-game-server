@@ -184,7 +184,7 @@ export default class TriplePlus2Matcher implements IMatcher {
 
         // console.warn("tripleCount %s addCount %s triple %s", triple.length, addCount, JSON.stringify(triple));
 
-        const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point).filter(g => g.length >= 2)
+        const leftCards = [].concat(...groupBy(arraySubtract(cards, triple), c => c.point).filter(g => g.length >= 2 && g.length < 4)
           .sort(lengthFirstThenPointXXGroupComparator))
 
         if (leftCards.length < 2) {
