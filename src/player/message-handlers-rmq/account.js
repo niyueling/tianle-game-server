@@ -360,7 +360,7 @@ export default {
 
       return p.sendMessage("account/benefitDataReply", {
         ok: true,
-        data: {gold, giftGold, vip: isVip, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount}
+        data: {gold, giftGold, vip: isVip, helpCount: helpCount + 1, totalCount: user.helpCount + helpCount, vipLevel: user.vip}
       });
     }
 
