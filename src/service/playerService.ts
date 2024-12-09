@@ -12,6 +12,7 @@ import {ConsumeLogType} from "@fm/common/constants";
 import UserRechargeOrder from "../database/models/userRechargeOrder";
 import CombatGain from "../database/models/combatGain";
 import Enums from "../match/majiang/enums";
+import PlayerPayReviveSupplementRecord from "../database/models/PlayerPayReviveSupplementRecord";
 
 // 玩家信息
 export default class PlayerService extends BaseService {
@@ -245,6 +246,30 @@ export default class PlayerService extends BaseService {
 
     // 增加日志
     await this.logGemConsume(user._id, ConsumeLogType.chargeByWechat, order.diamond, user.diamond, "微信充值");
+
+    return true;
+  }
+
+  async playerPaySupplement(orderId, thirdOrderNo) {
+    const order = await PlayerPayReviveSupplementRecord.findOne({_id: orderId});
+    if (!order) {
+      return false;
+    }
+
+    const user = await Player.findOne({_id: order.playerId});
+    if (!user) {
+      return false;
+    }
+
+    user.tlGold += order.config.gold;
+    await user.save();
+
+    order.status = 1;
+    order.transactionId = thirdOrderNo;
+    await order.save();
+
+    // 增加日志
+    await this.logGoldConsume(user._id, ConsumeLogType.payReviveSupplement, order.config.gold, user.tlGold, "购买复活专享补充包");
 
     return true;
   }

@@ -14,6 +14,9 @@ import crypto = require('crypto');
 import Player from "../../database/models/player";
 import Enums from "../../match/majiang/enums";
 import GoodsReviveTlGold from "../../database/models/goodsReviveTlGold";
+import GoodsReviveSupplement from "../../database/models/goodsReviveSupplement";
+import PlayerPayReviveSupplementRecord from "../../database/models/PlayerPayReviveSupplementRecord";
+import PlayerReceiveReviveSupplementRecord from "../../database/models/PlayerReceiveReviveSupplementRecord";
 
 // 商品
 export class GoodsApi extends BaseApi {
@@ -471,5 +474,270 @@ export class GoodsApi extends BaseApi {
 
     this.replySuccess({tlGold: exchangeConf.tlGold, gold: exchangeConf.gold});
     this.player.sendMessage('resource/update', {ok: true, data: {gold: model.gold, diamond: model.diamond, tlGold: model.tlGold}})
+  }
+
+  // 领取复活专享包
+  @addApi()
+  async exchangeRevivePaySupplement(message) {
+    const exchangeConf = await GoodsReviveSupplement.findById(message._id);
+    if (!exchangeConf) {
+      return this.replyFail(TianleErrorCode.configNotFound);
+    }
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // 计算7天前的日期
+    const orderInfo = await PlayerPayReviveSupplementRecord.findOne({
+      playerId: this.player.model._id,
+      status: 1,
+      recordId: exchangeConf._id,
+      createAt: { $gte: sevenDaysAgo } // 添加7天内的条件
+    }).sort({ createAt: -1 });
+    if (!orderInfo) {
+      return this.replyFail(TianleErrorCode.payFail);
+    }
+
+    // 判断今日已领取次数
+    const start = moment(new Date()).startOf('day').toDate();
+    const end = moment(new Date()).endOf('day').toDate();
+    const todayReceiveCount = await PlayerReceiveReviveSupplementRecord.count({
+      playerId: this.player.model._id,
+      recordId: exchangeConf._id,
+      createAt: {$gte: start, $lt: end}
+    });
+
+    if (todayReceiveCount >= exchangeConf.todayReceiveLimit) {
+      return this.replyFail(TianleErrorCode.todayReceiveLimit);
+    }
+
+    const model = await service.playerService.getPlayerModel(this.player.model._id);
+
+    model.tlGold = model.tlGold + exchangeConf.todayReceiveGold;
+    this.player.model.tlGold = model.tlGold;
+
+    await PlayerModel.update({_id: model._id}, {$inc: {tlGold: exchangeConf.todayReceiveGold}});
+
+    // 增加日志
+    await service.playerService.logGoldConsume(model._id, ConsumeLogType.receiveReviveSupplement, exchangeConf.todayReceiveGold, model.tlGold, `领取复活专享补充包`);
+
+    this.replySuccess({tlGold: exchangeConf.todayReceiveGold});
+    this.player.sendMessage('resource/update', {ok: true, data: {gold: model.gold, diamond: model.diamond, tlGold: model.tlGold}})
+  }
+
+  // 复活专享包列表
+  @addApi()
+  async getPaySupplementList(message) {
+    const reviveInfo = await GoodsReviveSupplement.findOne({ gameType: message.gameType }).lean();
+
+    // 判断是否已经购买复活专享包
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // 计算7天前的日期
+
+    const orderInfo = await PlayerPayReviveSupplementRecord.findOne({
+      playerId: this.player.model._id,
+      status: 1,
+      recordId: reviveInfo._id,
+      createAt: { $gte: sevenDaysAgo } // 添加7天内的条件
+    }).sort({ createAt: -1 });
+    reviveInfo["isPay"] = !!orderInfo;
+
+    // 判断今日已领取次数
+    const start = moment(new Date()).startOf('day').toDate();
+    const end = moment(new Date()).endOf('day').toDate();
+    reviveInfo["todayReceiveCount"] = await PlayerReceiveReviveSupplementRecord.count({
+      playerId: this.player.model._id,
+      recordId: reviveInfo._id,
+      createAt: {$gte: start, $lt: end}
+    });
+
+    this.replySuccess(reviveInfo);
+  }
+
+  // 购买复活专享包
+  @addApi()
+  async wxGamePaySupplement(message) {
+    const lock = await service.utils.grantLockOnce(RedisKey.paySupplementLock + message.userId, 5);
+    if (!lock) {
+      // 有进程在处理
+      console.log('another processing');
+      return;
+    }
+
+    const template = await GoodsReviveSupplement.findOne({ _id: message._id }).lean();
+    if (!template) {
+      return this.replyFail(TianleErrorCode.configNotFound);
+    }
+
+    //判断用户最近7天是否购买过专享包
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // 计算7天前的日期
+
+    const orderInfo = await PlayerPayReviveSupplementRecord.findOne({
+      playerId: message.userId,
+      status: 1,
+      recordId: message._id,
+      createAt: { $gte: sevenDaysAgo } // 添加7天内的条件
+    }).sort({ createAt: -1 });
+    if (orderInfo) {
+      return this.replyFail(TianleErrorCode.payAnotherGift);
+    }
+
+    // 获取用户信息，判断openid和session_key是否绑定
+    const player = await PlayerModel.findOne({_id: message.userId}).lean();
+    if (!player.openid) {
+      return this.replyFail(TianleErrorCode.openidNotFound);
+    }
+    if (!player.sessionKey) {
+      return this.replyFail(TianleErrorCode.sessionKeyNotFound);
+    }
+
+    const data = {
+      playerId: message.userId,
+      recordId: template._id,
+      config: template,
+      status: 0,
+      sn: await this.service.utils.generateOrderNumber(),
+    }
+    const record = await PlayerPayReviveSupplementRecord.create(data);
+    const accessToken = await this.service.utils.getGlobalConfigByName("MnpAccessToken");
+    const appKey = await this.service.utils.getGlobalConfigByName("appkey");
+    const userPostBody = {
+      openid: player.openid,
+      offer_id: await this.service.utils.getGlobalConfigByName("offerid"),
+      ts: Math.floor(Date.now() / 1000),
+      zone_id: await this.service.utils.getGlobalConfigByName("zoneid"),
+      env: message.env,
+      user_ip: this.player.getIpAddress()
+    }
+
+    const userPostBodyString = JSON.stringify(userPostBody);
+
+    // 生成登录态签名和支付请求签名
+    const signature = crypto.createHmac('sha256', player.sessionKey).update(userPostBodyString).digest('hex');
+    const needSignMsg = `/wxa/game/getbalance&${userPostBodyString}`;
+    const paySign = crypto.createHmac('sha256', appKey).update(needSignMsg).digest('hex');
+    // 查询用户游戏币余额
+    const balanceUrl = `https://api.weixin.qq.com/wxa/game/getbalance?access_token=${accessToken}&signature=${signature}&sig_method=hmac_sha256&pay_sig=${paySign}`;
+    const response = await this.service.base.postByJson(balanceUrl, userPostBody);
+    if (response.data.errcode !== 0) {
+      return this.replyFail(TianleErrorCode.payFail);
+    }
+
+    // 如果用户游戏币小于充值数量，通知客户端充值，operate=1
+    if (response.data.balance < template.price * 10) {
+      return this.replySuccess({
+        "orderId": record["_id"],
+        'orderSn': record["sn"],
+        "env": message.env,
+        "offerId": userPostBody.offer_id,
+        'zoneId': userPostBody.zone_id,
+        "currencyType": "CNY",
+        "buyQuantity": template.price * 10,
+        "operate": 1
+      })
+    }
+
+    // 如果用户游戏币大于充值数量，扣除游戏币
+    const payBody = {
+      openid: player.openid,
+      offer_id: userPostBody.offer_id,
+      ts: userPostBody.ts,
+      zone_id: userPostBody.zone_id,
+      env: userPostBody.env,
+      user_ip: userPostBody.user_ip,
+      amount: template.price * 10,
+      bill_no: record.sn
+    }
+
+    // 生成登录态签名和支付请求签名
+    const sign = crypto.createHmac('sha256', player.sessionKey).update(JSON.stringify(payBody)).digest('hex');
+    const needSign = "/wxa/game/pay&" + JSON.stringify(payBody);
+    const paySig = crypto.createHmac('sha256', appKey).update(needSign).digest('hex');
+    const payUrl = `https://api.weixin.qq.com/wxa/game/pay?access_token=${accessToken}&signature=${sign}&sig_method=hmac_sha256&pay_sig=${paySig}`;
+    const pay_res = await this.service.base.curl(payUrl, { method: "post", data: payBody});
+    const pay_response = JSON.parse(pay_res.data);
+    if (pay_response.errcode !== 0) {
+      return this.replyFail(TianleErrorCode.payFail);
+    }
+
+    const result = this.service.playerService.playerPaySupplement(record._id, pay_response.bill_no);
+    if(!result) {
+      return this.replyFail(TianleErrorCode.payFail);
+    }
+
+    pay_response.operate = 2;
+
+    return this.replySuccess(pay_response);
+  }
+
+  // 安卓虚拟支付回调
+  @addApi()
+  async wxGamePaySupplementNotify(message) {
+    const order = await PlayerPayReviveSupplementRecord.findOne({_id: message.orderId});
+    if (!order || order.status === 1) {
+      return this.replyFail(TianleErrorCode.orderNotExistOrPay);
+    }
+
+    const player = await PlayerModel.findOne({_id: order.playerId});
+    if (!player || !player.openid || !player.sessionKey) {
+      return this.replyFail(TianleErrorCode.userNotFound);
+    }
+
+    const accessToken = await this.service.utils.getGlobalConfigByName("MnpAccessToken");
+    const appKey = await this.service.utils.getGlobalConfigByName("appkey");
+    const userPostBody = {
+      openid: player.openid,
+      offer_id: await this.service.utils.getGlobalConfigByName("offerid"),
+      ts: Math.floor(Date.now() / 1000),
+      zone_id: await this.service.utils.getGlobalConfigByName("zoneid"),
+      env: message.env,
+      user_ip: this.player.getIpAddress()
+    }
+    const userPostBodyString = JSON.stringify(userPostBody);
+
+    // 生成登录态签名和支付请求签名
+    const signature = crypto.createHmac('sha256', player.sessionKey).update(userPostBodyString).digest('hex');
+    const needSignMsg = `/wxa/game/getbalance&${userPostBodyString}`;
+    const paySign = crypto.createHmac('sha256', appKey).update(needSignMsg).digest('hex');
+    // 查询用户游戏币余额
+    const balanceUrl = `https://api.weixin.qq.com/wxa/game/getbalance?access_token=${accessToken}&signature=${signature}&sig_method=hmac_sha256&pay_sig=${paySign}`;
+    const response = await this.service.base.postByJson(balanceUrl, userPostBody);
+    if (response.data.errcode !== 0) {
+      return this.replyFail(TianleErrorCode.payFail);
+    }
+
+    if (response.data.balance < order.config.price * 10) {
+      return this.replyFail(TianleErrorCode.gameBillInsufficient);
+    }
+
+    // 如果用户游戏币大于充值数量，扣除游戏币
+    const payBody = {
+      openid: player.openid,
+      offer_id: userPostBody.offer_id,
+      ts: userPostBody.ts,
+      zone_id: userPostBody.zone_id,
+      env: userPostBody.env,
+      user_ip: userPostBody.user_ip,
+      amount: order.config.price * 10,
+      bill_no: order._id
+    }
+
+    // 生成登录态签名和支付请求签名
+    const sign = crypto.createHmac('sha256', player.sessionKey).update(JSON.stringify(payBody)).digest('hex');
+    const needSign = "/wxa/game/pay&" + JSON.stringify(payBody);
+    const paySig = crypto.createHmac('sha256', appKey).update(needSign).digest('hex');
+    const payUrl = `https://api.weixin.qq.com/wxa/game/pay?access_token=${accessToken}&signature=${sign}&sig_method=hmac_sha256&pay_sig=${paySig}`;
+    const pay_response = await this.service.base.postByJson(payUrl, payBody);
+    if (pay_response.data.errcode !== 0) {
+      return this.replyFail(TianleErrorCode.payFail);
+    }
+
+    const result = await this.service.playerService.playerPaySupplement(order._id, pay_response.data.bill_no);
+    if(!result) {
+      return this.replyFail(TianleErrorCode.payFail);
+    }
+
+    this.replySuccess(order);
+
+    await this.player.updateResource2Client();
   }
 }
