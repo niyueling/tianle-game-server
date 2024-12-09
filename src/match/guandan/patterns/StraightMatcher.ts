@@ -97,7 +97,7 @@ export default class StraightMatcher implements IMatcher {
 
       return {
         name: PatterNames.straight + copyCardsByValue.length,
-        score: copyCardsByValue[0].point,
+        score: copyCardsByValue[0].value,
         cards: copyCardsByValue,
         level: copyCardsByValue.length
       };
