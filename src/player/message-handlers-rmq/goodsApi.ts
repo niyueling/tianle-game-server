@@ -665,6 +665,7 @@ export class GoodsApi extends BaseApi {
     }
 
     pay_response.operate = 2;
+    pay_response.gold = template.gold;
 
     return this.replySuccess(pay_response);
   }
