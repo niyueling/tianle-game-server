@@ -12,7 +12,7 @@ export default class BombMatcher implements IMatcher {
       const sameAsFirst = sortCards.filter(c => firstCard.point === c.point).length;
       const caiShenCount = sortCards.filter(c => c.type === CardType.Heart && c.value === levelCard).length;
       // console.warn("sortCards %s firstCard %s sameAsFirst %s caiShenCount %s", JSON.stringify(sortCards), JSON.stringify(firstCard), sameAsFirst, caiShenCount);
-      if (sameAsFirst === sortCards.length || sameAsFirst + caiShenCount === sortCards.length) {
+      if ((sameAsFirst === sortCards.length || sameAsFirst + caiShenCount === sortCards.length) && firstCard.point < 16) {
         return {
           name: PatterNames.bomb,
           score: sortCards.length * 100 + sortCards[0].point,
@@ -42,7 +42,7 @@ export default class BombMatcher implements IMatcher {
     const minScore = target.name === PatterNames.bomb ? target.score : 0;
     const caiShen = cards.filter(c => c.type === CardType.Heart && c.value === levelCard);
     const haveLevelFilter = function (g: Card[]) {
-      return g.length >= 4 - caiShen.length && ((g.length < 4 && g[0].value !== levelCard) || g.length >= 4)
+      return g.length >= 4 - caiShen.length && ((g.length < 4 && g[0].value !== levelCard) || g.length >= 4) && g[0].point < 16
     }
     const noLevelFilter = function (g: Card[]) {
       return g.length >= 4
