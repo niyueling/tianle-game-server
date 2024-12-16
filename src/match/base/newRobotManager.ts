@@ -194,7 +194,8 @@ export class NewRobotManager {
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
         // 金豆过多或者金豆不足，则离开房间
-        console.warn("index %s isNeedRuby %s isUpgrade %s can leave", i, resp.isNeedRuby, resp.isUpgrade);
+        const pModel = await service.playerService.getPlayerModel(p._id);
+        console.warn("index %s isNeedRuby %s isUpgrade %s gold %s can leave", i, resp.isNeedRuby, resp.isUpgrade, pModel.gold);
         delete this.disconnectPlayers[p._id.toString()];
         await this.room.leave(p);
       }
