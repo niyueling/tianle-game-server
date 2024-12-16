@@ -81,7 +81,7 @@ export class PublicRoom extends Room {
     this.cancelReady(player._id)
     this.emit('leave', {_id: player._id})
 
-    if (this.isPublic) {
+    if (this.isPublic && (!this.gameState || this.gameState.state === 'gameOver')) {
       this.forceDissolve();
     }
     return true;
