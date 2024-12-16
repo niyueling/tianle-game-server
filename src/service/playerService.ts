@@ -78,8 +78,8 @@ export default class PlayerService extends BaseService {
       randomPlayer.tlGold = gold;
     }
 
-    // console.warn("shortId-%s, currency-%s", randomPlayer.shortId, currency);
-
+    console.warn("shortId-%s, currency-%s gold-%s", randomPlayer.shortId, currency, randomPlayer.gold);
+    //
     // 记录金豆日志
     await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
       randomPlayer.gold, `机器人开局设置金豆:${roomId}`);
