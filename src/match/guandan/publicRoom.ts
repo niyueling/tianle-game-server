@@ -80,6 +80,10 @@ export class PublicRoom extends Room {
     this.broadcast('room/leaveReply', {ok: true, data: {playerId: player._id, roomId: this._id, location: "guandan.publicRoom"}})
     this.cancelReady(player._id)
     this.emit('leave', {_id: player._id})
+
+    if (this.isPublic) {
+      this.forceDissolve();
+    }
     return true;
   }
 

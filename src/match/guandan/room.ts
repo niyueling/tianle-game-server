@@ -709,6 +709,7 @@ class Room extends RoomBase {
     }
     this.broadcast('room/leaveReply', {ok: true, data: {playerId: player._id, roomId: this._id, location: "guandan.room"}})
     this.removeReadyPlayer(player._id);
+
     return true
   }
 
