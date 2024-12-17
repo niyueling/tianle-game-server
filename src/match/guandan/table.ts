@@ -274,9 +274,10 @@ abstract class Table implements Serializable {
     } else {
       const homeTeamPlayers = this.players.filter(p => this.room.homeTeam.includes(p._id.toString()));
       const awayTeamPlayers = this.players.filter(p => this.room.awayTeam.includes(p._id.toString()));
+      console.warn("juIndex-%s homeTeamPlayers-%s awayTeamPlayers-%s", this.room.game.juIndex, JSON.stringify(homeTeamPlayers), JSON.stringify(awayTeamPlayers));
       homeTeamPlayers[0].team = homeTeamPlayers[1].team = Team.HomeTeam;
       awayTeamPlayers[0].team = awayTeamPlayers[1].team = Team.AwayTeam;
-      console.warn("juIndex-%s homeTeamPlayers-%s awayTeamPlayers-%s", this.room.game.juIndex, JSON.stringify(homeTeamPlayers), JSON.stringify(awayTeamPlayers));
+
     }
   }
 
