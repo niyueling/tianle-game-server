@@ -193,11 +193,38 @@ export class NewRobotManager {
 
       const resp = await service.gameConfig.rubyRequired(p._id.toString(), this.room.gameRule);
       if (resp.isNeedRuby || resp.isUpgrade) {
-        // 金豆过多或者金豆不足，则离开房间
-        const pModel = await service.playerService.getPlayerModel(p._id);
-        console.warn("index %s isNeedRuby %s isUpgrade %s gold %s can leave", i, resp.isNeedRuby, resp.isUpgrade, pModel.gold);
-        delete this.disconnectPlayers[p._id.toString()];
-        await this.room.leave(p);
+        if (this.room.gameRule.gameType === GameType.guandan) {
+          // 如果场次最高无限制，则最高携带金豆为门槛*10
+          if (resp.conf.maxAmount === -1) {
+            resp.conf.maxAmount = resp.conf.minAmount * 10;
+          }
+          // 最高为随机下限的 20% - 30%
+          const rand = service.utils.randomIntBetweenNumber(10, 100) / 100;
+          const max = resp.conf.minAmount + Math.floor(rand * (resp.conf.maxAmount - resp.conf.minAmount));
+          const gold = service.utils.randomIntBetweenNumber(resp.conf.minAmount, max);
+          const randomPlayer = await service.playerService.getPlayerModel(p._id);
+          // 重新随机设置 ruby
+          if (this.room.gameRule.currency === Enums.goldCurrency) {
+            randomPlayer.gold = gold;
+          }
+          if (this.room.gameRule.currency === Enums.tlGoldCurrency) {
+            randomPlayer.tlGold = gold;
+          }
+
+          this.room.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(randomPlayer, ['gold', 'diamond', 'tlGold'])}})
+
+          // 记录金豆日志
+          await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
+            randomPlayer.gold, `机器人开局设置游戏豆:${this.room._id}`);
+
+          await randomPlayer.save();
+        } else {
+          // 金豆过多或者金豆不足，则离开房间
+          const pModel = await service.playerService.getPlayerModel(p._id);
+          console.warn("index %s isNeedRuby %s isUpgrade %s gold %s can leave", i, resp.isNeedRuby, resp.isUpgrade, pModel.gold);
+          delete this.disconnectPlayers[p._id.toString()];
+          await this.room.leave(p);
+        }
       }
     }
 
