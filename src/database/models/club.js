@@ -1,3 +1,3 @@
 'use strict';
-const { Club } = require('@fm/model/models/club');
+const { Club } = require('@fm/model/models/club')
 export default Club

@@ -67,13 +67,15 @@ export class BackendProcess {
 
     this.lobby.clubBroadcaster = {
       broadcast: async (clubId: string) => {
-        const rooms = this.lobby.getClubRooms(clubId)
-        const clubInfo = await getClubInfo(clubId)
+        const rooms = this.lobby.getClubRooms(clubId);
+        const clubInfo = await getClubInfo(clubId);
 
         await requestToAllClubMember(this.lobbyChannel, 'newClubRoomCreated', clubId, this.gameName, {
           ok: true,
-          roomInfo: rooms,
-          ...clubInfo
+          data: {
+            roomInfo: rooms,
+            ...clubInfo
+          }
         });
       },
 
