@@ -370,6 +370,12 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
             }
 
             this.currentRoom = messageBody.payload.data._id
+            await this.cancelListenClub(this.clubId)
+          }
+
+          if (messageBody.name === 'newClubRoomCreated') {
+            this.sendMessage('club/updateClubInfo', messageBody.payload)
+            return;
           }
 
           if (messageBody.name === 'resource/update') {
@@ -387,6 +393,20 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
 
     } catch (e) {
       logger.error('connectToBackend error', this.socketId, e)
+    }
+  }
+
+  async listenClub(clubId = -1) {
+    if (this.channel && clubId) {
+      await this.channel.assertExchange(`exClubCenter`, 'topic', {durable: false})
+      await this.channel.bindQueue(this.myQueue, `exClubCenter`, `club:${this.gameName}:${clubId}`)
+      this.clubId = clubId;
+    }
+  }
+
+  async cancelListenClub(clubId = -1) {
+    if (this.channel && clubId) {
+      await this.channel.unbindQueue(this.myQueue, `exClubCenter`, `club:${this.gameName}:${clubId}`)
     }
   }
 

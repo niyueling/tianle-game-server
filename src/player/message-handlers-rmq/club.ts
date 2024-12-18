@@ -87,26 +87,11 @@ async function createClubRoom(player, message) {
   }
 
   const rule = message.rule;
-
-  // if (rule.useClubGold) {
-  //   rule.useClubGold = true;
-  //   let clubMember = await ClubMember.findOne({club: club._id, member: player._id})
-  //   if (!clubMember) {
-  //     // 检查联盟战队
-  //     clubMember = await ClubMember.findOne({
-  //       unionClubShortId: club.shortId,
-  //       member: player._id,
-  //     })
-  //   }
-  //   if (!clubMember || clubMember.clubGold < rule.leastGold) {
-  //     player.sendMessage('room/join-fail', { reason: '您的金币不足' });
-  //     return;
-  //   }
-  // }
-
-  const gameType = rule.type;
+  const gameType = message.gameType;
+  rule.gameType = gameType;
   player.setGameName(gameType);
   await player.connectToBackend(gameType);
+  await player.listenClub(club._id);
   player.requestTo(lobbyQueueNameFrom(gameType), 'createClubRoom', { rule, clubId: club._id });
 }
 
