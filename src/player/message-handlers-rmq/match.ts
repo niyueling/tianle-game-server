@@ -5,12 +5,47 @@ import {service} from "../../service/importService";
 import {AsyncRedisClient} from "../../utils/redis"
 import {ISocketPlayer} from "../ISocketPlayer"
 import {GameType, TianleErrorCode} from "@fm/common/constants";
+import xmmjLobby from '../../match/xmmajiang/centerlobby'
+import pcmjLobby from '../../match/pcmajiang/centerlobby'
+import ddzLobby from '../../match/doudizhu/centerlobby'
+import guandanLobby from '../../match/guandan/centerlobby'
+import zhadanLobby from '../../match/zhadan/centerlobby'
+import {playerInClubBlacklist} from "./club";
 
 export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
 }
 
 const allGameName = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj, GameType.xmmj, GameType.ddz, GameType.zd, GameType.guandan]
+
+async function playerCanInClubRoom(player, clubId, gameType) {
+
+  if (!clubId) {
+    return false;
+  }
+  const ownerClub = await Club.findOne({_id: clubId})
+  if (ownerClub && ownerClub.owner === player.model._id) {
+    return true;
+  }
+
+  const clubMemberInfo = await ClubMember.findOne({
+    member: player.model._id,
+    club: clubId
+  })
+
+  return !!clubMemberInfo;
+}
+
+function getLobby(gameType) {
+  const gameType2Lobby = {
+    pcmj: pcmjLobby,
+    xmmajiang: xmmjLobby,
+    zhadan: zhadanLobby,
+    ddz: ddzLobby,
+    guandan: guandanLobby
+  }
+  return gameType2Lobby[gameType] || gameType2Lobby.zhadan
+}
 
 export function createHandler(redisClient: AsyncRedisClient) {
   return {
@@ -27,13 +62,27 @@ export function createHandler(redisClient: AsyncRedisClient) {
 
     // 玩家加入房间
     'room/join-friend': async (player, message) => {
-      const roomExists = await service.roomRegister.isRoomExists(message._id)
+      const lobby = getLobby(message.gameType).getInstance();
+
+      const roomInfo = await lobby.getRoomInfo(message._id);
+
+      if (roomInfo.clubMode && !await playerCanInClubRoom(player, roomInfo.clubId, message.gameType)) {
+        player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notClubMember});
+        return
+      }
+
+      if (roomInfo.clubMode && await playerInClubBlacklist(roomInfo.clubId, player._id)) {
+        player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notJoinClubGame});
+        return
+      }
+
+      const roomExists = await service.roomRegister.isRoomExists(message._id);
       if (roomExists) {
-        player.setGameName(message.gameType)
+        player.setGameName(message.gameType);
         // 加入房间
-        player.requestToRoom(message._id, 'joinRoom', message)
+        player.requestToRoom(message._id, 'joinRoom', message);
       } else {
-        player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom})
+        player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notInRoom});
       }
     },
 

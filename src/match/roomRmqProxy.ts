@@ -155,7 +155,7 @@ export default class RoomProxy {
           const alreadyInRoom = await service.roomRegister.roomNumber(messageBody.from, gameName)
 
           if (alreadyInRoom && alreadyInRoom !== room._id) {
-            newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.userNotFound})
+            newPlayer.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.roomIsNotFinish})
             return
           }
 
