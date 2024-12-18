@@ -1,9 +1,8 @@
 import {RuleType, TianleErrorCode} from "@fm/common/constants";
 import Club from '../../database/models/club'
 import ClubMember from '../../database/models/clubMember'
-import ClubRuleModel from "../../database/models/clubRule";
+import {ClubRuleModel} from "../../database/models/clubRule";
 import Lobby from '../../match/zhadan/centerlobby';
-import {service} from "../../service/importService";
 import ClubExtra from "../../database/models/clubExtra";
 
 function lobbyQueueNameFrom(gameType: string) {

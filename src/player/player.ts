@@ -399,14 +399,14 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
   async listenClub(clubId = -1) {
     if (this.channel && clubId) {
       await this.channel.assertExchange(`exClubCenter`, 'topic', {durable: false})
-      await this.channel.bindQueue(this.myQueue, `exClubCenter`, `club:${this.gameName}:${clubId}`)
+      await this.channel.bindQueue(this.myQueue, `exClubCenter`, `club:${clubId}`)
       this.clubId = clubId;
     }
   }
 
   async cancelListenClub(clubId = -1) {
     if (this.channel && clubId) {
-      await this.channel.unbindQueue(this.myQueue, `exClubCenter`, `club:${this.gameName}:${clubId}`)
+      await this.channel.unbindQueue(this.myQueue, `exClubCenter`, `club:${clubId}`)
     }
   }
 

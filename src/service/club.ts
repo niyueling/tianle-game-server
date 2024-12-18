@@ -1,16 +1,5 @@
-import {ClubOp, GameType, RuleType} from '@fm/common/constants';
-import * as mongoose from 'mongoose';
-import * as config from "../config"
 import Club from "../database/models/club";
-import ClubExtra from "../database/models/clubExtra";
-import ClubLogModel from "../database/models/clubLog";
 import ClubMember from "../database/models/clubMember";
-import ClubRuleModel from "../database/models/clubRule";
-import ClubUnion from "../database/models/clubUnion";
-import ClubUnionRequest from "../database/models/clubUnionRequest";
-import {MailModel, MailState, MailType} from "../database/models/mail";
-import {RoomDetailModel} from "../database/models/roomDetail";
-import RoomRecord from "../database/models/roomRecord";
 import BaseService from "./base";
 import {service} from "./importService";
 
