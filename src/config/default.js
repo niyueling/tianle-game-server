@@ -105,7 +105,7 @@ module.exports = {
     // 房卡兑换金豆
     gem2RubyExchangeRate: 10000,
     // 是否扣房卡
-    useGem: false,
+    useGem: true,
     // 赢家保留的金豆比例
     winnerReservePrizeRuby: 0.3,
     // 洗牌需要支付的房卡

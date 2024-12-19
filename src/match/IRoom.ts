@@ -3,7 +3,6 @@ import * as EventEmitter from 'events'
 import * as logger from 'winston'
 import * as config from "../config";
 import Club from '../database/models/club'
-import ClubGoldRecord from "../database/models/clubGoldRecord";
 import ClubMember from '../database/models/clubMember'
 import GoodsLive from "../database/models/goodsLive";
 import LuckyBless from "../database/models/luckyBless";
@@ -560,107 +559,28 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     return false
   }
 
-  // 房主支付
-  async chargeCreator() {
-    if (this.charged) return
-    this.charged = true
-    const createRoomNeed = await this.privateRoomFee(this.rule)
-    this.payUseGem(this.creator, createRoomNeed, this._id, ConsumeLogType.chargeRoomFeeByCreator)
-    await this.updateRoomGem({ [this.creator.model.shortId]: createRoomNeed });
-  }
-
   getPlayerById(id: string) {
     return this.players.find(p => p && p._id === id)
   }
 
-  // aa 支付房费
-  async chargeAllPlayers() {
-    if (this.charged) return
-    this.charged = true
-    const fee = await this.privateRoomFee(this.rule)
-    const gemList = {};
-    for (const player of this.snapshot) {
-      gemList[player.model.shortId] = fee;
-      this.payUseGem(player, fee, this._id, ConsumeLogType.chargeRoomFeeByShare)
-    }
-    await this.updateRoomGem(gemList);
-  }
-
   // 战队主付费
   async chargeClubOwner() {
-    if (this.charged) return
-    this.charged = true
-    const fee = await this.privateRoomFee(this.rule)
-    this.payUseGem(this.clubOwner, fee, this._id, ConsumeLogType.chargeRoomFeeByClubOwner)
+    if (this.charged) return;
+    this.charged = true;
+    const fee = await this.privateRoomFee(this.rule);
+    this.payUseGem(this.clubOwner, fee, this._id, ConsumeLogType.chargeRoomFeeByClubOwner);
     await this.updateRoomGem({ [this.clubOwner.model.shortId]: fee });
-  }
-
-  async chargePublicPlayers() {
-    console.log('no charge for public players');
-    return;
-  }
-
-  // 赢家付
-  async chargeWinner() {
-    if (this.charged) return
-    this.charged = true
-    let payList = [];
-    let tempScore = 0;
-    for (let j = 0; j < this.players.length; j ++) {
-      const p = this.players[j];
-      if (p) {
-        const score = this.scoreMap[p.model._id] || 0;
-        if (tempScore === score) {
-          payList.push(p)
-        }
-        if (tempScore < score) {
-          tempScore = score;
-          payList = [p]
-        }
-      }
-    }
-    if (payList.length < 1) {
-      return;
-    }
-    let fee = await this.privateRoomFee(this.rule)
-    fee = Math.ceil(fee / payList.length) || 1;
-    const gemList = {};
-    for (const p of payList) {
-      this.payUseGem(p, fee, this._id, ConsumeLogType.chargeRoomFeeByWinner)
-      gemList[p.model.shortId] = fee;
-    }
-    await this.updateRoomGem(gemList);
   }
 
   // 选择房费支付人
   async charge() {
     if (!config.game.useGem) {
-      // 不扣房卡
       this.charged = true;
       return;
     }
     // 战队房间都是战队主付房卡
     if (this.clubMode) {
       return this.chargeClubOwner();
-    }
-    if (this.gameRule.share) {
-      // aa 支付
-      return this.chargeAllPlayers();
-    }
-    if (this.gameRule.winnerPay) {
-      // 赢家付
-      return this.chargeWinner()
-    }
-    if (this.gameRule.creatorPay) {
-      // 房主付
-      return this.chargeCreator()
-    }
-    if (this.gameRule.clubOwnerPay) {
-      // 战队主付
-      return this.chargeClubOwner();
-    }
-    if (this.isPublic) {
-      return this.chargePublicPlayers();
     }
   }
 
@@ -908,7 +828,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
       if (newDoc) {
         player.model.diamond = newDoc.diamond
-        // player.sendMessage('resource/createRoomUsedDiamond', {ok: true, data: {diamondFee: toPay}})
+        player.sendMessage('resource/update', {ok: true, data: {diamond: player.model.diamond, gold: player.model.gold, tlGold: player.model.tlGold}})
         service.playerService.logGemConsume(player.model._id, type, -toPay, player.model.diamond, note);
       }
     }
@@ -945,126 +865,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     const shuffleDelayTime = this.shuffleData.length * config.game.playShuffleTime + 1000;
     this.broadcast('game/shuffleData', {ok: true, data: {shuffleData, shuffleDelayTime}});
     return shuffleDelayTime;
-  }
-
-  // 进房间战队金币消耗
-  async updatePlayerClubGold() {
-    const club = this.clubId && await Club.findOne({_id: this.clubId})
-    if (!club) {
-      return
-    }
-    let goldPay;
-    let payResult;
-    let payPlayer = [];
-    // if (this.gameRule.creatorPayGold) {
-    //   // 创建者支付
-    //   payPlayer.push(this.creator.model._id);
-    // }
-    // if (this.gameRule.clubOwnerPayGold) {
-    //   // 战队主支付
-    //   payPlayer.push(this.clubOwner.model._id);
-    // }
-    if (this.gameRule.winnerPayGold) {
-      // 大赢家付金币
-      payPlayer = [];
-      let tempScore = 0;
-      for (let j = 0; j < this.snapshot.length; j ++) {
-        const p = this.snapshot[j]
-        if (p) {
-          const score = this.scoreMap[p.model._id] || 0;
-          if (tempScore === score) {
-            payPlayer.push(p.model._id)
-          }
-          if (tempScore < score) {
-            tempScore = score;
-            payPlayer = [p.model._id]
-          }
-        }
-      }
-    }
-    if (payPlayer.length > 0) {
-      goldPay = Math.ceil((this.gameRule.clubGold || 0) / payPlayer.length)
-      if (goldPay === 0) {
-        goldPay = 1;
-      }
-      for (let i = 0; i < payPlayer.length; i ++) {
-        payResult = await service.club.calculateGold(club.shortId, payPlayer[i], goldPay);
-        if (payResult.inviterGold > 0) {
-          // 需要给邀请人分成
-          await this.adjustPlayerClubGold(club, -goldPay, payPlayer[i],
-            "游戏消耗，房间号：" + this._id)
-          await this.adjustPlayerClubGold(club, payResult.inviterGold, payResult.inviterPlayerId,
-          "游戏金币分成，房间号：" + this._id)
-        } else {
-          await this.adjustPlayerClubGold(club, -goldPay, payPlayer[i], "游戏消耗，房间号：" + this._id)
-        }
-      }
-      return;
-    }
-    // aa支付, 每个人都扣相同金币
-    goldPay = this.gameRule.clubGold || 0;
-    for (let i = 0; i < this.snapshot.length; i ++) {
-      const p = this.snapshot[i]
-      if (p) {
-        payResult = await service.club.calculateGold(club.shortId, p.model._id, goldPay);
-        if (payResult.inviterGold > 0) {
-          // 需要给邀请人分成
-          await this.adjustPlayerClubGold(club, -goldPay, p.model._id, "游戏消耗，房间号：" + this._id)
-          await this.adjustPlayerClubGold(club, payResult.inviterGold, payResult.inviterPlayerId,
-            "游戏金币分成，房间号：" + this._id)
-        } else {
-          await this.adjustPlayerClubGold(club, -goldPay, p.model._id, "游戏消耗，房间号：" + this._id)
-        }
-      }
-    }
-  }
-
-  async adjustPlayerClubGold(club, goldPay, playerId, info) {
-    let memberShip = await ClubMember.findOne({ club: club._id, member: playerId});
-    if (!memberShip) {
-      // 检查联盟战队
-      memberShip = await ClubMember.findOne({
-        unionClubShortId: club.shortId,
-        member: playerId,
-      })
-    }
-    if (memberShip) {
-      memberShip.clubGold += goldPay;
-      await ClubGoldRecord.create({
-        club: club._id,
-        member: playerId,
-        gameType: this.gameRule.type,
-        goldChange: goldPay,
-        allClubGold: memberShip.clubGold,
-        info,
-      })
-      await memberShip.save()
-    }
-  }
-
-  // 结算金币分
-  async updateClubGoldByScore(scores: { [playerId: string]: number }) {
-    if (!this.clubId) {
-      return;
-    }
-    const club = await Club.findOne({_id: this.clubId})
-    if (club && this.gameRule.useClubGold) {
-      for (const playerId of Object.keys(scores)) {
-        const p = this.players.find(value => {
-          return value && value._id === playerId
-        });
-        if (!p) {
-          continue;
-        }
-        p.model.clubGold += scores[playerId];
-        await this.adjustPlayerClubGold(club, scores[playerId], playerId, "游戏输赢，房间号：" + this._id)
-      }
-    }
-  }
-
-  // 是否支付战队金币
-  isPayClubGold(roomState = 'normal') {
-    return this.gameRule.useClubGold && (this.game.juIndex === this.gameRule.juShu || roomState === "dissolve")
   }
 
   // 更新房卡记录

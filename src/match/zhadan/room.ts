@@ -343,9 +343,6 @@ class Room extends RoomBase {
       roomState = 'zero_ju'
     }
     const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
-    if (this.gameRule.useClubGold && (this.game.juIndex === this.gameRule.juShu || roomState === "dissolve")) {
-      await this.updatePlayerClubGold();
-    }
 
     const roomRecord = {
       players,

@@ -205,14 +205,8 @@ class Room extends RoomBase {
     return 0
   }
 
-  static roomFee(rule): number {
-    if (rule.juShu === 4) {
-      return 1
-    } else if (rule.juShu === 8) {
-      return 2
-    } else {
-      return 3
-    }
+  static async roomFee(rule): Promise<number> {
+    return 0;
   }
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
@@ -292,8 +286,8 @@ class Room extends RoomBase {
     return this.players.find(p => p && p.model._id.toString() === id)
   }
 
-  privateRoomFee(rule): number {
-    return Room.roomFee(rule)
+  async privateRoomFee(rule): Promise<number> {
+    return await Room.roomFee(rule)
   }
 
   recordPlayerEvent(evtType, playerId) {
@@ -1099,98 +1093,6 @@ class Room extends RoomBase {
     }
 
     return message
-  }
-
-  async chargeCreator() {
-    if (!this.charged) {
-      this.charged = true
-      const createRoomNeed = this.privateRoomFee(this.rule)
-      const creatorId = this.creator.model._id
-      const playerManager = PlayerManager.getInstance()
-
-      const payee = playerManager.getPlayer(creatorId) || this.creator
-
-      payee.model.gem -= createRoomNeed
-      payee.sendMessage('resource/createRoomUsedGem', {
-        createRoomNeed,
-      })
-
-      PlayerModel.update({_id: creatorId},
-        {
-          $inc: {
-            gem: -createRoomNeed,
-          },
-        }, err => {
-          if (err) {
-            logger.error(err)
-          }
-        })
-      new ConsumeRecord({player: creatorId, gem: createRoomNeed}).save()
-      new DiamondRecord({
-        player: this.creator.model._id,
-        amount: -createRoomNeed,
-        residue: this.creator.model.gem,
-        type: ConsumeLogType.chargeRoomFeeByCreator,
-        note: ""
-      }).save();
-    }
-  }
-
-  async chargeAllPlayers() {
-    if (!this.charged) {
-      this.charged = true
-      const createRoomNeed = this.privateRoomFee(this.rule)
-      const playerManager = PlayerManager.getInstance()
-
-      const share = Math.ceil(createRoomNeed / this.capacity)
-      for (const player of this.snapshot) {
-
-        const payee = playerManager.getPlayer(player.model._id) || player
-
-        payee.model.gem -= share
-        payee.sendMessage('resource/createRoomUsedGem', {
-          createRoomNeed: share
-        })
-        PlayerModel.update({_id: player.model._id},
-          {
-            $inc: {
-              gem: -share,
-            },
-          }, err => {
-            if (err) {
-              logger.error(player.model, err)
-            }
-          })
-
-        new ConsumeRecord({player: player.model._id, gem: share}).save()
-        new DiamondRecord({
-          player: player.model._id,
-          amount: -share,
-          residue: player.model.gem,
-          type: ConsumeLogType.chargeRoomFeeByShare,
-          note: ""
-        }).save();
-      }
-    }
-  }
-
-  async chargeClubOwner() {
-    const fee = Room.roomFee(this.rule)
-
-    PlayerModel.update({_id: this.clubOwner._id},
-      {
-        $inc: {
-          gem: -fee,
-        },
-      }, err => {
-        if (err) {
-          logger.error(this.clubOwner._id, err)
-        }
-      })
-
-    this.clubOwner.sendMessage('resource/createRoomUsedGem', {
-      createRoomNeed: fee
-    })
   }
 
   sortPlayer(zhuang) {

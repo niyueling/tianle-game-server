@@ -1,7 +1,7 @@
 /**
  * Created by user on 2016-07-04.
  */
-import {ConsumeLogType, GameType, TianleErrorCode} from "@fm/common/constants";
+import {GameType, TianleErrorCode} from "@fm/common/constants";
 import {Channel} from 'amqplib'
 import * as lodash from 'lodash'
 // @ts-ignore
@@ -13,7 +13,6 @@ import ConsumeRecord from '../../database/models/consumeRecord'
 import DiamondRecord from "../../database/models/diamondRecord";
 import DissolveRecord from '../../database/models/dissolveRecord'
 import GameRecord from '../../database/models/gameRecord'
-import PlayerModel from '../../database/models/player'
 import RoomRecord from '../../database/models/roomRecord'
 import PlayerManager from '../../player/player-manager'
 import '../../utils/algorithm'
@@ -399,12 +398,6 @@ class Room extends RoomBase {
       const state = states[index]
       const id = state.model._id
       const score = state.score
-      if (club && this.gameRule.useClubGold) {
-        state.model.clubGold += score;
-        if (state) {
-          await this.adjustPlayerClubGold(club, score, state.model._id, "游戏输赢，房间号：" + this._id)
-        }
-      }
 
       if (this.playerGainRecord[id]) {
         this.playerGainRecord[id] += score
@@ -482,9 +475,6 @@ class Room extends RoomBase {
     //   roomState = 'zero_ju'
     // }
     const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
-    if (this.isPayClubGold(roomState)) {
-      await this.updatePlayerClubGold();
-    }
 
     const roomRecord = {
       players, scores,
@@ -1056,6 +1046,7 @@ class Room extends RoomBase {
     }
     this.sortPlayer(nextZhuang)
     this.clearReady()
+    await this.charge();
     await this.delPlayerBless();
     this.readyPlayers = [];
     this.joinRoomPlayers = [];
@@ -1111,98 +1102,6 @@ class Room extends RoomBase {
     }
 
     return message;
-  }
-
-  async chargeCreator() {
-    if (!this.charged) {
-      this.charged = true
-      const createRoomNeed = await this.privateRoomFee(this.rule)
-      const creatorId = this.creator.model._id
-      const playerManager = PlayerManager.getInstance()
-
-      const payee = playerManager.getPlayer(creatorId) || this.creator
-
-      payee.model.gem -= createRoomNeed
-      payee.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
-          createRoomNeed,
-        }})
-
-      PlayerModel.update({_id: creatorId},
-        {
-          $inc: {
-            gem: -createRoomNeed,
-          },
-        }, err => {
-          if (err) {
-            logger.error(err)
-          }
-        })
-      new ConsumeRecord({player: creatorId, gem: createRoomNeed}).save()
-      new DiamondRecord({
-        player: this.creator.model._id,
-        amount: -createRoomNeed,
-        residue: this.creator.model.gem,
-        type: ConsumeLogType.chargeRoomFeeByCreator,
-        note: ""
-      }).save();
-    }
-  }
-
-  async chargeAllPlayers() {
-    if (!this.charged) {
-      this.charged = true
-      const createRoomNeed = await this.privateRoomFee(this.rule)
-      const playerManager = PlayerManager.getInstance()
-
-      const share = Math.ceil(createRoomNeed / this.capacity)
-      for (const player of this.snapshot) {
-
-        const payee = playerManager.getPlayer(player.model._id) || player
-
-        payee.model.gem -= share
-        payee.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
-            createRoomNeed: share
-          }})
-        PlayerModel.update({_id: player.model._id},
-          {
-            $inc: {
-              gem: -share,
-            },
-          }, err => {
-            if (err) {
-              logger.error(player.model, err)
-            }
-          })
-
-        new ConsumeRecord({player: player.model._id, gem: share}).save()
-        new DiamondRecord({
-          player: player.model._id,
-          amount: -share,
-          residue: player.model.gem,
-          type: ConsumeLogType.chargeRoomFeeByShare,
-          note: ""
-        }).save();
-      }
-    }
-  }
-
-  async chargeClubOwner() {
-    const fee = Room.roomFee(this.rule)
-
-    PlayerModel.update({_id: this.clubOwner._id},
-      {
-        $inc: {
-          gem: -fee,
-        },
-      }, err => {
-        if (err) {
-          logger.error(this.clubOwner._id, err)
-        }
-      })
-
-    this.clubOwner.sendMessage('resource/createRoomUsedGem', {ok: true, data: {
-        createRoomNeed: fee
-      }})
   }
 
   sortPlayer(zhuang) {

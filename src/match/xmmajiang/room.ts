@@ -1111,6 +1111,7 @@ class Room extends RoomBase {
 
     this.sortPlayer(nextZhuang)
     this.clearReady()
+    await this.charge();
 
     // 下一局
     await this.robotManager.nextRound();
@@ -1194,34 +1195,6 @@ class Room extends RoomBase {
     return message;
   }
 
-  async chargeCreator() {
-    if (!this.charged) {
-      this.charged = true
-      const createRoomNeed = await this.privateRoomFee(this.rule)
-      const creatorId = this.creator.model._id
-      const playerManager = PlayerManager.getInstance()
-
-      const payee = playerManager.getPlayer(creatorId) || this.creator
-
-      payee.model.gem -= createRoomNeed
-      payee.sendMessage('resource/createRoomUsedGem', {
-        createRoomNeed,
-      })
-
-      PlayerModel.update({_id: creatorId},
-        {
-          $inc: {
-            gem: -createRoomNeed,
-          },
-        }, err => {
-          if (err) {
-            logger.error(err)
-          }
-        })
-      new ConsumeRecord({player: creatorId, gem: createRoomNeed}).save()
-    }
-  }
-
   // @once
   // async refundClubOwner() {
   //   if (!this.clubMode) return
@@ -1250,25 +1223,6 @@ class Room extends RoomBase {
   //     })
   //   }
   // }
-
-  async chargeClubOwner() {
-    const fee = await Room.roomFee(this.rule)
-
-    PlayerModel.update({_id: this.clubOwner._id},
-      {
-        $inc: {
-          gem: -fee,
-        },
-      }, err => {
-        if (err) {
-          logger.error(this.clubOwner._id, err)
-        }
-      })
-
-    this.clubOwner.sendMessage('resource/createRoomUsedGem', {
-      createRoomNeed: fee
-    })
-  }
 
   sortPlayer(zhuang) {
     if (zhuang) {

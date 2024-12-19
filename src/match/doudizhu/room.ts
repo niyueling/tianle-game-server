@@ -128,7 +128,6 @@ class Room extends RoomBase {
     this.gameState = null
     this.dissolveReqInfo = []
     this.charged = false
-    this.charge = rule.share ? this.chargeAllPlayers.bind(this) : this.chargeCreator.bind(this)
 
     this.restJuShu = rule.juShu
     this.juIndex = 0
@@ -264,59 +263,6 @@ class Room extends RoomBase {
     }
   }
 
-  async updatePlayerClubGold() {
-    let score;
-    let p;
-    let i;
-    const club = this.clubId && await Club.findOne({_id: this.clubId})
-    if (!club) {
-      return
-    }
-    let goldPay;
-    let payPlayer = [];
-    // 圈主付
-    if (!this.gameRule.share) {
-      payPlayer.push(this.creator.model._id);
-    }
-    if (this.gameRule.winnerPay) {
-      payPlayer = [];
-      let tempScore = 0;
-      for (i = 0; i < this.snapshot.length; i ++) {
-        p = this.snapshot[i];
-        if (p) {
-          score = this.scoreMap[p.model._id] || 0;
-          if (tempScore === score) {
-            payPlayer.push(p.model._id)
-          }
-          if (tempScore < score) {
-            tempScore = score;
-            payPlayer = [p.model._id]
-          }
-        }
-      }
-    }
-    if (payPlayer.length > 0) {
-      goldPay = Math.ceil((this.gameRule.clubGold || 0) / payPlayer.length)
-      if (goldPay === 0) {
-        goldPay = 1;
-      }
-      for (i = 0; i < payPlayer.length; i ++) {
-        await this.adjustPlayerClubGold(club, -goldPay, payPlayer[i], "游戏消耗，房间号：" + this._id)
-      }
-      return;
-    }
-
-    goldPay = Math.ceil((this.rule.ro.clubGold || 0) / this.snapshot.length);
-
-    for (i = 0; i < this.snapshot.length; i ++) {
-      p = this.snapshot[i];
-      if (p) {
-        score = this.scoreMap[p.model._id] || 0;
-        await this.adjustPlayerClubGold(club, -goldPay, p.model._id, "游戏消耗，房间号：" + this._id)
-      }
-    }
-  }
-
   async recordRoomScore(roomState = 'normal') {
     const players = this.snapshot.map(p => p._id);
     // console.warn("playersOrder-%s", JSON.stringify(this.playersOrder));
@@ -336,9 +282,6 @@ class Room extends RoomBase {
       roomState = 'zero_ju'
     }
     const stateInfo = this.game.juIndex === this.rule.ro.juShu ? roomState + '_last' : roomState
-    if (this.gameRule.useClubGold && (this.game.juIndex === this.gameRule.juShu || roomState === "dissolve")) {
-      await this.updatePlayerClubGold();
-    }
 
     const roomRecord = {
       players,
@@ -684,6 +627,7 @@ class Room extends RoomBase {
     this.nextStarterIndex = this.playersOrder.findIndex(p => p._id.toString() === firstPlayerId.toString())
     await this.sortPlayer(this.nextStarterIndex)
     this.clearReady();
+    await this.charge();
     await this.robotManager.nextRound();
 
     await this.recordRoomScore()

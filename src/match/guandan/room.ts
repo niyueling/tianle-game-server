@@ -18,7 +18,7 @@ import Game from './game'
 import {eqlModelId} from "./modelId"
 import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
-import Table, {genFullyCards} from "./table"
+import Table from "./table"
 import Player from "../../database/models/player";
 import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
