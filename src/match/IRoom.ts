@@ -222,7 +222,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   async setClub(clubId, clubOwner) {
     this.clubId = clubId;
-    this.clubOwner = clubOwner
+    this.clubOwner = clubOwner;
     this.clubMode = true;
   }
 
