@@ -263,10 +263,10 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   isReadyPlayer(playerId) {
     for (const readyPlayerId of this.readyPlayers) {
       if (readyPlayerId === playerId) {
-        return true
+        return true;
       }
     }
-    return false
+    return false;
   }
 
   async ready(player) {
