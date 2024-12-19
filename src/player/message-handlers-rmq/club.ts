@@ -91,7 +91,7 @@ async function createClubRoom(player, message) {
   player.setGameName(gameType);
   await player.connectToBackend(gameType);
   await player.listenClub(club._id);
-  player.requestTo(lobbyQueueNameFrom(gameType), 'createClubRoom', { rule, clubId: club._id });
+  player.requestTo(lobbyQueueNameFrom(gameType), 'createClubRoom', { rule, clubId: club._id, gameType: gameType });
 }
 
 export async function requestToAllClubMember(channel, name, clubId, gameType, info) {
