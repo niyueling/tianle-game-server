@@ -106,6 +106,8 @@ export class BackendProcess {
           return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish, data: {roomId: alreadyInRoom, gameName: this.gameName}}, playerRouteKey);
         }
 
+        console.warn("messageBody-%s", JSON.stringify(messageBody));
+
         if (messageBody.payload.clubId) {
           const clubMember = await ClubMember.findOne({club: messageBody.payload.clubId, member: playerModel._id});
           playerModel.clubGold = clubMember.clubGold;
@@ -230,7 +232,7 @@ export class BackendProcess {
         cardTableId = playerCardTable.propId;
       }
 
-      theCreator.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}})
+      theCreator.sendMessage('room/createReply', {ok: true, data: {roomType: "club", _id: room._id, rule: room.rule, category, cardTableId}})
 
       if (room.rule.ro.gameType === GameType.xmmj) {
         room.fanShuMap[theCreator._id] = 16;
@@ -303,7 +305,7 @@ export class BackendProcess {
         cardTableId = playerCardTable.propId;
       }
 
-      await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, category, cardTableId}})
+      await playerRmqProxy.sendMessage('room/createReply', {ok: true, data: {roomType: "public", _id: room._id, rule: room.rule, category, cardTableId}})
 
       if (room.rule.ro.gameType === GameType.xmmj) {
         room.fanShuMap[playerRmqProxy._id] = 16;
@@ -374,7 +376,7 @@ export class BackendProcess {
         cardTableId = playerCardTable.propId;
       }
 
-      await theCreator.sendMessage('room/createReply', {ok: true, data: {_id: room._id, rule: room.rule, cardTableId}})
+      await theCreator.sendMessage('room/createReply', {ok: true, data: {roomType: "person", _id: room._id, rule: room.rule, cardTableId}})
 
       // 创建者即庄家，设置底分16分
       if (room.rule.ro.gameType === GameType.xmmj) {

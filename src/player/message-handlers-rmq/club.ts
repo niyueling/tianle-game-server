@@ -104,7 +104,7 @@ export async function requestToAllClubMember(channel, name, clubId, gameType, in
 
   channel.publish(
     `exClubCenter`,
-    `club:${gameType}:${clubId}`,
+    `club:${clubId}`,
     toBuffer({ name, payload: info }))
 }
 
