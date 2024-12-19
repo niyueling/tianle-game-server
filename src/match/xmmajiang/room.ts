@@ -24,9 +24,10 @@ import Game from './game'
 import {RobotManager} from "./robotManager";
 import TableState, {stateGameOver} from "./table_state"
 import {service} from "../../service/importService";
-import Enums from "../majiang/enums";
+import Enums from "../xmmajiang/enums";
 import PlayerMedal from "../../database/models/PlayerMedal";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
+import RoomFeeConfig from "../../database/models/roomFeeConfig";
 
 const ObjectId = mongoose.Types.ObjectId
 const gameType = GameType.xmmj;
@@ -206,14 +207,43 @@ class Room extends RoomBase {
     return 0
   }
 
-  static roomFee(rule): number {
-    if (rule.juShu === 4) {
-      return 1
-    } else if (rule.juShu === 8) {
-      return 2
-    } else {
-      return 3
+  static getJuType(rule) {
+    if (rule.gameJuCount === Enums.yiKe) {
+      return 1;
     }
+
+    if (rule.gameJuCount === Enums.liangQuan) {
+      return 2;
+    }
+
+    return 3;
+  }
+
+  static async roomFee(rule): Promise<number> {
+    const configList = await RoomFeeConfig.find({game: GameType.pcmj}).sort({diamond: 1});
+    const configIndex = configList.findIndex(c => c.juShu === rule.juShu && c.juType === this.getJuType(rule));
+
+    if (rule.clubPersonalRoom === false) {
+      if (configIndex !== -1) {
+        if (configList[configIndex].clubMode) {
+          return configList[configIndex].diamond;
+        }
+
+        return configList[configList.length - 1].diamond;
+      }
+
+      return configList[configList.length - 1].diamond;
+    }
+
+    if (configIndex !== -1) {
+      if (configList[configIndex].personMode) {
+        return configList[configIndex].diamond;
+      }
+
+      return 0;
+    }
+
+    return configList[configList.length - 1].diamond;
   }
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
@@ -296,8 +326,8 @@ class Room extends RoomBase {
     return this.players.find(p => p && p._id === id)
   }
 
-  privateRoomFee(rule): number {
-    return Room.roomFee(rule)
+  async privateRoomFee(rule): Promise<number> {
+    return await Room.roomFee(rule);
   }
 
   recordPlayerEvent(evtType, playerId) {
@@ -1167,7 +1197,7 @@ class Room extends RoomBase {
   async chargeCreator() {
     if (!this.charged) {
       this.charged = true
-      const createRoomNeed = this.privateRoomFee(this.rule)
+      const createRoomNeed = await this.privateRoomFee(this.rule)
       const creatorId = this.creator.model._id
       const playerManager = PlayerManager.getInstance()
 
@@ -1222,7 +1252,7 @@ class Room extends RoomBase {
   // }
 
   async chargeClubOwner() {
-    const fee = Room.roomFee(this.rule)
+    const fee = await Room.roomFee(this.rule)
 
     PlayerModel.update({_id: this.clubOwner._id},
       {
@@ -1263,6 +1293,7 @@ class Room extends RoomBase {
     this.auditManager = new AuditManager(this.gameRule, this.uid, this._id);
     await this.auditManager.init();
   }
+
 }
 
 export default Room

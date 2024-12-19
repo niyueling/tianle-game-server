@@ -80,7 +80,7 @@ export class BackendProcess {
       },
 
       updateClubRoomInfo: async (clubId: string, roomInfo: { roomNum: string, capacity: number, current: number }) => {
-        await requestToAllClubMember(this.lobbyChannel, 'club/updateClubRoom', clubId, this.gameName, roomInfo);
+        await requestToAllClubMember(this.lobbyChannel, 'club/updateClubRoom', clubId, this.gameName, {ok: true, data: roomInfo});
       }
 
     }

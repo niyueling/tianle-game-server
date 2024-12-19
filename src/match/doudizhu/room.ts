@@ -26,6 +26,7 @@ import {stateGameOver} from "./table";
 import RoomTimeRecord from "../../database/models/roomTimeRecord";
 import PlayerMedal from "../../database/models/PlayerMedal";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
+import RoomFeeConfig from "../../database/models/roomFeeConfig";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -157,21 +158,31 @@ class Room extends RoomBase {
     return true
   }
 
-  static roomFee(rule): number {
-    const creatorFeeMap = {
-      6: 1, 12: 2, 18: 3
+  static async roomFee(rule): Promise<number> {
+    const configList = await RoomFeeConfig.find({game: GameType.ddz}).sort({diamond: 1});
+    const configIndex = configList.findIndex(c => c.juShu === rule.juShu);
+
+    if (rule.clubPersonalRoom === false) {
+      if (configIndex !== -1) {
+        if (configList[configIndex].clubMode) {
+          return configList[configIndex].diamond;
+        }
+
+        return configList[configList.length - 1].diamond;
+      }
+
+      return configList[configList.length - 1].diamond;
     }
 
-    const shareFeeMap = {
-      6: 1, 12: 1, 18: 2
+    if (configIndex !== -1) {
+      if (configList[configIndex].personMode) {
+        return configList[configIndex].diamond;
+      }
+
+      return 0;
     }
 
-    const juShu = rule.juShu
-    if (rule.share) {
-      return shareFeeMap[juShu] || 2
-    }
-
-    return creatorFeeMap[juShu] || 6
+    return configList[configList.length - 1].diamond;
   }
 
   initPlayers() {
@@ -795,17 +806,18 @@ class Room extends RoomBase {
     return message;
   }
 
-  privateRoomFee() {
-    return Room.roomFee(this.game.rule)
+  async privateRoomFee() {
+    return await Room.roomFee(this.game.rule)
   }
 
-  applyAgain(player) {
+  async applyAgain(player) {
     if (player._id.toString() !== this.creator._id.toString()) {
       player.sendMessage('room/againReply', {ok: false, info: TianleErrorCode.playerIsNotCreator})
       return
     }
 
-    if (!this.enoughCurrency(player)) {
+    const isEnough = await this.enoughCurrency(player);
+    if (!isEnough) {
       player.sendMessage('room/againReply', {ok: false, info: TianleErrorCode.diamondInsufficient})
       return
     }
@@ -813,8 +825,8 @@ class Room extends RoomBase {
     this.playAgain()
   }
 
-  enoughCurrency(player) {
-    return player.model.diamond >= this.privateRoomFee()
+  async enoughCurrency(player) {
+    return player.model.diamond >= await this.privateRoomFee()
   }
 
   playAgain() {
@@ -839,7 +851,7 @@ class Room extends RoomBase {
 
     this.listenOn = ['room/again', 'room/exit', 'disconnect', 'game/disableRobot']
 
-    player.on('room/again', () => this.applyAgain(player))
+    player.on('room/again', async () => await this.applyAgain(player))
     player.on('room/exit', () => this.playerOnExit(player))
     player.on('disconnect', this.disconnectCallback)
     player.on('game/disableRobot', async () => {

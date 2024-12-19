@@ -373,7 +373,14 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
             await this.cancelListenClub(this.clubId)
           }
 
+          // 创建俱乐部房间通知俱乐部用户
           if (messageBody.name === 'newClubRoomCreated') {
+            this.sendMessage('club/newClubRoomCreatedReply', messageBody.payload)
+            return;
+          }
+
+          // 加入俱乐部房间通知用户
+          if (messageBody.name === 'club/updateClubRoom') {
             this.sendMessage('club/updateClubInfo', messageBody.payload)
             return;
           }

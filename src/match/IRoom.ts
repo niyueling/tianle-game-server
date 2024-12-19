@@ -227,7 +227,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.clubMode = true;
   }
 
-  abstract privateRoomFee(rule: any): number
+  abstract async privateRoomFee(rule: any): Promise<number>
 
   canJoin(player) {
     if (!player) {
@@ -406,13 +406,6 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     return true
   }
 
-  joinInHalf(newJoinPlayer) {
-    if (this.gameRule.share && this.game.juIndex > 1) {
-      const fee = this.privateRoomFee(this.rule)
-      this.payUseGem(newJoinPlayer, fee, this._id, ConsumeLogType.chargeRoomFeeByShare)
-    }
-  }
-
   leave(player) {
     if (this.gameState || !player) {
       // 游戏已开始 or 玩家不存在
@@ -571,7 +564,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async chargeCreator() {
     if (this.charged) return
     this.charged = true
-    const createRoomNeed = this.privateRoomFee(this.rule)
+    const createRoomNeed = await this.privateRoomFee(this.rule)
     this.payUseGem(this.creator, createRoomNeed, this._id, ConsumeLogType.chargeRoomFeeByCreator)
     await this.updateRoomGem({ [this.creator.model.shortId]: createRoomNeed });
   }
@@ -584,7 +577,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async chargeAllPlayers() {
     if (this.charged) return
     this.charged = true
-    const fee = this.privateRoomFee(this.rule)
+    const fee = await this.privateRoomFee(this.rule)
     const gemList = {};
     for (const player of this.snapshot) {
       gemList[player.model.shortId] = fee;
@@ -597,7 +590,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async chargeClubOwner() {
     if (this.charged) return
     this.charged = true
-    const fee = this.privateRoomFee(this.rule)
+    const fee = await this.privateRoomFee(this.rule)
     this.payUseGem(this.clubOwner, fee, this._id, ConsumeLogType.chargeRoomFeeByClubOwner)
     await this.updateRoomGem({ [this.clubOwner.model.shortId]: fee });
   }
@@ -629,7 +622,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     if (payList.length < 1) {
       return;
     }
-    let fee = this.privateRoomFee(this.rule)
+    let fee = await this.privateRoomFee(this.rule)
     fee = Math.ceil(fee / payList.length) || 1;
     const gemList = {};
     for (const p of payList) {
