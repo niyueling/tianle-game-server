@@ -151,15 +151,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
     })
   }
 
-  getDebugMessage(data) {
-    let content = data
-    if (content.length > 1024) {
-      content = `${content.slice(0, 1024)}...`
-    }
-
-    return content
-  }
-
   getLocation(onGetData?) {
     // const options = {
     //   hostname: 'int.dpool.sina.com.cn',

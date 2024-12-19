@@ -20,6 +20,7 @@ export const RoomInfoModel = new RoomInfo().getModelForClass(RoomInfo)
 
 // 保存房间信息
 export async function saveRoomInfo(roomId: number, gameType: string, clubId?: mongoose.Types.ObjectId) {
+  console.warn("roomId-%s gameType-%s clubId-%s", roomId, gameType, clubId);
   let m = await RoomInfoModel.findOne({ roomId });
   if (m) {
     return;
