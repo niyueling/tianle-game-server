@@ -28,7 +28,7 @@ export async function getClubInfo(clubId: string) {
     publicRule: rules.publicRule
   }
 
-  return { ok: true, roomInfo: room, clubInfo };
+  return { ok: true, data: {roomInfo: room, clubInfo} };
 }
 
 async function playerInClub(clubShortId: string, playerId: string) {
