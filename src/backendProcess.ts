@@ -70,6 +70,14 @@ export class BackendProcess {
         const rooms = this.lobby.getClubRooms(clubId);
         const clubInfo = await getClubInfo(clubId);
 
+        console.warn("lobby.clubBroadcaster newClubRoomCreated info-%s", JSON.stringify({
+          ok: true,
+          data: {
+            roomInfo: rooms,
+            clubInfo
+          }
+        }));
+
         await requestToAllClubMember(this.lobbyChannel, 'newClubRoomCreated', clubId, this.gameName, {
           ok: true,
           data: {
