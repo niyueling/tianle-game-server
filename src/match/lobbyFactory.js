@@ -139,7 +139,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       room.on('empty', async () => {
         const clubId = room.clubId
         await redisClient.sremAsync('clubRoom:' + clubId, room._id)
-        this.clubBroadcaster && this.clubBroadcaster.broadcast(clubId)
+        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {})
         if (room.robotManager) {
           // 删除机器人
           await room.robotManager.gameOver();
@@ -150,10 +150,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       room.on('join', async () => {
         const clubId = room.clubId
         const current = room.players.filter(x => x).length + room.disconnected.length
-        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {
-          roomNum: room._id,
-          capacity: room.capacity, current
-        })
+        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
 
       room.on('leave', async () => {
@@ -161,10 +158,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
 
         const current = room.players.filter(x => x).length + room.disconnected.length
 
-        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {
-          roomNum: room._id,
-          capacity: room.capacity, current
-        })
+        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
     }
 
