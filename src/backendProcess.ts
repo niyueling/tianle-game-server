@@ -236,7 +236,7 @@ export class BackendProcess {
       await this.redisClient.saddAsync(`cluster-${this.cluster}`, room._id);
       await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()));
 
-      await requestToAllClubMember(gameChannel, 'newClubRoomCreated', clubId, this.gameName, {});
+      // await requestToAllClubMember(gameChannel, 'newClubRoomCreated', clubId, this.gameName, {});
     } catch (e) {
       logger.error('create room error', e)
     }
