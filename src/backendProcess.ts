@@ -74,7 +74,7 @@ export class BackendProcess {
           ok: true,
           data: {
             roomInfo: rooms,
-            ...clubInfo
+            clubInfo
           }
         });
       },

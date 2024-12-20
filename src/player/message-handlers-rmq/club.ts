@@ -102,6 +102,8 @@ export async function requestToAllClubMember(channel, name, clubId, gameType, in
     return
   }
 
+  console.warn("requestToAllClubMember name-%s clubId-%s info-%s", name, clubId, JSON.stringify(info));
+
   channel.publish(
     `exClubCenter`,
     `club:${clubId}`,
