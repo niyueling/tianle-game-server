@@ -106,8 +106,6 @@ export class BackendProcess {
           return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.roomIsNotFinish, data: {roomId: alreadyInRoom, gameName: this.gameName}}, playerRouteKey);
         }
 
-        console.warn("messageBody-%s", JSON.stringify(messageBody));
-
         if (messageBody.payload.clubId) {
           const clubMember = await ClubMember.findOne({club: messageBody.payload.clubId, member: playerModel._id});
           playerModel.clubGold = clubMember.clubGold;
