@@ -364,16 +364,16 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
             await this.cancelListenClub(this.clubId)
           }
 
-          console.warn("messageBody-%s", JSON.stringify(messageBody));
-
           // 创建俱乐部房间通知俱乐部用户
           if (messageBody.name === 'newClubRoomCreated') {
+            console.warn("newClubRoomCreated messageBody-%s", JSON.stringify(messageBody));
             this.sendMessage('club/newClubRoomCreatedReply', messageBody.payload)
             return;
           }
 
           // 加入俱乐部房间通知用户
           if (messageBody.name === 'club/updateClubRoom') {
+            console.warn("updateClubRoom messageBody-%s", JSON.stringify(messageBody));
             this.sendMessage('club/updateClubInfo', messageBody.payload)
             return;
           }
