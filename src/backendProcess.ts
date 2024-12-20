@@ -15,7 +15,7 @@ import {GameType, TianleErrorCode} from "@fm/common/constants";
 import GameCategory from "./database/models/gameCategory";
 import PlayerCardTable from "./database/models/PlayerCardTable";
 import ClubMember from "./database/models/clubMember";
-import {getClubInfo, requestToAllClubMember} from "./player/message-handlers-rmq/club";
+import {requestToAllClubMember} from "./player/message-handlers-rmq/club";
 
 const alwaysOk = () => true
 
@@ -67,16 +67,7 @@ export class BackendProcess {
 
     this.lobby.clubBroadcaster = {
       broadcast: async (clubId: string) => {
-        const rooms = this.lobby.getClubRooms(clubId);
-        const clubInfo = await getClubInfo(clubId);
-
-        await requestToAllClubMember(this.lobbyChannel, 'newClubRoomCreated', clubId, this.gameName, {
-          ok: true,
-          data: {
-            roomInfo: rooms,
-            clubInfo
-          }
-        });
+        await requestToAllClubMember(this.lobbyChannel, 'newClubRoomCreated', clubId, this.gameName, {});
       },
 
       updateClubRoomInfo: async (clubId: string, roomInfo: { roomNum: string, capacity: number, current: number }) => {
@@ -245,8 +236,7 @@ export class BackendProcess {
       await this.redisClient.saddAsync(`cluster-${this.cluster}`, room._id);
       await this.redisClient.setAsync('room:info:' + room._id, JSON.stringify(room.toJSON()));
 
-      const clubInfo = await getClubInfo(clubId);
-      await requestToAllClubMember(gameChannel, 'newClubRoomCreated', clubId, this.gameName, clubInfo);
+      await requestToAllClubMember(gameChannel, 'newClubRoomCreated', clubId, this.gameName, {});
     } catch (e) {
       logger.error('create room error', e)
     }

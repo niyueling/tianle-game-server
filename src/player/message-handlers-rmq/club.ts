@@ -4,31 +4,105 @@ import ClubMember from '../../database/models/clubMember'
 import {ClubRuleModel} from "../../database/models/clubRule";
 import Lobby from '../../match/zhadan/centerlobby';
 import ClubExtra from "../../database/models/clubExtra";
+import {service} from "../../service/importService";
+import {createClient} from "../../utils/redis";
+import PlayerModel from '../../database/models/player'
 
 function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
 }
 
-export async function getClubInfo(clubId: string) {
-  const room = await Lobby.getInstance().getClubRooms(clubId);
+export async function getPlayerClub(playerId, clubId?: string) {
+  let clubMemberInfo;
+  if (clubId) {
+    clubMemberInfo = await ClubMember.findOne({member: playerId, club: clubId})
+  } else {
+    clubMemberInfo = await ClubMember.findOne({member: playerId})
+  }
 
-  const club = await Club.findOne({ _id: clubId }).populate('owner');
+  if (!clubMemberInfo) {
+    const ownerClub = await Club.findOne({owner: playerId});
+    if (ownerClub) {
+      return ownerClub;
+    }
+    return false
+  }
+  return await Club.findOne({_id: clubMemberInfo.club}).lean();
+}
 
-  if (!club) {
+async function getClubRooms(clubId, gameType = null) {
+  let clubRooms = [];
+  const redis = createClient();
+  const roomNumbers = await redis.smembersAsync('clubRoom:' + clubId);
+  const roomInfoKeys = roomNumbers.map(num => 'room:info:' + num);
+  let roomDatas = [];
+  if (roomInfoKeys.length > 0) {
+    roomDatas = await redis.mgetAsync(roomInfoKeys);
+  }
+
+  for (const roomData of roomDatas) {
+    const roomInfo = JSON.parse(roomData);
+    if (roomInfo) {
+      const rule = roomInfo.gameRule || 'err';
+      const roomNum = roomInfo._id || 'err';
+      const roomCreator = roomInfo.creatorName || 'err';
+      const playerOnline = roomInfo.players.filter(x => x).length + roomInfo.disconnected.length;
+      const juIndex = roomInfo.game.juIndex;
+      const playerAvatars = [];
+
+      for (let i = 0; i < roomInfo.players.length; i++) {
+        const p = roomInfo.players[i];
+
+        if (p) {
+          const pModel = await service.playerService.getPlayerModel(p);
+          playerAvatars.push(pModel.avatar);
+        }
+      }
+
+      if (gameType && rule.gameType !== gameType) {
+        continue;
+      }
+
+      clubRooms.push({roomNum, roomCreator, rule, playerOnline, juIndex, gameType: rule.gameType, playerCount: rule.playerCount, playerAvatars: playerAvatars});
+    }
+  }
+
+  return clubRooms.sort((x, y) => {
+    if (Math.max(x.playerOnline, y.playerOnline) < 4) {
+      return y.playerOnline - x.playerOnline
+    } else {
+      return x.playerOnline - y.playerOnline
+    }
+
+  })
+}
+
+export async function getClubInfo(clubId, player?) {
+  const playerClub = await getPlayerClub(player._id, clubId);
+  if (!playerClub) {
+    player.sendMessage('club/getClubInfoReply', {ok: false, info: TianleErrorCode.notClubPlayer});
     return;
   }
 
-  const clubOwner = club.owner;
-  const rules = await getClubRule(club);
+  const allClubMemberShips = await ClubMember.find({member: player._id}).populate('club').lean();
+  const clubs = allClubMemberShips.map(cm => cm.club);
+  const room = await getClubRooms(playerClub._id);
+  const currentClubMemberShip = allClubMemberShips.find(x => x.club._id.toString() === clubId);
+  const isAdmin = (currentClubMemberShip && currentClubMemberShip.role === 'admin') || playerClub.owner === player._id.toString();
+  const clubOwnerId = playerClub.owner;
+  const clubOwner = await PlayerModel.findOne({_id: clubOwnerId}).sort({nickname: 1});
+  const clubRule = await getClubRule(playerClub);
+  const currentClubPlayerGold = currentClubMemberShip && currentClubMemberShip.clubGold || 0;
   const clubInfo = {
     diamond: clubOwner.diamond,
-    nickname: clubOwner.nickname,
-    clubName: club.name,
-    clubShortId: club.shortId,
-    publicRule: rules.publicRule
+    name: clubOwner.nickname,
+    clubGold: currentClubPlayerGold,
+    clubName: playerClub.name,
+    clubShortId: playerClub.shortId,
+    publicRule: clubRule.publicRule
   }
 
-  return { ok: true, data: {roomInfo: room, clubInfo} };
+  return { ok: true, data: {roomInfo: room, clubInfo, clubs, isAdmin} };
 }
 
 async function playerInClub(clubShortId: string, playerId: string) {

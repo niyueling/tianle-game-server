@@ -14,7 +14,7 @@ import createClient from "../utils/redis"
 import {IPlayerModel, ISocketPlayer} from "./ISocketPlayer"
 import accountHandlers from './message-handlers-rmq/account'
 import chatHandlers from './message-handlers-rmq/chat'
-import clubHandlers from './message-handlers-rmq/club';
+import clubHandlers, {getClubInfo} from './message-handlers-rmq/club';
 import errorHandlers from './message-handlers-rmq/error'
 import gameHandlers from './message-handlers-rmq/game'
 import {GameApi} from "./message-handlers-rmq/gameApi";
@@ -366,7 +366,8 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
 
           // 创建俱乐部房间通知俱乐部用户
           if (messageBody.name === 'newClubRoomCreated') {
-            this.sendMessage('club/newClubRoomCreatedReply', messageBody.payload)
+            const clubInfo = getClubInfo(this.clubId, this);
+            this.sendMessage('club/newClubRoomCreatedReply', clubInfo)
             return;
           }
 
