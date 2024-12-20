@@ -374,7 +374,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
           // 加入俱乐部房间通知用户
           if (messageBody.name === 'club/updateClubRoom') {
             const clubInfo = await getClubInfo(this.clubId, this);
-            this.sendMessage('club/getClubInfo', clubInfo);
+            this.sendMessage('club/getClubInfoReply', clubInfo);
             return;
           }
 
