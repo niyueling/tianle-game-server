@@ -136,6 +136,7 @@ class Room extends RoomBase {
     this.gameRule = rule
 
     this.initPlayers()
+    this.init();
 
     this.scoreMap = {}
     this.counterMap = {}
@@ -961,7 +962,10 @@ class Room extends RoomBase {
   async init() {
     // 初始化以后，再开启机器人
     console.warn("init room RobotManager %s", this.gameRule.depositCount);
-    this.robotManager = new RobotManager(this, this.gameRule.depositCount);
+    if (!this.robotManager) {
+      this.robotManager = new RobotManager(this, this.gameRule.depositCount);
+    }
+    // this.robotManager = new RobotManager(this, this.gameRule.depositCount);
   }
 
   private sortPlayer(nextStarterIndex: number) {
