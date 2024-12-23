@@ -159,7 +159,7 @@ class PlayerState implements Serializable {
     this.dropped = [];
     this.score = room.getScoreBy(userSocket)
     this.disconnectCallBack = player => {
-      if (player === this.msgDispatcher) {
+      if (player._id.toString() === this.msgDispatcher._id.toString()) {
         this.onDisconnect()
       }
     }
@@ -367,6 +367,8 @@ class PlayerState implements Serializable {
     if (this.room.gameState.tableState !== 'selectMode') {
       minutes = 15;
     }
+
+    console.warn("1 tableState %s isPublic %s autoCommit %s", this.room.gameState.tableState, this.room.isPublic, this.rule.ro.autoCommit);
 
     if (!this.msgDispatcher) {
       return ;
