@@ -489,7 +489,7 @@ abstract class Table implements Serializable {
       return ;
     }
     if (!this.room.isPublic && this.rule.ro.autoCommit && this.tableState !== 'selectMode') {
-      time = (this.rule.ro.autoCommit + 1) * 1000;
+      time = (this.rule.ro.autoCommit + 1);
     }
 
     // 如果处于进还贡状态，托管后自动选择
