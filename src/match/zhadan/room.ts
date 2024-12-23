@@ -960,6 +960,7 @@ class Room extends RoomBase {
 
   async init() {
     // 初始化以后，再开启机器人
+    console.warn("init room RobotManager %s", this.gameRule.depositCount);
     this.robotManager = new RobotManager(this, this.gameRule.depositCount);
   }
 
