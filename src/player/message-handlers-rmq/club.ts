@@ -88,7 +88,8 @@ export async function getClubInfo(clubId, player?) {
   const clubs = allClubMemberShips.map(cm => cm.club);
   const room = await getClubRooms(playerClub._id);
   const currentClubMemberShip = allClubMemberShips.find(x => x.club._id.toString() === clubId);
-  const isAdmin = (currentClubMemberShip && currentClubMemberShip.role === 'admin') || playerClub.owner === player._id.toString();
+  const isAdmin = (currentClubMemberShip && currentClubMemberShip.role === 'admin');
+  const isClubOwner = playerClub.owner === player._id.toString();
   const isPartner = currentClubMemberShip && currentClubMemberShip.partner;
   const clubOwnerId = playerClub.owner;
   const clubOwner = await PlayerModel.findOne({_id: clubOwnerId}).sort({nickname: 1});
@@ -103,7 +104,7 @@ export async function getClubInfo(clubId, player?) {
     publicRule: clubRule.publicRule
   }
 
-  return { ok: true, data: {roomInfo: room, clubInfo, clubs, isAdmin, isPartner} };
+  return { ok: true, data: {roomInfo: room, clubInfo, clubs, isAdmin, isPartner, isClubOwner} };
 }
 
 async function playerInClub(clubShortId: string, playerId: string) {
