@@ -87,7 +87,7 @@ export async function getClubInfo(clubId, player?) {
   const allClubMemberShips = await ClubMember.find({member: player._id}).populate('club').lean();
   const clubs = allClubMemberShips.map(cm => cm.club);
   const room = await getClubRooms(playerClub._id);
-  const currentClubMemberShip = allClubMemberShips.find(x => x.club._id.toString() === clubId);
+  const currentClubMemberShip = allClubMemberShips.find(x => x.club._id.toString() === clubId.toString());
   const isAdmin = (currentClubMemberShip && currentClubMemberShip.role === 'admin');
   const isClubOwner = playerClub.owner === player._id.toString();
   const isPartner = (currentClubMemberShip && currentClubMemberShip.partner);
