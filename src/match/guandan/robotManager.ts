@@ -69,6 +69,7 @@ export class RobotManager extends NewRobotManager {
   async selectMode() {
     // 在线用户都选好模式了
     for (const proxy of Object.values(this.disconnectPlayers)) {
+      console.warn("shortId-%s, index-%s", proxy.playerState.model.shortId, proxy.playerState.seatIndex);
       if (!proxy.playerState || proxy.playerState.isChooseMode) {
         // console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
         continue;
