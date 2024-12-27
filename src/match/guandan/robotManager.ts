@@ -69,12 +69,12 @@ export class RobotManager extends NewRobotManager {
     // 在线用户都选好模式了
     for (const proxy of Object.values(this.disconnectPlayers)) {
       if (!proxy.playerState || proxy.playerState.isChooseMode) {
-        // console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
+        console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
         continue;
       }
 
       const random = Math.random();
-      if (random < 0.5) {
+      if (random < 0.8) {
         await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
         return true;
       }
