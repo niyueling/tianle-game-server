@@ -149,15 +149,11 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
 
       room.on('join', async () => {
         const clubId = room.clubId
-        const current = room.players.filter(x => x).length + room.disconnected.length
         this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
 
       room.on('leave', async () => {
         const clubId = room.clubId
-
-        const current = room.players.filter(x => x).length + room.disconnected.length
-
         this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
     }
