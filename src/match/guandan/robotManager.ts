@@ -75,6 +75,7 @@ export class RobotManager extends NewRobotManager {
       }
 
       const random = algorithm.randomBySeed();
+      console.warn("shortId-%s, index-%s, random-%s", proxy.playerState.model.shortId, proxy.playerState.seatIndex, random);
       if (random < 0.8) {
         await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
         return true;
@@ -149,6 +150,7 @@ export class RobotManager extends NewRobotManager {
 
     for (const proxy of this.room.gameState.players) {
       if (!proxy.isChooseMode) {
+        console.warn("shortId-%s seatIndex-%s not choice", proxy.model.shortId, proxy.seatIndex);
         // 还有人没选模式
         return false;
       }
