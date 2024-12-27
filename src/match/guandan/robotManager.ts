@@ -75,28 +75,13 @@ export class RobotManager extends NewRobotManager {
           const random = algorithm.randomBySeed();
           // console.warn("shortId-%s, index-%s, random-%s", proxy.playerState.model.shortId, proxy.playerState.seatIndex, random);
           if (random < 0.8) {
-            await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
-            return true;
+            await this.room.gameState.onSelectMode(playerState, Math.random() < 0.8 ? 2 : 1);
+          }
         }
       }
     }
 
-    // // 在线用户都选好模式了
-    // for (const proxy of Object.values(this.disconnectPlayers)) {
-    //   if (!proxy.playerState || proxy.playerState.isChooseMode) {
-    //     // console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
-    //     continue;
-    //   }
-    //
-    //   const random = algorithm.randomBySeed();
-    //   // console.warn("shortId-%s, index-%s, random-%s", proxy.playerState.model.shortId, proxy.playerState.seatIndex, random);
-    //   if (random < 0.8) {
-    //     await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
-    //     return true;
-    //   }
-    // }
-
-    return true;
+      return true;
   }
 
   // 机器人选择进还贡
