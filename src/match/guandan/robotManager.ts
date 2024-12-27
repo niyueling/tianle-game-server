@@ -5,6 +5,7 @@ import {NewRobotManager} from "../base/newRobotManager";
 import {RobotGuanDan} from "./robotProxy";
 import {CardType} from "./card";
 import {arraySubtract} from "./patterns/base";
+import algorithm from "../../utils/algorithm";
 
 export class RobotManager extends NewRobotManager {
   disconnectPlayers: { [key: string]: RobotGuanDan }
@@ -73,7 +74,7 @@ export class RobotManager extends NewRobotManager {
         continue;
       }
 
-      const random = Math.random();
+      const random = algorithm.randomBySeed();
       if (random < 0.8) {
         await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
         return true;
