@@ -67,20 +67,34 @@ export class RobotManager extends NewRobotManager {
 
   // 为离线用户选择模式
   async selectMode() {
-    // 在线用户都选好模式了
-    for (const proxy of Object.values(this.disconnectPlayers)) {
-      if (!proxy.playerState || proxy.playerState.isChooseMode) {
-        // console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
-        continue;
-      }
-
-      const random = algorithm.randomBySeed();
-      // console.warn("shortId-%s, index-%s, random-%s", proxy.playerState.model.shortId, proxy.playerState.seatIndex, random);
-      if (random < 0.8) {
-        await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
-        return true;
+    for (let i = 0; i < this.room.gameState.players.length; i++) {
+      const playerState = this.room.gameState.players[i];
+      const proxy = this.room.players[i];
+      if (playerState && this.isHumanPlayerOffline(proxy)) {
+        if (!playerState.isChooseMode) {
+          const random = algorithm.randomBySeed();
+          // console.warn("shortId-%s, index-%s, random-%s", proxy.playerState.model.shortId, proxy.playerState.seatIndex, random);
+          if (random < 0.8) {
+            await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
+            return true;
+        }
       }
     }
+
+    // // 在线用户都选好模式了
+    // for (const proxy of Object.values(this.disconnectPlayers)) {
+    //   if (!proxy.playerState || proxy.playerState.isChooseMode) {
+    //     // console.error('invalid player state', JSON.stringify(this.disconnectPlayers))
+    //     continue;
+    //   }
+    //
+    //   const random = algorithm.randomBySeed();
+    //   // console.warn("shortId-%s, index-%s, random-%s", proxy.playerState.model.shortId, proxy.playerState.seatIndex, random);
+    //   if (random < 0.8) {
+    //     await this.room.gameState.onSelectMode(proxy.playerState, Math.random() < 0.8 ? 2 : 1);
+    //     return true;
+    //   }
+    // }
 
     return true;
   }
