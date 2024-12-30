@@ -45,6 +45,8 @@ export class AuditManager {
         playerCardRecord: {},
       })
     }
+
+    console.warn("model-%s", JSON.stringify(this.model));
   }
 
   // 下一局开始
