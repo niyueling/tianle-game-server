@@ -247,20 +247,20 @@ class Room extends RoomBase {
   }
 
   static async recover(json: any, repository: { channel: Channel, userCenter: any }): Promise<Room> {
-    const room = new Room(json.gameRule, json._id)
+    const room = new Room(json.gameRule, json._id);
     // 还原 uid
     room.uid = json.uid;
-    const gameAutoKeys = autoSerializePropertyKeys(room.game)
-    Object.assign(room.game, pick(json.game, gameAutoKeys))
+    const gameAutoKeys = autoSerializePropertyKeys(room.game);
+    Object.assign(room.game, pick(json.game, gameAutoKeys));
 
-    const keys = autoSerializePropertyKeys(room)
-    Object.assign(room, pick(json, keys))
+    const keys = autoSerializePropertyKeys(room);
+    Object.assign(room, pick(json, keys));
 
     for (const [index, playerId] of json.playersOrder.entries()) {
       if (playerId) {
         const playerRmq = await getPlayerRmqProxy(playerId, repository.channel, gameType);
         if (json.players[index]) {
-          room.players[index] = playerRmq
+          room.players[index] = playerRmq;
         }
         room.playersOrder[index] = playerRmq;
       }

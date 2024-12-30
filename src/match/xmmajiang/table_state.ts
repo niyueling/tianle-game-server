@@ -929,6 +929,10 @@ class TableState implements Serializable {
     this.sleepTime = 3000;
     // 金牌
     this.caishen = this.randGoldCard(this.rule.test, payload.goldCard);
+    if (!this.room.auditManager) {
+      await this.room.init();
+    }
+
     await this.room.auditManager.start(this.room.game.juIndex, this.caishen);
     const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
 
