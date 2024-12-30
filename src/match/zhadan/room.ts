@@ -966,7 +966,6 @@ class Room extends RoomBase {
     if (!this.robotManager) {
       this.robotManager = new RobotManager(this, this.gameRule.depositCount);
     }
-    // this.robotManager = new RobotManager(this, this.gameRule.depositCount);
   }
 
   private sortPlayer(nextStarterIndex: number) {
