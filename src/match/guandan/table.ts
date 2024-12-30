@@ -271,6 +271,10 @@ abstract class Table implements Serializable {
       this.players[1].team = this.players[3].team = Team.AwayTeam;
       this.room.homeTeam = [this.players[0]._id.toString(), this.players[2]._id.toString()];
       this.room.awayTeam = [this.players[1]._id.toString(), this.players[3]._id.toString()];
+      this.room.broadcast("game/showTeam", {ok: true, data: {
+          homeTeam: [this.players[0]._id.toString(), this.players[2]._id.toString()],
+          awayTeam: [this.players[1]._id.toString(), this.players[3]._id.toString()]
+        }});
     } else {
       const fusionTeam = [...this.room.homeTeam, ...this.room.awayTeam];
       const homeTeamPlayers = this.players.filter(p => this.room.homeTeam.includes(p._id.toString()));
@@ -290,9 +294,11 @@ abstract class Table implements Serializable {
 
       homeTeamPlayers[0].team = homeTeamPlayers[1].team = Team.HomeTeam;
       awayTeamPlayers[0].team = awayTeamPlayers[1].team = Team.AwayTeam;
-      const playerList = this.players.map(p => {
-        return {id: p._id, index: p.seatIndex, team: p.team};
-      })
+
+      this.room.broadcast("game/showTeam", {ok: true, data: {
+          homeTeam: [homeTeamPlayers[0]._id.toString(), homeTeamPlayers[1]._id.toString()],
+          awayTeam: [awayTeamPlayers[0]._id.toString(), awayTeamPlayers[1]._id.toString()]
+      }});
 
       // console.warn("juIndex-%s homeTeam-%s awayTeam-%s playerList-%s", this.room.game.juIndex, JSON.stringify(this.room.homeTeam), JSON.stringify(this.room.awayTeam), JSON.stringify(playerList));
     }
@@ -958,14 +964,6 @@ abstract class Table implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : [])];
-
-      const prompts = new StraightFlushMatcher().promptWithPattern({
-        name: PatterNames.straightFlush + '5',
-        score: 0,
-        cards: Array.from({ length: 5 }),
-      }, p.cards, this.room.currentLevelCard);
-
-      // console.warn("prompts %s", JSON.stringify(prompts));
     }
   }
 
