@@ -69,6 +69,8 @@ export class NewRobotManager {
         step: RobotStep.start,
       });
     }
+
+    console.warn("this.model-%s", JSON.stringify(this.model));
   }
 
   // 还原机器人
