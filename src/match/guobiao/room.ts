@@ -160,7 +160,7 @@ class Room extends RoomBase {
       await this.playerDisconnect(disconnectPlayer)
     }
 
-    this.init();
+    // this.init();
 
     this.readyPlayers = []
     this.gameState = null

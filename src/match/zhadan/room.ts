@@ -136,7 +136,7 @@ class Room extends RoomBase {
     this.gameRule = rule
 
     this.initPlayers()
-    this.init();
+    // this.init();
 
     this.scoreMap = {}
     this.counterMap = {}

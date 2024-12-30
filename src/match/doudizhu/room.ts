@@ -122,7 +122,7 @@ class Room extends RoomBase {
     this._id = roomNum;
 
     this.initPlayers()
-    this.init();
+    // this.init();
 
     this.scoreMap = {}
     this.counterMap = {}
