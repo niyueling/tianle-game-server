@@ -31,12 +31,6 @@ export default class NormalTable extends Table {
   }
 
   async start(payload) {
-    // if (this.room.gameRule.isPublic && !this.room.gameRule.test) {
-    //   // 金豆房发牌
-    //   await this.publicRoomFapai();
-    // } else {
-    //   await this.fapai(payload);
-    // }
     await this.fapai(payload);
     if (!this.selectFriendCard(this.players[0].cards)) {
       const player0 = this.players[0];
@@ -69,6 +63,10 @@ export default class NormalTable extends Table {
       await this.room.payRubyForStart();
     }
     await this.broadcastModeRequest();
+
+    if (!this.room.robotManager) {
+      await this.room.init();
+    }
 
     await this.room.robotManager.setCardReady();
   }

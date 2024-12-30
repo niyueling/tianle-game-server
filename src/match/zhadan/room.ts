@@ -748,6 +748,7 @@ class Room extends RoomBase {
     this.sortPlayer(this.nextStarterIndex)
     await this.delPlayerBless();
     // 可能没人离线，需要手动初始化
+
     await this.robotManager.nextRound();
 
     // 更新玩家位置
