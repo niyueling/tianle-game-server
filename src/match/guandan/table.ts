@@ -547,12 +547,12 @@ abstract class Table implements Serializable {
 
       // 进贡
       if (player.payTributeState) {
-        return await this.room.gameState.onPayTribute(player, {card: subtractCards[0]});
+        await this.room.gameState.onPayTribute(player, {card: subtractCards[0]});
       }
 
       // 还贡
       if (player.returnTributeState) {
-        return await this.room.gameState.onReturnTribute(player, {card: subtractCards[subtractCards.length - 1]});
+        await this.room.gameState.onReturnTribute(player, {card: subtractCards[subtractCards.length - 1]});
       }
     }
   }
