@@ -294,7 +294,7 @@ abstract class Table implements Serializable {
         return {id: p._id, index: p.seatIndex, team: p.team};
       })
 
-      console.warn("juIndex-%s homeTeam-%s awayTeam-%s playerList-%s", this.room.game.juIndex, JSON.stringify(this.room.homeTeam), JSON.stringify(this.room.awayTeam), JSON.stringify(playerList));
+      // console.warn("juIndex-%s homeTeam-%s awayTeam-%s playerList-%s", this.room.game.juIndex, JSON.stringify(this.room.homeTeam), JSON.stringify(this.room.awayTeam), JSON.stringify(playerList));
     }
   }
 
@@ -504,7 +504,7 @@ abstract class Table implements Serializable {
     this.autoCommitStartTime = Date.now();
     const primaryDelayTime = playerIsOndeposit ? 2000 : time * 1000;
     const delayTime = primaryDelayTime - (Date.now() - this.autoCommitStartTime);
-    console.warn("currentPlayerStep %s playerIsOndeposit %s delayTime %s tableState %s", this.currentPlayerStep, playerIsOndeposit, delayTime, this.tableState);
+    // console.warn("currentPlayerStep %s playerIsOndeposit %s delayTime %s tableState %s", this.currentPlayerStep, playerIsOndeposit, delayTime, this.tableState);
     this.autoCommitTimer = setTimeout(async () => {
       if (this.tableState === "selectMode") {
         return await this.autoCommitForPlayerChooseMode();
@@ -965,7 +965,7 @@ abstract class Table implements Serializable {
         cards: Array.from({ length: 5 }),
       }, p.cards, this.room.currentLevelCard);
 
-      console.warn("prompts %s", JSON.stringify(prompts));
+      // console.warn("prompts %s", JSON.stringify(prompts));
     }
   }
 
