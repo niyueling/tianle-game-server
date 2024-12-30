@@ -486,37 +486,29 @@ export class NewRobotManager {
         continue;
       }
 
-      const addPlayerFunc = async () => {
-        await this.addRobotPlayer(i);
-      }
+      // 重新计时
+      this.waitPublicRobotSecond = 0;
+      this.waitPublicRobot = 0;
 
-      setTimeout(addPlayerFunc, Math.floor(Math.random() * 3 + 1));
+      const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id, this.room.game.rule.currency);
+      const robotProxy = await this.createProxy(model._id.toString());
+      robotProxy.seatIndex = i;
+      robotProxy.isPublicRobot = true;
+      // 加入房间
+      const isOk = await this.room.join(robotProxy);
+      if (isOk) {
+        console.warn("add robot index-%s shortId-%s", i, model.shortId);
+        // 公共房托管的机器人
+        this.model.publicRoomRobot.push([model._id, i]);
+        await this.addPublicRobot(model._id, robotProxy, i);
+        // 添加离线时间
+        this.model.offlineTimes[model._id] = config.game.offlineDelayTime;
+      }
 
       break;
     }
     // 保存房间信息
     await service.roomRegister.saveRoomInfoToRedis(this.room);
-  }
-
-  async addRobotPlayer(i) {
-    // 重新计时
-    this.waitPublicRobotSecond = 0;
-    this.waitPublicRobot = 0;
-
-    const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id, this.room.game.rule.currency);
-    const robotProxy = await this.createProxy(model._id.toString());
-    robotProxy.seatIndex = i;
-    robotProxy.isPublicRobot = true;
-    // 加入房间
-    const isOk = await this.room.join(robotProxy);
-    if (isOk) {
-      console.warn("add robot index-%s shortId-%s", i, model.shortId);
-      // 公共房托管的机器人
-      this.model.publicRoomRobot.push([model._id, i]);
-      await this.addPublicRobot(model._id, robotProxy, i);
-      // 添加离线时间
-      this.model.offlineTimes[model._id] = config.game.offlineDelayTime;
-    }
   }
 
   async addPublicRobot(playerId, robotProxy, posIndex) {

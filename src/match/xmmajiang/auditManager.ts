@@ -114,6 +114,7 @@ export class AuditManager {
     // this.model.markModified('cardUsed');
     // this.model.markModified('gangZi');
     // this.model.markModified('playerCardRecord');
+    console.warn("model-%s", JSON.stringify(this.model));
     await RoomMaJiangAudit.update({ _id: this.model._id}, this.model);
   }
 
