@@ -57,7 +57,6 @@ export default class NormalTable extends Table {
     this.shuffleDelayTime = Date.now() + this.room.shuffleData.length * 5000
     this.room.broadcast('game/shuffleData', {ok: true, data: {shuffleData}})
     this.status.current.seatIndex = -1
-    // console.log('fai pa seatIndex -1');
     // 金豆房扣除开局金豆
     if (this.room.gameRule.isPublic) {
       await this.room.payRubyForStart();
