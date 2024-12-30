@@ -7,34 +7,6 @@ import {RobotMangerModel} from "../../database/models/robotManager";
 
 export class RobotManager extends NewRobotManager {
   disconnectPlayers: { [key: string]: RobotZD }
-  model: any
-  depositCount: number
-
-  async init() {
-    const m = await RobotMangerModel.findOne({ roomId: this.room._id });
-    if (m) {
-      this.model = m;
-      if (!m.depositPlayer) {
-        m.depositPlayer = {};
-      }
-      if (!m.offlineTimes) {
-        m.offlineTimes = {};
-      }
-      if (!m.publicRoomRobot) {
-        m.publicRoomRobot = [];
-      }
-    } else {
-      this.model = await RobotMangerModel.create({
-        roomId: this.room._id,
-        depositCount: this.depositCount || 0,
-        gameType: this.room.gameRule.gameType,
-        depositPlayer: {},
-        offlineTimes: {},
-        publicRoomRobot: [],
-        step: RobotStep.start,
-      });
-    }
-  }
 
   async createProxy(playerId) {
     const model = await service.playerService.getPlayerPlainModel(playerId);
@@ -130,7 +102,9 @@ export class RobotManager extends NewRobotManager {
 
   // 发牌完成
   async setCardReady() {
+    if (this.model.step) {
       this.model.step = RobotStep.selectMode;
       await this.save();
+    }
   }
 }
