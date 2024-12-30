@@ -45,6 +45,7 @@ async function boot() {
       if (anyJson.gameRule.isPublic) {
         return PublicRoom.recover(anyJson, repository)
       }
+
       return Room.recover(anyJson, repository)
     })
     .useLobby(new ZhadanLobby())

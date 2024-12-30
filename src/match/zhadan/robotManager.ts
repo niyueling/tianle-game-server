@@ -8,6 +8,7 @@ import {RobotMangerModel} from "../../database/models/robotManager";
 export class RobotManager extends NewRobotManager {
   disconnectPlayers: { [key: string]: RobotZD }
   model: any
+  depositCount: number
 
   async init() {
     const m = await RobotMangerModel.findOne({ roomId: this.room._id });
