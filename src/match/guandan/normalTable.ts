@@ -31,11 +31,17 @@ export default class NormalTable extends Table {
 
   async start(payload) {
     this.faPaiPayload = payload;
+    if (!this.room.robotManager) {
+      await this.room.init();
+    }
 
     const faPaiFunc = async() => {
       if (this.rule.allowDouble) {
         await this.broadcastModeRequest();
-        await this.room.robotManager.setCardReady(this.rule.allowDouble);
+
+        if (this.room.isPublic) {
+          await this.room.robotManager.setCardReady(this.rule.allowDouble);
+        }
       } else {
         await this.startFaPai(payload);
       }
@@ -213,7 +219,10 @@ export default class NormalTable extends Table {
     const startFunc = async () => {
       console.warn("nextSeatIndex %s", this.nextSeatIndex);
       this.tableState = '';
-      this.room.robotManager.model.step = RobotStep.running;
+      if (this.room.isPublic) {
+        this.room.robotManager.model.step = RobotStep.running;
+      }
+
       this.setTeamMate();
       this.setFirstDa(this.nextSeatIndex !== -1 ? this.nextSeatIndex : 0);
       this.mode = 'teamwork';
@@ -466,7 +475,9 @@ export default class NormalTable extends Table {
       console.warn("payAndReturnState %s", payAndReturnState);
       if (payAndReturnState !== -1) {
         this.tableState = "returnTribute";
-        this.room.robotManager.model.step = RobotStep.returnTribute;
+        if (this.room.isPublic) {
+          this.room.robotManager.model.step = RobotStep.returnTribute;
+        }
 
         return this.autoCommitFunc();
       }

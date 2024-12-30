@@ -355,7 +355,10 @@ abstract class Table implements Serializable {
 
   onCancelDeposit(player: PlayerState) {
     player.cancelDeposit()
-    this.room.robotManager.disableRobot(player._id)
+    if (this.room.isPublic) {
+      this.room.robotManager.disableRobot(player._id)
+    }
+
     this.autoCommitFunc()
   }
 
