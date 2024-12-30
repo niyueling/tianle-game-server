@@ -492,7 +492,7 @@ export class NewRobotManager {
 
       const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id, this.room.game.rule.currency);
       const robotProxy = await this.createProxy(model._id.toString());
-      // robotProxy.seatIndex = i;
+      robotProxy.seatIndex = i;
       robotProxy.isPublicRobot = true;
       // 加入房间
       const isOk = await this.room.join(robotProxy);
