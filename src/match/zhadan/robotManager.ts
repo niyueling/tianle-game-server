@@ -3,9 +3,37 @@ import {RobotStep} from "@fm/common/constants";
 import {service} from "../../service/importService";
 import {NewRobotManager} from "../base/newRobotManager";
 import {RobotZD} from "./robotProxy";
+import {RobotMangerModel} from "../../database/models/robotManager";
 
 export class RobotManager extends NewRobotManager {
   disconnectPlayers: { [key: string]: RobotZD }
+  model: any
+
+  async init() {
+    const m = await RobotMangerModel.findOne({ roomId: this.room._id });
+    if (m) {
+      this.model = m;
+      if (!m.depositPlayer) {
+        m.depositPlayer = {};
+      }
+      if (!m.offlineTimes) {
+        m.offlineTimes = {};
+      }
+      if (!m.publicRoomRobot) {
+        m.publicRoomRobot = [];
+      }
+    } else {
+      this.model = await RobotMangerModel.create({
+        roomId: this.room._id,
+        depositCount: this.depositCount || 0,
+        gameType: this.room.gameRule.gameType,
+        depositPlayer: {},
+        offlineTimes: {},
+        publicRoomRobot: [],
+        step: RobotStep.start,
+      });
+    }
+  }
 
   async createProxy(playerId) {
     const model = await service.playerService.getPlayerPlainModel(playerId);
