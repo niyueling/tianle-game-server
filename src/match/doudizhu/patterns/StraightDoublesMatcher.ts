@@ -62,9 +62,9 @@ export default class StraightDoublesMatcher implements IMatcher {
         if (nextCard.point - prevCard.point === 1) {
           prevCard = nextCard;
           prompt.push(...groups[j].slice(0, 2));
-          // if (prompt.length === len) {
-          //   break;
-          // }
+          if (prompt.length === len) {
+            break;
+          }
         } else {
           break;
         }

@@ -72,7 +72,7 @@ export default class NormalTable extends Table {
     }
 
     const shuffleData = this.room.shuffleData.map(x => {
-      const p = this.players.find(y => y.model._id === x);
+      const p = this.players.find(y => y.model._id.toString() === x.toString());
       return p.index;
     })
     this.shuffleDelayTime = Date.now() + this.room.shuffleData.length * 5000;
