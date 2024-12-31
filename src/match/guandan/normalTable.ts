@@ -293,8 +293,8 @@ export default class NormalTable extends Table {
 
         // 查询还贡用户
         const returnTributePlayer = this.players.find(p => p.returnTributeState);
-        console.warn("isAllTribute %s kangTribute %s payTributePlayerId %s returnTributePlayerId %s", this.isAllTribute,
-          JSON.stringify(this.kangTribute), payTributePlayer && payTributePlayer._id, returnTributePlayer && returnTributePlayer._id);
+        // console.warn("isAllTribute %s kangTribute %s payTributePlayerId %s returnTributePlayerId %s", this.isAllTribute,
+        //   JSON.stringify(this.kangTribute), payTributePlayer && payTributePlayer._id, returnTributePlayer && returnTributePlayer._id);
 
         payTributePlayer.returnTributeCard = returnTributePlayer.returnTributeCard;
         payTributePlayer.returnTributeIndex = returnTributePlayer.seatIndex;
@@ -333,8 +333,8 @@ export default class NormalTable extends Table {
       // 执行换牌逻辑
       for (const player of this.players) {
         if (player.payTributeState || player.returnTributeState) {
-          console.warn("payTributeState %s returnTributeState %s payTributeCard %s returnTributeCard %s",
-            player.payTributeState, player.returnTributeState, JSON.stringify(player.payTributeCard), JSON.stringify(player.returnTributeCard));
+          // console.warn("payTributeState %s returnTributeState %s payTributeCard %s returnTributeCard %s",
+          //   player.payTributeState, player.returnTributeState, JSON.stringify(player.payTributeCard), JSON.stringify(player.returnTributeCard));
 
           if (player.payTributeState) {
             const payTributeCardIndex = player.cards.findIndex(c => c.type === player.payTributeCard.type && c.point === player.payTributeCard.point);
@@ -360,7 +360,7 @@ export default class NormalTable extends Table {
       const lastWinOrder = this.room.winOrderLists.find(w => w.winOrder === 99);
       const lastPlayerIndex = this.players.findIndex(p => p._id.toString() === lastWinOrder.playerId.toString());
 
-      console.warn("firstTeamPlayerWinOrder %s, lastPlayerIndex %s", firstTeamPlayerWinOrder, lastPlayerIndex);
+      // console.warn("firstTeamPlayerWinOrder %s, lastPlayerIndex %s", firstTeamPlayerWinOrder, lastPlayerIndex);
 
       // 单下，末游先出牌
       if (firstTeamPlayerWinOrder > 2) {
@@ -590,7 +590,7 @@ export default class NormalTable extends Table {
     this.room.winTeamPlayers = this.players.filter(p => p.team === winTeam).map(p => p.seatIndex);
     this.room.loseTeamPlayers = this.players.filter(p => p.team !== winTeam).map(p => p.seatIndex);
 
-    console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", upgradeMultiple, JSON.stringify(this.room.winTeamPlayers), JSON.stringify(this.room.loseTeamPlayers));
+    // console.warn("score %s winTeamPlayers %s loseTeamPlayers %s", upgradeMultiple, JSON.stringify(this.room.winTeamPlayers), JSON.stringify(this.room.loseTeamPlayers));
   }
 
   async gameOver() {
@@ -669,14 +669,14 @@ export default class NormalTable extends Table {
       const p = this.players[i];
       if (p) {
         const base = this.room.winTeamPlayers.includes(p.seatIndex) ? 1 : -1;
-        console.warn("index %s base %s times %s", p.seatIndex, base, times);
+        // console.warn("index %s base %s times %s", p.seatIndex, base, times);
         // 基础倍率
         p.balance = base * times * this.multiple * this.room.upgradeScore;
 
         if (p.balance > 0) {
           const currency = await this.PlayerGoldCurrency(p._id);
           if (p.balance > currency) {
-            console.warn("winner balance-%s currency-%s", p.balance, currency);
+            // console.warn("winner balance-%s currency-%s", p.balance, currency);
             p.balance = currency;
           }
 
@@ -686,7 +686,7 @@ export default class NormalTable extends Table {
         } else {
           const currency = await this.PlayerGoldCurrency(p._id);
           if (currency < -p.balance) {
-            console.warn("loser balance-%s currency-%s", p.balance, currency);
+            // console.warn("loser balance-%s currency-%s", p.balance, currency);
             p.balance = -currency;
           }
 
