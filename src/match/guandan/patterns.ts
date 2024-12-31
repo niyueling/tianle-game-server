@@ -154,11 +154,17 @@ class Pattern {
         return null;
       }
 
-      if (foundPattern.name === PatterNames.bomb) {
+      // 非炸弹或者6星炸以下，可用同花顺吃牌
+      if ((pattern.name !== PatterNames.bomb || pattern.level < 6) && foundPattern.name === PatterNames.straightFlush + 5) {
         return foundPattern;
       }
 
-      if ((pattern.name !== PatterNames.bomb || pattern.level < 6) && foundPattern.name === PatterNames.straightFlush + 5) {
+      // 同花顺，必须6星炸弹才能吃牌
+      if (pattern.name === PatterNames.straightFlush + 5 && foundPattern.name === PatterNames.bomb && foundPattern.level > 5) {
+        return foundPattern;
+      }
+
+      if (foundPattern.name === PatterNames.bomb) {
         return foundPattern;
       }
     }
