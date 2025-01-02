@@ -1,4 +1,4 @@
-import Card from "../card";
+import Card, {CardType} from "../card";
 import {groupBy, IMatcher, IPattern, lengthFirstThenPointGroupComparator, PatterNames} from "./base";
 
 export default class SingleMatcher implements IMatcher {
@@ -15,7 +15,7 @@ export default class SingleMatcher implements IMatcher {
 
   promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
     return groupBy(cards.filter(c => c.point > target.score), card => card.point)
-    .filter(g => g.length < 4)
+    .filter(g => g.length < 4 && (g[0].type !== CardType.Heart || g[0].value === levelCard))
       .sort(lengthFirstThenPointGroupComparator)
       .map(grp => [grp[0]])
   }
