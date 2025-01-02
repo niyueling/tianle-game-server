@@ -2,20 +2,20 @@
 
 const mongoose = require('mongoose');
 
-const ClubRequestSchema = new mongoose.Schema({
+const ClubMessageSchema = new mongoose.Schema({
   playerId: {type: String, required: true, ref: 'Player'},
   clubShortId: {type: Number, required: true},
   playerName: {type: String, required: true},
   avatar: {type: String, required: true},
+  message: {type: String, required: true},
   playerShortId: {type: Number, required: true},
-  type: {type: Number, default: 1},
-  partner: {type: Number},
-  status: {type: Number, default: 0},
+  type: {type: Number, default: 4},
+  state: {type: Number, default: 1},
   createAt: {type: Date, required: true, default: Date.now},
 });
 
-ClubRequestSchema.index({createAt: -1});
-ClubRequestSchema.index({clubShortId: 1});
+ClubMessageSchema.index({createAt: -1});
+ClubMessageSchema.index({clubShortId: 1});
 
-const ClubRequest = mongoose.model('ClubRequest', ClubRequestSchema);
-export default ClubRequest
+const ClubMessage = mongoose.model('ClubMessage', ClubMessageSchema);
+export default ClubMessage
