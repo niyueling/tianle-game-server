@@ -932,7 +932,14 @@ abstract class Table implements Serializable {
       }, p.cards, this.room.currentLevelCard);
 
       const levelCards = p.cards.filter(card => card.type === CardType.Heart && card.value === this.room.currentLevelCard);
-      console.warn("seatIndex-%s caiShenCount-%s prompts-%s", i, levelCards.length, JSON.stringify(prompts));
+
+      for (let j = 0; j < prompts.length; j++) {
+        const levelCardCount = prompts[j].filter(card => card.type === CardType.Heart && card.value === this.room.currentLevelCard).length;
+        if (levelCardCount > levelCards.length) {
+          console.warn("seatIndex-%s caiShenCount-%s prompts-%s", i, levelCards.length, JSON.stringify(prompts));
+          break;
+        }
+      }
     }
   }
 
