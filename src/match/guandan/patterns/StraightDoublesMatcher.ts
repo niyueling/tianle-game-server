@@ -516,8 +516,6 @@ export default class StraightDoublesMatcher implements IMatcher {
       }
     }
 
-    console.warn("caiShenCount-%s prompts-%s", levelCards.length, JSON.stringify(prompts));
-
     return prompts
   }
 }

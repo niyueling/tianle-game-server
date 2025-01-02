@@ -19,6 +19,7 @@ import PlayerProp from "../../database/models/PlayerProp";
 import Pattern from "./patterns";
 import * as config from "../../config"
 import RoomTimeRecord from "../../database/models/roomTimeRecord";
+import StraightDoublesMatcher from "./patterns/StraightDoublesMatcher";
 
 const logger = new winston.Logger({
   level: 'debug',
@@ -923,6 +924,15 @@ abstract class Table implements Serializable {
     for (let i = 0; i < this.players.length; i++) {
       const p = this.players[i];
       p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : [])];
+
+      const prompts = new StraightDoublesMatcher().promptWithPattern({
+        name: PatterNames.doubles + '3',
+        score: 0,
+        cards: Array.from({ length: 6 }),
+      }, p.cards, this.room.currentLevelCard);
+
+      const levelCards = p.cards.filter(card => card.type === CardType.Heart && card.value === this.room.currentLevelCard);
+      console.warn("seatIndex-%s caiShenCount-%s prompts-%s", i, levelCards.length, JSON.stringify(prompts));
     }
   }
 
