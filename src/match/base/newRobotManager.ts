@@ -69,8 +69,6 @@ export class NewRobotManager {
         step: RobotStep.start,
       });
     }
-
-    console.warn("this.model-%s", JSON.stringify(this.model));
   }
 
   // 还原机器人
@@ -86,7 +84,7 @@ export class NewRobotManager {
 
   // 每秒开始监控
   startMonit() {
-    console.log('monit start %s model %s', this.room._id, JSON.stringify(this.model));
+    console.log('monit start %s', this.room._id);
     this.watchTimer = setInterval(async () => {
       if (this.isWatching) {
         // 上次还没处理完
