@@ -510,7 +510,7 @@ export default class NormalTable extends Table {
       tribute = {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard, multile: this.multiple};
     }
     if (reconnectPlayer.team === 1) {
-      tribute = {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.awayTeamCard, awayTeamCard: this.room.homeTeamCard, multile: this.multiple};
+      tribute = {currentLevelCard: this.room.currentLevelCard, homeTeamCard: this.room.homeTeamCard, awayTeamCard: this.room.awayTeamCard, multile: this.multiple};
     }
 
     return {
