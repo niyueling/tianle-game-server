@@ -19,9 +19,6 @@ import PlayerProp from "../../database/models/PlayerProp";
 import Pattern from "./patterns";
 import * as config from "../../config"
 import RoomTimeRecord from "../../database/models/roomTimeRecord";
-import StraightDoublesMatcher from "./patterns/StraightDoublesMatcher";
-import StraightTriplesMatcher from "./patterns/StraightTriplesMatcher";
-import StraightFlushMatcher from "./patterns/StraightFlushMatcher";
 
 const logger = new winston.Logger({
   level: 'debug',

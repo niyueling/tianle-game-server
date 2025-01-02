@@ -1,9 +1,8 @@
 import createClient from "../utils/redis";
 import {service} from "../service/importService";
 import Enums from "./majiang/enums";
-import {GameType} from "@fm/common/constants";
 import * as config from "../config";
-import {Club} from "@fm/model/models/club";
+import Club from "../database/models/club";
 
 /**
  *
@@ -149,12 +148,12 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
 
       room.on('join', async () => {
         const clubId = room.clubId
-        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {})
+        this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
 
       room.on('leave', async () => {
         const clubId = room.clubId
-        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {})
+        this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
     }
 
