@@ -19,6 +19,6 @@ export default class SingleMatcher implements IMatcher {
       .sort(lengthFirstThenPointGroupComparator)
       .map(grp => [grp[0]]);
 
-    return prompts.filter(g => g[0].type !== CardType.Heart || g[0].value === levelCard);
+    return prompts.filter(g => g[0].type !== CardType.Heart || g[0].value !== levelCard);
   }
 }
