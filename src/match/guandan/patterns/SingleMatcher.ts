@@ -14,9 +14,11 @@ export default class SingleMatcher implements IMatcher {
   }
 
   promptWithPattern(target: IPattern, cards: Card[], levelCard?: Number): Card[][] {
-    return groupBy(cards.filter(c => c.point > target.score), card => card.point)
-    .filter(g => g.length < 4 && (g[0].type !== CardType.Heart || g[0].value === levelCard))
+    const prompts = groupBy(cards.filter(c => c.point > target.score), card => card.point)
+    .filter(g => g.length < 4)
       .sort(lengthFirstThenPointGroupComparator)
-      .map(grp => [grp[0]])
+      .map(grp => [grp[0]]);
+
+    return prompts.filter(g => g[0].type !== CardType.Heart || g[0].value === levelCard);
   }
 }
