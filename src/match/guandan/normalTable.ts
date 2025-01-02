@@ -52,44 +52,6 @@ export default class NormalTable extends Table {
     setTimeout(faPaiFunc, 1000);
   }
 
-  async setPlayerTeamMate() {
-    // 分配队友
-    if (this.room.game.juIndex === 1) {
-      this.players[0].team = this.players[2].team = Team.HomeTeam;
-      this.players[1].team = this.players[3].team = Team.AwayTeam;
-      this.room.homeTeam = [this.players[0]._id.toString(), this.players[2]._id.toString()];
-      this.room.awayTeam = [this.players[1]._id.toString(), this.players[3]._id.toString()];
-      this.room.broadcast("game/showTeam", {ok: true, data: {
-          homeTeam: [this.players[0]._id.toString(), this.players[2]._id.toString()],
-          awayTeam: [this.players[1]._id.toString(), this.players[3]._id.toString()]
-        }});
-    } else {
-      const fusionTeam = [...this.room.homeTeam, ...this.room.awayTeam];
-      const homeTeamPlayers = this.players.filter(p => this.room.homeTeam.includes(p._id.toString()));
-      const awayTeamPlayers = this.players.filter(p => this.room.awayTeam.includes(p._id.toString()));
-
-      for (let i = 0; i < this.players.length; i++) {
-        const p = this.players[i];
-
-        if (!fusionTeam.includes(p._id.toString())) {
-          if (homeTeamPlayers.length < 2) {
-            homeTeamPlayers.push(p);
-          } else {
-            awayTeamPlayers.push(p);
-          }
-        }
-      }
-
-      homeTeamPlayers[0].team = homeTeamPlayers[1].team = Team.HomeTeam;
-      awayTeamPlayers[0].team = awayTeamPlayers[1].team = Team.AwayTeam;
-
-      this.room.broadcast("game/showTeam", {ok: true, data: {
-          homeTeam: [homeTeamPlayers[0]._id.toString(), homeTeamPlayers[1]._id.toString()],
-          awayTeam: [awayTeamPlayers[0]._id.toString(), awayTeamPlayers[1]._id.toString()]
-        }});
-    }
-  }
-
   async startFaPai(payload) {
     const levelCard = this.cards.find(c => c.type === 1 && c.value === this.room.currentLevelCard);
     this.players[0].record("openLevelCard", [levelCard]);
