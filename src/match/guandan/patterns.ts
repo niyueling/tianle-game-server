@@ -159,16 +159,12 @@ class Pattern {
         return foundPattern;
       }
 
-      if (pattern.name === PatterNames.straightFlush + 5) {
-        console.warn("pattern-%s foundPattern-%s", JSON.stringify(pattern), JSON.stringify(foundPattern));
-      }
-
       // 同花顺，必须6星炸弹才能吃牌
       if (pattern.name === PatterNames.straightFlush + 5 && foundPattern.name === PatterNames.bomb && foundPattern.level > 5) {
         return foundPattern;
       }
 
-      if (foundPattern.name === PatterNames.bomb) {
+      if (pattern.name !== PatterNames.straightFlush + 5 && foundPattern.name === PatterNames.bomb) {
         return foundPattern;
       }
     }
