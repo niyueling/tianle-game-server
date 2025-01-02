@@ -12,7 +12,7 @@ export default class StraightMatcher implements IMatcher {
       let subtractCards = arraySubtract(copyCards.slice(), levelCards).slice();
       const startCard = subtractCards[0];
       if (subtractCards.every(card => card.type === startCard.type)) {
-        console.warn("StraightMatcher error 1 %s", JSON.stringify(subtractCards));
+        // console.warn("StraightMatcher error 1 %s", JSON.stringify(subtractCards));
         return null;
       }
 
@@ -39,7 +39,7 @@ export default class StraightMatcher implements IMatcher {
       };
 
       if (last(subtractCards).point > 14) {
-        console.warn("StraightMatcher error 2 %s", JSON.stringify(subtractCards));
+        // console.warn("StraightMatcher error 2 %s", JSON.stringify(subtractCards));
         result = null;
       }
 
@@ -77,7 +77,7 @@ export default class StraightMatcher implements IMatcher {
       subtractCards = arraySubtract(copyCardsByValue.slice(), levelCards);
       caiShenCount = levelCards.length;
 
-      console.warn("atraightMatcher subtractCards %s caiShenCount %s", JSON.stringify(subtractCards), caiShenCount);
+      // console.warn("atraightMatcher subtractCards %s caiShenCount %s", JSON.stringify(subtractCards), caiShenCount);
 
       let lastCard1 = subtractCards[0].value;
       for (let i = 1; i < subtractCards.length; i++) {

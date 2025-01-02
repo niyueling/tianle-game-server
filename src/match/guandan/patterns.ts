@@ -199,7 +199,7 @@ class Pattern {
       if (pattern.name !== PatterNames.bomb || pattern.name === PatterNames.bomb && pattern.level < 6) {
         straightFlushPrompts = new StraightFlushMatcher().promptWithPattern(<IPattern>currentPattern, cards, this.room.currentLevelCard);
         if (straightFlushPrompts.length) {
-          console.warn("pattern-%s straightFlushPrompts-%s", JSON.stringify(pattern), JSON.stringify(straightFlushPrompts));
+          // console.warn("pattern-%s straightFlushPrompts-%s", JSON.stringify(pattern), JSON.stringify(straightFlushPrompts));
         }
 
         prompts = [...prompts, ...straightFlushPrompts];

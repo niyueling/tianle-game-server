@@ -29,7 +29,7 @@ export default class Game implements Serializable {
         room.homeTeamCard = 2;
         room.awayTeamCard = 2;
         room.currentLevelCard = room.homeTeamCard;
-        console.warn("本局级牌 %s", room.currentLevelCard);
+        // console.warn("本局级牌 %s", room.currentLevelCard);
       }
     }
 
@@ -52,7 +52,7 @@ export default class Game implements Serializable {
           room.homeTeamCard = levelCard;
           room.awayTeamCard = levelCard;
           room.currentLevelCard = room.homeTeamCard;
-          console.warn("本局级牌 %s", room.currentLevelCard);
+          // console.warn("本局级牌 %s", room.currentLevelCard);
         }
       }
     }

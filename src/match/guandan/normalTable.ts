@@ -257,7 +257,7 @@ export default class NormalTable extends Table {
     await this.calcPayAndReturnTribute();
 
     const startFunc = async () => {
-      console.warn("nextSeatIndex %s", this.nextSeatIndex);
+      // console.warn("nextSeatIndex %s", this.nextSeatIndex);
       this.tableState = '';
       if (this.room.isPublic) {
         this.room.robotManager.model.step = RobotStep.running;

@@ -44,15 +44,15 @@ export default class StraightTriplesMatcher implements IMatcher {
         }
 
         if (!subtractGroups.every(grp => grp.length <= 3) || subtractGroups.length > 2) {
-          console.warn("StraightTriplesMatcher error-1");
+          // console.warn("StraightTriplesMatcher error-1");
           resultCaiShen = null;
         }
 
         const lastCard = last(subtractGroups)[0];
         if (lastCard.point >= 15) {
           if (lastCard.value !== levelCard || lastCard.type !== CardType.Heart) {
-            console.warn("StraightTriplesMatcher error-2");
-            console.warn("sortBy point useCaiShen sortedGroups last card is gt 15");
+            // console.warn("StraightTriplesMatcher error-2");
+            // console.warn("sortBy point useCaiShen sortedGroups last card is gt 15");
             resultCaiShen = null;
           }
         }
@@ -71,13 +71,13 @@ export default class StraightTriplesMatcher implements IMatcher {
 
           // 如果超过3张，则一定无法组成钢板
           if (subtractGroup.length > 3) {
-            console.warn("StraightTriplesMatcher error-3");
+            // console.warn("StraightTriplesMatcher error-3");
             resultCaiShen = null;
           }
 
           // 如果小于3张，并且红心级牌不足以补足，则一定无法组成钢板
           if (subtractGroup.length < 3 && caiShenCount - useCaiShenCount < 3 - subtractGroup.length) {
-            console.warn("StraightTriplesMatcher error-4");
+            // console.warn("StraightTriplesMatcher error-4");
             resultCaiShen = null;
           }
 
@@ -90,7 +90,7 @@ export default class StraightTriplesMatcher implements IMatcher {
 
         // 如果红心级牌补完的不符合都是三张，则一定无法组成钢板
         if (!subtractGroups.every(grp => grp.length === 3)) {
-          console.warn("StraightTriplesMatcher error-5");
+          // console.warn("StraightTriplesMatcher error-5");
           resultCaiShen = null;
         }
 
@@ -103,7 +103,7 @@ export default class StraightTriplesMatcher implements IMatcher {
           if (currentGroup - prevGroupByLevelPoint === 1) {
             prevGroupByLevelPoint = currentGroup;
           } else {
-            console.warn("StraightTriplesMatcher error-6 %s", JSON.stringify(subtractGroups));
+            // console.warn("StraightTriplesMatcher error-6 %s", JSON.stringify(subtractGroups));
             resultCaiShen = null;
           }
         }
@@ -155,8 +155,8 @@ export default class StraightTriplesMatcher implements IMatcher {
       const lastCard = last(sortedGroups)[0];
       if (lastCard.point >= 15) {
         if (lastCard.value !== levelCard || lastCard.type !== CardType.Heart) {
-          console.warn("StraightTriplesMatcher error-7");
-          console.warn("sortBy point not CaiShen sortedGroups last card is gt 15 %s", JSON.stringify(sortedGroups));
+          // console.warn("StraightTriplesMatcher error-7");
+          // console.warn("sortBy point not CaiShen sortedGroups last card is gt 15 %s", JSON.stringify(sortedGroups));
           result = null;
         }
       }
@@ -168,7 +168,7 @@ export default class StraightTriplesMatcher implements IMatcher {
         if (currentGroup[0].point - prevGroup[0].point === 1) {
           prevGroup = currentGroup;
         } else {
-          console.warn("StraightTriplesMatcher error-8");
+          // console.warn("StraightTriplesMatcher error-8");
           result = null;
         }
       }
@@ -213,13 +213,13 @@ export default class StraightTriplesMatcher implements IMatcher {
         }
 
         if (!subtractGroupsByValue.every(grp => grp.length <= 3) || subtractGroupsByValue.length > 2) {
-          console.warn("StraightTriplesMatcher error-9");
+          // console.warn("StraightTriplesMatcher error-9");
           resultCaiShenByValue = null;
         }
 
         if (last(subtractGroupsByValue)[0].value > 13) {
-          console.warn("StraightTriplesMatcher error-10");
-          console.warn("sortBy value useCaiShen subtractGroupsByValue last card is gt 13");
+          // console.warn("StraightTriplesMatcher error-10");
+          // console.warn("sortBy value useCaiShen subtractGroupsByValue last card is gt 13");
           resultCaiShenByValue = null;
         }
 
@@ -237,13 +237,13 @@ export default class StraightTriplesMatcher implements IMatcher {
 
           // 如果超过3张，则一定无法组成钢板
           if (subtractGroup.length > 3) {
-            console.warn("StraightTriplesMatcher error-11");
+            // console.warn("StraightTriplesMatcher error-11");
             resultCaiShenByValue = null;
           }
 
           // 如果小于3张，并且红心级牌不足以补足，则一定无法组成钢板
           if (subtractGroup.length < 3 &&caiShenCount - useCaiShenCount < 3 - subtractGroup.length) {
-            console.warn("StraightTriplesMatcher error-12");
+            // console.warn("StraightTriplesMatcher error-12");
             resultCaiShenByValue = null;
           }
 
@@ -256,7 +256,7 @@ export default class StraightTriplesMatcher implements IMatcher {
 
         // 如果红心级牌补完的不符合都是三张，则一定无法组成钢板
         if (!subtractGroupsByValue.every(grp => grp.length === 3) || subtractGroupsByValue.length > 2) {
-          console.warn("StraightTriplesMatcher error-13");
+          // console.warn("StraightTriplesMatcher error-13");
           resultCaiShenByValue = null;
         }
 
@@ -269,7 +269,7 @@ export default class StraightTriplesMatcher implements IMatcher {
           if (currentGroup - prevGroupByLevelPoint === 1) {
             prevGroupByLevelPoint = currentGroup;
           } else {
-            console.warn("StraightTriplesMatcher error-14");
+            // console.warn("StraightTriplesMatcher error-14");
             resultCaiShenByValue = null;
           }
         }
@@ -280,24 +280,24 @@ export default class StraightTriplesMatcher implements IMatcher {
       }
 
       if (last(sortedGroupsByValue)[0].value > 13) {
-        console.warn("StraightTriplesMatcher error-15");
-        console.warn("sortBy value not CaiShen subtractGroupsByValue last card is gt 13");
+        // console.warn("StraightTriplesMatcher error-15");
+        // console.warn("sortBy value not CaiShen subtractGroupsByValue last card is gt 13");
         return null;
       }
 
       if (!sortedGroupsByValue.every(grp => grp.length <= 3) || sortedGroupsByValue.length > 2) {
-        console.warn("StraightTriplesMatcher error-16");
+        // console.warn("StraightTriplesMatcher error-16");
         return null;
       }
 
-      console.warn("sort by value arrays %s", JSON.stringify(sortedGroupsByValue));
+      // console.warn("sort by value arrays %s", JSON.stringify(sortedGroupsByValue));
       let prevGroup1 = sortedGroupsByValue[0];
       for (let i = 1; i < sortedGroupsByValue.length; i++) {
         const currentGroup = sortedGroupsByValue[i];
         if (currentGroup[0].value - prevGroup1[0].value === 1) {
           prevGroup1 = currentGroup;
         } else {
-          console.warn("StraightTriplesMatcher error-17");
+          // console.warn("StraightTriplesMatcher error-17");
           return null;
         }
       }

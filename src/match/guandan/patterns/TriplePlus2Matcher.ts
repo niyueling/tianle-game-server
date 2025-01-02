@@ -189,7 +189,7 @@ export default class TriplePlus2Matcher implements IMatcher {
 
         if (leftCards.length < 2) {
           // 可以选择返回一个空数组或null，或者执行其他逻辑
-          console.warn("Not enough cards to form a valid 'three with a pair'");
+          // console.warn("Not enough cards to form a valid 'three with a pair'");
           return [];
         }
 

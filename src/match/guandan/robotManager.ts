@@ -149,7 +149,7 @@ export class RobotManager extends NewRobotManager {
 
     for (const proxy of this.room.gameState.players) {
       if (!proxy.isChooseMode) {
-        console.warn("shortId-%s seatIndex-%s not choice", proxy.model.shortId, proxy.seatIndex);
+        // console.warn("shortId-%s seatIndex-%s not choice", proxy.model.shortId, proxy.seatIndex);
         // 还有人没选模式
         return false;
       }

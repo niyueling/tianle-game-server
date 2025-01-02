@@ -394,7 +394,7 @@ class Room extends RoomBase {
   }
 
   async addScore(playerId, v) {
-    console.warn("_id-%s, score-%s", playerId, v);
+    // console.warn("_id-%s, score-%s", playerId, v);
     this.scoreMap[playerId] += v;
   }
 
@@ -540,7 +540,7 @@ class Room extends RoomBase {
   }
 
   getNextLevelCard() {
-    console.warn("juShu %s", this.gameRule.juShu);
+    // console.warn("juShu %s", this.gameRule.juShu);
     if (this.gameRule.juShu === 1) {
       return 5;
     }
@@ -809,8 +809,8 @@ class Room extends RoomBase {
         }
       }
 
-      console.warn("firstWinnerPlayer %s team %s oldHomeTeamCard %s homeTeamCard %s oldAwayTeamCard %s awayTeamCard %s currentLevelCard %s nextLevelCard %s", JSON.stringify(firstWinnerPlayer), team, this.oldHomeTeamCard,
-        this.homeTeamCard, this.oldAwayTeamCard, this.awayTeamCard, this.currentLevelCard, nextLevelCard);
+      // console.warn("firstWinnerPlayer %s team %s oldHomeTeamCard %s homeTeamCard %s oldAwayTeamCard %s awayTeamCard %s currentLevelCard %s nextLevelCard %s", JSON.stringify(firstWinnerPlayer), team, this.oldHomeTeamCard,
+      //   this.homeTeamCard, this.oldAwayTeamCard, this.awayTeamCard, this.currentLevelCard, nextLevelCard);
     }
   }
 
