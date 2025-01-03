@@ -59,7 +59,7 @@ export default class NormalTable extends Table {
 
     if (this.rule.shuffleType === 2) {
       // 不洗牌
-      await this.publicRoomFapai();
+      await this.fapai(payload);
     } else {
       // 随机发牌
       await this.fapai(payload);
