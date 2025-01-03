@@ -138,7 +138,8 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       room.on('empty', async () => {
         const clubId = room.clubId
         await redisClient.sremAsync('clubRoom:' + clubId, room._id)
-        this.clubBroadcaster && this.clubBroadcaster.updateClubRoomInfo(clubId, {})
+        console.warn("");
+        this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
         if (room.robotManager) {
           // 删除机器人
           await room.robotManager.gameOver();
