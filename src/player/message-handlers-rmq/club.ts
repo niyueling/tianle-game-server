@@ -201,6 +201,12 @@ export async function playerInClubBlacklist(clubId, playerId) {
   return clubBlacklist.find(x => x === playerId)
 }
 
+export async function playerInClubPartnerBlacklist(clubId, playerId) {
+  const clubExtra = await getClubExtra(clubId);
+  const clubBlacklist = clubExtra && clubExtra.partnerBlacklist || [];
+  return clubBlacklist.find(x => x === playerId);
+}
+
 async function getClubExtra(clubId) {
   let clubExtra = await ClubExtra.findOne({clubId});
   if (!clubExtra) {

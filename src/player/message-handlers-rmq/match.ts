@@ -10,7 +10,7 @@ import pcmjLobby from '../../match/pcmajiang/centerlobby'
 import ddzLobby from '../../match/doudizhu/centerlobby'
 import guandanLobby from '../../match/guandan/centerlobby'
 import zhadanLobby from '../../match/zhadan/centerlobby'
-import {playerInClubBlacklist} from "./club";
+import {playerInClubBlacklist, playerInClubPartnerBlacklist} from "./club";
 
 export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
@@ -72,6 +72,11 @@ export function createHandler(redisClient: AsyncRedisClient) {
       }
 
       if (roomInfo.clubMode && await playerInClubBlacklist(roomInfo.clubId, player._id)) {
+        player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notJoinClubGame});
+        return
+      }
+
+      if (roomInfo.clubMode && await playerInClubPartnerBlacklist(roomInfo.clubId, player._id)) {
         player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notJoinClubGame});
         return
       }
