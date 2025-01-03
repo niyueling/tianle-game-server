@@ -564,8 +564,9 @@ class Room extends RoomBase {
   }
 
   async addScore(playerId: string, gains: number) {
-    const p = PlayerManager.getInstance().getPlayer(playerId)
-    this.scoreMap[playerId] += gains
+    const oldScore = this.scoreMap[playerId];
+    this.scoreMap[playerId] += gains;
+    console.warn("oldScore-%s, gains-%s, score-%s", oldScore, gains, this.scoreMap[playerId]);
   }
 
   removeDisconnected(item) {
