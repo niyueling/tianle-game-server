@@ -361,7 +361,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
             }
 
             this.currentRoom = messageBody.payload.data._id
-            await this.cancelListenClub(this.clubId)
+            // await this.cancelListenClub(this.clubId)
           }
 
           // 创建俱乐部房间通知俱乐部用户
@@ -374,6 +374,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
           // 加入俱乐部房间通知用户
           if (messageBody.name === 'club/updateClubRoom') {
             const clubInfo = await getClubInfo(this.clubId, this);
+            console.warn("clubInfo-%s", JSON.stringify(clubInfo));
 
             if (clubInfo.ok) {
               this.sendMessage('club/getClubInfoReply', clubInfo);

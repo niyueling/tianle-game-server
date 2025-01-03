@@ -261,6 +261,8 @@ export async function requestToAllClubMember(channel, name, clubId, gameType, in
     return
   }
 
+  console.warn("sendInfo-%s", JSON.stringify({name, clubId, gameType, info}));
+
   channel.publish(
     `exClubCenter`,
     `club:${clubId}`,
