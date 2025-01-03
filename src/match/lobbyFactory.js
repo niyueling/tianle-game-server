@@ -126,19 +126,20 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
     async createClubRoom(isPublic = false, roomId, rule = {}, clubId, clubOwnerPlayer) {
       let newRule = Object.assign({}, rule, {isPublic})
 
+      redisClient.sadd('clubRoom:' + clubId, roomId)
       const room = roomFactory(roomId, newRule)
       await room.setClub(clubId, clubOwnerPlayer);
-      this.listenRoom(room)
-      this.listenClubRoom(room)
-      redisClient.sadd('clubRoom:' + clubId, roomId)
+      await this.listenRoom(room)
+      await this.listenClubRoom(room)
+
       return room;
     }
 
-    listenClubRoom(room) {
+    async listenClubRoom(room) {
       room.on('empty', async () => {
         const clubId = room.clubId
         await redisClient.sremAsync('clubRoom:' + clubId, room._id)
-        console.warn("");
+        console.warn("empty clubId-%s clubBroadcaster-%s", clubId, this.clubBroadcaster);
         this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
         if (room.robotManager) {
           // 删除机器人
@@ -149,25 +150,28 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
 
       room.on('join', async () => {
         const clubId = room.clubId
+        console.warn("join clubId-%s clubBroadcaster-%s", clubId, this.clubBroadcaster);
         this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
 
       room.on('leave', async () => {
         const clubId = room.clubId
+        console.warn("leave clubId-%s clubBroadcaster-%s", clubId, this.clubBroadcaster);
         this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
     }
 
     async createRoom(isPublic, roomId, rule = {}) {
       let newRule = Object.assign({}, rule, {isPublic})
+      redisClient.sadd('room', roomId)
       const room = roomFactory(roomId, newRule)
       await room.init();
-      this.listenRoom(room)
-      redisClient.sadd('room', roomId)
+      await this.listenRoom(room)
+
       return room;
     }
 
-    listenRoom(room) {
+    async listenRoom(room) {
       room.on('empty', async (disconnectedPlayerIds = []) => {
         disconnectedPlayerIds.forEach(id => {
           service.roomRegister.removePlayerFromGameRoom(id, gameName)

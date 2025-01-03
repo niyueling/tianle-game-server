@@ -2,6 +2,7 @@ import * as rabbitMq from 'amqplib'
 import {Channel, Connection} from 'amqplib'
 import * as winston from 'winston'
 import * as config from "./config";
+import * as redis from 'redis'
 import Database from './database/database'
 import {saveRoomDetail} from "./database/models/roomDetail";
 import {saveRoomInfo} from "./database/models/roomInfo";
@@ -160,6 +161,9 @@ export class BackendProcess {
           }, this.gameName, this.roomRecover)
 
           this.lobby.listenRoom(roomProxy.room)
+          if (roomProxy.room.clubMode) {
+            this.lobby.listenClubRoom(roomProxy.room)
+          }
         }
       } catch (e) {
         logger.error('room recover failed', id, e)
@@ -431,7 +435,6 @@ export class BackendProcessBuilder {
   }
 
   build(): BackendProcess {
-
     const process = new BackendProcess({
       dataBaseUrl: this.dataBaseUrl,
       rabbitMqServer: this.rabbitMqServer,
