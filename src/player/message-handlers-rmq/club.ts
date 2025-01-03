@@ -196,15 +196,15 @@ async function playerInClub(clubShortId: string, playerId: string) {
 }
 
 export async function playerInClubBlacklist(clubId, playerId) {
-  const clubExtra = await getClubExtra(clubId)
-  const clubBlacklist = clubExtra && clubExtra.blacklist || []
-  return clubBlacklist.find(x => x === playerId)
+  const clubExtra = await getClubExtra(clubId);
+  const clubBlacklist = clubExtra && clubExtra.blacklist || [];
+  return clubBlacklist.find(x => x === playerId.toString());
 }
 
 export async function playerInClubPartnerBlacklist(clubId, playerId) {
   const clubExtra = await getClubExtra(clubId);
   const clubBlacklist = clubExtra && clubExtra.partnerBlacklist || [];
-  return clubBlacklist.find(x => x === playerId);
+  return clubBlacklist.find(x => x === playerId.toString());
 }
 
 async function getClubExtra(clubId) {
