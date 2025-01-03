@@ -238,7 +238,7 @@ async function createClubRoom(player, message) {
     player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notJoinClubGame});
     return
   }
-  const playerInPartnerBlacklist = await playerInClubBlacklist(club._id, player._id)
+  const playerInPartnerBlacklist = await playerInClubPartnerBlacklist(club._id, player._id)
   if (playerInPartnerBlacklist) {
     player.sendMessage('room/joinReply', {ok: false, info: TianleErrorCode.notJoinClubGame});
     return
