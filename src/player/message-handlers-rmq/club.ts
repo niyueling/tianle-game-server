@@ -2,7 +2,6 @@ import {RuleType, TianleErrorCode} from "@fm/common/constants";
 import Club from '../../database/models/club'
 import ClubMember from '../../database/models/clubMember'
 import {ClubRuleModel} from "../../database/models/clubRule";
-import Lobby from '../../match/zhadan/centerlobby';
 import ClubExtra from "../../database/models/clubExtra";
 import {service} from "../../service/importService";
 import {createClient} from "../../utils/redis";
@@ -10,6 +9,7 @@ import PlayerModel from '../../database/models/player'
 import ClubRequest from "../../database/models/clubRequest";
 import ClubMessage from "../../database/models/clubMessage";
 import ClubMerge from "../../database/models/clubMerge";
+import * as config from "../../config";
 
 function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
@@ -175,6 +175,8 @@ export async function getClubInfo(clubId, player?) {
     clubShortId: playerClub.shortId,
     publicRule: clubRule.publicRule
   }
+
+  console.warn("roomInfo-%s, redis-%s", JSON.stringify(room), JSON.stringify(config.redis));
 
   return { ok: true, data: {roomInfo: room, clubInfo, unReadMessage, clubs, isAdmin: !!isAdmin, isPartner: !!isPartner, isClubOwner} };
 }
