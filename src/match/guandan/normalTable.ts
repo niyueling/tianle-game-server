@@ -115,7 +115,6 @@ export default class NormalTable extends Table {
 
   @once
   private next() {
-
     clearTimeout(this.selectModeTimeout)
     for (const p of this.players) {
       p.msgDispatcher.removeAllListeners('game/chooseMultiple')
