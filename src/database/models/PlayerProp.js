@@ -36,6 +36,12 @@ const schema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  // 是否回归用户专属
+  isRegression: {
+    type: Number,
+    required: true,
+    default: false
+  },
   // 获得时间
   createAt: {
     type: Date,

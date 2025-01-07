@@ -325,7 +325,7 @@ abstract class Table implements Serializable {
       this.room.robotManager.disableRobot(player._id)
     }
 
-    this.autoCommitFunc()
+    this.autoCommitFunc(this.players[this.status.current.seatIndex].onDeposit)
   }
 
   async autoCommitForPlayers() {
