@@ -537,6 +537,7 @@ class TableState implements Serializable {
     }
 
     const cardType = algorithm.randomBySeed() < 0.5 ? 1 : 2;
+    console.warn("cardType-%s", cardType);
     if (cardType === 1) {
       const result = Object.keys(counter).filter(num => counter[num] >= cardNumber);
       const randomNumber = Math.floor(Math.random() * result.length);
@@ -551,6 +552,8 @@ class TableState implements Serializable {
           this.lastTakeCard = card;
         }
       }
+
+      console.warn("keZi cards-%s", JSON.stringify(cards));
     }
 
     if (cardType === 2) {
@@ -567,6 +570,8 @@ class TableState implements Serializable {
           this.lastTakeCard = card;
         }
       }
+
+      console.warn("ShunZi cards-%s", JSON.stringify(cards));
     }
 
     return cards;
@@ -581,7 +586,7 @@ class TableState implements Serializable {
 
     // 生成两个对子或者两个两顺
     for (let i = 0; i < 2; i++) {
-      const consumeCards = await this.consumeShunOrKeCard(3);
+      const consumeCards = await this.consumeShunOrKeCard(2);
       cards = [...cards, ...consumeCards];
     }
 
