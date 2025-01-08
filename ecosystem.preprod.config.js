@@ -42,8 +42,8 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm Z"
     },
     {
-      name: "tianle-guobiao-server",
-      script: "dist/backend.guobiao.js",
+      name: "tianle-redpocket-server",
+      script: "dist/backend.redpocket.js",
       instances: 1,
       instance_var: 'INSTANCE_ID',
       env: {
