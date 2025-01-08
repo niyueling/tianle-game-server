@@ -4296,57 +4296,10 @@ class TableState implements Serializable {
                 }
               });
 
-              const huTakeCard = async () => {
-                if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-                  return player.emitter.emit(Enums.huTakeCard, {from, type: 1});
-                }
-
-                // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
-                this.gameMoStatus = {
-                  state: true,
-                  from,
-                  type: 1,
-                  index: this.atIndex(player)
-                }
-              }
-
-              const gameCompetite = async () => {
-                let isAllHu = true;
-                let brokes = [];
-                let sleepTime = 500;
-
-                for (let i = 0; i < this.players.length; i++) {
-                  brokes.push({isBroke: this.players[i].isBroke, isGameHu: this.players[i].isGameHu})
-                  if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                    isAllHu = false;
-                  }
-                }
-
-                if (!this.isAllHu && isAllHu && !this.isGameOver) {
-                  this.isAllHu = isAllHu;
-                  sleepTime += 3000;
-
-                  this.room.broadcast('game/gameCompetite', {
-                    ok: true,
-                    data: {
-                      roomId: this.room._id
-                    }
-                  });
-                }
-
-                // 给下家摸牌
-                setTimeout(huTakeCard, sleepTime);
-              }
-
               const gameOverFunc = async () => {
-                if (this.room.isPublic) {
-                  await this.gameOver(this.players[from], player);
-                } else {
-                  await this.gameOverNormal(this.players[from], player);
-                }
-
-                // 执行巅峰对决
-                setTimeout(gameCompetite, 2200);
+                const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+                const nextZhuang = this.nextZhuang()
+                await this.gameAllOver(states, [], nextZhuang);
               }
 
               const huReply = async () => {
@@ -4445,55 +4398,10 @@ class TableState implements Serializable {
             }
           });
 
-          const huTakeCard = async () => {
-            if (player.waitMo && this.room.robotManager.model.step === RobotStep.running) {
-              return player.emitter.emit(Enums.huTakeCard, {from, type: 4});
-            }
-
-            // 如果牌局暂停，则记录当前牌局状态为摸牌，并记录from和type
-            this.gameMoStatus = {
-              state: true,
-              from,
-              type: 4,
-              index: this.atIndex(player)
-            }
-          }
-
-          const gameCompetite = async () => {
-            let isAllHu = true;
-            let sleepTime = 500;
-
-            for (let i = 0; i < this.players.length; i++) {
-              if (!this.players[i].isBroke && !this.players[i].isGameHu) {
-                isAllHu = false;
-              }
-            }
-
-            if (!this.isAllHu && isAllHu && !this.isGameOver) {
-              this.isAllHu = isAllHu;
-              sleepTime += 3000;
-
-              this.room.broadcast('game/gameCompetite', {
-                ok: true,
-                data: {
-                  roomId: this.room._id
-                }
-              });
-            }
-
-            // 给下家摸牌
-            setTimeout(huTakeCard, sleepTime);
-          }
-
           const gameOverFunc = async () => {
-            if (this.room.isPublic) {
-              await this.gameOver(null, player);
-            } else {
-              await this.gameOverNormal(null, player);
-            }
-
-            // 执行巅峰对决
-            setTimeout(gameCompetite, 2200);
+            const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+            const nextZhuang = this.nextZhuang()
+            await this.gameAllOver(states, [], nextZhuang);
           }
 
           const huReply = async () => {
