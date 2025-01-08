@@ -557,7 +557,10 @@ class TableState implements Serializable {
     }
 
     if (cardType === 2) {
-      const result = Object.keys(counter).filter(num => counter[num] >= 1 && counter[num + 1] >= 1 && counter[num + 2] >= 1);
+      const result = Object.keys(counter).filter(num => {
+        console.warn("num-%s,  counter[num]-%s", num, counter[num]);
+        return counter[num] >= 1 && counter[num + 1] >= 1 && counter[num + 2] >= 1
+      });
       const randomNumber = Math.floor(Math.random() * result.length);
 
       for (let i = 0; i < cardNumber; i++) {
