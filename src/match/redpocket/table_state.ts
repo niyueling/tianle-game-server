@@ -522,7 +522,7 @@ class TableState implements Serializable {
     return false;
   }
 
-  async consumeShunOrKeCard(cardNumber?) {
+  async consumeShunOrKeCard(cardNumber?, cardType?) {
     let cards = [];
     this.remainCards -= cardNumber;
     const counter = {};
@@ -536,7 +536,6 @@ class TableState implements Serializable {
       }
     }
 
-    const cardType = algorithm.randomBySeed() < 0.5 ? 1 : 2;
     console.warn("cardType-%s", cardType);
     if (cardType === 1) {
       const result = Object.keys(counter).filter(num => counter[num] >= cardNumber);
@@ -584,12 +583,14 @@ class TableState implements Serializable {
     let cards = []
 
     // 生成一个刻子或者顺子
-    const consumeCards = await this.consumeShunOrKeCard(3);
+    const cardType = algorithm.randomBySeed() < 0.3 ? 1 : 2;
+    const consumeCards = await this.consumeShunOrKeCard(3, cardType);
     cards = [...cards, ...consumeCards];
 
     // 生成两个对子或者两个两顺
     for (let i = 0; i < 2; i++) {
-      const consumeCards = await this.consumeShunOrKeCard(2);
+      const cardType = algorithm.randomBySeed() < 0.3 ? 1 : 2;
+      const consumeCards = await this.consumeShunOrKeCard(2, cardType);
       cards = [...cards, ...consumeCards];
     }
 
