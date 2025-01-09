@@ -4539,6 +4539,25 @@ class TableState implements Serializable {
     }
   }
 
+  promptWithOther(todo, player, card) {
+    switch (todo) {
+      case Enums.peng:
+        player.emitter.emit(Enums.peng, this.turn, this.stateData.card)
+        break;
+      case Enums.gang:
+        player.emitter.emit(Enums.gangByOtherDa, this.turn, this.stateData.card)
+        break;
+      case Enums.anGang:
+      case Enums.buGang:
+        player.emitter.emit(Enums.gangBySelf, this.turn, card)
+        break;
+      case Enums.hu:
+        player.emitter.emit(Enums.hu, this.turn, this.stateData.card);
+
+        break;
+    }
+  }
+
   // 托管模式出牌
   promptWithPattern(player: PlayerState, lastTakeCard) {
     // 获取摸牌前的卡牌
