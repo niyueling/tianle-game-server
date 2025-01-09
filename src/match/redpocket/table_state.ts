@@ -644,10 +644,10 @@ class TableState implements Serializable {
         }
       }
 
-      console.warn("list cardType-%s", JSON.stringify(cardTypes[i]));
+      // console.warn("name-%s cardType-%s", cardTypes[i].cardName, JSON.stringify(cardTypes[i]));
     }
 
-    console.warn("end cardType-%s", JSON.stringify(cardType));
+    // console.warn("end cardType-%s", JSON.stringify(cardType));
 
     return cardType;
   }
@@ -666,7 +666,7 @@ class TableState implements Serializable {
 
     for (let i = Enums.wanzi1; i <= Enums.wanzi3; i++) {
       let isLong = true;
-      for (let j = i; j <= i + 6; i++) {
+      for (let j = i; j <= i + 6; j++) {
         if (cards[j] === 0) {
           isLong = false;
           break;
@@ -678,6 +678,8 @@ class TableState implements Serializable {
         break;
       }
     }
+
+
 
     return flag && (isZiMo || isJiePao);
   }
