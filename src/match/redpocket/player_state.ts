@@ -994,12 +994,6 @@ class PlayerState implements Serializable {
   }
 
   daPai(card) {
-    const forbidCards = this.forbidCards || []
-    if (this.getCardsArray().length > 2) {
-      if (forbidCards.indexOf(card) >= 0 && card !== this.freeCard) {
-        return false
-      }
-    }
     if (this.cards[card] > 0) {
       this.cards[card]--;
       this.dropped.push(card);
@@ -1014,6 +1008,8 @@ class PlayerState implements Serializable {
       this.record('da', card)
       return true
     }
+
+    console.warn("cards-%s", JSON.stringify(this.getCardsArray()));
 
     return false
   }

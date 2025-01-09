@@ -4185,7 +4185,7 @@ class TableState implements Serializable {
           state: this.state
         }
       });
-      // return;
+      return;
     }
 
     this.lastDa = player;
