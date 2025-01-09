@@ -512,7 +512,7 @@ class TableState implements Serializable {
     return cards;
   }
 
-  async takeDominateCards() {
+  async takeDominateCards(player) {
     let cards = []
 
     // 生成一个刻子或者顺子
@@ -520,11 +520,15 @@ class TableState implements Serializable {
     const consumeCards = await this.consumeShunOrKeCard(3, cardType);
     cards = [...cards, ...consumeCards];
 
-    // 生成两个对子或者两个两顺
+    // 生成一个对子或者一个两顺
+    const cardType1 = algorithm.randomBySeed() < 0.3 ? 1 : 2;
+    const consumeCards1 = await this.consumeShunOrKeCard(2, cardType1);
+    cards = [...cards, ...consumeCards1];
+
+    // 生成两个单张
     for (let i = 0; i < 2; i++) {
-      const cardType = algorithm.randomBySeed() < 0.3 ? 1 : 2;
-      const consumeCards = await this.consumeShunOrKeCard(2, cardType);
-      cards = [...cards, ...consumeCards];
+      const consumeCard2 = await this.consumeCard(player);
+      cards.push(consumeCard2);
     }
 
     return cards;
@@ -543,7 +547,7 @@ class TableState implements Serializable {
     let zhuangIndex = 0;
     for (let i = 0, iMax = this.players.length; i < iMax; i++) {
       const p = this.players[i];
-      const cards13 = await this.takeDominateCards();
+      const cards13 = await this.takeDominateCards(p);
 
       if (p.zhuang) {
         zhuangIndex = i;
