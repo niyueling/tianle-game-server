@@ -645,8 +645,10 @@ class TableState implements Serializable {
         }
       }
 
-      console.warn("cardType-%s", JSON.stringify(cardType));
+      console.warn("list cardType-%s", JSON.stringify(cardType));
     }
+
+    console.warn("end cardType-%s", JSON.stringify(cardType));
 
     return cardType;
   }
