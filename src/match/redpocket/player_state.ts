@@ -11,6 +11,7 @@ import {DummyRecorder, IGameRecorder} from './GameRecorder'
 import HuPaiDetect from './HuPaiDetect'
 import Room from './room'
 import Rule from './Rule'
+import {manager} from "./cardManager";
 
 export class SourceCardMap extends Array<number> {
   first: boolean
@@ -209,9 +210,6 @@ class PlayerState implements Serializable {
   // 本局积分
   juScore = 0
 
-  // 本局是否胡牌
-  isGameHu = false
-
   // 是否计算对局
   isCalcJu = false
 
@@ -237,13 +235,6 @@ class PlayerState implements Serializable {
 
   // 序数牌相加
   numberCount: number = 0
-
-  // 本局胡的牌型
-  huTypeList: any[] = [];
-
-  // 本局胡的turn
-  huTurnList: any[] = [];
-  competiteTurnList: any[] = [];
 
   // 是否地胡
   isDiHu: boolean = true;
@@ -296,9 +287,6 @@ class PlayerState implements Serializable {
     this.isGangHouDa = false;
     this.numberCount = 0;
     this.openCardScore = 1;
-    this.huTypeList = [];
-    this.huTurnList = [];
-    this.competiteTurnList = [];
     this.isDiHu = true;
   }
 
@@ -461,11 +449,6 @@ class PlayerState implements Serializable {
     let ret = msg;
 
     if (send) {
-      // 如果用户可以杠，并且胡牌已托管，则取消托管
-      if (msg.gang && this.isGameHu && this.onDeposit) {
-        this.onDeposit = false;
-        this.sendMessage('game/cancelDepositReply', {ok: true, data: {card: msg.card}})
-      }
       this.sendMessage('game/TakeCard', {ok: true, data: msg})
     }
     // 禁止触发旧麻将机器人
@@ -581,6 +564,12 @@ class PlayerState implements Serializable {
   }
 
   checkChi(card, check) {
+    const list = manager.isCanChi(card, this.cards);
+    if (list.length > 0) {
+      check[Enums.chi] = this;
+      check.chiCombol = list;
+    }
+
     return check
   }
 
@@ -749,9 +738,14 @@ class PlayerState implements Serializable {
   @triggerAfterAction
   chiPai(card, otherCard1, otherCard2, daPlayer) {
     if (this.cards[otherCard1] > 0 && this.cards[otherCard2] > 0) {
-      this.cards[otherCard1]--
-      this.cards[otherCard2]--
-      this.recordGameEvent(Enums.chi, [card, otherCard1, otherCard2])
+      this.cards.gang = false;
+      this.cards[otherCard1]--;
+      this.cards[otherCard2]--;
+      const cards = [card, otherCard1, otherCard2].sort((a, b) => a - b);
+      // 将新牌添加到排序后数组的末尾
+      const cardsWithNewCard = [...cards, card];
+      // 最后插入card，记录吃牌
+      this.recordGameEvent(Enums.chi, cardsWithNewCard);
       if (daPlayer) {
         daPlayer.consumeDropped()
       }
@@ -768,7 +762,6 @@ class PlayerState implements Serializable {
         if (maxCard % 10 < 9) {
           this.forbidCards.push(maxCard + 1)
         }
-
         if (minCard % 10 > 1) {
           this.forbidCards.push(minCard - 1)
         }
