@@ -722,7 +722,7 @@ class TableState implements Serializable {
       flag = true;
     }
 
-    console.warn("wanCount-%s, ziCount-%s", wanCount, ziCount);
+    console.warn("wanCount-%s, ziCount-%s, zimo-%s, jiepao-%s", wanCount, ziCount, isZiMo, isJiePao);
 
     return flag && (isZiMo || isJiePao);
   }
@@ -768,6 +768,8 @@ class TableState implements Serializable {
     if (wanCount > 0 && ziCount > 0) {
       flag = true;
     }
+
+    console.warn("wanCount-%s, ziCount-%s, zimo-%s, jiepao-%s", wanCount, ziCount, isZiMo, isJiePao);
 
     return flag && (isZiMo || isJiePao);
   }
