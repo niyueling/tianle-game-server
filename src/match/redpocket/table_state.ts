@@ -559,7 +559,7 @@ class TableState implements Serializable {
       const nextCard = await this.consumeCard(this.zhuang);
       this.zhuang.cards[nextCard]++;
       this.cardTypes = await this.getCardTypes(this.zhuang, 1);
-      console.warn("cardTypes-%s, nextCard-%s", JSON.stringify(this.cardTypes), nextCard);
+      // console.warn("cardTypes-%s, nextCard-%s", JSON.stringify(this.cardTypes), nextCard);
       this.zhuang.cards[nextCard]--;
       const msg = this.zhuang.takeCard(this.turn, nextCard, false, false,
         {
@@ -590,11 +590,11 @@ class TableState implements Serializable {
 
   async getCardTypesByHu(player, type = 1) {
     const cardTypes = await CardTypeModel.find({gameType: GameType.redpocket});
-    console.warn("cardTypes-%s", JSON.stringify(cardTypes));
     let cardType = {...cardTypes[0]}; // 创建一个新的对象，其属性与cardTypes[0]相同
     cardType.multiple = type === 1 ? 2 : 1;
     cardType.cardId = -1;
     cardType.cardName = "平胡";
+    console.warn(" begin cardType-%s", JSON.stringify(cardTypes));
 
     for (let i = 0; i < cardTypes.length; i++) {
       // 清一色
