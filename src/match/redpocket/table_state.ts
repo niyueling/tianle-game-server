@@ -540,7 +540,6 @@ class TableState implements Serializable {
 
   async fapai(payload) {
     this.shuffle()
-    this.sleepTime = 500;
     this.caishen = [Enums.slotNoCard];
     const restCards = this.remainCards - (this.rule.playerCount * 7);
 
@@ -573,11 +572,7 @@ class TableState implements Serializable {
       this.stateData = {msg, da: this.zhuang, card: nextCard}
     }
 
-    if (this.sleepTime === 0) {
-      await nextDo()
-    } else {
-      setTimeout(nextDo, this.sleepTime)
-    }
+    await nextDo();
   }
 
   async getRoomMultiple(player) {
