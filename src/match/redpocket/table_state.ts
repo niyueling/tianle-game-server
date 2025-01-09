@@ -590,11 +590,11 @@ class TableState implements Serializable {
 
   async getCardTypesByHu(player, type = 1) {
     const cardTypes = await CardTypeModel.find({gameType: GameType.redpocket});
-    let cardType = {...cardTypes[0]}; // 创建一个新的对象，其属性与cardTypes[0]相同
+    let cardType = cardTypes[0]; // 创建一个新的对象，其属性与cardTypes[0]相同
     cardType.multiple = type === 1 ? 2 : 1;
     cardType.cardId = -1;
     cardType.cardName = "平胡";
-    console.warn(" begin cardType-%s", JSON.stringify(cardTypes));
+    console.warn(" begin cardType-%s", JSON.stringify(cardType));
 
     for (let i = 0; i < cardTypes.length; i++) {
       // 清一色
@@ -645,7 +645,7 @@ class TableState implements Serializable {
         }
       }
 
-      console.warn("cardType-%s", JSON.stringify(cardTypes));
+      console.warn("cardType-%s", JSON.stringify(cardType));
     }
 
     return cardType;
