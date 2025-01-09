@@ -16,7 +16,7 @@ export function lobbyQueueNameFrom(gameType: string) {
   return `${gameType}Lobby`
 }
 
-const allGameName = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj, GameType.xmmj, GameType.ddz, GameType.zd, GameType.guandan]
+const allGameName = [GameType.mj, GameType.xueliu, GameType.guobiao, GameType.pcmj, GameType.xmmj, GameType.ddz, GameType.zd, GameType.guandan, GameType.redpocket]
 
 async function playerCanInClubRoom(player, clubId, gameType) {
 
