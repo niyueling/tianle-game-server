@@ -559,6 +559,7 @@ class TableState implements Serializable {
       const nextCard = await this.consumeCard(this.zhuang);
       this.zhuang.cards[nextCard]++;
       this.cardTypes = await this.getCardTypes(this.zhuang, 1);
+      console.warn("cardTypes-%s, nextCard-%s", JSON.stringify(this.cardTypes), nextCard);
       this.zhuang.cards[nextCard]--;
       const msg = this.zhuang.takeCard(this.turn, nextCard, false, false,
         {
