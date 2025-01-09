@@ -594,7 +594,6 @@ class TableState implements Serializable {
     cardType.multiple = type === 1 ? 2 : 1;
     cardType.cardId = -1;
     cardType.cardName = "平胡";
-    console.warn(" begin cardType-%s", JSON.stringify(cardType));
 
     for (let i = 0; i < cardTypes.length; i++) {
       // 清一色
@@ -645,7 +644,7 @@ class TableState implements Serializable {
         }
       }
 
-      console.warn("list cardType-%s", JSON.stringify(cardType));
+      console.warn("list cardType-%s", JSON.stringify(cardTypes[i]));
     }
 
     console.warn("end cardType-%s", JSON.stringify(cardType));
