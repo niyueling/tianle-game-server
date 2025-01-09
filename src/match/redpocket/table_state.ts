@@ -722,6 +722,8 @@ class TableState implements Serializable {
       flag = true;
     }
 
+    console.warn("wanCount-%s, ziCount-%s", wanCount, ziCount);
+
     return flag && (isZiMo || isJiePao);
   }
 
