@@ -2,7 +2,7 @@ import {ConsumeLogType, GameType, RobotStep} from "@fm/common/constants";
 import * as config from '../../config'
 import {RobotMangerModel} from '../../database/models/robotManager';
 import {service} from "../../service/importService";
-import { RobotRmqProxy } from "./robotRmqProxy";
+import {RobotRmqProxy} from "./robotRmqProxy";
 import Enums from "../majiang/enums";
 // @ts-ignore
 import {pick} from "lodash";
@@ -216,6 +216,10 @@ export class NewRobotManager {
           await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
             randomPlayer.gold, `机器人开局设置游戏豆:${this.room._id}`);
 
+          await randomPlayer.save();
+        } else if (this.room.gameRule.gameType === GameType.redpocket) {
+          const randomPlayer = await service.playerService.getPlayerModel(p._id);
+          randomPlayer.redPocket = service.utils.randomIntBetweenNumber(500, 3000);
           await randomPlayer.save();
         } else {
           // 金豆过多或者金豆不足，则离开房间
@@ -489,7 +493,7 @@ export class NewRobotManager {
       this.waitPublicRobotSecond = 0;
       this.waitPublicRobot = 0;
 
-      const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id, this.room.game.rule.currency);
+      const model = await service.playerService.getRobot(this.room.gameRule.categoryId, this.room._id, this.room.game.rule.currency, this.room.game.rule.gameType);
       const robotProxy = await this.createProxy(model._id.toString());
       robotProxy.seatIndex = i;
       robotProxy.isPublicRobot = true;

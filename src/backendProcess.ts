@@ -2,7 +2,6 @@ import * as rabbitMq from 'amqplib'
 import {Channel, Connection} from 'amqplib'
 import * as winston from 'winston'
 import * as config from "./config";
-import * as redis from 'redis'
 import Database from './database/database'
 import {saveRoomDetail} from "./database/models/roomDetail";
 import {saveRoomInfo} from "./database/models/roomInfo";
@@ -262,10 +261,10 @@ export class BackendProcess {
 
     // 检查金豆
     const resp = await this.lobby.isRoomLevelCorrect(playerModel, rule);
-    if (resp.isMoreRuby) {
+    if (resp.isMoreRuby && room.rule.ro.gameType !== GameType.redpocket) {
       return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldInsufficient}, playerRouteKey);
     }
-    if (resp.isUpper) {
+    if (resp.isUpper && room.rule.ro.gameType !== GameType.redpocket) {
       return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.goldIsHigh}, playerRouteKey);
     }
 

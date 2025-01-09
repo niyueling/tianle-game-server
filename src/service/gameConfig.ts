@@ -3,6 +3,7 @@ import GoodsLive from "../database/models/goodsLive";
 import BaseService from "./base";
 import {service} from "./importService";
 import Enums from "../match/majiang/enums";
+import {GameType} from "@fm/common/constants";
 
 export default class GameConfig extends BaseService {
 
@@ -92,21 +93,28 @@ export default class GameConfig extends BaseService {
 
   // 检查房间是否需要升级
   async rubyRequired(playerId, rule) {
-    const conf = await service.gameConfig.getPublicRoomCategoryByCategory(rule.categoryId);
-    if (!conf) {
-      // 配置错了，继续玩吧
-      return {isUpgrade: false, isNeedRuby: false};
+    if (rule.gameType !== GameType.redpocket) {
+      const conf = await service.gameConfig.getPublicRoomCategoryByCategory(rule.categoryId);
+      if (!conf) {
+        // 配置错了，继续玩吧
+        return {isUpgrade: false, isNeedRuby: false};
+      }
+
+      const model = await service.playerService.getPlayerModel(playerId);
+      // 房间要升级
+      const isUpgrade = conf.maxAmount !== -1 && (rule.currency === Enums.goldCurrency ? model.gold > conf.maxAmount : model.tlGold > conf.maxAmount);
+      // 需要更金豆
+      const isNeedRuby = rule.currency === Enums.goldCurrency ? model.gold < conf.minAmount : model.tlGold < conf.minAmount;
+      // 是否复活成功
+      const isResurrection = Enums.goldCurrency ? model.gold <= 0 : model.tlGold <= 0;
+
+      return {isUpgrade, isNeedRuby, isResurrection, minAmount: conf.minAmount, conf}
     }
 
+    // 红包游戏
     const model = await service.playerService.getPlayerModel(playerId);
-    // 房间要升级
-    const isUpgrade = conf.maxAmount !== -1 && (rule.currency === Enums.goldCurrency ? model.gold > conf.maxAmount : model.tlGold > conf.maxAmount);
-    // 需要更金豆
-    const isNeedRuby = rule.currency === Enums.goldCurrency ? model.gold < conf.minAmount : model.tlGold < conf.minAmount;
-    // 是否复活成功
-    const isResurrection = Enums.goldCurrency ? model.gold <= 0 : model.tlGold <= 0;
+    return {isUpgrade: model.redPocket > 3000, isNeedRuby: model.redPocket < 500, isResurrection: false, minAmount: 0, conf: {}}
 
-    return {isUpgrade, isNeedRuby, isResurrection, minAmount: conf.minAmount, conf}
   }
 
   // 复活礼包倍数

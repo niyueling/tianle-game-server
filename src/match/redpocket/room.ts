@@ -517,32 +517,7 @@ class Room extends RoomBase {
   }
 
   async reconnect(reconnectPlayer) {
-    // console.warn("room reconnect")
-    const disconnectedItem = this.disconnected.find(x => eqlModelId(x[0], reconnectPlayer.model._id.toString()))
-    reconnectPlayer.room = this
-    this.arrangePos(reconnectPlayer, true)
-    this.mergeOrder()
-    if (disconnectedItem) {
-      this.removeDisconnected(disconnectedItem)
-    }
-
-    if (!this.gameState) {
-      console.warn("gameState is dissolve");
-      if (this.isPublic) {
-        await this.forceDissolve();
-        return ;
-      } else {
-        await this.announcePlayerJoin(reconnectPlayer);
-      }
-    }
-    // Fixme the index may be wrong
-    const i = this.snapshot.findIndex(p => p.model._id.toString() === reconnectPlayer.model._id.toString())
-    await this.broadcastRejoin(reconnectPlayer)
-    if (this.dissolveTimeout) {
-      this.updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer);
-    }
-
-    this.emit('reconnect', reconnectPlayer, i);
+    await this.forceDissolve();
 
     return true;
   }

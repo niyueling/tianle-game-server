@@ -8,7 +8,7 @@ import PlayerRoomRuby from "../database/models/playerRoomRuby";
 import BaseService from "./base";
 import {service} from "./importService";
 import GoldRecord from "../database/models/goldRecord";
-import {ConsumeLogType} from "@fm/common/constants";
+import {ConsumeLogType, GameType} from "@fm/common/constants";
 import UserRechargeOrder from "../database/models/userRechargeOrder";
 import CombatGain from "../database/models/combatGain";
 import Enums from "../match/majiang/enums";
@@ -46,44 +46,60 @@ export default class PlayerService extends BaseService {
   }
 
   // 获取机器人
-  async getRobot(categoryId, roomId, currency) {
+  async getRobot(categoryId, roomId, currency, gameType) {
     if (!currency) {
       currency = Enums.goldCurrency;
     }
+
+    let gold = 0;
+
     // 金豆
-    const rubyRequired = await service.gameConfig.getPublicRoomCategoryByCategory(categoryId);
-    if (!rubyRequired) {
-      throw new Error('房间错误')
+    if (gameType !== GameType.redpocket) {
+      const rubyRequired = await service.gameConfig.getPublicRoomCategoryByCategory(categoryId);
+      if (!rubyRequired) {
+        throw new Error('房间错误')
+      }
+
+      // 如果场次最高无限制，则最高携带金豆为门槛*10
+      if (rubyRequired.maxAmount === -1) {
+        rubyRequired.maxAmount = rubyRequired.minAmount * 10;
+      }
+      // 最高为随机下限的 20% - 30%
+      const rand = service.utils.randomIntBetweenNumber(10, 100) / 100;
+      const max = rubyRequired.minAmount + Math.floor(rand * (rubyRequired.maxAmount - rubyRequired.minAmount));
+      gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
+
+      const result = await Player.aggregate([
+        {$match: {robot: true, isGame: false }},
+        {$sample: { size: 1}}
+      ]);
+
+      const randomPlayer = await this.getPlayerModel(result[0]._id);
+      // 重新随机设置 ruby
+      if (currency === Enums.goldCurrency) {
+        randomPlayer.gold = gold;
+      }
+      if (currency === Enums.tlGoldCurrency) {
+        randomPlayer.tlGold = gold;
+      }
+
+      // 记录金豆日志
+      await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
+        randomPlayer.gold, `机器人开局设置金豆:${roomId}`);
+
+      await randomPlayer.save();
+      return randomPlayer;
     }
 
-    // 如果场次最高无限制，则最高携带金豆为门槛*10
-    if (rubyRequired.maxAmount === -1) {
-      rubyRequired.maxAmount = rubyRequired.minAmount * 10;
-    }
-    // 最高为随机下限的 20% - 30%
-    const rand = service.utils.randomIntBetweenNumber(10, 100) / 100;
-    const max = rubyRequired.minAmount + Math.floor(rand * (rubyRequired.maxAmount - rubyRequired.minAmount));
-    const gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
+    // 红包麻将
     const result = await Player.aggregate([
       {$match: {robot: true, isGame: false }},
       {$sample: { size: 1}}
     ]);
 
+    const redPocket = service.utils.randomIntBetweenNumber(500, 3000);
     const randomPlayer = await this.getPlayerModel(result[0]._id);
-    // 重新随机设置 ruby
-    if (currency === Enums.goldCurrency) {
-      randomPlayer.gold = gold;
-    }
-    if (currency === Enums.tlGoldCurrency) {
-      randomPlayer.tlGold = gold;
-    }
-
-    console.warn("shortId-%s, currency-%s gold-%s", randomPlayer.shortId, currency, randomPlayer.gold);
-    //
-    // 记录金豆日志
-    await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,
-      randomPlayer.gold, `机器人开局设置金豆:${roomId}`);
-
+    randomPlayer.redPocket = redPocket;
     await randomPlayer.save();
     return randomPlayer;
   }
