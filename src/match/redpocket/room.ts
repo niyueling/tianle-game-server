@@ -791,6 +791,8 @@ class Room extends RoomBase {
     this.removeReadyPlayer(p._id.toString())
     this.clearScore(player._id.toString())
 
+    this.forceDissolve();
+
     return true
   }
 

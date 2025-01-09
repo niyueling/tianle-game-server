@@ -72,6 +72,8 @@ export class PublicRoom extends Room {
     this.broadcast('room/leaveReply', {ok: true, data: {playerId: player._id.toString(), roomId: this._id, location: "gb.publicRoom"}})
     this.clearScore(player.model._id.toString())
 
+    this.forceDissolve();
+
     return true
   }
 
