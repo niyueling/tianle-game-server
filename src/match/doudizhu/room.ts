@@ -17,7 +17,7 @@ import Game from './game'
 import NormalTable from "./normalTable"
 import {RobotManager} from "./robotManager";
 import Table from "./table"
-import {GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
+import {GameType, RobotStep, shopPropType, TianleErrorCode} from "@fm/common/constants";
 import {service} from "../../service/importService";
 import GameCategory from "../../database/models/gameCategory";
 import CombatGain from "../../database/models/combatGain";
@@ -27,6 +27,7 @@ import RoomTimeRecord from "../../database/models/roomTimeRecord";
 import PlayerMedal from "../../database/models/PlayerMedal";
 import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
 import RoomFeeConfig from "../../database/models/roomFeeConfig";
+import PlayerProp from "../../database/models/PlayerProp";
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -402,6 +403,7 @@ class Room extends RoomBase {
   async joinMessageFor(newJoinPlayer): Promise<any> {
     let medalId = null;
     let headerBorderId = null;
+    let emojiIds = [];
     // 获取用户称号
     const playerMedal = await PlayerMedal.findOne({playerId: newJoinPlayer._id, isUse: true});
     if (playerMedal && (playerMedal.times === -1 || playerMedal.times > new Date().getTime())) {
@@ -414,7 +416,16 @@ class Room extends RoomBase {
       headerBorderId = playerHeadBorder.propId;
     }
 
-    const newModel = {...newJoinPlayer.model, medalId, headerBorderId};
+    // 获取用户表情
+    const playerEmojis = await PlayerProp.find({playerId: newJoinPlayer._id, propType: shopPropType.emoji});
+    for (let i = 0; i < playerEmojis.length; i++) {
+      const playerEmoji = playerEmojis[i];
+      if (playerEmoji && (playerEmoji.times === -1 || playerEmoji.times > new Date().getTime())) {
+        emojiIds.push(playerEmoji.propId);
+      }
+    }
+
+    const newModel = {...newJoinPlayer.model, medalId, headerBorderId, emojiIds};
     const index = this.players.findIndex(p => p && !p.isRobot());
     return {
       index: this.indexOf(newJoinPlayer),
