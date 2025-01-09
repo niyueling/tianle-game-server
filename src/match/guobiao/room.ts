@@ -588,6 +588,7 @@ class Room extends RoomBase {
       model: newModel,
       medalId,
       headerBorderId,
+      emojiIds,
       startIndex: index,
       isGameRunning: !!this.gameState,
       isZhuang: newJoinPlayer.zhuang,

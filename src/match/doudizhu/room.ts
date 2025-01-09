@@ -430,6 +430,9 @@ class Room extends RoomBase {
     return {
       index: this.indexOf(newJoinPlayer),
       model: newModel,
+      medalId,
+      headerBorderId,
+      emojiIds,
       _id: this._id,
       startIndex: index,
       ip: newJoinPlayer.getIpAddress(),

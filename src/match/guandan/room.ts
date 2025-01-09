@@ -482,7 +482,9 @@ class Room extends RoomBase {
       model: newModel,
       ip: newJoinPlayer.getIpAddress(),
       location: newJoinPlayer.location,
-
+      medalId,
+      headerBorderId,
+      emojiIds,
       owner: this.ownerId,
       startIndex: index,
       gameState: this.gameState ? this.gameState.state : null,

@@ -593,6 +593,7 @@ class Room extends RoomBase {
       model: newModel,
       medalId,
       headerBorderId,
+      emojiIds,
       startIndex: index,
       isWaitRecharge: this.waitRechargeLists.includes(newJoinPlayer._id.toString()),
       gameWaitRecharge: this.isWaitRecharge,
