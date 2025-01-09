@@ -540,7 +540,7 @@ class TableState implements Serializable {
 
   async fapai(payload) {
     this.shuffle()
-    this.sleepTime = 1500;
+    this.sleepTime = 500;
     this.caishen = [Enums.slotNoCard];
     const restCards = this.remainCards - (this.rule.playerCount * 7);
 
