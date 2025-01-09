@@ -643,11 +643,7 @@ class TableState implements Serializable {
           cardType = cardTypes[i];
         }
       }
-
-      // console.warn("name-%s cardType-%s", cardTypes[i].cardName, JSON.stringify(cardTypes[i]));
     }
-
-    // console.warn("end cardType-%s", JSON.stringify(cardType));
 
     return cardType;
   }
@@ -762,7 +758,7 @@ class TableState implements Serializable {
         wanCount++;
       }
 
-      if (cards[i] > 0 && cards[i] >= Enums.zhong && cards[i] <= Enums.bai) {
+      if (cards[i] > 0 && i >= Enums.zhong && i <= Enums.bai) {
         ziCount++;
       }
     }
