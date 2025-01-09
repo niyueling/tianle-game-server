@@ -3657,21 +3657,22 @@ class TableState implements Serializable {
         await player.sendMessage('game/startDepositReply', {ok: false, data: {}})
       }
     })
-    player.on(Enums.chi, async (turn, card, shunZiList) => {
-      const cardList = shunZiList.filter(value => value !== card);
+    player.on(Enums.chi, async (msg) => {
+      console.warn("msg-%s", JSON.stringify(msg));
+      const cardList = msg.combol.filter(value => value !== msg.card);
       const otherCard1 = cardList[0]
       const otherCard2 = cardList[1]
       if (this.state !== stateWaitAction) {
-        player.emitter.emit(Enums.guo, turn, card);
+        player.emitter.emit(Enums.guo, this.turn, msg.card);
         return
       }
       if (this.stateData[Enums.chi] && this.stateData[Enums.chi]._id.toString() !== player._id.toString()) {
-        player.emitter.emit(Enums.guo, turn, card);
+        player.emitter.emit(Enums.guo, this.turn, msg.card);
         return
       }
 
       this.actionResolver.requestAction(player, 'chi', async () => {
-        const ok = await player.chiPai(card, otherCard1, otherCard2, this.lastDa);
+        const ok = await player.chiPai(msg.card, otherCard1, otherCard2, this.lastDa);
         if (ok) {
           this.turn++;
           this.state = stateWaitDa;
@@ -3683,25 +3684,25 @@ class TableState implements Serializable {
 
           player.sendMessage('game/chiReply', {ok: true, data: {
               turn: this.turn,
-              card,
+              card: msg.card,
               from,
-              suit: shunZiList,
+              suit: msg.combol,
               gang: gangSelection.length > 0,
               gangSelection,
               forbidCards: player.forbidCards
             }});
           this.room.broadcast('game/oppoChi', {ok: true, data: {
-              card,
-              turn,
+              card: msg.card,
+              turn: this.turn,
               from,
               index,
-              suit: shunZiList,
+              suit: msg.combol,
             }}, player.msgDispatcher);
         } else {
-          player.emitter.emit(Enums.guo, turn, card);
+          player.emitter.emit(Enums.guo, this.turn, msg.card);
         }
       }, () => {
-        player.emitter.emit(Enums.guo, turn, card);
+        player.emitter.emit(Enums.guo, this.turn, msg.card);
       })
 
       await this.actionResolver.tryResolve()
