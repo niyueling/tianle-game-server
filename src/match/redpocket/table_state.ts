@@ -1749,6 +1749,7 @@ class TableState implements Serializable {
       const failModel = await service.playerService.getPlayerModel(from._id.toString());
       failModel.redPocket -= gameRedPocket;
       await failModel.save();
+      this.room.updateResource2Client(from);
       from.balance = -gameRedPocket;
       await this.saveRedPocketRecord(from._id, -gameRedPocket)
     } else {
@@ -1759,6 +1760,7 @@ class TableState implements Serializable {
           const failModel = await service.playerService.getPlayerModel(p._id.toString());
           failModel.redPocket -= gameRedPocket;
           await failModel.save();
+          this.room.updateResource2Client(p);
           p.balance = -gameRedPocket;
           await this.saveRedPocketRecord(p._id, -gameRedPocket)
         }
