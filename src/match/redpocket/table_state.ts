@@ -596,6 +596,7 @@ class TableState implements Serializable {
     cardType.cardName = "平胡";
 
     for (let i = 0; i < cardTypes.length; i++) {
+      console.warn("cardId-%s, cardName-%s", cardTypes[i].cardId, cardTypes[i].cardName);
       // 清一色
       if (cardTypes[i].cardId === 163) {
         const status = await this.checkQingYiSe(player, type);
