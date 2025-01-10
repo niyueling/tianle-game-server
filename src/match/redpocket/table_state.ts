@@ -597,7 +597,7 @@ class TableState implements Serializable {
 
     for (let i = 0; i < cardTypes.length; i++) {
       // 清一色
-      if (cardTypes[i].cardId === 154) {
+      if (cardTypes[i].cardId === 163) {
         const status = await this.checkQingYiSe(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
@@ -605,7 +605,7 @@ class TableState implements Serializable {
       }
 
       // 混一色
-      if (cardTypes[i].cardId === 155) {
+      if (cardTypes[i].cardId === 164) {
         const status = await this.checkHunYiSe(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
@@ -613,7 +613,7 @@ class TableState implements Serializable {
       }
 
       // 清一色碰碰胡
-      if (cardTypes[i].cardId === 156) {
+      if (cardTypes[i].cardId === 165) {
         const status = await this.checkQingYiSeDuiDuiHu(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
@@ -621,7 +621,7 @@ class TableState implements Serializable {
       }
 
       // 混一色碰碰胡
-      if (cardTypes[i].cardId === 157) {
+      if (cardTypes[i].cardId === 166) {
         const status = await this.checkHunYiSeDuiDuiHu(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
@@ -629,7 +629,7 @@ class TableState implements Serializable {
       }
 
       // 小三元
-      if (cardTypes[i].cardId === 158) {
+      if (cardTypes[i].cardId === 167) {
         const status = await this.checkXiaoSanYuan(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
@@ -637,7 +637,7 @@ class TableState implements Serializable {
       }
 
       // 一条龙
-      if (cardTypes[i].cardId === 159) {
+      if (cardTypes[i].cardId === 168) {
         const status = await this.checkYiTiaoLong(player, type);
         if (status && cardTypes[i].multiple >= cardType.multiple) {
           cardType = cardTypes[i];
@@ -722,7 +722,7 @@ class TableState implements Serializable {
       flag = true;
     }
 
-    console.warn("wanCount-%s, ziCount-%s, zimo-%s, jiepao-%s", wanCount, ziCount, isZiMo, isJiePao);
+    console.warn("checkQingYiSe wanCount-%s, ziCount-%s, zimo-%s, jiepao-%s", wanCount, ziCount, isZiMo, isJiePao);
 
     return flag && (isZiMo || isJiePao);
   }
@@ -769,7 +769,7 @@ class TableState implements Serializable {
       flag = true;
     }
 
-    console.warn("wanCount-%s, ziCount-%s, zimo-%s, jiepao-%s", wanCount, ziCount, isZiMo, isJiePao);
+    console.warn("checkHunYiSe wanCount-%s, ziCount-%s, zimo-%s, jiepao-%s", wanCount, ziCount, isZiMo, isJiePao);
 
     return flag && (isZiMo || isJiePao);
   }
