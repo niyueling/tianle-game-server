@@ -34,7 +34,7 @@ const schema = new Schema({
   madButcherCount: {type: Number, default: 0}, // 累计使认输人数
   goVillageCount: {type: Number, default: 0}, // 累计对局结束破产次数（1）
   juRank: {type: Number, default: 1}, // 胜率
-  redPocket: {type: Number, default: 0}, // 红包
+  redPocket: {type: Number, default: 200}, // 红包
   gangCount: {type: Number, default: 0}, // 杠牌次数
   activityTimes: {type: Number, default: 0}, // 在线时长
   turntableTimes: {type: Number, default: 10}, // 转盘次数
