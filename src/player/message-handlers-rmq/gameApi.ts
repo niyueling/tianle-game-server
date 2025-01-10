@@ -256,7 +256,7 @@ export class GameApi extends BaseApi {
     }
 
     // 挽回红包损失
-    player.redPocket += Math.abs(record.redPocket);
+    player.redPocket = (player.redPocket + Math.abs(record.redPocket)).toFixed(2);
     await player.save();
     await this.player.updateResource2Client();
     this.replySuccess({redPocket: Math.abs(record.redPocket)})
@@ -288,7 +288,7 @@ export class GameApi extends BaseApi {
     await record.save();
 
     // 挽回红包损失
-    player.redPocket += record.redPocket;
+    player.redPocket = (player.redPocket + record.redPocket).toFixed(2);
     await player.save();
     await this.player.updateResource2Client();
 
@@ -318,7 +318,7 @@ export class GameApi extends BaseApi {
     await record.save();
 
     // 挽回红包损失
-    player.redPocket += Math.abs(record.redPocket);
+    player.redPocket = (player.redPocket + Math.abs(record.redPocket)).toFixed(2);
     await player.save();
     await this.player.updateResource2Client();
 
