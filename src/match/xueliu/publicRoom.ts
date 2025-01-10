@@ -213,7 +213,7 @@ export class PublicRoom extends Room {
         await service.playerService.logGoldConsume(p._id, ConsumeLogType.payGameFee, -conf.roomRate,
           p.model.gold, `扣除房费`);
         // 通知客户端更新金豆
-        this.updateResource2Client(p)
+        await this.updateResource2Client(p)
       }
     }
   }

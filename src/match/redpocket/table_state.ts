@@ -1750,7 +1750,7 @@ class TableState implements Serializable {
     // 挽回红包损失
     player.redPocket = (player.redPocket + Math.abs(record.redPocket)).toFixed(2);
     await player.save();
-    this.room.updateResource2Client(p);
+    await this.room.updateResource2Client(p);
 
     return p.sendMessage("game/watchAdveraAditionalMultipleRedPocketReply", {ok: true, data: { redPocket: Math.abs(record.redPocket) }});
   }
@@ -1774,7 +1774,7 @@ class TableState implements Serializable {
       from.balance = parseFloat((-gameRedPocket * 10).toFixed(2));
       failModel.redPocket = (failModel.redPocket + from.balance).toFixed(2);
       await failModel.save();
-      this.room.updateResource2Client(from);
+      await this.room.updateResource2Client(from);
 
       await this.saveRedPocketRecord(from._id, from.balance)
     } else {
@@ -1786,7 +1786,7 @@ class TableState implements Serializable {
           const failModel = await service.playerService.getPlayerModel(p._id.toString());
           failModel.redPocket = (failModel.redPocket + p.balance).toFixed(2);
           await failModel.save();
-          this.room.updateResource2Client(p);
+          await this.room.updateResource2Client(p);
 
           await this.saveRedPocketRecord(p._id, p.balance);
         }

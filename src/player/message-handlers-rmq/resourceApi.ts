@@ -42,7 +42,7 @@ export class ResourceApi extends BaseApi {
       await service.playerService.logGemConsume(model._id, ConsumeLogType.gemForRuby, -gem2ExchangeNum, model.gem,
         reason);
       this.player.model = model;
-      this.player.updateResource2Client();
+      await this.player.updateResource2Client();
     }
     this.replySuccessWithName('resource/exchange', '', {message: reason})
   }

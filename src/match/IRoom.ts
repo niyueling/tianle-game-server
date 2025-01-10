@@ -852,7 +852,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     this.payUseGem(player, config.game.payForReshuffle, this._id, ConsumeLogType.reshuffleCard);
     player.sendMessage('room/addShuffleRely', {ok: true, data: {seatIndex: this.indexOf(player), diamondFee: config.game.payForReshuffle}})
 
-    this.updateResource2Client(player);
+    await this.updateResource2Client(player);
   }
 
   playShuffle() {
@@ -992,7 +992,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     const model = await service.qian.saveBlessLevel(player.model.shortId, this._id, index + 1);
     this.blessLevel[player.model.shortId] = model.blessLevel;
     this.replySuccess(player, key, { index: blessIndex, blessLevel: model.blessLevel });
-    this.updateResource2Client(player);
+    await this.updateResource2Client(player);
     // 通知祈福等级更新
     this.broadcast('game/updateBlessLevel', {index: this.indexOf(player), blessLevel: model.blessLevel })
   }
@@ -1006,8 +1006,12 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   // 转发，通知客户端
-  updateResource2Client(player) {
-    player.sendMessage('resource/update', {ok: true, data: {gold: player.model.gold, diamond: player.model.diamond, tlGold: player.model.tlGold, redPocket: player.model.redPocket}})
+  async updateResource2Client(player) {
+    const model = await service.playerService.getPlayerModel(player._id);
+    player.sendMessage('resource/update', {
+      ok: true,
+      data: {gold: model.gold, diamond: model.diamond, tlGold: model.tlGold, redPocket: model.redPocket}
+    })
   }
 
   async payRubyForStart() {

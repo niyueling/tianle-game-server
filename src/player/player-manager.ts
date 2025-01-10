@@ -125,25 +125,6 @@ class PlayerManager {
   get onLinePlayers() {
     return this.onlinePlayers
   }
-
-  addRuby(playerId, ruby) {
-    const player = this.getPlayer(playerId)
-    let delta = ruby
-    if (player) {
-      let newRuby = player.model.ruby + ruby;
-      if (newRuby < 0) {
-        newRuby = 0
-        delta = -player.model.ruby
-      }
-      player.model.ruby = newRuby
-      player.updateResource2Client()
-    }
-    PlayerModel.update({_id: playerId}, {$inc: {ruby: delta}}, err => {
-        if (err) {
-          logger.error(err);
-        }
-      });
-  }
 }
 
 export default PlayerManager;

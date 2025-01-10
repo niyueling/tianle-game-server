@@ -228,7 +228,7 @@ export class PublicRoom extends Room {
         const currency = await this.PlayerGoldCurrency(p._id);
         await service.playerService.logGoldConsume(p._id, ConsumeLogType.payGameFee, -conf.roomRate, currency, `扣除房费`);
         // 通知客户端更新金豆
-        this.updateResource2Client(p)
+        await this.updateResource2Client(p)
       }
     }
   }

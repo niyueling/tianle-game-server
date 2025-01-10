@@ -78,7 +78,7 @@ export class GoodsApi extends BaseApi {
       this.player.model.gold, `钻石兑换金豆`);
 
     this.replySuccess({diamond: gem2ExchangeNum, gold, goldFormat: temp});
-    this.player.updateResource2Client();
+    await this.player.updateResource2Client();
   }
 
   // 安卓虚拟支付
@@ -228,7 +228,7 @@ export class GoodsApi extends BaseApi {
       config: goodInfo
     });
 
-    this.player.updateResource2Client();
+    await this.player.updateResource2Client();
 
     return this.replySuccess(record);
   }
@@ -394,7 +394,7 @@ export class GoodsApi extends BaseApi {
     await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveGold, exchangeConf.gold, model.gold, `购买复活礼包`);
 
     this.replySuccess({diamond: exchangeConf.diamond, gold: exchangeConf.gold, currency: message.currency});
-    this.player.updateResource2Client();
+    await this.player.updateResource2Client();
   }
 
   // 下一局金豆礼包
@@ -473,7 +473,7 @@ export class GoodsApi extends BaseApi {
     await service.playerService.logGoldConsume(model._id, ConsumeLogType.payReviveTlGold, exchangeConf.gold, model.gold, `兑换天乐币`);
 
     this.replySuccess({tlGold: exchangeConf.tlGold, gold: exchangeConf.gold});
-    this.player.updateResource2Client();
+    await this.player.updateResource2Client();
   }
 
   // 领取复活专享包
@@ -528,7 +528,7 @@ export class GoodsApi extends BaseApi {
     await service.playerService.logGoldConsume(model._id, ConsumeLogType.receiveReviveSupplement, exchangeConf.todayReceiveGold, model.tlGold, `领取复活专享补充包`);
 
     this.replySuccess({tlGold: exchangeConf.todayReceiveGold});
-    this.player.updateResource2Client();
+    await this.player.updateResource2Client();
   }
 
   // 复活专享包列表
