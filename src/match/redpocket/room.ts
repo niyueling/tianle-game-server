@@ -411,17 +411,17 @@ class Room extends RoomBase {
       juShu: this.game.juIndex,
       players: players.map(p => p.model._id),
       playersInfo: players.map(player => (
-        {model: pick(player.model, ['name', 'headImgUrl', 'sex', 'gold', 'shortId'])}
+        {model: pick(player.model, ['nickname', 'avatar', 'redpocket', 'shortId'])}
       )),
       record: playerArray,
       game: {
         base: this.currentBase, caiShen: table.caishen, roomId: this._id,
-        rule: this.rule.ro, niaos: table.niaos
+        rule: this.rule.ro
       },
       roomId: this._id,
       winner,
       states,
-      type: 'guobiao',
+      type: GameType.redpocket,
       events: table.recorder.getEvents()
     })
   }
@@ -441,7 +441,7 @@ class Room extends RoomBase {
     const roomRecord = {
       players, scores,
       roomNum: this._id, room: this.uid,
-      category: 'guobiao',
+      category: GameType.redpocket,
       club: null,
       creatorId: this.creator.model.shortId || 0,
       createAt: Date.now(),
@@ -465,7 +465,7 @@ class Room extends RoomBase {
             players, scores,
             roomNum: this._id,
             room: this.uid,
-            category: 'guobiao',
+            category: GameType.redpocket,
             creatorId: this.creator.model.shortId,
             createAt: Date.now(),
             rule: this.rule.getOriginData(),
@@ -936,35 +936,6 @@ class Room extends RoomBase {
     return this.dissolveReqInfo;
   }
 
-  recDissolvePlayerInfo(player) {
-    const item = this.dissolveReqInfo.find(x => {
-      return x._id === player.model._id;
-    });
-    if (item) {
-      if (item.type === 'agree_offline') {
-        item.type = 'agree';
-      } else if (item.type !== 'originator') {
-        item.type = 'waitConfirm';
-      }
-    }
-    this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime}, player);
-  }
-
-  updateReconnectPlayerDissolveInfoAndBroadcast(reconnectPlayer) {
-    const item = this.dissolveReqInfo.find(x => {
-      return x._id === reconnectPlayer.model._id.toString()
-    })
-    if (item) {
-      if (item.type === 'agree_offline') {
-        item.type = 'agree'
-      } else if (item.type !== 'originator') {
-        item.type = 'waitConfirm'
-      }
-    }
-    this.broadcast('room/dissolveReq',
-      {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
-  }
-
   updateDisconnectPlayerDissolveInfoAndBroadcast(player) {
     const item = this.dissolveReqInfo.find(x => {
       return x._id === player.model._id
@@ -979,41 +950,18 @@ class Room extends RoomBase {
     this.broadcast('room/dissolveReq', {dissolveReqInfo: this.dissolveReqInfo, startTime: this.dissolveTime})
   }
 
-  changeZhuang() {
-    this.lunZhuangCount -= 1
-  }
-
-  isRoomAllOver(): boolean {
-    return this.game.juShu < -1;
-  }
-
-  someoneOverLostLimit() {
-    return values(this.scoreMap).some(score => score <= this.rule.lostLimit)
-  }
-
-  async gameOver(nextZhuangId, states) {
+  async gameOver() {
     // 清除洗牌
     this.shuffleData = []
     this.clearReady()
     await this.delPlayerBless();
-    // 下一局
-    // await this.robotManager.nextRound();
 
     this.gameState.dissolve()
     this.gameState = null
     this.readyPlayers = [];
-    this.robotManager.model.step = RobotStep.waitRuby;
-
-    if (this.isRoomAllOver()) {
-      const message = this.allOverMessage()
-      this.broadcast('room/allOver', message)
-      this.players.forEach(x => x && this.leave(x))
-      this.emit('empty', this.disconnected)
-    }
   }
 
   allOverMessage(): any {
-
     const message = {players: {}, roomNum: this._id, juShu: this.game.juIndex, isClubRoom: this.clubMode, gameType: GameType.guobiao}
     this.snapshot
       .filter(p => p)
@@ -1043,22 +991,6 @@ class Room extends RoomBase {
     }
 
     return message
-  }
-
-  sortPlayer(zhuang) {
-    if (zhuang) {
-      const playersCopy = new Array(this.players.length)
-      const newOrders = new Array(this.players.length)
-
-      const zhuangIndex = this.players.indexOf(zhuang)
-      for (let i = 0; i < playersCopy.length; i++) {
-        const from = (zhuangIndex + i) % playersCopy.length
-        playersCopy[i] = this.players[from]
-        newOrders[i] = this.playersOrder[from]
-      }
-      this.players = playersCopy
-      this.playersOrder = newOrders
-    }
   }
 
   async init() {

@@ -1331,20 +1331,14 @@ class PlayerState implements Serializable {
 
     return {
       index,
-      score: this.juScore,
+      score: this.balance,
       cards,
-      niaoCount: this.niaoCount,
-      niaoCards: this.niaoCards,
       jieGangCount: this.gangFrom.length,
       anGangCount: this.eventCount('anGang'),
       buGangCount: this.eventCount('buGang'),
       fangGangCount: this.fangGangCount,
-      // 金豆房奖励
-      rubyReward: 0,
       events: {chiPengGang: this.events.chiPengGang},
-      model: this.model,
-      isBroke: false,
-      mvpTimes: 0,
+      model: this.model
     }
   }
 

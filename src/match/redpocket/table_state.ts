@@ -27,6 +27,8 @@ import PlayerCardTypeRecord from "../../database/models/playerCardTypeRecord";
 import * as config from "../../config"
 import RoomTimeRecord from "../../database/models/roomTimeRecord";
 import algorithm from "../../utils/algorithm";
+import WithdrawConfig from "../../database/models/withdrawConfig";
+import RoomRedPocketRecord from "../../database/models/roomRedpocketRecord";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1340,9 +1342,7 @@ class TableState implements Serializable {
               });
 
               const gameOverFunc = async () => {
-                const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-                const nextZhuang = this.nextZhuang()
-                await this.gameAllOver(states, [], nextZhuang);
+                await this.gameOver(this.players[from], player);
               }
 
               const huReply = async () => {
@@ -1417,9 +1417,7 @@ class TableState implements Serializable {
           });
 
           const gameOverFunc = async () => {
-            const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-            const nextZhuang = this.nextZhuang()
-            await this.gameAllOver(states, [], nextZhuang);
+            await this.gameOver(null, player);
           }
 
           const huReply = async () => {
@@ -1755,27 +1753,61 @@ class TableState implements Serializable {
     }
   }
 
-  checkPlayerSimpleCrdCount(player) {
-    const cards = player.cards.slice();
-    let count = 0;
+  async saveRedPocketRecord(playerId, amount) {
+    // 生成对局记录
+    await RoomRedPocketRecord.create({
+      roomId: this.room._id,
+      redPocket: amount,
+      playerId,
+      juIndex: this.room.game.juIndex,
+      cardTypes: this.cardTypes,
+      categoryId: this.room.gameRule.categoryId
+    })
+  }
 
-    for (let i = 0; i < cards.length; i++) {
-      if ([Enums.spring, Enums.summer, Enums.autumn, Enums.winter, Enums.mei, Enums.lan, Enums.zhu, Enums.ju].includes(i)) {
-        continue;
-      }
+  async gameOver(from, to) {
+    this.players.map((p) => {
+      p.balance = 0;
+    })
 
-      if (cards[i] === 1) {
-        count++;
+    const withdrawList = await WithdrawConfig.find({type: 2}).sort({amount: 1});
+    const withdrawConfig = withdrawList[0];
+    let winModel = await service.playerService.getPlayerModel(to._id.toString());
+
+    // 计算本局红包输赢
+    const gameRedPocket = (withdrawConfig.amount - winModel.redpocket) * 0.007;
+
+    // 点炮胡
+    if (from) {
+      from.balance = -gameRedPocket;
+      await this.saveRedPocketRecord(from._id, -gameRedPocket)
+    } else {
+      // 自摸胡
+      for (const p of this.players) {
+        // 扣除三家金币
+        if (p.model._id.toString() !== to.model._id.toString()) {
+          p.balance = -gameRedPocket;
+          await this.saveRedPocketRecord(p._id, -gameRedPocket)
+        }
       }
     }
 
-    return count;
+    to.balance = gameRedPocket;
+    await this.saveRedPocketRecord(to._id, -gameRedPocket);
+
+    const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
+    const nextZhuang = this.nextZhuang()
+    await this.gameAllOver(states, [], nextZhuang);
   }
 
   async gameAllOver(states, niaos, nextZhuang) {
+    if (this.state === stateGameOver) {
+      return ;
+    }
+
     this.state = stateGameOver;
 
-    const winner = this.players.filter(x => x.events.jiePao)[0]
+    const winner = this.players.filter(x => x.events.jiePao)[0];
 
     // 没胡牌 也没放冲
     if (winner) {
@@ -1809,51 +1841,22 @@ class TableState implements Serializable {
       await this.room.RoomScoreRecord(scores, players)
     }
 
-    // 更新战绩
-    for (let i = 0; i < states.length; i++) {
-      // 判断是否已经录入战绩
-      const exists = await CombatGain.count({
-        playerId: states[i].model._id,
-        uid: this.room._id,
-        juIndex: this.room.game.juIndex
-      });
-
-      if (!exists) {
-        const category = await GameCategory.findOne({_id: this.room.gameRule.categoryId}).lean();
-
-        await CombatGain.create({
-          uid: this.room._id,
-          room: this.room.uid,
-          juIndex: this.room.game.juIndex,
-          playerId: states[i].model._id,
-          gameName: "红包麻将",
-          caregoryName: category.title,
-          time: new Date(),
-          score: states[i].score
-        });
-      }
-    }
-
     const gameOverMsg = {
-      niaos,
       creator: this.room.creator.model._id,
       juShu: this.restJushu,
       juIndex: this.room.game.juIndex,
       states,
       gameType: GameType.redpocket,
-      ruleType: this.rule.ruleType,
       isPublic: this.room.isPublic,
-      caiShen: this.caishen,
-      base: this.room.currentBase
     }
 
     if (gameOverMsg.states.length > 0) {
-      await this.room.gameOver(nextZhuang._id.toString(), states)
+      await this.room.gameOver()
 
       const nextDo = async () => {
         this.room.broadcast('game/game-over', {ok: true, data: gameOverMsg})
       }
-      setTimeout(nextDo, 2000)
+      setTimeout(nextDo, 1000)
     }
   }
 
