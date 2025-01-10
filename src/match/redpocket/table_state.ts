@@ -775,48 +775,43 @@ class TableState implements Serializable {
   async checkXiaoSanYuan(player, type) {
     const anGang = player.events["anGang"] || [];
     const jieGang = player.events["mingGang"] || [];
-    let gangList = [...anGang, ...jieGang];
-    let jiangList = [];
-    let keCount = 0;
-    let jiangCount = 0;
+    const peng = player.events["peng"] || [];
+    let gangList = [...anGang, ...jieGang, ...peng];
+    let flag = false;
+    let ziCount = 0;
+    let wanCount = 0;
     const isZiMo = type === 1 && player.zimo(this.lastTakeCard, this.turn === 1, this.remainCards === 0);
     let isJiePao = this.lastDa && !isZiMo && player.jiePao(this.lastHuCard, this.turn === 2, this.remainCards === 0, this.lastDa);
-    let gangZi = [];
-    let keZi = [];
+    let cards = player.cards.slice();
     if (isJiePao) {
-      player.cards[this.lastHuCard]++;
+      cards[this.lastHuCard]++;
     }
 
-    const huResult = player.checkZiMo();
-    if (isJiePao) {
-      player.cards[this.lastHuCard]--;
-    }
+    for (let i = 0; i < gangList.length; i++) {
+      if (gangList[i] <= Enums.wanzi9) {
+        wanCount++;
+      }
 
-    if (huResult.hu) {
-      if (huResult.huCards.gangZi) {
-        gangZi = huResult.huCards.gangZi;
-        gangList = [...gangList, ...gangZi];
-      }
-      if (huResult.huCards.KeZi) {
-        keZi = huResult.huCards.KeZi;
-        gangList = [...gangList, ...keZi];
-      }
-      if (huResult.huCards.useJiang) {
-        jiangList = huResult.huCards.useJiang;
+      if (gangList[i] >= Enums.zhong && gangList[i] <= Enums.bai) {
+        ziCount++;
       }
     }
 
-    for (let i = Enums.zhong; i <= Enums.bai; i++) {
-      if (gangList.includes(i)) {
-        keCount++;
+    for (let i = Enums.wanzi1; i <= Enums.bai; i++) {
+      if (cards[i] > 0 && i <= Enums.wanzi9) {
+        wanCount++;
       }
 
-      if (jiangList.includes(i)) {
-        jiangCount++;
+      if (cards[i] > 0 && i >= Enums.zhong && i <= Enums.bai) {
+        ziCount++;
       }
     }
 
-    return keCount === 2 && jiangCount === 1 && (isZiMo || isJiePao);
+    if (wanCount === 0 && ziCount > 0) {
+      flag = true;
+    }
+
+    return flag && (isZiMo || isJiePao);
   }
 
   async checkQingYiSeDuiDuiHu(player, type) {
