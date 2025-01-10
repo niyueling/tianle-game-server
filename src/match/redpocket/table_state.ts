@@ -595,7 +595,6 @@ class TableState implements Serializable {
     let cardType = cardTypes[0]; // 创建一个新的对象，其属性与cardTypes[0]相同
 
     for (let i = 0; i < cardTypes.length; i++) {
-      console.warn("cardId-%s, cardName-%s", cardTypes[i].cardId, cardTypes[i].cardName);
       // 清一色
       if (cardTypes[i].cardId === 163) {
         const status = await this.checkQingYiSe(player, type);
@@ -1775,7 +1774,8 @@ class TableState implements Serializable {
     let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
     // 计算本局红包输赢
-    const gameRedPocket = (withdrawConfig.amount - winModel.redpocket) * 0.007;
+    const gameRedPocket = parseFloat(((withdrawConfig.amount - winModel.redPocket) * 0.007).toFixed(2));
+    console.warn("gameRedPocket-%s", gameRedPocket);
 
     // 点炮胡
     if (from) {
