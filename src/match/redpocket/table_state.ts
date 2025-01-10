@@ -1771,7 +1771,7 @@ class TableState implements Serializable {
     // 点炮胡
     if (from) {
       const failModel = await service.playerService.getPlayerModel(from._id.toString());
-      from.balance = -gameRedPocket * 10;
+      from.balance = parseFloat((-gameRedPocket * 10).toFixed(2));
       failModel.redPocket += from.balance;
       await failModel.save();
       this.room.updateResource2Client(from);
@@ -1782,7 +1782,7 @@ class TableState implements Serializable {
       for (const p of this.players) {
         // 扣除三家金币
         if (p.model._id.toString() !== to.model._id.toString()) {
-          p.balance = -gameRedPocket * 10;
+          p.balance = parseFloat((-gameRedPocket * 10).toFixed(2));;
           const failModel = await service.playerService.getPlayerModel(p._id.toString());
           failModel.redPocket += p.balance;
           await failModel.save();
