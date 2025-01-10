@@ -591,9 +591,6 @@ class TableState implements Serializable {
   async getCardTypesByHu(player, type = 1) {
     const cardTypes = await CardTypeModel.find({gameType: GameType.redpocket});
     let cardType = cardTypes[0]; // 创建一个新的对象，其属性与cardTypes[0]相同
-    cardType.multiple = type === 1 ? 2 : 1;
-    cardType.cardId = -1;
-    cardType.cardName = "平胡";
 
     for (let i = 0; i < cardTypes.length; i++) {
       console.warn("cardId-%s, cardName-%s", cardTypes[i].cardId, cardTypes[i].cardName);
