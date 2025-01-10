@@ -914,38 +914,6 @@ class TableState implements Serializable {
     player.registerHook('game/canDoSomething', msg => {
       player.emitter.emit('waitForDoSomeThing', msg)
     })
-    player.registerHook('game/canDoSomethingGang', msg => {
-      player.deposit(() => {
-        player.emitter.emit('gangShangGuo', msg.turn)
-      })
-    })
-    player.registerHook('game/kaiGangBuZhang', msg => {
-      player.deposit(() => {
-        if (msg.hu) {
-          player.emitter.emit('gangShangKaiHuaGuo', msg.turn)
-        }
-      })
-    })
-    player.registerHook('game/takeHaiDiCard', msg => {
-      player.deposit(() => {
-        if (msg.hu) {
-          player.emitter.emit('daHaiDi', msg.turn)
-        }
-      })
-    })
-    player.registerHook('game/canJieHaiDiPao', msg => {
-      player.deposit(() => {
-        if (msg.hu) {
-          player.emitter.emit('guoHaiDiPao', msg.turn)
-        }
-      })
-    })
-    player.registerHook('game/xunWenHaiDi', msg => {
-      player.deposit(() => {
-        player.emitter.emit('buYaoHaiDi', msg.turn)
-        player.sendMessage('game/depositBuYaoHaiDi', {turn: msg.turn})
-      })
-    })
     player.on('refreshQuiet', async (p, idx) => {
       await this.onRefresh(idx)
     })
@@ -1396,7 +1364,6 @@ class TableState implements Serializable {
           player.lastOperateType = 4;
           player.isGameDa = true;
           this.stateData = {};
-
           from = this.atIndex(this.lastDa);
 
           // 设置用户的状态为待摸牌
@@ -1779,6 +1746,9 @@ class TableState implements Serializable {
 
     // 点炮胡
     if (from) {
+      const failModel = await service.playerService.getPlayerModel(from._id.toString());
+      failModel.redPocket -= gameRedPocket;
+      await failModel.save();
       from.balance = -gameRedPocket;
       await this.saveRedPocketRecord(from._id, -gameRedPocket)
     } else {
@@ -1786,6 +1756,9 @@ class TableState implements Serializable {
       for (const p of this.players) {
         // 扣除三家金币
         if (p.model._id.toString() !== to.model._id.toString()) {
+          const failModel = await service.playerService.getPlayerModel(p._id.toString());
+          failModel.redPocket -= gameRedPocket;
+          await failModel.save();
           p.balance = -gameRedPocket;
           await this.saveRedPocketRecord(p._id, -gameRedPocket)
         }

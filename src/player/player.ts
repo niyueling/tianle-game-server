@@ -223,20 +223,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
     return (this.model && this.model.gold) || 0
   }
 
-  addGold(v) {
-    if (this.model) {
-      let g = this.model.gold
-      g += v
-      this.model.gold = g
-      this.sendMessage('resource/update', {ok: true, data: {gold: g, diamond: this.model.diamond, tlGold: this.model.tlGold}})
-      PlayerModel.update({_id: this.model._id}, {$set: {gold: g}}, err => {
-          if (err) {
-            logger.error(err)
-          }
-        })
-    }
-  }
-
   onDisconnect() {
     this.emit('disconnect', {from: this._id})
 
@@ -486,6 +472,6 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
       return;
     }
     const model = await service.playerService.getPlayerModel(this.model._id);
-    this.sendMessage('resource/update', {ok: true, data: {gold: model.gold, diamond: model.diamond, tlGold: model.tlGold }});
+    this.sendMessage('resource/update', {ok: true, data: {gold: model.gold, diamond: model.diamond, tlGold: model.tlGold, redPocket: model.redPocket }});
   }
 }

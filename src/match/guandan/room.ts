@@ -843,7 +843,7 @@ class Room extends RoomBase {
       await this.addScore(state.model._id, state.score);
 
       const playerModel = await service.playerService.getPlayerModel(player._id);
-      this.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(playerModel, ['gold', 'diamond', 'tlGold'])}})
+      this.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(playerModel, ['gold', 'diamond', 'tlGold', 'redPocket'])}})
     }
 
     this.clearReady()

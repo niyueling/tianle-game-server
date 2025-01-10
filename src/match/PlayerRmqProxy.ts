@@ -71,7 +71,7 @@ export class PlayerRmqProxy extends EventEmitter implements SimplePlayer {
       let g = this.model.gold;
       g += v;
       this.model.gold = g;
-      this.sendMessage('resource/update', {ok: true, data: {gold: g, diamond: this.model.diamond, tlGold: this.model.tlGold}})
+      this.sendMessage('resource/update', {ok: true, data: {gold: g, diamond: this.model.diamond, tlGold: this.model.tlGold, redPocket: this.model.redPocket}})
       PlayerModel.update({_id: this.model._id}, {$set: {gold: g}}, err => {
           if (err) {
             console.error(err);

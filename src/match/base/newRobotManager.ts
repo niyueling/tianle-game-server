@@ -210,7 +210,7 @@ export class NewRobotManager {
             randomPlayer.tlGold = gold;
           }
 
-          this.room.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(randomPlayer, ['gold', 'diamond', 'tlGold'])}})
+          this.room.broadcast('resource/updateGold', {ok: true, data: {index: i, data: pick(randomPlayer, ['gold', 'diamond', 'tlGold', 'redPocket'])}})
 
           // 记录金豆日志
           await service.playerService.logGoldConsume(randomPlayer._id, ConsumeLogType.robotSetGold, gold,

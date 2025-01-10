@@ -828,7 +828,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
       if (newDoc) {
         player.model.diamond = newDoc.diamond
-        player.sendMessage('resource/update', {ok: true, data: {diamond: player.model.diamond, gold: player.model.gold, tlGold: player.model.tlGold}})
+        player.sendMessage('resource/update', {ok: true, data: {diamond: player.model.diamond, gold: player.model.gold, tlGold: player.model.tlGold, redPocket: player.model.redPocket}})
         service.playerService.logGemConsume(player.model._id, type, -toPay, player.model.diamond, note);
       }
     }
@@ -1007,7 +1007,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
 
   // 转发，通知客户端
   updateResource2Client(player) {
-    player.sendMessage('resource/update', {ok: true, data: {gold: player.model.gold, diamond: player.model.diamond, tlGold: player.model.tlGold}})
+    player.sendMessage('resource/update', {ok: true, data: {gold: player.model.gold, diamond: player.model.diamond, tlGold: player.model.tlGold, redPocket: player.model.redPocket}})
   }
 
   async payRubyForStart() {

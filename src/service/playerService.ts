@@ -13,6 +13,7 @@ import UserRechargeOrder from "../database/models/userRechargeOrder";
 import CombatGain from "../database/models/combatGain";
 import Enums from "../match/majiang/enums";
 import PlayerPayReviveSupplementRecord from "../database/models/PlayerPayReviveSupplementRecord";
+import RoomRedPocketRecord from "../database/models/roomRedpocketRecord";
 
 // 玩家信息
 export default class PlayerService extends BaseService {
@@ -210,6 +211,11 @@ export default class PlayerService extends BaseService {
   // 获取上局金豆输赢情况
   async getLastRoomRuby(playerId, roomId) {
     return CombatGain.findOne({playerId, uid: roomId}).sort({time: -1});
+  }
+
+  // 获取上局红包麻将输赢情况
+  async getLastRedPocketRoom(playerId, roomId) {
+    return RoomRedPocketRecord.findOne({playerId, roomId}).sort({createAt: -1});
   }
 
   // 玩家金豆救助次数

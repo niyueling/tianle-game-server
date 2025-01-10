@@ -237,4 +237,61 @@ export class GameApi extends BaseApi {
     const resp = await service.qian.qianList(this.player);
     this.replySuccess(resp);
   }
+
+  // 红包麻将看广告免输
+  @addApi({
+    rule: {
+      roomId: "number", // 房间号
+    }
+  })
+  async watchAdverRestoreRedPocket(msg) {
+    const record = await service.playerService.getLastRedPocketRoom(this.player._id, msg.roomId);
+    const player = await service.playerService.getPlayerModel(this.player._id);
+
+    if (!record) {
+      return this.replyFail(TianleErrorCode.recordNotFound);
+    }
+    if (record.redPocket > 0) {
+      return this.replyFail(TianleErrorCode.playerIsWinner);
+    }
+
+    // 挽回红包损失
+    player.redPocket += Math.abs(record.redPocket);
+    await player.save();
+    await this.player.updateResource2Client();
+    this.replySuccess({redPocket: Math.abs(record.redPocket)})
+  }
+
+  // 红包麻将看广告红包翻10倍
+  @addApi({
+    rule: {
+      roomId: "number", // 房间号
+    }
+  })
+  async watchAdverMultipleRedPocket(msg) {
+    const record = await service.playerService.getLastRedPocketRoom(this.player._id, msg.roomId);
+    const player = await service.playerService.getPlayerModel(this.player._id);
+
+    if (!record) {
+      return this.replyFail(TianleErrorCode.recordNotFound);
+    }
+    if (record.redPocket < 0) {
+      return this.replyFail(TianleErrorCode.playerIsLoser);
+    }
+    if (record.multiple) {
+      return this.replyFail(TianleErrorCode.gameIsMultiple);
+    }
+
+    // 修改翻倍状态
+    record.multiple = true;
+    record.redPocket *= 10;
+    await record.save();
+
+    // 挽回红包损失
+    player.redPocket += record.redPocket;
+    await player.save();
+    await this.player.updateResource2Client();
+
+    this.replySuccess({redPocket: Math.abs(record.redPocket)});
+  }
 }
