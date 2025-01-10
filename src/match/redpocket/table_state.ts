@@ -1750,7 +1750,7 @@ class TableState implements Serializable {
     // 挽回红包损失
     player.redPocket += Math.abs(record.redPocket);
     await player.save();
-    await this.room.updateResource2Client(p);
+    this.room.updateResource2Client(p);
 
     return p.sendMessage("game/watchAdveraAditionalMultipleRedPocketReply", {ok: true, data: { redPocket: Math.abs(record.redPocket) }});
   }
@@ -1771,22 +1771,24 @@ class TableState implements Serializable {
     // 点炮胡
     if (from) {
       const failModel = await service.playerService.getPlayerModel(from._id.toString());
-      failModel.redPocket -= gameRedPocket;
+      from.balance = -gameRedPocket * 10;
+      failModel.redPocket += from.balance;
       await failModel.save();
       this.room.updateResource2Client(from);
-      from.balance = -gameRedPocket;
-      await this.saveRedPocketRecord(from._id, -gameRedPocket)
+
+      await this.saveRedPocketRecord(from._id, from.balance)
     } else {
       // 自摸胡
       for (const p of this.players) {
         // 扣除三家金币
         if (p.model._id.toString() !== to.model._id.toString()) {
+          p.balance = -gameRedPocket * 10;
           const failModel = await service.playerService.getPlayerModel(p._id.toString());
-          failModel.redPocket -= gameRedPocket;
+          failModel.redPocket += p.balance;
           await failModel.save();
           this.room.updateResource2Client(p);
-          p.balance = -gameRedPocket;
-          await this.saveRedPocketRecord(p._id, -gameRedPocket)
+
+          await this.saveRedPocketRecord(p._id, p.balance);
         }
       }
     }
