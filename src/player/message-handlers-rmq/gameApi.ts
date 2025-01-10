@@ -294,4 +294,34 @@ export class GameApi extends BaseApi {
 
     this.replySuccess({redPocket: Math.abs(record.redPocket)});
   }
+
+  // 红包麻将看广告额外领最多50元红包
+  @addApi({
+    rule: {
+      roomId: "number", // 房间号
+    }
+  })
+  async watchAdveraAditionalMultipleRedPocket(msg) {
+    const record = await service.playerService.getLastRedPocketRoom(this.player._id, msg.roomId);
+    const player = await service.playerService.getPlayerModel(this.player._id);
+
+    if (!record) {
+      return this.replyFail(TianleErrorCode.recordNotFound);
+    }
+    if (record.additional) {
+      return this.replyFail(TianleErrorCode.gameIsMultiple);
+    }
+
+    // 修改翻倍状态
+    record.additional = true;
+    record.redPocket = record.multiple ? record.redPocket :  record.redPocket * 10;
+    await record.save();
+
+    // 挽回红包损失
+    player.redPocket += Math.abs(record.redPocket);
+    await player.save();
+    await this.player.updateResource2Client();
+
+    this.replySuccess({redPocket: Math.abs(record.redPocket)});
+  }
 }

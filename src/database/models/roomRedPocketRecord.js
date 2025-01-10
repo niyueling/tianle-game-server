@@ -19,6 +19,11 @@ const schema = new mongoose.Schema({
     required: true,
     default: false
   },
+  additional: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   juIndex: {
     type: Number,
     required: true,

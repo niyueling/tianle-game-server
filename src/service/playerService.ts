@@ -13,7 +13,7 @@ import UserRechargeOrder from "../database/models/userRechargeOrder";
 import CombatGain from "../database/models/combatGain";
 import Enums from "../match/majiang/enums";
 import PlayerPayReviveSupplementRecord from "../database/models/PlayerPayReviveSupplementRecord";
-import RoomRedPocketRecord from "../database/models/roomRedpocketRecord";
+import RoomRedPocketRecord from "../database/models/roomRedPocketRecord";
 
 // 玩家信息
 export default class PlayerService extends BaseService {
