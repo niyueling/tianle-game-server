@@ -1766,7 +1766,7 @@ class TableState implements Serializable {
     }
 
     to.balance = gameRedPocket;
-    await this.saveRedPocketRecord(to._id, -gameRedPocket);
+    await this.saveRedPocketRecord(to._id, gameRedPocket);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
