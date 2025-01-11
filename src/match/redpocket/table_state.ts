@@ -1739,30 +1739,6 @@ class TableState implements Serializable {
     })
   }
 
-  async watchAdveraAditionalMultipleRedPocket(p, roomId) {
-    const record = await service.playerService.getLastRedPocketRoom(p._id, roomId);
-    const player = await service.playerService.getPlayerModel(p._id);
-
-    if (!record) {
-      return p.sendMessage("game/watchAdveraAditionalMultipleRedPocketReply", {ok: false, info: TianleErrorCode.recordNotFound});
-    }
-    if (record.additional) {
-      return p.sendMessage("game/watchAdveraAditionalMultipleRedPocketReply", {ok: false, info: TianleErrorCode.gameIsMultiple});
-    }
-
-    // 修改翻倍状态
-    record.additional = true;
-    record.redPocket = record.multiple ? record.redPocket : record.redPocket * 10;
-    await record.save();
-
-    // 挽回红包损失
-    player.redPocket = (player.redPocket + Math.abs(record.redPocket)).toFixed(2);
-    await player.save();
-    await this.room.updateResource2Client(p);
-
-    return p.sendMessage("game/watchAdveraAditionalMultipleRedPocketReply", {ok: true, data: { redPocket: Math.abs(record.redPocket) }});
-  }
-
   async gameOver(from, to) {
     this.players.map((p) => {
       p.balance = 0;
@@ -1803,7 +1779,6 @@ class TableState implements Serializable {
 
     to.balance = gameRedPocket;
     await this.saveRedPocketRecord(to._id, gameRedPocket);
-    await this.watchAdveraAditionalMultipleRedPocket(to, this.room._id);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
     const nextZhuang = this.nextZhuang()
