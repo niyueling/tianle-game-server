@@ -24,6 +24,12 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+  info: {
+    type: String
+  },
+  paymentId: {
+    type: String
+  },
   // 创建时间
   createAt: {
     type: Date,
