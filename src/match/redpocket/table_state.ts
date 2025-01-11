@@ -1293,7 +1293,7 @@ class TableState implements Serializable {
               this.lastDa = player;
               this.stateData = {};
 
-              const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
+              const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 3);
               cardTypeRecord.count++;
               await cardTypeRecord.save();
 
@@ -1370,7 +1370,7 @@ class TableState implements Serializable {
           this.stateData = {};
           from = this.atIndex(this.lastDa);
 
-          const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
+          const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 3);
           cardTypeRecord.count++;
           await cardTypeRecord.save();
 
