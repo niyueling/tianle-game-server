@@ -32,6 +32,11 @@ const schema = new mongoose.Schema({
     type: Object,
     required: true
   },
+  receive: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   categoryId: {
     type: String,
     required: false,

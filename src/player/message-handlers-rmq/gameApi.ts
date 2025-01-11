@@ -267,6 +267,7 @@ export class GameApi extends BaseApi {
   @addApi({
     rule: {
       roomId: "number", // 房间号
+      multiple: "number", // 倍数
     }
   })
   async watchAdverMultipleRedPocket(msg) {
@@ -282,10 +283,14 @@ export class GameApi extends BaseApi {
     if (record.multiple) {
       return this.replyFail(TianleErrorCode.gameIsMultiple);
     }
+    if (record.receive) {
+      return this.replyFail(TianleErrorCode.prizeIsReceive);
+    }
 
     // 修改翻倍状态
     record.multiple = true;
-    record.redPocket *= 10;
+    record.receive = true;
+    record.redPocket *= msg.multiple;
     await record.save();
 
     // 挽回红包损失
