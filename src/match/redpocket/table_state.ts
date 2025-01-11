@@ -1160,7 +1160,7 @@ class TableState implements Serializable {
               this.cardTypes = await this.getCardTypes(player, 1);
               player.cards[nextCard]--;
 
-              const msg = player.gangTakeCard(this.turn, nextCard,
+              const msg = player.canReceive(this.turn, nextCard,
                 {
                   id: this.cardTypes.cardId,
                   multiple: await this.getRoomMultiple(player)

@@ -6,6 +6,7 @@ import RoomGoldRecord from "../../database/models/roomGoldRecord";
 import GameFeedback from "../../database/models/GameFeedback";
 import Enums from "../../match/majiang/enums";
 import LuckyBless from "../../database/models/luckyBless";
+import WithdrawConfig from "../../database/models/withdrawConfig";
 
 // 游戏
 export class GameApi extends BaseApi {
@@ -323,5 +324,13 @@ export class GameApi extends BaseApi {
     await this.player.updateResource2Client();
 
     this.replySuccess({redPocket: Math.abs(record.redPocket)});
+  }
+
+  // 红包麻将数据接口
+  @addApi({})
+  async redPocketData() {
+    const player = await service.playerService.getPlayerModel(this.player._id);
+    const configs = await WithdrawConfig.find();
+    this.replySuccess({redPocket: player.redPocket, configs});
   }
 }
