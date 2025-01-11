@@ -1293,6 +1293,10 @@ class TableState implements Serializable {
               this.lastDa = player;
               this.stateData = {};
 
+              const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
+              cardTypeRecord.count++;
+              await cardTypeRecord.save();
+
               this.lastDa.recordGameEvent(Enums.dianPao, player.events[Enums.hu][0]);
 
               this.room.broadcast('game/showHuType', {
@@ -1365,6 +1369,10 @@ class TableState implements Serializable {
           player.isGameDa = true;
           this.stateData = {};
           from = this.atIndex(this.lastDa);
+
+          const cardTypeRecord = await this.getPlayerCardTypeRecord(player, this.cardTypes.cardId, 1);
+          cardTypeRecord.count++;
+          await cardTypeRecord.save();
 
           // 设置用户的状态为待摸牌
           player.waitMo = true;
@@ -1860,6 +1868,20 @@ class TableState implements Serializable {
       }
       setTimeout(nextDo, 1000)
     }
+  }
+
+  async getPlayerCardTypeRecord(player, typeId, taskType) {
+    let cardTypeRecord = await PlayerCardTypeRecord.findOne({playerId: player._id, taskType: taskType, typeId: typeId});
+    if (cardTypeRecord) {
+      return cardTypeRecord;
+    }
+
+    return await PlayerCardTypeRecord.create({
+      playerId: player._id,
+      taskType: taskType,
+      typeId: typeId,
+      count: 0
+    });
   }
 
   dissolve() {
