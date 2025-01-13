@@ -372,7 +372,7 @@ export class GameApi extends BaseApi {
     await withLock('red-pocket-withdraw', 7000, async () => {
       const playerModel = await Player.findById(this.player._id);
 
-      if (playerModel && !playerModel.openId) {
+      if (playerModel && !playerModel.openid) {
         return this.replyFail(TianleErrorCode.playerIsTourist);
       }
 
