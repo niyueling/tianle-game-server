@@ -3,8 +3,6 @@
  */
 // @ts-ignore
 import {isNaN, pick, random} from 'lodash'
-import * as moment from 'moment'
-import * as logger from "winston";
 import * as winston from "winston";
 import Player from "../../database/models/player";
 import {service} from "../../service/importService";
@@ -17,15 +15,7 @@ import Room from './room'
 import Rule from './Rule'
 import {ConsumeLogType, GameType, RobotStep, TianleErrorCode} from "@fm/common/constants";
 import CardTypeModel from "../../database/models/CardType";
-import RoomGoldRecord from "../../database/models/roomGoldRecord";
-import CombatGain from "../../database/models/combatGain";
-import GameCategory from "../../database/models/gameCategory";
-import PlayerMedal from "../../database/models/PlayerMedal";
-import PlayerHeadBorder from "../../database/models/PlayerHeadBorder";
-import PlayerCardTable from "../../database/models/PlayerCardTable";
 import PlayerCardTypeRecord from "../../database/models/playerCardTypeRecord";
-import * as config from "../../config"
-import RoomTimeRecord from "../../database/models/roomTimeRecord";
 import algorithm from "../../utils/algorithm";
 import WithdrawConfig from "../../database/models/withdrawConfig";
 import RoomRedPocketRecord from "../../database/models/roomRedPocketRecord";
@@ -408,8 +398,7 @@ class TableState implements Serializable {
     if (this.remainCards < 0) {
       this.remainCards = 0;
       const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-      const nextZhuang = this.nextZhuang()
-      await this.gameAllOver(states, [], nextZhuang);
+      await this.gameAllOver(states);
       return ;
     }
 
@@ -977,8 +966,7 @@ class TableState implements Serializable {
       if (this.remainCards < 0) {
         denyFunc()
         const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-        const nextZhuang = this.nextZhuang()
-        await this.gameAllOver(states, [], nextZhuang);
+        await this.gameAllOver(states);
         return
       }
     })
@@ -1781,11 +1769,10 @@ class TableState implements Serializable {
     await this.saveRedPocketRecord(to._id, gameRedPocket);
 
     const states = this.players.map((player, idx) => player.genGameStatus(idx, 1))
-    const nextZhuang = this.nextZhuang()
-    await this.gameAllOver(states, [], nextZhuang);
+    await this.gameAllOver(states);
   }
 
-  async gameAllOver(states, niaos, nextZhuang) {
+  async gameAllOver(states) {
     if (this.state === stateGameOver) {
       return ;
     }
@@ -1830,6 +1817,7 @@ class TableState implements Serializable {
       creator: this.room.creator.model._id,
       juShu: this.restJushu,
       juIndex: this.room.game.juIndex,
+      roomId: this.room._id,
       states,
       gameType: GameType.redpocket,
       isPublic: this.room.isPublic,
