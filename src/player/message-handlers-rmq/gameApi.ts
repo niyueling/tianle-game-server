@@ -409,7 +409,7 @@ export class GameApi extends BaseApi {
             out_detail_no: tem_batch_no,
             transfer_amount: withdrawConfig.amount * 100,
             transfer_remark: '天乐麻将红包提现',
-            openid: playerModel.openId,
+            openid: playerModel.openid,
           },
         ],
       });
