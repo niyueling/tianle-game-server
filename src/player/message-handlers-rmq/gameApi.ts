@@ -356,7 +356,7 @@ export class GameApi extends BaseApi {
     for (let i = 0; i < configs.length; i++) {
       const config = configs[i];
       if (config.juShu > 0) {
-        config.joinRoomCount = await roomRecord.count({creatorId: player.shortId, scores: {$ne: []}, category: GameType.redpocket});
+        config.joinRoomCount = await roomRecord.count({creatorId: player.shortId, category: GameType.redpocket});
       }
 
       // 提现次数
