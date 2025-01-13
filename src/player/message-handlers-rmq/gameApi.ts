@@ -314,7 +314,7 @@ export class GameApi extends BaseApi {
     await player.save();
     await this.player.updateResource2Client();
 
-    this.replySuccess({redPocket: Math.abs(record.redPocket)});
+    this.replySuccess({redPocket: Math.abs(record.redPocket), multiple: msg.multiple});
   }
 
   // 红包麻将看广告额外领最多50元红包
@@ -344,7 +344,7 @@ export class GameApi extends BaseApi {
     await player.save();
     await this.player.updateResource2Client();
 
-    this.replySuccess({redPocket: Math.abs(record.redPocket)});
+    this.replySuccess({redPocket: Math.abs(record.redPocket), multiple: msg.multiple});
   }
 
   // 红包麻将数据接口
