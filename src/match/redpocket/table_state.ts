@@ -19,6 +19,7 @@ import PlayerCardTypeRecord from "../../database/models/playerCardTypeRecord";
 import algorithm from "../../utils/algorithm";
 import WithdrawConfig from "../../database/models/withdrawConfig";
 import RoomRedPocketRecord from "../../database/models/roomRedPocketRecord";
+import roomRecord from "../../database/models/roomRecord";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1798,11 +1799,13 @@ class TableState implements Serializable {
       if (player) {
         players.push(player._id.toString())
         const state = player.genGameStatus(idx, 1);
+        const joinRoomCount = await roomRecord.count({creatorId: player.model.shortId, category: GameType.redpocket});
         scores.push({
           score: state.score,
           name: player.model.nickname,
           headImgUrl: player.model.avatar,
-          shortId: player.model.shortId
+          shortId: player.model.shortId,
+          first: joinRoomCount === 1
         })
       }
     })
