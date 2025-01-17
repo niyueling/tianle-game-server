@@ -1733,7 +1733,7 @@ class TableState implements Serializable {
       p.balance = 0;
     })
 
-    const withdrawList = await WithdrawConfig.find({type: 2}).sort({amount: 1});
+    const withdrawList = await WithdrawConfig.find({type: 2, first: false}).sort({amount: 1});
     const withdrawConfig = withdrawList[0];
     let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
