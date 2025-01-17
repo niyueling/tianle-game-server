@@ -1799,13 +1799,11 @@ class TableState implements Serializable {
       if (player) {
         players.push(player._id.toString())
         const state = player.genGameStatus(idx, 1);
-        const joinRoomCount = await roomRecord.count({creatorId: player.model.shortId, category: GameType.redpocket});
         scores.push({
           score: state.score,
           name: player.model.nickname,
           headImgUrl: player.model.avatar,
-          shortId: player.model.shortId,
-          first: joinRoomCount === 1
+          shortId: player.model.shortId
         })
       }
     })
@@ -1814,6 +1812,11 @@ class TableState implements Serializable {
       await this.room.recordGameRecord(this, states);
       await this.room.recordRoomScore('dissolve', scores, players)
       await this.room.RoomScoreRecord(scores, players)
+    }
+
+    for (let i = 0; i < states.length; i++) {
+      const joinRoomCount = await roomRecord.count({creatorId: states[i].model.shortId, category: GameType.redpocket});
+      states[i].first = joinRoomCount === 1;
     }
 
     const gameOverMsg = {
