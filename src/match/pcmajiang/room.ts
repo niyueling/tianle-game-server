@@ -212,7 +212,6 @@ class Room extends RoomBase {
   static async roomFee(rule): Promise<number> {
     const configList = await RoomFeeConfig.find({game: GameType.pcmj}).sort({diamond: 1});
     const configIndex = configList.findIndex(c => c.juShu === rule.juShu);
-    console.warn("rule-%s", JSON.stringify(rule));
 
     if (rule.ruleId) {
       if (configIndex !== -1) {

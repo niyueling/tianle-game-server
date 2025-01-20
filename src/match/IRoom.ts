@@ -568,6 +568,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     if (this.charged) return;
     this.charged = true;
     const fee = await this.privateRoomFee(this.rule);
+    console.warn("fee-%s", fee);
     this.payUseGem(this.clubOwner, fee, this._id, ConsumeLogType.chargeRoomFeeByClubOwner);
     await this.updateRoomGem({ [this.clubOwner.model.shortId]: fee });
   }
