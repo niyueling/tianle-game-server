@@ -109,7 +109,7 @@ export class CardMap {
       }
     }
 
-    console.warn("jokerList %s result %s", JSON.stringify(jokerList), JSON.stringify(result));
+    // console.warn("jokerList %s result %s", JSON.stringify(jokerList), JSON.stringify(result));
     return result;
   }
 
@@ -334,7 +334,7 @@ class CardManager {
           throw new Error('invalid card')
         }
 
-        console.warn("resultCards %s", JSON.stringify(resultCards));
+        // console.warn("resultCards %s", JSON.stringify(resultCards));
         cards.push(...resultCards);
       }
     }
