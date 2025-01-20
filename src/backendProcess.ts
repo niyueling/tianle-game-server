@@ -180,10 +180,8 @@ export class BackendProcess {
 
     const clubOwnerSocket = new PlayerRmqProxy(clubOwner, this.lobbyChannel, this.gameName);
 
-    if (messageBody.payload.rule.clubPersonalRoom === false) {
-      if (clubOwner.diamond < this.lobby.roomFee(messageBody.payload.rule)) {
-        return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.diamondInsufficient}, playerRouteKey);
-      }
+    if (clubOwner.diamond < this.lobby.roomFee(messageBody.payload.rule)) {
+      return this.sendMessage('room/createReply', {ok: false, info: TianleErrorCode.diamondInsufficient}, playerRouteKey);
     }
 
     const roomId = await this.redisClient.lpopAsync('roomIds');
