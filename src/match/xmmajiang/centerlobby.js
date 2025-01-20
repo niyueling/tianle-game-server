@@ -21,7 +21,7 @@ const Lobby = LobbyFactory({
     return room
   },
   // fixme: Room 被循环引用, 暂时采用函数调用来延迟 ref roomFee
-  roomFee: (rule) => Room.roomFee(rule),
+  roomFee: async (rule) => await Room.roomFee(rule),
   normalizeRule: async (rule) => {
 
     return rule
