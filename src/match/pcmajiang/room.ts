@@ -211,10 +211,10 @@ class Room extends RoomBase {
 
   static async roomFee(rule): Promise<number> {
     const configList = await RoomFeeConfig.find({game: GameType.pcmj}).sort({diamond: 1});
-    const configIndex = configList.findIndex(c => c.juShu === rule.ro.juShu);
-    console.warn("configIndex-%s, rule-%s, config-%s", configIndex, JSON.stringify(rule.ro), JSON.stringify(configList[configIndex]));
+    const configIndex = configList.findIndex(c => c.juShu === rule.juShu);
+    console.warn("configIndex-%s, rule-%s, config-%s", configIndex, JSON.stringify(rule), JSON.stringify(configList[configIndex]));
 
-    if (rule.ro.ruleId) {
+    if (rule.ruleId) {
       if (configIndex !== -1) {
         if (configList[configIndex].clubMode) {
           return configList[configIndex].diamond;
