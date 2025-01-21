@@ -802,16 +802,23 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     const condition = {_id: player.model._id};
     const update = {$inc: {diamond: -toPay}};
     const options = {new: true};
-    const callback = (err, newDoc) => {
+    const callback = async (err, newDoc) => {
       if (err) {
         logger.error(player.model, err);
         return
       }
 
       if (newDoc) {
-        player.model.diamond = newDoc.diamond
-        player.sendMessage('resource/update', {ok: true, data: {diamond: player.model.diamond, gold: player.model.gold, tlGold: player.model.tlGold, redPocket: player.model.redPocket}})
-        service.playerService.logGemConsume(player.model._id, type, -toPay, player.model.diamond, note);
+        const model = await service.playerService.getPlayerModel(player._id);
+        player.sendMessage('resource/update', {ok: true,
+          data: {
+            diamond: model.diamond,
+            gold: model.gold,
+            tlGold: model.tlGold,
+            redPocket: model.redPocket
+          }
+        })
+        await service.playerService.logGemConsume(player.model._id, type, -toPay, model.diamond, note);
       }
     }
 
