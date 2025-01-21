@@ -14,6 +14,21 @@ import {autoSerialize, Serializable, serialize, serializeHelp} from "./serialize
 import {eqlModelId} from "./pcmajiang/modelId";
 import createClient from "../utils/redis";
 import RoomTimeRecord from "../database/models/roomTimeRecord";
+import {toBuffer} from "./messageBus";
+
+export async function requestToUserCenter(channel, name, playerId, info) {
+
+  const player = await Player.findOne({_id: playerId});
+
+  if (!player) {
+    return
+  }
+
+  channel.publish(
+    `userCenter`,
+    `user.${playerId}`,
+    toBuffer({name, payload: info}))
+}
 
 export interface RedPocketConfig {
   _id: string
@@ -811,6 +826,14 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
       if (newDoc) {
         const model = await service.playerService.getPlayerModel(player._id);
         player.sendMessage('resource/update', {ok: true,
+          data: {
+            diamond: model.diamond,
+            gold: model.gold,
+            tlGold: model.tlGold,
+            redPocket: model.redPocket
+          }
+        })
+        await requestToUserCenter(player.channel, 'resource/update', player._id, {ok: true,
           data: {
             diamond: model.diamond,
             gold: model.gold,
