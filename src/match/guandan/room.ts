@@ -1031,8 +1031,8 @@ class Room extends RoomBase {
     return message;
   }
 
-  async privateRoomFee() {
-    return await Room.roomFee(this.game.rule)
+  async privateRoomFee(rule) {
+    return await Room.roomFee(rule)
   }
 
   async applyAgain(player) {
@@ -1051,7 +1051,7 @@ class Room extends RoomBase {
   }
 
   async enoughCurrency(player) {
-    return player.model.diamond >= await this.privateRoomFee()
+    return player.model.diamond >= await this.privateRoomFee(this.game.rule.ro)
   }
 
   playAgain() {
