@@ -19,6 +19,7 @@ import PlayerCardTypeRecord from "../../database/models/playerCardTypeRecord";
 import algorithm from "../../utils/algorithm";
 import WithdrawConfig from "../../database/models/withdrawConfig";
 import RoomRedPocketRecord from "../../database/models/roomRedPocketRecord";
+import roomRecord from "../../database/models/roomRecord";
 
 const stateWaitDa = 1
 const stateWaitAction = 2
@@ -1732,7 +1733,7 @@ class TableState implements Serializable {
       p.balance = 0;
     })
 
-    const withdrawList = await WithdrawConfig.find({type: 2}).sort({amount: 1});
+    const withdrawList = await WithdrawConfig.find({type: 2, first: false}).sort({amount: 1});
     const withdrawConfig = withdrawList[0];
     let winModel = await service.playerService.getPlayerModel(to._id.toString());
 
@@ -1811,6 +1812,11 @@ class TableState implements Serializable {
       await this.room.recordGameRecord(this, states);
       await this.room.recordRoomScore('dissolve', scores, players)
       await this.room.RoomScoreRecord(scores, players)
+    }
+
+    for (let i = 0; i < states.length; i++) {
+      const joinRoomCount = await roomRecord.count({creatorId: states[i].model.shortId, category: GameType.redpocket});
+      states[i].first = joinRoomCount === 1;
     }
 
     const gameOverMsg = {

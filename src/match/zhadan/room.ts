@@ -207,8 +207,9 @@ class Room extends RoomBase {
   static async roomFee(rule): Promise<number> {
     const configList = await RoomFeeConfig.find({game: GameType.zd}).sort({diamond: 1});
     const configIndex = configList.findIndex(c => c.juShu === rule.juShu);
+    console.warn("configIndex-%s, rule-%s， config-%s", configIndex, JSON.stringify(rule), JSON.stringify(configList[configIndex]));
 
-    if (rule.clubPersonalRoom === false) {
+    if (rule.ruleId) {
       if (configIndex !== -1) {
         if (configList[configIndex].clubMode) {
           return configList[configIndex].diamond;
@@ -915,8 +916,8 @@ class Room extends RoomBase {
     return message;
   }
 
-  async privateRoomFee() {
-    return await Room.roomFee(this.game.rule)
+  async privateRoomFee(rule) {
+    return await Room.roomFee(rule)
   }
 
   async applyAgain(player) {
@@ -936,7 +937,7 @@ class Room extends RoomBase {
   }
 
   async enoughCurrency(player) {
-    return player.model.diamond >= await this.privateRoomFee()
+    return player.model.diamond >= await this.privateRoomFee(this.game.rule.ro)
   }
 
   playAgain() {

@@ -927,21 +927,21 @@ abstract class Table implements Serializable {
       const p = this.players[i];
       p.cards = [...p.cards, ...this.takeQuarterCards(p, this.rule.test && payload.cards && payload.cards[i] ? payload.cards[i] : [])];
 
-      const prompts = new StraightDoublesMatcher().promptWithPattern({
-        name: PatterNames.doubles + '3',
-        score: 0,
-        cards: Array.from({ length: 6 }),
-      }, p.cards, this.room.currentLevelCard);
-
-      const levelCards = p.cards.filter(card => card.type === CardType.Heart && card.value === this.room.currentLevelCard);
-
-      for (let j = 0; j < prompts.length; j++) {
-        const levelCardCount = prompts[j].filter(card => card.type === CardType.Heart && card.value === this.room.currentLevelCard).length;
-        if (levelCardCount > levelCards.length) {
-          console.warn("seatIndex-%s caiShenCount-%s prompts-%s", i, levelCards.length, JSON.stringify(prompts));
-          break;
-        }
-      }
+      // const prompts = new StraightDoublesMatcher().promptWithPattern({
+      //   name: PatterNames.doubles + '3',
+      //   score: 0,
+      //   cards: Array.from({ length: 6 }),
+      // }, p.cards, this.room.currentLevelCard);
+      //
+      // const levelCards = p.cards.filter(card => card.type === CardType.Heart && card.value === this.room.currentLevelCard);
+      //
+      // for (let j = 0; j < prompts.length; j++) {
+      //   const levelCardCount = prompts[j].filter(card => card.type === CardType.Heart && card.value === this.room.currentLevelCard).length;
+      //   if (levelCardCount > levelCards.length) {
+      //     console.warn("seatIndex-%s caiShenCount-%s prompts-%s", i, levelCards.length, JSON.stringify(prompts));
+      //     break;
+      //   }
+      // }
     }
   }
 

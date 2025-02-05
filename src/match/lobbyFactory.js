@@ -139,7 +139,7 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
       room.on('empty', async () => {
         const clubId = room.clubId
         await redisClient.sremAsync('clubRoom:' + clubId, room._id)
-        console.warn("empty clubId-%s clubBroadcaster-%s", clubId, JSON.stringify(this.clubBroadcaster));
+        // console.warn("empty clubId-%s clubBroadcaster-%s", clubId, JSON.stringify(this.clubBroadcaster));
         this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
         if (room.robotManager) {
           // 删除机器人
@@ -150,13 +150,13 @@ export function LobbyFactory({gameName, roomFactory, roomFee, normalizeRule = as
 
       room.on('join', async () => {
         const clubId = room.clubId
-        console.warn("join clubId-%s clubBroadcaster-%s", clubId, JSON.stringify(this.clubBroadcaster));
+        // console.warn("join clubId-%s clubBroadcaster-%s", clubId, JSON.stringify(this.clubBroadcaster));
         this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
 
       room.on('leave', async () => {
         const clubId = room.clubId
-        console.warn("leave clubId-%s clubBroadcaster-%s", clubId, JSON.stringify(this.clubBroadcaster));
+        // console.warn("leave clubId-%s clubBroadcaster-%s", clubId, JSON.stringify(this.clubBroadcaster));
         this.clubBroadcaster && await this.clubBroadcaster.updateClubRoomInfo(clubId, {})
       })
     }

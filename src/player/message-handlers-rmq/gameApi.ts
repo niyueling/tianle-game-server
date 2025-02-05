@@ -351,19 +351,33 @@ export class GameApi extends BaseApi {
   @addApi({})
   async redPocketData() {
     const player = await service.playerService.getPlayerModel(this.player._id);
-    const configs = await WithdrawConfig.find().lean();
+    const joinRoomCount = await roomRecord.count({creatorId: player.shortId, category: GameType.redpocket});
+    const configs = await WithdrawConfig.find({}).lean();
+    const configList = [];
 
     for (let i = 0; i < configs.length; i++) {
       const config = configs[i];
       if (config.juShu > 0) {
-        config.joinRoomCount = await roomRecord.count({creatorId: player.shortId, category: GameType.redpocket});
+        config.joinRoomCount = joinRoomCount;
       }
 
       // 提现次数
       config.withdrawCount = await WithdrawRecord.count({playerId: this.player._id, configId: config._id, status: 1});
+
+      if (config.type === 1) {
+        configList.push(config);
+      }
+
+      if (config.type === 2 && joinRoomCount <= 1 && config.first) {
+        configList.push(config);
+      }
+
+      if (config.type === 2 && joinRoomCount > 1 && !config.first) {
+        configList.push(config);
+      }
     }
 
-    this.replySuccess({redPocket: player.redPocket, configs});
+    this.replySuccess({first: joinRoomCount <= 1, redPocket: player.redPocket, configs: configList});
   }
 
   // 红包提现
@@ -399,32 +413,51 @@ export class GameApi extends BaseApi {
         keyFilePath: path.join(__dirname, "..", "..", "..", "apiclient_key.pem")
       });
       const tranRes = await wechatPayMent.batches_transfer({
-        out_batch_no: tem_batch_no,
-        batch_name: '天乐麻将红包提现',
-        batch_remark: '天乐麻将红包提现',
-        total_amount: withdrawConfig.amount * 100,
-        total_num: 1,
-        transfer_detail_list: [
+        out_bill_no: tem_batch_no,
+        transfer_scene_id: '1000',
+        openid: playerModel.openid,
+        transfer_amount: withdrawConfig.amount * 100,
+        transfer_remark: '天乐麻将红包提现',
+        transfer_scene_report_infos : [
           {
-            out_detail_no: tem_batch_no,
-            transfer_amount: withdrawConfig.amount * 100,
-            transfer_remark: '天乐麻将红包提现',
-            openid: playerModel.openid,
+            info_type: "活动名称",
+            info_content: "对局有礼"
           },
-        ],
+          {
+            info_type: "奖励说明",
+            info_content: "对局可以获得现金红包"
+          }
+        ]
       });
 
+      console.warn("res-%s", JSON.stringify(tranRes));
+
       if (tranRes["status"] == '200') {
-        const updated = await Player.findByIdAndUpdate(this.player._id, {$inc: {redPocket: -withdrawConfig.amount}}, {'new': true})
-        record.info = '完成';
-        record.status = 1;
-        record.paymentId = tranRes["batch_id"]
-        await record.save()
-        return this.replySuccess({redPocket: updated.redPocket});
+        await Player.findByIdAndUpdate(this.player._id, {$inc: {redPocket: -withdrawConfig.amount}}, {'new': true})
+        record.info = tranRes["data"]["state"];
+        record.paymentId = tranRes["data"]["transfer_bill_no"];
+        await record.save();
+        return this.replySuccess({record, response: tranRes});
       }
-      record.info = tranRes["err_code_des"];
+
+      record.info = tranRes["data"]["state"];
       await record.save();
       return this.replyFail(TianleErrorCode.withdrawFail);
     }, locker)
+  }
+
+  // 提现成功回调
+  @addApi({})
+  async withdrawNotify(msg) {
+    const record = await WithdrawRecord.findOne({_id: msg._id});
+    if (!record) {
+      return this.replyFail(TianleErrorCode.recordNotFound);
+    }
+
+    record.status = 1;
+    record.info = "提现成功";
+    await record.save();
+
+    this.replySuccess({});
   }
 }

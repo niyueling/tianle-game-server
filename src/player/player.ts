@@ -361,7 +361,7 @@ export default class SocketPlayer extends EventEmitter implements ISocketPlayer 
           if (messageBody.name === 'club/updateClubRoom') {
             const sendFunc = async() => {
               const clubInfo = await getClubInfo(this.clubId, this);
-              console.warn("clubInfo-%s, redis-%s", JSON.stringify(clubInfo), config.redis);
+              // console.warn("clubInfo-%s, redis-%s", JSON.stringify(clubInfo), config.redis);
 
               if (clubInfo.ok) {
                 this.sendMessage('club/getClubInfoReply', clubInfo);

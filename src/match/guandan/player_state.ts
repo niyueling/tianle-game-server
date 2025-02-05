@@ -368,7 +368,7 @@ class PlayerState implements Serializable {
       minutes = 15;
     }
 
-    console.warn("1 tableState %s isPublic %s autoCommit %s", this.room.gameState.tableState, this.room.isPublic, this.rule.ro.autoCommit);
+    // console.warn("1 tableState %s isPublic %s autoCommit %s", this.room.gameState.tableState, this.room.isPublic, this.rule.ro.autoCommit);
 
     if (!this.msgDispatcher) {
       return ;
@@ -381,11 +381,11 @@ class PlayerState implements Serializable {
       minutes = (this.rule.ro.autoCommit + 1) * 1000
     }
 
-    console.warn("1 tableState %s minutes %s", this.room.gameState.tableState, minutes);
+    // console.warn("1 tableState %s minutes %s", this.room.gameState.tableState, minutes);
 
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(async () => {
-        console.warn("2 tableState %s minutes %s", this.room.gameState.tableState, minutes);
+        // console.warn("2 tableState %s minutes %s", this.room.gameState.tableState, minutes);
         // 如果是选择加倍，默认选择不加倍
         if (this.room.gameState.tableState === 'selectMode') {
           await this.room.gameState.onSelectMode(this, 1);

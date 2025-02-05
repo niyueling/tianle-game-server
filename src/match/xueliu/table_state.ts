@@ -4917,7 +4917,7 @@ class TableState implements Serializable {
         const currentTime = new Date().getTime();
         const startTime = Date.parse(m.createAt);
 
-        console.warn("startTime %s currentTime %s", startTime, currentTime);
+        // console.warn("startTime %s currentTime %s", startTime, currentTime);
 
         if (currentTime - startTime > config.game.dissolveTime) {
           return await this.room.forceDissolve();

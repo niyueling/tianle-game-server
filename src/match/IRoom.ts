@@ -2,8 +2,6 @@ import {ConsumeLogType, GameType, playerAttributes, TianleErrorCode} from "@fm/c
 import * as EventEmitter from 'events'
 import * as logger from 'winston'
 import * as config from "../config";
-import Club from '../database/models/club'
-import ClubMember from '../database/models/clubMember'
 import GoodsLive from "../database/models/goodsLive";
 import LuckyBless from "../database/models/luckyBless";
 import Player from "../database/models/player";
@@ -16,21 +14,20 @@ import {autoSerialize, Serializable, serialize, serializeHelp} from "./serialize
 import {eqlModelId} from "./pcmajiang/modelId";
 import createClient from "../utils/redis";
 import RoomTimeRecord from "../database/models/roomTimeRecord";
+import {toBuffer} from "./messageBus";
 
-export const playerInClub = async (clubShortId: string, playerId: string) => {
-  if (!clubShortId) {
-    return false
-  }
-  const club = await Club.findOne({shortId: clubShortId})
-  if (!club) {
-    return false
-  }
+export async function requestToUserCenter(channel, name, playerId, info) {
 
-  if (club.owner === playerId) {
-    return true;
+  const player = await Player.findOne({_id: playerId});
+
+  if (!player) {
+    return
   }
 
-  return ClubMember.findOne({club: club._id, member: playerId}).exec()
+  channel.publish(
+    `userCenter`,
+    `user.${playerId}`,
+    toBuffer({name, payload: info}))
 }
 
 export interface RedPocketConfig {
@@ -567,7 +564,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   async chargeClubOwner() {
     if (this.charged) return;
     this.charged = true;
-    const fee = await this.privateRoomFee(this.rule);
+    const fee = await this.privateRoomFee(this.rule.ro);
     this.payUseGem(this.clubOwner, fee, this._id, ConsumeLogType.chargeRoomFeeByClubOwner);
     await this.updateRoomGem({ [this.clubOwner.model.shortId]: fee });
   }
@@ -820,16 +817,31 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
     const condition = {_id: player.model._id};
     const update = {$inc: {diamond: -toPay}};
     const options = {new: true};
-    const callback = (err, newDoc) => {
+    const callback = async (err, newDoc) => {
       if (err) {
         logger.error(player.model, err);
         return
       }
 
       if (newDoc) {
-        player.model.diamond = newDoc.diamond
-        player.sendMessage('resource/update', {ok: true, data: {diamond: player.model.diamond, gold: player.model.gold, tlGold: player.model.tlGold, redPocket: player.model.redPocket}})
-        service.playerService.logGemConsume(player.model._id, type, -toPay, player.model.diamond, note);
+        const model = await service.playerService.getPlayerModel(player._id);
+        player.sendMessage('resource/update', {ok: true,
+          data: {
+            diamond: model.diamond,
+            gold: model.gold,
+            tlGold: model.tlGold,
+            redPocket: model.redPocket
+          }
+        })
+        await requestToUserCenter(player.channel, 'resource/update', player._id, {ok: true,
+          data: {
+            diamond: model.diamond,
+            gold: model.gold,
+            tlGold: model.tlGold,
+            redPocket: model.redPocket
+          }
+        })
+        await service.playerService.logGemConsume(player.model._id, type, -toPay, model.diamond, note);
       }
     }
 

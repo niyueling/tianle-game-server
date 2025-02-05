@@ -224,7 +224,7 @@ class Room extends RoomBase {
     const configList = await RoomFeeConfig.find({game: GameType.pcmj}).sort({diamond: 1});
     const configIndex = configList.findIndex(c => c.juShu === rule.juShu && c.juType === this.getJuType(rule));
 
-    if (rule.clubPersonalRoom === false) {
+    if (rule.ruleId) {
       if (configIndex !== -1) {
         if (configList[configIndex].clubMode) {
           return configList[configIndex].diamond;

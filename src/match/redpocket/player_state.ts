@@ -12,6 +12,8 @@ import HuPaiDetect from './HuPaiDetect'
 import Room from './room'
 import Rule from './Rule'
 import {manager} from "./cardManager";
+import roomRecord from "../../database/models/roomRecord";
+import {GameType} from "@fm/common/constants";
 
 export class SourceCardMap extends Array<number> {
   first: boolean
