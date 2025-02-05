@@ -665,7 +665,7 @@ abstract class Table implements Serializable {
   }
 
   cannotDaPai(player, cards, pattern) {
-    this.room.broadcast('game/daCardReply', {
+    player.sendMessage('game/daCardReply', {
       ok: false,
       info: TianleErrorCode.cardDaError,
       data: {index: player.index, daCards: cards, inHandle: player.cards, pattern}
