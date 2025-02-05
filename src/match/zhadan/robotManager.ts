@@ -102,7 +102,7 @@ export class RobotManager extends NewRobotManager {
 
   // 发牌完成
   async setCardReady() {
-    if (this.model.step) {
+    if (this.model && this.model.step) {
       this.model.step = RobotStep.selectMode;
       await this.save();
     }
