@@ -343,6 +343,7 @@ export abstract class RoomBase extends EventEmitter implements IRoom, Serializab
   }
 
   async broadcastStartGame(payload) {
+    console.warn("game start ", this.gameRule.categoryId);
     let conf = await service.gameConfig.getPublicRoomCategoryByCategory(this.gameRule.categoryId);
 
     // @ts-ignore
