@@ -338,8 +338,8 @@ class PlayerState implements Serializable {
 
   // 托管
   deposit(callback) {
+    console.warn("currentPlayerStep %s", this.room.gameState.currentPlayerStep);
     if (this.room.gameState.currentPlayerStep === -1) {
-      console.warn("currentPlayerStep %s", this.room.gameState.currentPlayerStep);
       return;
     }
 
@@ -371,8 +371,8 @@ class PlayerState implements Serializable {
     if (!this.onDeposit) {
       this.timeoutTask = setTimeout(() => {
         if (this.room.gameState && this.room.gameState.currentPlayerStep === this.index) {
-          this.onDeposit = true
           if (this.room.gameState && this.room.gameState.state === 3) {
+            this.onDeposit = true
             this.sendMessage('game/startDepositReply', {ok: true, data: {}})
           }
         }
