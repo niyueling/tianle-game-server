@@ -71,7 +71,7 @@ export default class PlayerService extends BaseService {
       gold = service.utils.randomIntBetweenNumber(rubyRequired.minAmount, max);
 
       const result = await Player.aggregate([
-        {$match: {robot: true, isGame: false }},
+        {$match: {robot: true }},
         {$sample: { size: 1}}
       ]);
 
