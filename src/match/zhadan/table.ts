@@ -303,47 +303,21 @@ abstract class Table implements Serializable {
     return this.rule.jokerCount ? 27 : 26;
   }
 
-  async fapai(payload) {
-    // payload.cards = [
-    //   [{type: 0, point: 16, value: 16}, {type: 0, point: 16, value: 16}, {type: 0, point: 16, value: 16}, {type: 0, point: 17, value: 17}, {type: 0, point: 17, value: 17}, {type: 0, point: 17, value: 17},
-    //     {type: 1, point: 15, value: 2}, {type: 1, point: 15, value: 2}, {type: 2, point: 15, value: 2}, {type: 2, point: 15, value: 2}, {type: 3, point: 15, value: 2}, {type: 3, point: 15, value: 2}, {type: 4, point: 15, value: 2},
-    //     {type: 4, point: 15, value: 2}, {type: 1, point: 14, value: 1}, {type: 1, point: 14, value: 1}, {type: 2, point: 14, value: 1}, {type: 2, point: 14, value: 1}, {type: 3, point: 14, value: 1},
-    //     {type: 3, point: 14, value: 1}, {type: 4, point: 14, value: 1}, {type: 1, point: 13, value: 13}, {type: 1, point: 13, value: 13}, {type: 2, point: 13, value: 13}, {type: 2, point: 13, value: 13},
-    //     {type: 3, point: 13, value: 13}, {type: 3, point: 13, value: 13}],
-    //   [],
-    //   [],
-    //   []
-    // ];
+  private haveFourJokers(p: PlayerState) {
+    return p.cards.filter(c => c.type === CardType.Joker).length >= 4
+  }
 
+  private rollReshuffle() {
+    return Math.random() < 0.83
+  }
+
+  async fapai(payload) {
     await this._fapai(payload);
 
     if (this.players.some(p => this.haveFourJokers(p)) && this.rollReshuffle()) {
-      this._fapai(payload);
+      await this._fapai(payload);
     }
 
-    // 金豆房扣除开局金豆
-    // if (this.room.gameRule.isPublic) {
-    //   await this.room.payRubyForStart();
-    // }
-
-    this.players[0].team = this.players[2].team = Team.HomeTeam
-    this.players[1].team = this.players[3].team = Team.AwayTeam
-  }
-
-  // 公共房发牌
-  async publicRoomFapai() {
-    this.stateData = {};
-    this.turn = 1;
-    this.cards = manager.withJokerCards(this.rule.jokerCount);
-    const playerCards = manager.makeCards(this.cards);
-    this.remainCards = this.cards.length;
-    for (let i = 0; i < this.players.length; i++) {
-      const p = this.players[i];
-      p.cards = playerCards[i].map(value => value.card);
-      // p.cards = [...p.cards, ...this.takeQuarterCards(p)];
-    }
-
-    // 分配队友
     this.players[0].team = this.players[2].team = Team.HomeTeam
     this.players[1].team = this.players[3].team = Team.AwayTeam
   }
@@ -383,7 +357,7 @@ abstract class Table implements Serializable {
   onCancelDeposit(player: PlayerState) {
     player.cancelDeposit()
     this.room.robotManager.disableRobot(player._id)
-    this.autoCommitFunc()
+    this.autoCommitFunc(this.players[this.status.current.seatIndex].onDeposit)
   }
 
   async autoCommitForPlayers() {
@@ -1248,14 +1222,6 @@ abstract class Table implements Serializable {
 
     return {status: !!(isHave && times), day: times}
   };
-
-  private haveFourJokers(p: PlayerState) {
-    return p.cards.filter(c => c.type === CardType.Joker).length >= 4
-  }
-
-  private rollReshuffle() {
-    return Math.random() < 0.83
-  }
 
   private drawGameBombScore(player: PlayerState): number {
     const unUsedBombs = this.getPlayerUnUsedBombs(player);
