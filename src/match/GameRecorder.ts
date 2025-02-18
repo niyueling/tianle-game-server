@@ -26,11 +26,12 @@ class GameRecorder implements IGameRecorder, Serializable {
 
   recordUserEvent(player, event, actionCards = []) {
     let cards = [];
+    let index = -1;
     if (player) {
       cards = player.getCardsArray();
+      index = player.seatIndex;
     }
 
-    const index = player.seatIndex;
 
     if (actionCards.length) {
       actionCards = actionCards.sort((a, b) => a.point - b.point);
