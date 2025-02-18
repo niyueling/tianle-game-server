@@ -302,6 +302,7 @@ class Room extends RoomBase {
         playersInfo,
         record: playerArray,
         game: {roomId: this._id, rule: this.rule.getOriginData()},
+        roomId: this._id,
         states,
         events,
         type: 'zhadan'
