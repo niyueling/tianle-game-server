@@ -154,10 +154,10 @@ export default class NormalTable extends Table {
     super.listenPlayer(player)
     this.listenerOn.push('game/selectMode')
 
-    player.msgDispatcher.on('game/selectMode', async ({mode}) => {
-      await this.onSelectMode(player, mode)
-      this.room.emit('selectMode', {});
-    })
+    // player.msgDispatcher.on('game/selectMode', async ({mode}) => {
+    //   await this.onSelectMode(player, mode)
+    //   this.room.emit('selectMode', {});
+    // })
   }
 
   async canStartGame(): Promise<boolean> {
