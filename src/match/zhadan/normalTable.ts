@@ -219,7 +219,7 @@ export default class NormalTable extends Table {
   startTeamworkGame() {
     const zhuang = this.players[0]
     this.friendCard = this.selectFriendCard(zhuang.cards);
-    this.zhuang.recorder.recordUserEvent(this, 'setFriendCard', [this.friendCard]);
+    this.zhuang.recorder.recordUserEvent(null, 'setFriendCard', [this.friendCard]);
 
     for (const p of this.players) {
       if (p.cards.find(c => Card.compare(this.friendCard, c) === 0)) {

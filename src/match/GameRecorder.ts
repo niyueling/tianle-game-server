@@ -25,7 +25,11 @@ class GameRecorder implements IGameRecorder, Serializable {
   }
 
   recordUserEvent(player, event, actionCards = []) {
-    const cards = player.getCardsArray();
+    let cards = [];
+    if (player) {
+      cards = player.getCardsArray();
+    }
+
     const index = player.seatIndex;
 
     if (actionCards.length) {
