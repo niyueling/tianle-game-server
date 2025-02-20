@@ -39,7 +39,7 @@ class GameRecorder implements IGameRecorder, Serializable {
 
     const eventRecord = {
       index,
-      info: {cards, actionCards},
+      info: {cards, actionCards, pattern},
       type: event
     }
 
