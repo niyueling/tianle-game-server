@@ -57,7 +57,7 @@ class PlayerState implements Serializable {
   @autoSerialize
   events: any
   recorder: IGameRecorder
-  record: (event: string, cards?: Card[]) => void
+  record: (event: string, cards?: Card[], pattern?: IPattern) => void
   rule: Rule
   // model: any
   disconnectCallBack: (args) => void
@@ -166,7 +166,7 @@ class PlayerState implements Serializable {
 
   setGameRecorder(r) {
     this.recorder = r
-    this.record = (event, cards?) => this.recorder.recordUserEvent(this, event, cards)
+    this.record = (event, cards?, pattern?) => this.recorder.recordUserEvent(this, event, cards, pattern)
     return this
   }
 
@@ -210,7 +210,7 @@ class PlayerState implements Serializable {
     this.lastAction = 'da'
     this.dropped.push(daCards)
     this.clearDepositTask()
-    this.record('da', daCards)
+    this.record('da', daCards, pattern)
   }
 
   get remains() {
