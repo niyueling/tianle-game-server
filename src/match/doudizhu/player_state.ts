@@ -11,8 +11,6 @@ import Room from './room'
 import Rule from './Rule'
 import {default as Table} from "./table";
 import enums from "./enums";
-import Enums from "../xmmajiang/enums";
-import {genCardArray} from "../xmmajiang/player_state";
 
 const removeCard = (src, odst) => {
   const dst = odst.slice()
@@ -62,7 +60,7 @@ class PlayerState implements Serializable {
   events: any
 
   recorder: IGameRecorder
-  record: (event: string, cards?: Card[]) => void
+  record: (event: string, cards?: Card[], pattern?: IPattern) => void
   rule: Rule
   model: any
   disconnectCallBack: (anyData: any) => void
@@ -167,7 +165,7 @@ class PlayerState implements Serializable {
 
   setGameRecorder(r) {
     this.recorder = r
-    this.record = (event, cards?) => this.recorder.recordUserEvent(this, event, cards)
+    this.record = (event, cards?, pattern?) => this.recorder.recordUserEvent(this, event, cards, pattern)
     return this
   }
 
@@ -213,7 +211,7 @@ class PlayerState implements Serializable {
     this.lastAction = 'da'
     this.dropped.push(daCards)
     this.clearDepositTask()
-    this.record('da', daCards)
+    this.record('da', daCards, pattern)
   }
 
   get remains() {
