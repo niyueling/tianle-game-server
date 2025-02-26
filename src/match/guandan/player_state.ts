@@ -60,7 +60,7 @@ class PlayerState implements Serializable {
   @autoSerialize
   events: any
   recorder: IGameRecorder
-  record: (event: string, cards?: Card[], pattern?: IPattern) => void
+  record: (event: string, cards?: Card[], pattern?: IPattern, playerIndexs?: number[]) => void
   rule: Rule
   // model: any
   disconnectCallBack: (args) => void
@@ -185,7 +185,7 @@ class PlayerState implements Serializable {
 
   setGameRecorder(r) {
     this.recorder = r
-    this.record = (event, cards?, pattern?) => this.recorder.recordUserEvent(this, event, cards, pattern)
+    this.record = (event, cards?, pattern?, playerIndexs?) => this.recorder.recordUserEvent(this, event, cards, pattern, playerIndexs)
     return this
   }
 

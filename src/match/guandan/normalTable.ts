@@ -254,13 +254,14 @@ export default class NormalTable extends Table {
 
         // 查询还贡用户
         const returnTributePlayer = this.players.find(p => p.returnTributeState);
-        // console.warn("isAllTribute %s kangTribute %s payTributePlayerId %s returnTributePlayerId %s", this.isAllTribute,
-        //   JSON.stringify(this.kangTribute), payTributePlayer && payTributePlayer._id, returnTributePlayer && returnTributePlayer._id);
 
         payTributePlayer.returnTributeCard = returnTributePlayer.returnTributeCard;
         payTributePlayer.returnTributeIndex = returnTributePlayer.seatIndex;
         returnTributePlayer.payTributeCard = payTributePlayer.payTributeCard;
         returnTributePlayer.payTributeIndex = payTributePlayer.seatIndex;
+
+        payTributePlayer.record(`tribute-success`, [payTributePlayer.payTributeCard, returnTributePlayer.returnTributeCard], null,
+          [payTributePlayer.seatIndex, returnTributePlayer.seatIndex]);
       }
 
       // 双下无抗贡，则进贡大牌给头游，剩下的牌给二游
@@ -284,11 +285,17 @@ export default class NormalTable extends Table {
         secondPlayer.payTributeCard = payTributePlayer[0].payTributeCard;
         secondPlayer.payTributeIndex = payTributePlayer[0].seatIndex;
 
+        payTributePlayer[0].record(`tribute-success`, [payTributePlayer[0].payTributeCard, secondPlayer.returnTributeCard], null,
+          [payTributePlayer[0].seatIndex, secondPlayer.seatIndex]);
+
         // 进贡牌面较大的给头游
         payTributePlayer[1].returnTributeCard = firstPlayer.returnTributeCard;
         payTributePlayer[1].returnTributeIndex = firstPlayer.seatIndex;
         firstPlayer.payTributeCard = payTributePlayer[1].payTributeCard;
         firstPlayer.payTributeIndex = payTributePlayer[1].seatIndex;
+
+        payTributePlayer[1].record(`tribute-success`, [payTributePlayer[1].payTributeCard, firstPlayer.returnTributeCard], null,
+          [payTributePlayer[1].seatIndex, firstPlayer.seatIndex]);
       }
 
       // 执行换牌逻辑

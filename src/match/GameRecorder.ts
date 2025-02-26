@@ -1,7 +1,7 @@
 import {Serializable, serialize, serializeHelp} from "./serializeDecorator";
 
 export interface IGameRecorder {
-  recordUserEvent(player: any, event: string, cards?: any[], pattern?: object): void;
+  recordUserEvent(player: any, event: string, cards?: any[], pattern?: object, playerIndexs?: number[]): void;
 
   pushEvent(event: any)
 
@@ -24,7 +24,7 @@ class GameRecorder implements IGameRecorder, Serializable {
     this.events = recorder.events
   }
 
-  recordUserEvent(player, event, actionCards = [], pattern = {}) {
+  recordUserEvent(player, event, actionCards = [], pattern = {}, playerIndexs = []) {
     let cards = [];
     let index = -1;
     if (player) {
@@ -39,7 +39,7 @@ class GameRecorder implements IGameRecorder, Serializable {
 
     const eventRecord = {
       index,
-      info: {cards, actionCards, pattern},
+      info: {cards, actionCards, pattern, playerIndexs},
       type: event
     }
 

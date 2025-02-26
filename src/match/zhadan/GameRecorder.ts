@@ -1,8 +1,7 @@
-import {last} from 'lodash'
 import Card from "./card";
 
 export interface IGameRecorder {
-  recordUserEvent (player: any, event: string, cards?: Card[]): void;
+  recordUserEvent (player: any, event: string, cards?: Card[], pattern?: object, playerIndexs?: number[]): void;
 
   getEvents(): Array<any>;
 }
@@ -18,13 +17,22 @@ class GameRecorder implements IGameRecorder {
     this.events = []
   }
 
-  recordUserEvent(player, event, actionCards) {
-    const cards = player.getCardsArray()
-    const index = player.seatIndex
+  recordUserEvent(player, event, actionCards, pattern = {}, playerIndexs = []) {
+    let cards = [];
+    let index = -1;
+    if (player) {
+      cards = player.getCardsArray();
+      index = player.seatIndex;
+    }
+
+
+    if (actionCards.length) {
+      actionCards = actionCards.sort((a, b) => a.point - b.point);
+    }
 
     const eventRecord = {
       index,
-      info: {cards, actionCards},
+      info: {cards, actionCards, pattern, playerIndexs},
       type: event
     }
 
