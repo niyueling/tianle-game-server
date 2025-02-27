@@ -28,7 +28,7 @@ class GameRecorder implements IGameRecorder, Serializable {
     let cards = [];
     let index = -1;
     if (player) {
-      cards = player.getCardsArray();
+      cards = player.getCardsArray().slice();
       index = player.seatIndex;
     }
 
