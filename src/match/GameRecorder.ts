@@ -32,7 +32,6 @@ class GameRecorder implements IGameRecorder, Serializable {
       index = player.seatIndex;
     }
 
-
     if (actionCards.length) {
       actionCards = actionCards.sort((a, b) => a.point - b.point);
     }
@@ -42,6 +41,8 @@ class GameRecorder implements IGameRecorder, Serializable {
       info: {cards, actionCards, pattern, playerIndexs, createAt: new Date()},
       type: event
     }
+
+    console.warn("event-%s index-%s eventRecord-%s", event, index, JSON.stringify(eventRecord));
 
     this.events.push(eventRecord)
   }
